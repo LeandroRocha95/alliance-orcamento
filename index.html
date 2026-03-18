@@ -431,14 +431,14 @@
     </table>
   </div>
   <div style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap;">
-    <button class="btn btn-primary" style="flex:none;padding:11px 24px;" onclick="saveToFile()">💾 Salvar e Baixar HTML</button>
+    <button class="btn btn-primary" style="flex:none;padding:11px 28px;" onclick="saveConfig()">☁️ Salvar Configurações na Nuvem</button>
     <button class="btn btn-ghost btn-sm" onclick="exportItems()">📤 Exportar JSON</button>
     <button class="btn btn-ghost btn-sm" onclick="document.getElementById('importFile').click()">📥 Importar JSON</button>
     <input type="file" id="importFile" accept=".json" style="display:none" onchange="importItems(event)">
   </div>
   <div style="margin-top:10px;padding:12px 16px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;font-size:12px;color:var(--muted);line-height:1.6;">
-    💡 <strong style="color:var(--text)">Como distribuir para seus vendedores:</strong>
-    clique em <em>Salvar e Baixar HTML</em> após cada edição. Isso gera um novo arquivo com todos os itens já gravados. Envie esse arquivo para os vendedores — abrindo no navegador, tudo estará atualizado.
+    💡 <strong style="color:var(--text)">Como funciona:</strong>
+    ao clicar em <em>Salvar Configurações na Nuvem</em>, todos os itens, seções e unidades ficam disponíveis para todos os vendedores automaticamente.
   </div>
 </div>
 
@@ -540,35 +540,39 @@ function saveAll() {
   localStorage.setItem('obras_items',    JSON.stringify(ITEMS));
 }
 
-function saveToFile() {
-  var unitsJson    = JSON.stringify(UNITS);
-  var sectionsJson = JSON.stringify(SECTIONS);
-  var itemsJson    = JSON.stringify(ITEMS);
+function saveConfig() {
+  showToast('⏳ Salvando configurações...', 'success');
+  var payload = {
+    id: 1,
+    units:    JSON.stringify(UNITS),
+    sections: JSON.stringify(SECTIONS),
+    items:    JSON.stringify(ITEMS)
+  };
+  sbFetch('POST', SUPABASE_URL + '/rest/v1/config?on_conflict=id', payload)
+  .then(function(r) {
+    if (r.ok || r.status === 201) {
+      showToast('✓ Configurações salvas na nuvem!');
+    } else {
+      r.text().then(function(t){ showToast('Erro: ' + t, 'error'); });
+    }
+  })
+  .catch(function(){ showToast('Sem conexão com a nuvem', 'error'); });
+}
 
-  // Use original snapshot but strip out the snapshot variable itself
-  // so the saved file doesn't accumulate nested snapshots
-  var html = _ORIGINAL_HTML;
-
-  // Remove the snapshot script tag entirely from the saved file
-  html = html.replace(/<script>var _ORIGINAL_HTML[\s\S]*?<\/script>/, '');
-
-  // Inject current data
-  html = html.replace(/var DEFAULT_UNITS\s*=\s*\[[\s\S]*?\];/,    'var DEFAULT_UNITS = '    + unitsJson    + ';');
-  html = html.replace(/var DEFAULT_SECTIONS\s*=\s*\[[\s\S]*?\];/, 'var DEFAULT_SECTIONS = ' + sectionsJson + ';');
-  html = html.replace(/var DEFAULT_ITEMS\s*=\s*\{[\s\S]*?\n  \};/,'var DEFAULT_ITEMS = '    + itemsJson    + ';');
-  html = html.replace(/var UNITS\s*=\s*loadData\([^)]+\);/,       'var UNITS = '    + unitsJson    + ';');
-  html = html.replace(/var SECTIONS\s*=\s*loadData\([^)]+\);/,    'var SECTIONS = ' + sectionsJson + ';');
-  html = html.replace(/var ITEMS\s*=\s*loadData\([^)]+\);/,       'var ITEMS = '    + itemsJson    + ';');
-
-  // Re-add a fresh snapshot script at the right place in the saved file
-  html = html.replace('<!-- MODAL SENHA -->', '<!-- MODAL SENHA -->\n<script>var _ORIGINAL_HTML = document.documentElement.outerHTML;<\/script>');
-
-  var blob = new Blob([html], { type: 'text/html;charset=utf-8' });
-  var a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'alliance_orcamento.html';
-  a.click();
-  showToast('✓ Arquivo gerado! Distribua para os vendedores.');
+function loadConfig(callback) {
+  sbFetch('GET', SUPABASE_URL + '/rest/v1/config?id=eq.1')
+  .then(function(r){ return r.json(); })
+  .then(function(rows) {
+    if (rows && rows[0]) {
+      try { UNITS    = JSON.parse(rows[0].units);    } catch(e){}
+      try { SECTIONS = JSON.parse(rows[0].sections); } catch(e){}
+      try { ITEMS    = JSON.parse(rows[0].items);    } catch(e){}
+      syncItemKeys();
+      saveAll(); // also update localStorage as cache
+    }
+    if (callback) callback();
+  })
+  .catch(function(){ if (callback) callback(); });
 }
 function syncItemKeys() {
   SECTIONS.forEach(function(s) { if (!ITEMS[s.id]) ITEMS[s.id] = []; });
@@ -1447,7 +1451,8 @@ document.addEventListener('click', function(e) {
     if (!el.parentElement.contains(e.target)) el.style.display = 'none';
   });
 });
-renderOrcamento();
+// Load config from cloud first, then render
+loadConfig(function() { renderOrcamento(); });
 </script>
 </body>
 </html>
