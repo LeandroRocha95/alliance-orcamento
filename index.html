@@ -239,6 +239,30 @@
   .logout-btn { background: none; border: 1px solid var(--border); color: var(--muted); font-size: 11px; font-family: 'DM Sans', sans-serif; padding: 5px 10px; border-radius: 6px; cursor: pointer; transition: all 0.2s; }
   .logout-btn:hover { border-color: var(--red); color: var(--red); }
 
+
+  /* FORMAS DE PAGAMENTO */
+  .payment-card { margin-top: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+  .payment-header { background: linear-gradient(135deg, #1a6b8a, #2196b0); padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; }
+  .payment-header-title { font-family: 'Bebas Neue', sans-serif; font-size: 17px; letter-spacing: 2px; color: #fff; }
+  .payment-body { padding: 16px 20px; }
+  .payment-row { display: grid; grid-template-columns: 1fr 100px 130px 36px; gap: 8px; align-items: center; margin-bottom: 8px; }
+  .payment-row-header { display: grid; grid-template-columns: 1fr 100px 130px 36px; gap: 8px; margin-bottom: 6px; }
+  .payment-row-header span { font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); }
+  .payment-input { background: var(--bg); border: 1px solid var(--border); border-radius: 7px; color: var(--text); font-size: 13px; font-family: 'DM Sans', sans-serif; padding: 8px 10px; outline: none; width: 100%; transition: border-color 0.2s; }
+  .payment-input:focus { border-color: #2196b0; }
+  .payment-pct { background: var(--bg); border: 1px solid var(--border); border-radius: 7px; color: var(--text); font-size: 13px; font-family: 'DM Sans', sans-serif; padding: 8px 10px; outline: none; width: 100%; transition: border-color 0.2s; -moz-appearance: textfield; }
+  .payment-pct::-webkit-outer-spin-button, .payment-pct::-webkit-inner-spin-button { -webkit-appearance: none; }
+  .payment-pct:focus { border-color: #2196b0; }
+  .payment-val { font-size: 13px; font-weight: 600; color: var(--accent); padding: 8px 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 7px; text-align: right; white-space: nowrap; }
+  .payment-del { background: none; border: none; color: var(--muted); font-size: 16px; cursor: pointer; padding: 4px 6px; border-radius: 6px; transition: color 0.15s; }
+  .payment-del:hover { color: var(--red); }
+  .payment-add-btn { background: none; border: 1px dashed var(--border); color: var(--muted); font-size: 12px; font-family: 'DM Sans', sans-serif; padding: 8px; border-radius: 8px; cursor: pointer; width: 100%; margin-top: 4px; transition: all 0.2s; }
+  .payment-add-btn:hover { border-color: #2196b0; color: #2196b0; }
+  .payment-total-row { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
+  .payment-total-pct { font-size: 12px; color: var(--muted); }
+  .payment-total-pct.over { color: var(--red); font-weight: 600; }
+  .payment-total-pct.ok { color: var(--green); font-weight: 600; }
+
   /* MODAL */
   .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); display: flex; align-items: center;
     justify-content: center; z-index: 200; backdrop-filter: blur(4px); opacity: 0; pointer-events: none; transition: opacity 0.2s; }
@@ -424,6 +448,25 @@
       </div>
     </div>
   </div>
+
+  <!-- FORMAS DE PAGAMENTO -->
+  <div class="payment-card" id="paymentCard">
+    <div class="payment-header">
+      <div class="payment-header-title">💳 Formas de Pagamento</div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.8)" id="paymentTotalPct">0% do total</div>
+    </div>
+    <div class="payment-body">
+      <div class="payment-row-header">
+        <span>Etapa</span>
+        <span style="text-align:center">% do Total</span>
+        <span style="text-align:right">Valor (R$)</span>
+        <span></span>
+      </div>
+      <div id="paymentRows"></div>
+      <button class="payment-add-btn" onclick="addPaymentRow()">+ Adicionar etapa</button>
+    </div>
+  </div>
+
   <div class="actions">
     <button class="btn btn-ghost" onclick="resetAll()" style="flex:none;">🗑 Limpar</button>
     <button class="btn btn-ghost" onclick="saveToHistory()" style="flex:none;">💾 Salvar</button>
@@ -1007,6 +1050,7 @@ function recalc() {
   }
 
   document.getElementById('finalTotal').textContent  = fmt(total);
+  refreshPaymentValues();
   document.getElementById('headerTotal').textContent = fmt(total);
   document.getElementById('headerM2').textContent    = m2 + ' m²';
   document.getElementById('totalM2').textContent     = m2 + ' m²';
@@ -1019,6 +1063,7 @@ function resetAll() {
     var el = document.getElementById(id); if(el) el.value='';
   });
   document.getElementById('discountType').value = 'pct';
+  paymentRows = [{id:1,label:'Início da obra',pct:25},{id:2,label:'Término de fundação',pct:25},{id:3,label:'Término da cobertura',pct:25},{id:4,label:'Início instalação do piso',pct:25}]; paymentNextId=5; renderPaymentRows();
   document.getElementById('discountResult').style.display = 'none';
   setStatus('negociacao');
   var v = new Date(); v.setDate(v.getDate()+15);
@@ -1118,9 +1163,9 @@ function onLoginSuccess() {
   .then(function(r){ return r.json(); })
   .then(function(rows) {
     _isAdmin = Array.isArray(rows) && rows.length > 0;
-    loadConfig(function() { renderOrcamento(); });
+    loadConfig(function() { renderOrcamento(); renderPaymentRows(); });
   })
-  .catch(function(){ loadConfig(function() { renderOrcamento(); }); });
+  .catch(function(){ loadConfig(function() { renderOrcamento(); renderPaymentRows(); }); });
 }
 
 // ── Restore session from localStorage ───────────────────────────
@@ -1144,7 +1189,7 @@ function restoreSession() {
           .then(function(r){ return r.json(); })
           .then(function(rows) {
             _isAdmin = Array.isArray(rows) && rows.length > 0;
-            loadConfig(function() { renderOrcamento(); });
+            loadConfig(function() { renderOrcamento(); renderPaymentRows(); });
           });
         } else {
           _currentUser = null;
@@ -1183,6 +1228,7 @@ function saveToHistory() {
     discount_val:  document.getElementById('discountVal').value,
     discount_type: document.getElementById('discountType').value,
     acrescimo_val: document.getElementById('acrescimoVal').value,
+    payment_data:  JSON.stringify(getPaymentData()),
     state:         JSON.parse(JSON.stringify(state)),
     saved_at:      new Date().toLocaleString('pt-BR'),
     user_id:       _currentUser ? _currentUser.id : null
@@ -1263,6 +1309,7 @@ function loadFromHistory(id) {
     document.getElementById('discountVal').value   = e.discount_val  || '';
     document.getElementById('discountType').value  = e.discount_type || 'pct';
     document.getElementById('acrescimoVal').value   = e.acrescimo_val  || '';
+    try { if (e.payment_data) setPaymentData(JSON.parse(e.payment_data)); } catch(ex){}
     setStatus(e.status || 'negociacao');
     switchTab('orcamento');
     renderOrcamento();
@@ -1645,12 +1692,124 @@ function printQuote() {
     + (pdfMode === 'simple' && acrescimoAmt > 0 ? '<div style="margin-top:4px;text-align:right;font-size:13px;color:#27ae60">Acréscimo: + ' + fmt(acrescimoAmt) + '</div>' : '')
     + '<div class="total-row"><span>VALOR FINAL</span><span>' + total + '</span></div>'
     + obsHtml
+    + (function(){
+        var pdata = getPaymentData();
+        if (!pdata.length) return '';
+        var ttl = document.getElementById('finalTotal').textContent;
+        var tnum = parseFloat(ttl.replace('R$','').replace(/\./g,'').replace(',','.').trim()) || 0;
+        var rows = pdata.map(function(r,i){
+          var v = tnum * (r.pct/100);
+          return '<tr style="background:' + (i%2===0?'#f9f9f9':'#fff') + '"><td>' + r.label + '</td><td style="text-align:center">' + r.pct + '%</td><td style="text-align:right;font-weight:600">' + fmt(v) + '</td></tr>';
+        }).join('');
+        return '<div style="margin-top:28px"><table style="width:100%;border-collapse:collapse;border-radius:8px;overflow:hidden">'
+          + '<thead><tr style="background:#1a6b8a;color:#fff"><th colspan="3" style="padding:12px 14px;font-size:14px;text-align:left;font-family:Arial">FORMAS DE PAGAMENTO</th></tr>'
+          + '<tr style="background:#2196b0;color:#fff"><th style="padding:8px 14px;text-align:left;font-size:11px">Etapa</th><th style="padding:8px 14px;text-align:center;font-size:11px">%</th><th style="padding:8px 14px;text-align:right;font-size:11px">Valor (R$)</th></tr></thead>'
+          + '<tbody>' + rows + '</tbody></table></div>';
+      })()
     + '<p style="margin-top:40px;font-size:11px;color:#aaa">Este orçamento é válido por 15 dias. Preços sujeitos a alteração.</p>'
     + '<scri' + 'pt>setTimeout(function(){window.print();},400);</scri' + 'pt>'
     + '</body></html>';
 
   var blob = new Blob([html], {type:'text/html;charset=utf-8'});
   window.open(URL.createObjectURL(blob), '_blank');
+}
+
+
+// ═══════════════════════════════════════════════════
+// FORMAS DE PAGAMENTO
+// ═══════════════════════════════════════════════════
+var paymentRows = [
+  { id: 1, label: 'Início da obra',           pct: 25 },
+  { id: 2, label: 'Término de fundação',       pct: 25 },
+  { id: 3, label: 'Término da cobertura',      pct: 25 },
+  { id: 4, label: 'Início instalação do piso', pct: 25 }
+];
+var paymentNextId = 5;
+
+function getPaymentTotal() {
+  var raw = document.getElementById('finalTotal').textContent;
+  return parseFloat(raw.replace('R$','').replace(/\./g,'').replace(',','.').trim()) || 0;
+}
+
+function renderPaymentRows() {
+  var container = document.getElementById('paymentRows');
+  if (!container) return;
+  var total = getPaymentTotal();
+  container.innerHTML = '';
+  paymentRows.forEach(function(row) {
+    var val = total * (row.pct / 100);
+    var div = document.createElement('div');
+    div.className = 'payment-row';
+    div.id = 'prow-' + row.id;
+    div.innerHTML =
+      '<input class="payment-input" type="text" value="' + row.label + '" placeholder="Ex: Início da obra"' +
+        ' onchange="updatePaymentLabel(' + row.id + ', this.value)">' +
+      '<input class="payment-pct" type="number" min="0" max="100" step="0.01" value="' + row.pct + '"' +
+        ' oninput="updatePaymentPct(' + row.id + ', this.value)"' +
+        ' onchange="updatePaymentPct(' + row.id + ', this.value)"> ' +
+      '<div class="payment-val">' + fmt(val) + '</div>' +
+      '<button class="payment-del" onclick="removePaymentRow(' + row.id + ')" title="Remover">×</button>';
+    container.appendChild(div);
+  });
+  updatePaymentTotals();
+}
+
+function updatePaymentLabel(id, val) {
+  var row = paymentRows.find(function(r){ return r.id === id; });
+  if (row) row.label = val;
+}
+
+function updatePaymentPct(id, val) {
+  var row = paymentRows.find(function(r){ return r.id === id; });
+  if (row) {
+    row.pct = parseFloat(val) || 0;
+    var total = getPaymentTotal();
+    var valEl = document.querySelector('#prow-' + id + ' .payment-val');
+    if (valEl) valEl.textContent = fmt(total * (row.pct / 100));
+    updatePaymentTotals();
+  }
+}
+
+function updatePaymentTotals() {
+  var totalPct = paymentRows.reduce(function(s,r){ return s + (r.pct||0); }, 0);
+  totalPct = Math.round(totalPct * 100) / 100;
+  var el = document.getElementById('paymentTotalPct');
+  if (el) {
+    el.textContent = totalPct + '% do total';
+    el.className = totalPct > 100 ? 'over' : (totalPct === 100 ? 'ok' : '');
+  }
+}
+
+function addPaymentRow() {
+  paymentRows.push({ id: paymentNextId++, label: 'Nova etapa', pct: 0 });
+  renderPaymentRows();
+}
+
+function removePaymentRow(id) {
+  paymentRows = paymentRows.filter(function(r){ return r.id !== id; });
+  renderPaymentRows();
+}
+
+function refreshPaymentValues() {
+  var total = getPaymentTotal();
+  paymentRows.forEach(function(row) {
+    var valEl = document.querySelector('#prow-' + row.id + ' .payment-val');
+    if (valEl) valEl.textContent = fmt(total * (row.pct / 100));
+  });
+  updatePaymentTotals();
+}
+
+function getPaymentData() {
+  return paymentRows.map(function(r){ return { label: r.label, pct: r.pct }; });
+}
+
+function setPaymentData(data) {
+  if (!Array.isArray(data) || !data.length) return;
+  paymentNextId = 1;
+  paymentRows = data.map(function(r) {
+    return { id: paymentNextId++, label: r.label, pct: r.pct };
+  });
+  renderPaymentRows();
 }
 
 // ═══════════════════════════════════════════════════
