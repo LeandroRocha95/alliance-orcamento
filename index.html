@@ -1689,7 +1689,6 @@ function printQuote() {
     + (pdfMode === 'detailed' ? '<th>Descrição</th><th>Quantidade</th><th>Valor Unitário</th><th>Total</th>' : '<th>Descrição</th><th>Quantidade</th><th></th><th></th>')
     + '</tr></thead><tbody>' + rows + '</tbody></table>'
     + (pdfMode === 'simple' && discAmt > 0 ? '<div style="margin-top:12px;text-align:right;font-size:13px;color:#666">Desconto: - ' + fmt(discAmt) + '</div>' : '')
-    + (pdfMode === 'simple' && acrescimoAmt > 0 ? '<div style="margin-top:4px;text-align:right;font-size:13px;color:#27ae60">Acréscimo: + ' + fmt(acrescimoAmt) + '</div>' : '')
     + '<div class="total-row"><span>VALOR FINAL</span><span>' + total + '</span></div>'
     + obsHtml
     + (function(){
