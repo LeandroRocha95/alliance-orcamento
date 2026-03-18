@@ -268,8 +268,14 @@
   <div class="header-right">
     <button class="admin-btn" onclick="openAdminModal()">⚙️ Admin</button>
     <div>
-      <div class="header-total-label">Valor Final</div>
-      <div class="header-total-value" id="headerTotal">R$ 0,00</div>
+      <div style="text-align:right;margin-right:16px;">
+        <div class="header-total-label">Área Total</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:var(--muted)" id="headerM2">0 m²</div>
+      </div>
+      <div>
+        <div class="header-total-label">Valor Final</div>
+        <div class="header-total-value" id="headerTotal">R$ 0,00</div>
+      </div>
     </div>
   </div>
 </header>
@@ -359,6 +365,13 @@
         </div>
         <div class="discount-result" id="discountResult" style="display:none">- R$ 0,00</div>
       </div>
+      <div style="display:flex;gap:10px;align-items:flex-end;padding:8px 0 4px;flex-wrap:wrap;">
+        <div class="field" style="flex:1;min-width:120px;">
+          <label>Acréscimo</label>
+          <input type="number" id="acrescimoVal" min="0" step="0.01" placeholder="0" style="background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:14px;font-family:'DM Sans',sans-serif;padding:9px 12px;outline:none;width:100%;" oninput="recalc()" onchange="recalc()">
+        </div>
+        <div class="discount-result" id="acrescimoResult" style="display:none;background:rgba(46,204,113,0.1);border-color:var(--green);color:var(--green)">+ R$ 0,00</div>
+      </div>
       <div class="summary-total-row">
         <div class="summary-total-label">Valor Final</div>
         <div class="summary-total-value" id="finalTotal">R$ 0,00</div>
@@ -370,15 +383,27 @@
     <button class="btn btn-ghost" onclick="saveToHistory()" style="flex:none;">💾 Salvar</button>
     <button class="btn btn-ghost" onclick="openPresent()" style="flex:none;">🖥 Apresentar</button>
     <button class="btn btn-ghost" onclick="sendWhatsApp()" style="flex:none;">💬 WhatsApp</button>
-    <button class="btn btn-primary" onclick="printQuote()">🖨️ Gerar PDF</button>
+    <div style="display:flex;gap:6px;align-items:center;flex:1;">
+      <select id="pdfMode" style="background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:12px;font-family:'DM Sans',sans-serif;padding:10px 10px;outline:none;white-space:nowrap;">
+        <option value="detailed">PDF Detalhado</option>
+        <option value="simple">PDF Simplificado</option>
+      </select>
+      <button class="btn btn-primary" onclick="printQuote()" style="white-space:nowrap;">🖨️ Gerar PDF</button>
+    </div>
   </div>
 </div>
 
 <!-- ══════════ HISTÓRICO ══════════ -->
 <div class="container page" id="page-historico">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:10px;">
     <div class="section-title" style="margin:0;flex:1;">Orçamentos Salvos</div>
-    <button class="btn btn-danger btn-sm" onclick="clearHistory()" style="margin-left:16px;">🗑 Limpar Tudo</button>
+    <select id="historyStatusFilter" onchange="renderHistory()" style="background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;font-family:'DM Sans',sans-serif;padding:8px 14px;outline:none;">
+      <option value="">Todos os status</option>
+      <option value="negociacao">💬 Em Negociação</option>
+      <option value="aprovado">✅ Aprovado</option>
+      <option value="perdido">❌ Perdido</option>
+    </select>
+    <button class="btn btn-danger btn-sm" onclick="clearHistory()">🗑 Limpar Tudo</button>
   </div>
   <div id="historyList" style="display:flex;flex-direction:column;gap:10px;margin-top:16px;"></div>
 </div>
@@ -908,7 +933,9 @@ function recalc() {
     discAmt = discType === 'pct' ? subtotal * (discVal / 100) : discVal;
     discAmt = Math.min(discAmt, subtotal);
   }
-  var total = subtotal - discAmt;
+  // Acréscimo
+  var acrescimoVal = parseFloat(document.getElementById('acrescimoVal').value) || 0;
+  var total = subtotal - discAmt + acrescimoVal;
 
   document.getElementById('s-fechada').textContent  = fmt(fechada);
   document.getElementById('s-aberta').textContent   = fmt(aberta);
@@ -924,15 +951,24 @@ function recalc() {
     discEl.style.display = 'none';
   }
 
+  var acrescimoEl = document.getElementById('acrescimoResult');
+  if (acrescimoVal > 0) {
+    acrescimoEl.textContent = '+ ' + fmt(acrescimoVal);
+    acrescimoEl.style.display = 'flex';
+  } else {
+    acrescimoEl.style.display = 'none';
+  }
+
   document.getElementById('finalTotal').textContent  = fmt(total);
   document.getElementById('headerTotal').textContent = fmt(total);
+  document.getElementById('headerM2').textContent    = m2 + ' m²';
   document.getElementById('totalM2').textContent     = m2 + ' m²';
 }
 
 function resetAll() {
   if (!confirm('Limpar todos os valores?')) return;
   state = {};
-  ['clientName','vendorName','clientCity','clientPhone','quoteObs','discountVal'].forEach(function(id){
+  ['clientName','vendorName','clientCity','clientPhone','quoteObs','discountVal','acrescimoVal'].forEach(function(id){
     var el = document.getElementById(id); if(el) el.value='';
   });
   document.getElementById('discountType').value = 'pct';
@@ -997,6 +1033,7 @@ function saveToHistory() {
     total:         document.getElementById('finalTotal').textContent,
     discount_val:  document.getElementById('discountVal').value,
     discount_type: document.getElementById('discountType').value,
+    acrescimo_val: document.getElementById('acrescimoVal').value,
     state:         JSON.parse(JSON.stringify(state)),
     saved_at:      new Date().toLocaleString('pt-BR')
   };
@@ -1064,6 +1101,7 @@ function loadFromHistory(id) {
     document.getElementById('quoteObs').value      = e.obs           || '';
     document.getElementById('discountVal').value   = e.discount_val  || '';
     document.getElementById('discountType').value  = e.discount_type || 'pct';
+    document.getElementById('acrescimoVal').value   = e.acrescimo_val  || '';
     setStatus(e.status || 'negociacao');
     switchTab('orcamento');
     renderOrcamento();
@@ -1382,13 +1420,26 @@ function printQuote() {
   var total  = document.getElementById('finalTotal').textContent;
   var m2     = document.getElementById('totalM2').textContent;
   var obs    = document.getElementById('quoteObs').value.trim();
+  var discVal2  = parseFloat(document.getElementById('discountVal').value) || 0;
+  var discType2 = document.getElementById('discountType').value;
+  var subtotal2 = allItems().filter(function(i){ return (state[i.id]||0)>0; }).reduce(function(s,i){ return s + (state[i.id]||0)*i.price; }, 0);
+  var discAmt   = discVal2 > 0 ? (discType2==='pct' ? subtotal2*(discVal2/100) : discVal2) : 0;
+  var acrescimoAmt = parseFloat(document.getElementById('acrescimoVal').value) || 0;
 
+  var pdfMode = document.getElementById('pdfMode') ? document.getElementById('pdfMode').value : 'detailed';
   var active = allItems().filter(function(i){ return (state[i.id]||0) > 0; });
-  var rows = active.map(function(i) {
-    var qty = state[i.id];
-    var val = qty * i.price;
-    return '<tr><td>' + i.label + '</td><td>' + qty + ' ' + i.unit + '</td><td>' + fmt(i.price) + '</td><td>' + fmt(val) + '</td></tr>';
-  }).join('');
+  var rows = '';
+  if (pdfMode === 'detailed') {
+    rows = active.map(function(i) {
+      var qty = state[i.id]; var val = qty * i.price;
+      return '<tr><td>' + i.label + '</td><td>' + qty + ' ' + i.unit + '</td><td>' + fmt(i.price) + '</td><td>' + fmt(val) + '</td></tr>';
+    }).join('');
+  } else {
+    rows = active.map(function(i) {
+      var qty = state[i.id];
+      return '<tr><td>' + i.label + '</td><td>' + qty + ' ' + i.unit + '</td><td></td><td></td></tr>';
+    }).join('');
+  }
 
   var obsHtml = obs
     ? '<div style="margin-top:28px;border:1px solid #e0e0e0;border-radius:8px;padding:16px 18px">'
@@ -1427,8 +1478,10 @@ function printQuote() {
     +   '<div class="info-item"><strong>Data</strong>' + date + '</div>'
     + '</div>'
     + '<table><thead><tr>'
-    +   '<th>Descrição</th><th>Quantidade</th><th>Valor Unitário</th><th>Total</th>'
+    + (pdfMode === 'detailed' ? '<th>Descrição</th><th>Quantidade</th><th>Valor Unitário</th><th>Total</th>' : '<th>Descrição</th><th>Quantidade</th><th></th><th></th>')
     + '</tr></thead><tbody>' + rows + '</tbody></table>'
+    + (pdfMode === 'simple' && discAmt > 0 ? '<div style="margin-top:12px;text-align:right;font-size:13px;color:#666">Desconto: - ' + fmt(discAmt) + '</div>' : '')
+    + (pdfMode === 'simple' && acrescimoAmt > 0 ? '<div style="margin-top:4px;text-align:right;font-size:13px;color:#27ae60">Acréscimo: + ' + fmt(acrescimoAmt) + '</div>' : '')
     + '<div class="total-row"><span>VALOR FINAL</span><span>' + total + '</span></div>'
     + obsHtml
     + '<p style="margin-top:40px;font-size:11px;color:#aaa">Este orçamento é válido por 15 dias. Preços sujeitos a alteração.</p>'
