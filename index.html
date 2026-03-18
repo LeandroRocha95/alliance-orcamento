@@ -1216,6 +1216,14 @@ function renderHistory() {
       list.innerHTML = '<div class="history-empty">Nenhum orçamento salvo ainda.<br>Preencha um orçamento e clique em 💾 Salvar.</div>';
       return;
     }
+    // Apply status filter
+    var statusFilter = document.getElementById('historyStatusFilter');
+    var filterVal = statusFilter ? statusFilter.value : '';
+    if (filterVal) h = h.filter(function(e){ return e.status === filterVal; });
+    if (!h.length) {
+      list.innerHTML = '<div class="history-empty">Nenhum orçamento com esse status.</div>';
+      return;
+    }
     var statusLabel = { negociacao:'💬 Negociação', aprovado:'✅ Aprovado', perdido:'❌ Perdido' };
     var statusColor = { negociacao:'#3498db', aprovado:'#2ecc71', perdido:'#e74c3c' };
     list.innerHTML = '';
