@@ -263,6 +263,13 @@
   .payment-total-pct.over { color: var(--red); font-weight: 600; }
   .payment-total-pct.ok { color: var(--green); font-weight: 600; }
 
+
+  /* DRAG & DROP */
+  .drag-handle { cursor: grab; color: var(--muted); font-size: 16px; padding: 0 8px; user-select: none; }
+  .drag-handle:active { cursor: grabbing; }
+  tr.dragging { opacity: 0.4; }
+  tr.drag-over { border-top: 2px solid var(--accent); }
+
   /* MODAL */
   .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); display: flex; align-items: center;
     justify-content: center; z-index: 200; backdrop-filter: blur(4px); opacity: 0; pointer-events: none; transition: opacity 0.2s; }
@@ -540,7 +547,7 @@
   </div>
   <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
     <table class="admin-table">
-      <thead><tr><th>Item</th><th>Unidade</th><th>Preço</th><th>Seção</th><th>Ações</th></tr></thead>
+      <thead><tr><th style="width:30px"></th><th>Item</th><th>Unidade</th><th>Preço</th><th>Seção</th><th>Ações</th></tr></thead>
       <tbody id="adminTbody"></tbody>
     </table>
   </div>
@@ -1511,6 +1518,7 @@ function renderAdminTable() {
     var tr = document.createElement('tr');
     if (editingId === item.id) {
       tr.innerHTML =
+        '<td></td>' +
         '<td><input class="edit-input" id="edit-label" value="' + item.label + '" style="min-width:180px"></td>' +
         '<td><select class="edit-input" id="edit-unit" style="width:120px">' +
           UNITS.map(function(u){ return '<option' + (u===item.unit?' selected':'') + '>' + u + '</option>'; }).join('') +
@@ -1524,7 +1532,11 @@ function renderAdminTable() {
           '<button class="btn btn-ghost btn-sm" onclick="cancelEdit()">✕</button>' +
         '</div></td>';
     } else {
+      tr.setAttribute('draggable', 'true');
+      tr.setAttribute('data-id', item.id);
+      tr.setAttribute('data-sec', sec);
       tr.innerHTML =
+        '<td style="width:30px"><span class="drag-handle" title="Arrastar para reordenar">⠿</span></td>' +
         '<td>' + item.label + '</td>' +
         '<td style="color:var(--muted)">' + item.unit + '</td>' +
         '<td style="font-weight:600">' + fmt(item.price) + '</td>' +
@@ -1533,6 +1545,11 @@ function renderAdminTable() {
           '<button class="btn btn-ghost btn-sm" onclick="startEdit(\'' + item.id + '\')">✏️ Editar</button>' +
           '<button class="btn btn-danger btn-sm" onclick="deleteItem(\'' + item.id + '\')">🗑</button>' +
         '</div></td>';
+      tr.addEventListener('dragstart', onDragStart);
+      tr.addEventListener('dragover',  onDragOver);
+      tr.addEventListener('dragleave', onDragLeave);
+      tr.addEventListener('drop',      onDrop);
+      tr.addEventListener('dragend',   onDragEnd);
     }
     tbody.appendChild(tr);
   });
@@ -1829,6 +1846,65 @@ function setPaymentData(data) {
     return { id: paymentNextId++, label: r.label, pct: r.pct };
   });
   renderPaymentRows();
+}
+
+
+// ═══════════════════════════════════════════════════
+// DRAG & DROP — Admin Table
+// ═══════════════════════════════════════════════════
+var _dragSrcId  = null;
+var _dragSrcSec = null;
+
+function onDragStart(e) {
+  _dragSrcId  = this.getAttribute('data-id');
+  _dragSrcSec = this.getAttribute('data-sec');
+  this.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
+}
+function onDragOver(e) {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  this.classList.add('drag-over');
+}
+function onDragLeave() {
+  this.classList.remove('drag-over');
+}
+function onDragEnd() {
+  document.querySelectorAll('#adminTbody tr').forEach(function(tr) {
+    tr.classList.remove('dragging', 'drag-over');
+  });
+}
+function onDrop(e) {
+  e.preventDefault();
+  this.classList.remove('drag-over');
+  var targetId  = this.getAttribute('data-id');
+  var targetSec = this.getAttribute('data-sec');
+  if (!targetId || targetId === _dragSrcId) return;
+
+  // Move within same section
+  if (_dragSrcSec === targetSec) {
+    var arr = ITEMS[_dragSrcSec];
+    var fromIdx = arr.findIndex(function(i){ return i.id === _dragSrcId; });
+    var toIdx   = arr.findIndex(function(i){ return i.id === targetId; });
+    if (fromIdx === -1 || toIdx === -1) return;
+    var item = arr.splice(fromIdx, 1)[0];
+    arr.splice(toIdx, 0, item);
+  } else {
+    // Move across sections
+    var srcArr = ITEMS[_dragSrcSec];
+    var tgtArr = ITEMS[targetSec] || [];
+    var fromIdx = srcArr.findIndex(function(i){ return i.id === _dragSrcId; });
+    var toIdx   = tgtArr.findIndex(function(i){ return i.id === targetId; });
+    if (fromIdx === -1) return;
+    var item = srcArr.splice(fromIdx, 1)[0];
+    item.group = 'outros';
+    if (toIdx === -1) tgtArr.push(item);
+    else tgtArr.splice(toIdx, 0, item);
+    ITEMS[targetSec] = tgtArr;
+  }
+  saveAll();
+  renderAdminTable();
+  showToast('✓ Ordem atualizada!');
 }
 
 // ═══════════════════════════════════════════════════
