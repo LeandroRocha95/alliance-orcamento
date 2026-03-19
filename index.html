@@ -445,11 +445,7 @@
       <div class="summary-header-m2">Tamanho da Casa: <strong id="totalM2">0 m²</strong></div>
     </div>
     <div class="summary-body">
-      <div class="summary-line"><span class="summary-line-label">Área Fechada</span><span class="summary-line-value" id="s-fechada">R$ 0,00</span></div>
-      <div class="summary-line"><span class="summary-line-label">Área Aberta</span><span class="summary-line-value" id="s-aberta">R$ 0,00</span></div>
-      <div class="summary-line"><span class="summary-line-label">Banheiros / Lavanderia</span><span class="summary-line-value" id="s-banheiro">R$ 0,00</span></div>
-      <div class="summary-line"><span class="summary-line-label">Complementos</span><span class="summary-line-value" id="s-extras">R$ 0,00</span></div>
-      <div class="summary-line"><span class="summary-line-label">Logística</span><span class="summary-line-value" id="s-log">R$ 0,00</span></div>
+      <div id="summaryLines"></div>
       <!-- DISCOUNT -->
       <div style="display:flex;gap:10px;align-items:flex-end;padding:12px 0 4px;border-top:1px solid var(--border);flex-wrap:wrap;">
         <div class="field" style="flex:1;min-width:120px;">
@@ -556,8 +552,8 @@
       <div class="field"><label>Nome do Item</label><input type="text" id="newLabel" placeholder="Ex: Escada Caracol"></div>
       <div class="field"><label>Unidade</label><select id="newUnit"></select></div>
       <div class="field"><label>Preço (R$)</label><input type="number" id="newPrice" placeholder="0,00" min="0" step="0.01"></div>
-      <div class="field"><label>Seção</label><select id="newSection" onchange="toggleGroupField()"></select></div>
-      <div class="field" id="groupFieldWrap" style="display:none"><label>Categoria do Resumo</label><select id="newGroup"><option value="outros">Complementos</option><option value="fechada">Área Fechada</option><option value="aberta">Área Aberta</option><option value="banheiro">Banheiro/Lavanderia</option></select></div>
+      <div class="field"><label>Seção</label><select id="newSection"></select></div>
+
     </div>
     <div class="field" style="margin-top:10px;"><label>Observação do Item <span style="color:var(--muted);font-size:11px;">(opcional)</span></label><input type="text" id="newObs" placeholder="Ex: Inclui mão de obra, fundação extra..."></div>
     <div style="margin-top:10px;display:flex;align-items:center;gap:10px;"><label class="m2-toggle"><input type="checkbox" id="newCountM2"><span class="m2-toggle-track"><span class="m2-toggle-thumb"></span></span></label><span style="font-size:13px;color:var(--text)">Soma na <strong>Área Total (m²)</strong></span></div>
@@ -1038,25 +1034,24 @@ function changeQty(id, delta) {
 }
 
 function recalc() {
-  var fechada=0, aberta=0, banheiro=0, extras=0, log=0;
+  // Build per-section totals dynamically
+  var secTotals = {};
+  SECTIONS.forEach(function(s){ secTotals[s.id] = 0; });
+  var subtotal = 0;
   allItems().forEach(function(i) {
     var val = (state[i.id]||0) * i.price;
     var sec = sectionOf(i.id);
-    var grp = i.group || 'outros';
-    // Log section always goes to logistica
-    if (sec === 'log') { log += val; }
-    // Legacy group-based for main items
-    else if (grp === 'fechada')  { fechada  += val; }
-    else if (grp === 'aberta')   { aberta   += val; }
-    else if (grp === 'banheiro') { banheiro += val; }
-    // Items in 'main' section with no specific group: check if countM2
-    // If they count as m2, they are area items -> add to fechada bucket for summary
-    else if (sec === 'main' && i.countM2) { fechada += val; }
-    // Extra section -> complementos
-    else if (sec === 'extra') { extras += val; }
-    // Everything else in main section -> also itens principais (show as extras in summary)
-    else { extras += val; }
+    secTotals[sec] = (secTotals[sec]||0) + val;
   });
+  SECTIONS.forEach(function(s){ subtotal += secTotals[s.id]||0; });
+
+  // Render summary lines
+  var summaryEl = document.getElementById('summaryLines');
+  if (summaryEl) {
+    summaryEl.innerHTML = SECTIONS.map(function(s){
+      return '<div class="summary-line"><span class="summary-line-label">' + s.label + '</span><span class="summary-line-value">' + fmt(secTotals[s.id]||0) + '</span></div>';
+    }).join('');
+  }
   // m² calculation: use countM2 flag OR legacy group-based
   var m2 = 0;
   allItems().forEach(function(i) {
@@ -1065,7 +1060,7 @@ function recalc() {
     if (i.countM2) { m2 += qty; }
     else if (i.group === 'fechada' || i.group === 'aberta') { m2 += qty; }
   });
-  var subtotal = fechada + aberta + banheiro + extras + log;
+  // subtotal already computed above
 
   // Discount
   var discVal  = parseFloat(document.getElementById('discountVal').value) || 0;
@@ -1079,11 +1074,7 @@ function recalc() {
   var acrescimoVal = parseFloat(document.getElementById('acrescimoVal').value) || 0;
   var total = subtotal - discAmt + acrescimoVal;
 
-  document.getElementById('s-fechada').textContent  = fmt(fechada);
-  document.getElementById('s-aberta').textContent   = fmt(aberta);
-  document.getElementById('s-banheiro').textContent = fmt(banheiro);
-  document.getElementById('s-extras').textContent   = fmt(extras);
-  document.getElementById('s-log').textContent      = fmt(log);
+  // summary lines rendered above dynamically
 
   var discEl = document.getElementById('discountResult');
   if (discAmt > 0) {
@@ -1572,12 +1563,6 @@ function renderAdminTable() {
             '<input class="edit-input" id="edit-price" type="number" value="' + item.price + '" placeholder="Preço" style="width:110px">' +
             '<select class="edit-input" id="edit-sec" style="width:150px">' +
               SECTIONS.map(function(s){ return '<option value="' + s.id + '"' + (s.id===sec?' selected':'') + '>' + s.label + '</option>'; }).join('') +
-            '</select>' +
-            '<select class="edit-input" id="edit-group" style="width:160px">' +
-              '<option value="outros"' + ((!item.group||item.group==="outros")?" selected":"") + '>Complementos</option>' +
-              '<option value="fechada"' + (item.group==="fechada"?" selected":"") + '>Área Fechada</option>' +
-              '<option value="aberta"' + (item.group==="aberta"?" selected":"") + '>Área Aberta</option>' +
-              '<option value="banheiro"' + (item.group==="banheiro"?" selected":"") + '>Banheiro/Lavanderia</option>' +
             '</select>' +
             '<input class="edit-input" id="edit-obs" value="' + (item.obs||'') + '" placeholder="Observação (opcional)" style="flex:2;min-width:160px">' +
             '<label class="m2-toggle" style="display:flex;align-items:center;gap:5px">' +
