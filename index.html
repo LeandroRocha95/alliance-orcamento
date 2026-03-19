@@ -1106,7 +1106,12 @@ function resetAll() {
     var el = document.getElementById(id); if(el) el.value='';
   });
   document.getElementById('discountType').value = 'pct';
-  paymentRows = [{id:1,label:'Início da obra',pct:25},{id:2,label:'Término de fundação',pct:25},{id:3,label:'Término da cobertura',pct:25},{id:4,label:'Início instalação do piso',pct:25}]; paymentNextId=5; renderPaymentRows();
+  paymentRows = [
+    {id:1,label:'Até o dia Anterior ao início da Obra',pct:25},
+    {id:2,label:'Após o Fundamento Concretado e Paredes de Alvenaria Erguidas, Sem Reboco',pct:25},
+    {id:3,label:'Estrutura em Madeira Erguida e Telhas Colocadas',pct:25},
+    {id:4,label:'Apos Paredes Fechadas de Frontal, Hidraulica e Reboco Pronto',pct:25}
+  ]; paymentNextId=5; renderPaymentRows();
   document.getElementById('discountResult').style.display = 'none';
   setStatus('negociacao');
   var v = new Date(); v.setDate(v.getDate()+15);
@@ -1805,10 +1810,10 @@ function printQuote() {
 // FORMAS DE PAGAMENTO
 // ═══════════════════════════════════════════════════
 var paymentRows = [
-  { id: 1, label: 'Início da obra',           pct: 25 },
-  { id: 2, label: 'Término de fundação',       pct: 25 },
-  { id: 3, label: 'Término da cobertura',      pct: 25 },
-  { id: 4, label: 'Início instalação do piso', pct: 25 }
+  { id: 1, label: 'Até o dia Anterior ao início da Obra',                                          pct: 25 },
+  { id: 2, label: 'Após o Fundamento Concretado e Paredes de Alvenaria Erguidas, Sem Reboco',      pct: 25 },
+  { id: 3, label: 'Estrutura em Madeira Erguida e Telhas Colocadas',                               pct: 25 },
+  { id: 4, label: 'Apos Paredes Fechadas de Frontal, Hidraulica e Reboco Pronto',                  pct: 25 }
 ];
 var paymentNextId = 5;
 
