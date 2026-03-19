@@ -78,6 +78,8 @@
     display: grid; grid-template-columns: 1fr auto auto auto; align-items: center; gap: 16px; transition: border-color 0.2s, background 0.2s; }
   .item-row:hover { border-color: #3e4468; background: var(--surface2); }
   .item-row.active { border-color: var(--accent); background: rgba(245,166,35,0.06); }
+
+  .item-obs { font-size: 11px; color: var(--muted); font-style: italic; margin-top: 2px; }
   .item-label { font-size: 14px; font-weight: 500; color: var(--text); }
   .item-unit { font-size: 11px; color: var(--muted); margin-top: 2px; }
   .item-price-tag { font-size: 12px; color: var(--muted); text-align: right; white-space: nowrap; }
@@ -274,6 +276,15 @@
   /* INSTALL BTN */
   .install-btn { display:none; background: linear-gradient(135deg, var(--accent2), var(--accent)); border:none; color:#fff; font-size:12px; font-family:'DM Sans',sans-serif; font-weight:600; padding:8px 14px; border-radius:8px; cursor:pointer; transition:opacity 0.2s; white-space:nowrap; }
   .install-btn:hover { opacity:0.85; }
+
+
+  /* SOMA M2 TOGGLE */
+  .m2-toggle { display:inline-flex; align-items:center; gap:6px; cursor:pointer; font-size:11px; color:var(--muted); user-select:none; }
+  .m2-toggle input { display:none; }
+  .m2-toggle-track { width:32px; height:18px; background:var(--border); border-radius:9px; position:relative; transition:background 0.2s; flex-shrink:0; }
+  .m2-toggle input:checked + .m2-toggle-track { background:var(--accent); }
+  .m2-toggle-thumb { position:absolute; top:2px; left:2px; width:14px; height:14px; background:#fff; border-radius:50%; transition:left 0.2s; }
+  .m2-toggle input:checked + .m2-toggle-track .m2-toggle-thumb { left:16px; }
 
   /* DRAG & DROP */
   .drag-handle { cursor: grab; color: var(--muted); font-size: 16px; padding: 0 8px; user-select: none; }
@@ -547,6 +558,8 @@
       <div class="field"><label>Preço (R$)</label><input type="number" id="newPrice" placeholder="0,00" min="0" step="0.01"></div>
       <div class="field"><label>Seção</label><select id="newSection"></select></div>
     </div>
+    <div class="field" style="margin-top:10px;"><label>Observação do Item <span style="color:var(--muted);font-size:11px;">(opcional)</span></label><input type="text" id="newObs" placeholder="Ex: Inclui mão de obra, fundação extra..."></div>
+    <div style="margin-top:10px;display:flex;align-items:center;gap:10px;"><label class="m2-toggle"><input type="checkbox" id="newCountM2"><span class="m2-toggle-track"><span class="m2-toggle-thumb"></span></span></label><span style="font-size:13px;color:var(--text)">Soma na <strong>Área Total (m²)</strong></span></div>
     <div style="margin-top:14px;">
       <button class="btn btn-primary" style="flex:none;padding:11px 28px;" onclick="addItem()">+ Adicionar Item</button>
     </div>
@@ -933,6 +946,7 @@ function buildDropdownRow(item, secId) {
   row.innerHTML =
     '<div>' +
       '<div class="item-label">' + item.label + '</div>' +
+      (item.obs ? '<div class="item-obs">' + item.obs + '</div>' : '') +
       '<div class="item-unit">' + item.unit + ' · ' + fmt(item.price) + '</div>' +
     '</div>' +
     '<div class="qty-control">' +
@@ -979,6 +993,7 @@ function buildRow(item) {
   row.innerHTML =
     '<div>' +
       '<div class="item-label">' + item.label + '</div>' +
+      (item.obs ? '<div class="item-obs">' + item.obs + '</div>' : '') +
       '<div class="item-unit">' + item.unit + ' · ' + fmt(item.price) + '</div>' +
     '</div>' +
     '<div class="item-price-tag">Por ' + item.unit + '<br><strong>' + fmt(item.price) + '</strong></div>' +
@@ -1031,7 +1046,14 @@ function recalc() {
     else if (sectionOf(i.id)==='log') log   += val;
     else                           extras   += val;
   });
-  var m2       = (state['fechada']||0) + (state['aberta']||0);
+  // m² calculation: use countM2 flag OR legacy group-based
+  var m2 = 0;
+  allItems().forEach(function(i) {
+    var qty = state[i.id] || 0;
+    if (qty <= 0) return;
+    if (i.countM2) { m2 += qty; }
+    else if (i.group === 'fechada' || i.group === 'aberta') { m2 += qty; }
+  });
   var subtotal = fechada + aberta + banheiro + extras + log;
 
   // Discount
@@ -1536,6 +1558,11 @@ function renderAdminTable() {
           UNITS.map(function(u){ return '<option' + (u===item.unit?' selected':'') + '>' + u + '</option>'; }).join('') +
         '</select></td>' +
         '<td><input class="edit-input" id="edit-price" type="number" value="' + item.price + '" style="width:100px"></td>' +
+        '<td>' +
+          '<input class="edit-input" id="edit-obs" value="' + (item.obs||'') + '" placeholder="Observação opcional..." style="min-width:180px;margin-bottom:6px">' +
+          '<label class="m2-toggle"><input type="checkbox" id="edit-countM2"' + (item.countM2?' checked':'') + '><span class="m2-toggle-track"><span class="m2-toggle-thumb"></span></span></label>' +
+          ' <span style="font-size:11px;color:var(--muted)">Soma no M²</span>' +
+        '</td>' +
         '<td><select class="edit-input" id="edit-sec" style="width:140px">' +
           SECTIONS.map(function(s){ return '<option value="' + s.id + '"' + (s.id===sec?' selected':'') + '>' + s.label + '</option>'; }).join('') +
         '</select></td>' +
@@ -1549,7 +1576,7 @@ function renderAdminTable() {
       tr.setAttribute('data-sec', sec);
       tr.innerHTML =
         '<td style="width:30px"><span class="drag-handle" title="Arrastar para reordenar">⠿</span></td>' +
-        '<td>' + item.label + '</td>' +
+        '<td>' + item.label + (item.obs ? '<div class="item-obs" style="font-size:11px;color:var(--muted);font-style:italic">' + item.obs + '</div>' : '') + (item.countM2 ? '<span style="font-size:10px;background:rgba(245,166,35,0.15);color:var(--accent);border-radius:4px;padding:1px 5px;margin-left:4px">+m²</span>' : '') + '</td>' +
         '<td style="color:var(--muted)">' + item.unit + '</td>' +
         '<td style="font-weight:600">' + fmt(item.price) + '</td>' +
         '<td><span class="badge" style="' + secBadgeStyle(secIdx) + '">' + secLabel(sec) + '</span></td>' +
@@ -1572,6 +1599,8 @@ function cancelEdit()  { editingId=null; renderAdminTable(); }
 
 function saveEdit(id) {
   var label = document.getElementById('edit-label').value.trim();
+  var obs      = document.getElementById('edit-obs') ? document.getElementById('edit-obs').value.trim() : '';
+  var countM2  = document.getElementById('edit-countM2') ? document.getElementById('edit-countM2').checked : false;
   var unit  = document.getElementById('edit-unit').value;
   var price = parseFloat(document.getElementById('edit-price').value)||0;
   var sec   = document.getElementById('edit-sec').value;
@@ -1579,7 +1608,7 @@ function saveEdit(id) {
   var oldSec = sectionOf(id);
   var item = (ITEMS[oldSec]||[]).find(function(i){ return i.id===id; });
   if (!item) return;
-  item.label=label; item.unit=unit; item.price=price;
+  item.label=label; item.unit=unit; item.price=price; item.obs=obs; item.countM2=countM2;
   if (oldSec!==sec) {
     ITEMS[oldSec] = ITEMS[oldSec].filter(function(i){ return i.id!==id; });
     if (!ITEMS[sec]) ITEMS[sec] = [];
@@ -1610,6 +1639,8 @@ function addItem() {
   ITEMS[sec].push({ id:uid(), label:label, unit:unit, price:price, group:'outros' });
   saveAll();
   document.getElementById('newLabel').value = '';
+  document.getElementById('newObs').value = '';
+  document.getElementById('newCountM2').checked = false;
   document.getElementById('newPrice').value = '';
   renderAdminTable();
   showToast('✓ Item adicionado!');
