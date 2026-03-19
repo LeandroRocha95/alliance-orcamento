@@ -1,0 +1,25 @@
+{
+  "name": "Alliance Orçamentos",
+  "short_name": "Alliance",
+  "description": "Sistema de orçamentos Alliance Casas Pré Fabricadas",
+  "start_url": "/alliance-orcamento/",
+  "scope": "/alliance-orcamento/",
+  "display": "standalone",
+  "background_color": "#0f1117",
+  "theme_color": "#f5a623",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "https://leandrorocha95.github.io/alliance-orcamento/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://leandrorocha95.github.io/alliance-orcamento/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
