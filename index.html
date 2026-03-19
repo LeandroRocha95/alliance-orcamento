@@ -1703,10 +1703,11 @@ function printQuote() {
 
   var rows = active.map(function(i) {
     var qty = state[i.id]; var val = qty * i.price;
+    var labelCell = i.label + (i.obs ? '<div style="font-size:11px;color:#888;font-style:italic;margin-top:2px">' + i.obs + '</div>' : '');
     if (pdfMode === 'detailed') {
-      return '<tr><td>' + i.label + '</td><td style="text-align:center">' + qty + ' ' + i.unit + '</td><td style="text-align:right">' + fmt(i.price) + '</td><td style="text-align:right;font-weight:600">' + fmt(val) + '</td></tr>';
+      return '<tr><td>' + labelCell + '</td><td style="text-align:center">' + qty + ' ' + i.unit + '</td><td style="text-align:right">' + fmt(i.price) + '</td><td style="text-align:right;font-weight:600">' + fmt(val) + '</td></tr>';
     } else {
-      return '<tr><td>' + i.label + '</td><td style="text-align:center">' + qty + ' ' + i.unit + '</td></tr>';
+      return '<tr><td>' + labelCell + '</td><td style="text-align:center">' + qty + ' ' + i.unit + '</td></tr>';
     }
   }).join('');
 
