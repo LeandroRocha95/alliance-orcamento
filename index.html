@@ -286,6 +286,7 @@
   .m2-toggle-thumb { position:absolute; top:2px; left:2px; width:14px; height:14px; background:#fff; border-radius:50%; transition:left 0.2s; }
   .m2-toggle input:checked + .m2-toggle-track .m2-toggle-thumb { left:16px; }
 
+  .hide-pdf-badge{font-size:10px;background:rgba(231,76,60,0.15);color:#e74c3c;border-radius:4px;padding:1px 5px;margin-left:4px}
   /* DRAG & DROP */
   .drag-handle { cursor: grab; color: var(--muted); font-size: 16px; padding: 0 8px; user-select: none; }
   .drag-handle:active { cursor: grabbing; }
@@ -441,7 +442,10 @@
 
   <div class="summary-card">
     <div class="summary-header">
-      <div class="summary-header-title">Resumo do Orçamento</div>
+      <div>
+        <div class="summary-header-title">Resumo do Orçamento</div>
+        <div id="summaryHeaderObs" style="font-size:11px;color:rgba(255,255,255,0.75);margin-top:2px;"></div>
+      </div>
       <div class="summary-header-m2">Tamanho da Casa: <strong id="totalM2">0 m²</strong></div>
     </div>
     <div class="summary-body">
@@ -556,7 +560,10 @@
 
     </div>
     <div class="field" style="margin-top:10px;"><label>Observação do Item <span style="color:var(--muted);font-size:11px;">(opcional)</span></label><input type="text" id="newObs" placeholder="Ex: Inclui mão de obra, fundação extra..."></div>
-    <div style="margin-top:10px;display:flex;align-items:center;gap:10px;"><label class="m2-toggle"><input type="checkbox" id="newCountM2"><span class="m2-toggle-track"><span class="m2-toggle-thumb"></span></span></label><span style="font-size:13px;color:var(--text)">Soma na <strong>Área Total (m²)</strong></span></div>
+    <div style="margin-top:10px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;">
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer"><span class="m2-toggle"><input type="checkbox" id="newCountM2"><span class="m2-toggle-track"><span class="m2-toggle-thumb"></span></span></span><span style="font-size:13px;color:var(--text)">Soma na <strong>Área Total (m²)</strong></span></label>
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer"><span class="m2-toggle"><input type="checkbox" id="newHidePdf"><span class="m2-toggle-track"><span class="m2-toggle-thumb"></span></span></span><span style="font-size:13px;color:var(--text)">Ocultar no PDF</span></label>
+    </div>
     <div style="margin-top:14px;">
       <button class="btn btn-primary" style="flex:none;padding:11px 28px;" onclick="addItem()">+ Adicionar Item</button>
     </div>
@@ -1095,8 +1102,11 @@ function recalc() {
   document.getElementById('finalTotal').textContent  = fmt(total);
   refreshPaymentValues();
   document.getElementById('headerTotal').textContent = fmt(total);
-  document.getElementById('headerM2').textContent    = m2 + ' m²';
-  document.getElementById('totalM2').textContent     = m2 + ' m²';
+  var m2Fmt = (Math.round(m2 * 100) / 100).toLocaleString('pt-BR', {minimumFractionDigits:0, maximumFractionDigits:2});
+  document.getElementById('headerM2').textContent    = m2Fmt + ' m²';
+  document.getElementById('totalM2').textContent     = m2Fmt + ' m²';
+  var _obs = []; allItems().forEach(function(i){ if((state[i.id]||0)>0 && i.obs && (i.group==='fechada'||i.group==='aberta'||i.countM2)) _obs.push(i.obs); });
+  var _obsEl = document.getElementById('summaryHeaderObs'); if(_obsEl) _obsEl.textContent = _obs.length ? '('+_obs.join(' / ')+')' : '';
 }
 
 function resetAll() {
@@ -1575,6 +1585,11 @@ function renderAdminTable() {
               '<span class="m2-toggle-track"><span class="m2-toggle-thumb"></span></span>' +
               '<span style="font-size:11px;color:var(--muted);white-space:nowrap">Soma no M²</span>' +
             '</label>' +
+            '<label class="m2-toggle" style="display:flex;align-items:center;gap:5px">' +
+              '<input type="checkbox" id="edit-hidePdf"' + (item.hidePdf?' checked':'') + '>' +
+              '<span class="m2-toggle-track"><span class="m2-toggle-thumb"></span></span>' +
+              '<span style="font-size:11px;color:var(--muted);white-space:nowrap">Ocultar PDF</span>' +
+            '</label>' +
             '<button class="btn btn-primary btn-sm" onclick="saveEdit(\'' + item.id + '\')">✓ Salvar</button>' +
             '<button class="btn btn-ghost btn-sm" onclick="cancelEdit()">✕</button>' +
           '</div>' +
@@ -1585,7 +1600,7 @@ function renderAdminTable() {
       tr.setAttribute('data-sec', sec);
       tr.innerHTML =
         '<td style="width:30px"><span class="drag-handle" title="Arrastar para reordenar">⠿</span></td>' +
-        '<td>' + item.label + (item.obs ? '<div class="item-obs" style="font-size:11px;color:var(--muted);font-style:italic">' + item.obs + '</div>' : '') + (item.countM2 ? '<span style="font-size:10px;background:rgba(245,166,35,0.15);color:var(--accent);border-radius:4px;padding:1px 5px;margin-left:4px">+m²</span>' : '') + '</td>' +
+        '<td>' + item.label + (item.obs ? '<div class="item-obs" style="font-size:11px;color:var(--muted);font-style:italic">' + item.obs + '</div>' : '') + (item.countM2 ? '<span style="font-size:10px;background:rgba(245,166,35,0.15);color:var(--accent);border-radius:4px;padding:1px 5px;margin-left:4px">+m²</span>' : '') + (item.hidePdf ? '<span class="hide-pdf-badge">PDF oculto</span>' : '') + '</td>' +
         '<td style="color:var(--muted)">' + item.unit + '</td>' +
         '<td style="font-weight:600">' + fmt(item.price) + '</td>' +
         '<td><span class="badge" style="' + secBadgeStyle(secIdx) + '">' + secLabel(sec) + '</span></td>' +
@@ -1610,6 +1625,7 @@ function saveEdit(id) {
   var label = document.getElementById('edit-label').value.trim();
   var obs      = document.getElementById('edit-obs') ? document.getElementById('edit-obs').value.trim() : '';
   var countM2  = document.getElementById('edit-countM2') ? document.getElementById('edit-countM2').checked : false;
+  var hidePdf  = document.getElementById('edit-hidePdf') ? document.getElementById('edit-hidePdf').checked : false;
   var group    = document.getElementById('edit-group') ? document.getElementById('edit-group').value : (item ? item.group||'outros' : 'outros');
   var unit  = document.getElementById('edit-unit').value;
   var price = parseFloat(document.getElementById('edit-price').value)||0;
@@ -1618,7 +1634,7 @@ function saveEdit(id) {
   var oldSec = sectionOf(id);
   var item = (ITEMS[oldSec]||[]).find(function(i){ return i.id===id; });
   if (!item) return;
-  item.label=label; item.unit=unit; item.price=price; item.obs=obs; item.countM2=countM2; item.group=group;
+  item.label=label; item.unit=unit; item.price=price; item.obs=obs; item.countM2=countM2; item.hidePdf=hidePdf; item.group=group;
   if (oldSec!==sec) {
     ITEMS[oldSec] = ITEMS[oldSec].filter(function(i){ return i.id!==id; });
     if (!ITEMS[sec]) ITEMS[sec] = [];
@@ -1652,6 +1668,7 @@ function addItem() {
   document.getElementById('newObs').value = '';
   document.getElementById('newCountM2').checked = false;
   var ng = document.getElementById('newGroup'); if(ng) ng.value='outros';
+  var nhp = document.getElementById('newHidePdf'); if(nhp) nhp.checked=false;
   document.getElementById('newPrice').value = '';
   renderAdminTable();
   showToast('✓ Item adicionado!');
@@ -1705,10 +1722,11 @@ function printQuote() {
   var discVal2  = parseFloat(document.getElementById('discountVal').value) || 0;
   var discType2 = document.getElementById('discountType').value;
   var subtotal2 = allItems().filter(function(i){ return (state[i.id]||0)>0; }).reduce(function(s,i){ return s + (state[i.id]||0)*i.price; }, 0);
-  var discAmt   = discVal2 > 0 ? Math.min(discType2==='pct' ? subtotal2*(discVal2/100) : discVal2, subtotal2) : 0;
+  var discAmt      = discVal2 > 0 ? Math.min(discType2==='pct' ? subtotal2*(discVal2/100) : discVal2, subtotal2) : 0;
+  var acrescimoAmt = parseFloat(document.getElementById('acrescimoVal').value) || 0;
 
   var pdfMode = (document.getElementById('pdfMode') || {value:'detailed'}).value;
-  var active  = allItems().filter(function(i){ return (state[i.id]||0) > 0; });
+  var active  = allItems().filter(function(i){ return (state[i.id]||0) > 0 && !i.hidePdf; });
 
   var rows = active.map(function(i) {
     var qty = state[i.id]; var val = qty * i.price;
@@ -1792,6 +1810,7 @@ function printQuote() {
     + '</div>'
     + '<table class="items"><thead><tr>' + (pdfMode==='detailed' ? thDetailed : thSimple) + '</tr></thead><tbody>' + rows + '</tbody></table>'
     + (discAmt > 0 ? '<div class="disc">Desconto: - ' + fmt(discAmt) + '</div>' : '')
+    + (pdfMode === 'detailed' && acrescimoAmt > 0 ? '<div class="disc" style="color:#27ae60">Acréscimo: + ' + fmt(acrescimoAmt) + '</div>' : '')
     + '<div class="totalbar"><span class="totalbar-lbl">Valor Final</span><span class="totalbar-val">' + total + '</span></div>'
     + (obs ? '<div class="obsbox"><div class="obshdr">Observações</div><div class="obsbody">' + obs + '</div></div>' : '')
     + payHtml
