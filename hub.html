@@ -227,6 +227,7 @@
 
 </div>
 
+<a id="lockLink" href="#" target="_blank" style="display:none"></a>
 <!-- LOCK MODAL -->
 <div class="lock-overlay" id="lockOverlay">
   <div class="lock-box">
@@ -263,7 +264,9 @@ function checkLock() {
   var val = document.getElementById('lockInput').value;
   if (val === LOCK_PASS) {
     closeLock();
-    window.open(_lockTarget, '_blank');
+    var a = document.getElementById('lockLink');
+    a.href = _lockTarget;
+    a.click();
   } else {
     document.getElementById('lockErr').textContent = 'Senha incorreta.';
     document.getElementById('lockInput').value = '';
