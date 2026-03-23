@@ -640,7 +640,10 @@ function renderDash(){
     <div class="kpi blue"><div class="kpi-label">Categorias</div><div class="kpi-val">${Object.keys(cats()).length}</div><div class="kpi-sub">grupos de materiais</div></div>
     <div class="kpi purple"><div class="kpi-label">Última Revisão</div><div class="kpi-val" style="font-size:18px;margin-top:4px">${S.history.length?new Date(S.history[S.history.length-1].date).toLocaleDateString('pt-BR'):'—'}</div><div class="kpi-sub">de preços</div></div>
   `;
-  const cs=cats(), mx=Math.max(...Object.values(cs));
+  const cs=cats();
+  const csVals=Object.values(cs);
+  if(!csVals.length){ document.getElementById('dashCatGrid').innerHTML='<div style="color:var(--muted);font-size:13px;padding:16px 0;">Nenhum item cadastrado ainda.</div>'; return; }
+  const mx=Math.max(...csVals);
   const sorted=Object.entries(cs).sort((a,b)=>b[1]-a[1]);
   document.getElementById('dashCatGrid').innerHTML=sorted.map(([cat,val])=>{
     const col=catColor(cat), pct=(val/mx*100).toFixed(1), tpct=(val/total*100).toFixed(1);
@@ -690,7 +693,9 @@ function renderItens(){
 // ── CATEGORIAS ────────────────────────────────────────────────────────────────
 function renderCats(){
   const q=(document.getElementById('catSrch')?.value||'').toLowerCase();
-  const cs=cats(), total=grand(), mx=Math.max(...Object.values(cs));
+  const cs=cats(), total=grand();
+  const csVals=Object.values(cs); if(!csVals.length){document.getElementById('catListGrid').innerHTML='<div style="color:var(--muted);font-size:13px;padding:16px 0;">Nenhum item ainda.</div>';return;}
+  const mx=Math.max(...csVals);
   const sorted=Object.entries(cs).sort((a,b)=>b[1]-a[1]).filter(([c])=>!q||c.toLowerCase().includes(q));
   document.getElementById('catListGrid').innerHTML=sorted.map(([cat,val])=>{
     const col=catColor(cat), pct=(val/mx*100).toFixed(1), tpct=(val/total*100).toFixed(1);
@@ -1099,6 +1104,18 @@ function mvSnapshotTotal(snap) {
   return (snap||[]).reduce((s,i) => s + (i.preco_unit||0)*(i.qty||0), 0);
 }
 
+
+function mvPrecoVendaModelo(custo, margem, simRows) {
+  let cum = custo;
+  (simRows||[]).forEach(r => {
+    if (r.id === 'margem') return;
+    const v = r.type === 'pct' ? custo * (r.value/100) : (r.value||0);
+    cum += v;
+  });
+  const m = parseFloat(margem)||0;
+  return m >= 100 ? cum : cum / (1 - m/100);
+}
+
 function mvSnapshotCats(snap) {
   const cats = {};
   (snap||[]).forEach(i => {
@@ -1109,8 +1126,18 @@ function mvSnapshotCats(snap) {
 }
 
 function mvPrecoVenda(custo, margem) {
+  // Apply simRows overhead (admin, logistics, taxes etc) on top of material cost
+  let cum = custo;
+  if (S.simRows && S.simRows.length) {
+    S.simRows.forEach(r => {
+      if (r.id === 'margem') return; // handle margin separately
+      const v = r.type === 'pct' ? custo * (r.value/100) : (r.value||0);
+      cum += v;
+    });
+  }
+  // Apply margin on top of all costs
   const m = parseFloat(margem)||0;
-  return m >= 100 ? custo : custo / (1 - m/100);
+  return m >= 100 ? cum : cum / (1 - m/100);
 }
 
 function mvShowView(which) {
@@ -1133,7 +1160,7 @@ function renderModelos() {
   grid.innerHTML = S.modelos.map(m => {
     const snap  = m.snapshot||[];
     const custo = mvSnapshotTotal(snap);
-    const preco = mvPrecoVenda(custo, m.margem||25);
+    const preco = mvPrecoVendaModelo(custo, m.margem||25, m.simRows||S.simRows||[]);
     const data  = m.savedAt ? new Date(m.savedAt).toLocaleDateString('pt-BR') : '—';
     return `<div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px;transition:border-color .15s"
       onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border)'">
@@ -1180,7 +1207,7 @@ function mvOpenDetalhe(id) {
   mvShowView('mv-detalhe');
   const snap  = m.snapshot||[];
   const custo = mvSnapshotTotal(snap);
-  const preco = mvPrecoVenda(custo, m.margem||25);
+  const preco = mvPrecoVendaModelo(custo, m.margem||25, m.simRows||S.simRows||[]);
   document.getElementById('mvDetNome').textContent = m.nome;
   document.getElementById('mvDetSub').textContent  = (m.area||0) + ' m²  ·  Margem: ' + (m.margem||25) + '%  ·  ' + snap.length + ' itens';
   document.getElementById('mvDetTotal').textContent = brl(custo);
@@ -1258,7 +1285,7 @@ function mvShowCompare() {
   `<tr style="border-top:2px solid var(--border);font-weight:700;"><td>CUSTO TOTAL</td>
     ${modelos.map(m=>`<td class="r" style="color:var(--gold)">${brl(mvSnapshotTotal(m.snapshot||[]))}</td>`).join('')}</tr>
   <tr style="font-weight:700;"><td>PREÇO VENDA</td>
-    ${modelos.map(m=>`<td class="r" style="color:#27c482">${brl(mvPrecoVenda(mvSnapshotTotal(m.snapshot||[]),m.margem||25))}</td>`).join('')}</tr>
+    ${modelos.map(m=>`<td class="r" style="color:#27c482">${brl(mvPrecoVendaModelo(mvSnapshotTotal(m.snapshot||[]),m.margem||25,m.simRows||S.simRows||[]))}</td>`).join('')}</tr>
   <tr><td style="color:var(--muted)">Custo/m²</td>
     ${modelos.map(m=>`<td class="r" style="color:var(--muted)">${brl(mvSnapshotTotal(m.snapshot||[])/(m.area||1))}</td>`).join('')}</tr>`;
 }
@@ -1287,6 +1314,27 @@ function mvSaveModelo() {
     qty:        i.qty        || 0,
     preco_unit: i.preco_unit || 0
   }));
-  S.modelos.push({ id: String(Date.now()), nome, area, margem, snapshot, savedAt: new Date().toISOString() });
+  S.modelos.push({ id: String(Date.now()), nome, area, margem, snapshot, simRows: (S.simRows||[]).map(r=>({...r})), savedAt: new Date().toISOString() });
   save(); closeModal('mvModalModelo'); renderModelos();
-  toast('✓ Modelo "' + nome + '" salvo com ' + snapshot.length + ' itens!'
+  toast('✓ Modelo "' + nome + '" salvo com ' + snapshot.length + ' itens!');
+}
+
+function mvDelModelo(id) {
+  const m = mvGetModelo(String(id));
+  if (!m || !confirm('Excluir o modelo "' + m.nome + '"?')) return;
+  S.modelos = (S.modelos||[]).filter(x => String(x.id) !== String(id));
+  save(); renderModelos(); toast('Modelo excluído');
+}
+
+// Aliases
+var openAddModelo = mvOpenNew;
+var saveModelo    = mvSaveModelo;
+var delModelo     = mvDelModelo;
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+load();
+renderDash();
+sbLoadAll(); // Load from cloud on startup
+</script>
+</body>
+</html>
