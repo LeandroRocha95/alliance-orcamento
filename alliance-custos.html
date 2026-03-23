@@ -464,7 +464,14 @@ select.sel:focus{border-color:var(--gold)}
         <div><label class="field-label">Margem de Lucro (%)</label>
           <input class="field-inp" id="mvMargem" type="number" min="0" max="100" value="25" style="width:100%"></div>
       </div>
-      <div style="margin-top:14px;font-size:12px;color:var(--muted);" id="mvModalItemCount"></div>
+      <div style="margin-top:14px;">
+        <label class="field-label">Cenário de Preço de Venda</label>
+        <select class="field-inp" id="mvCenario" style="width:100%;">
+          <option value="">— Usar apenas margem simples —</option>
+        </select>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px;">Se selecionado, o preço de venda usará os custos indiretos do cenário escolhido.</div>
+      </div>
+      <div style="margin-top:10px;font-size:12px;color:var(--muted);" id="mvModalItemCount"></div>
     </div>
     <div class="modal-foot">
       <button class="btn btn-outline btn-sm" onclick="closeModal('mvModalModelo')">Cancelar</button>
@@ -810,7 +817,11 @@ function renderScenCards(){
     const t=scTotal(sc,base), pm2=t/(sc.area||S.area);
     const mr=sc.rows.find(r=>r.id==='margem'); const m=mr?mr.value:0;
     const tc=m<=15?'tag-low':m<=28?'tag-mid':'tag-high';
-    return `<div class="sc-card${S.activeScen===i?' active':''}" onclick="applyScen(${i})">
+    return `<div class="sc-card${S.activeScen===i?' active':''}" onclick="applyScen(${i})" style="position:relative;">
+      <button onclick="event.stopPropagation();delScen(${i})" title="Excluir cenário"
+        style="position:absolute;top:8px;right:8px;background:none;border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:2px 7px;cursor:pointer;font-size:11px;line-height:1.4;"
+        onmouseover="this.style.borderColor='#e74c3c';this.style.color='#e74c3c'"
+        onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">🗑</button>
       <div class="sc-name">${esc(sc.name)}</div>
       <div class="sc-price">${brl(pm2)}</div>
       <div class="sc-info">${brl(t)} total · ${sc.area||S.area} m²</div>
@@ -827,6 +838,13 @@ function applyScen(i){
   document.getElementById('simArea').value=sc.area||S.area;
   renderSimRows(); renderScenCards(); calcSim(); save();
   toast('Cenário "'+sc.name+'" aplicado!');
+}
+
+function delScen(i){
+  if(!confirm('Excluir o cenário "'+S.scenarios[i].name+'"?')) return;
+  S.scenarios.splice(i,1);
+  if(S.activeScen>=S.scenarios.length) S.activeScen=S.scenarios.length-1;
+  save(); renderScenCards(); toast('Cenário excluído');
 }
 
 function openSaveScen(){ document.getElementById('scenName').value=''; document.getElementById('scenModal').classList.add('open'); setTimeout(()=>document.getElementById('scenName').focus(),50); }
@@ -1170,7 +1188,7 @@ function renderModelos() {
           <button onclick="mvDelModelo('${m.id}')" style="background:none;border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:3px 8px;cursor:pointer;font-size:11px;" title="Excluir">🗑</button>
         </div>
       </div>
-      <div style="font-size:12px;color:var(--muted);margin-bottom:16px;">${m.area||0} m² &nbsp;·&nbsp; Margem: ${m.margem||25}% &nbsp;·&nbsp; ${snap.length} itens &nbsp;·&nbsp; Salvo: ${data}</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:16px;">${m.area||0} m² &nbsp;·&nbsp; ${m.cenarioNome ? '<span style="color:var(--gold)">'+esc(m.cenarioNome)+'</span>' : 'Margem: '+(m.margem||25)+'%'} &nbsp;·&nbsp; ${snap.length} itens &nbsp;·&nbsp; Salvo: ${data}</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">
         <div style="background:var(--surface2);border-radius:8px;padding:10px;">
           <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:3px;">Custo Total</div>
@@ -1296,6 +1314,17 @@ function mvOpenNew() {
   document.getElementById('mvNome').value = '';
   document.getElementById('mvArea').value = S.area||'';
   document.getElementById('mvMargem').value = '25';
+  // Populate scenario selector
+  const sel = document.getElementById('mvCenario');
+  sel.innerHTML = '<option value="">— Usar apenas margem simples —</option>' +
+    (S.scenarios||[]).map((sc,i) => {
+      const mr = sc.rows.find(r=>r.id==='margem'); const m = mr?mr.value:0;
+      return `<option value="${i}">${esc(sc.name)} (Lucro ${m}%)</option>`;
+    }).join('');
+  // Pre-select active scenario if any
+  if (S.activeScen !== null && S.activeScen !== undefined && S.activeScen >= 0) {
+    sel.value = String(S.activeScen);
+  }
   document.getElementById('mvModalItemCount').textContent = S.items.length + ' itens serão incluídos no modelo.';
   document.getElementById('mvModalModelo').classList.add('open');
   setTimeout(() => document.getElementById('mvNome').focus(), 50);
@@ -1307,16 +1336,22 @@ function mvSaveModelo() {
   const margem = parseFloat(document.getElementById('mvMargem').value)||25;
   if (!nome) { toast('Digite um nome para o modelo', 'err'); return; }
   if (!S.modelos) S.modelos = [];
-  // Deep copy current items as snapshot
   const snapshot = S.items.map(i => ({
     nome:       i.nome       || '',
     categoria:  i.categoria  || '',
     qty:        i.qty        || 0,
     preco_unit: i.preco_unit || 0
   }));
-  S.modelos.push({ id: String(Date.now()), nome, area, margem, snapshot, simRows: (S.simRows||[]).map(r=>({...r})), savedAt: new Date().toISOString() });
+  // Use selected scenario's simRows if chosen
+  const cenSel = document.getElementById('mvCenario');
+  const cenIdx = cenSel && cenSel.value !== '' ? parseInt(cenSel.value) : -1;
+  const chosenScen = cenIdx >= 0 && S.scenarios[cenIdx] ? S.scenarios[cenIdx] : null;
+  const chosenSimRows = chosenScen ? chosenScen.rows.map(r=>({...r})) : (S.simRows||[]).map(r=>({...r}));
+  const chosenMargem = chosenScen ? (chosenScen.rows.find(r=>r.id==='margem')?.value || margem) : margem;
+  const cenarioNome = chosenScen ? chosenScen.name : null;
+  S.modelos.push({ id: String(Date.now()), nome, area, margem: chosenMargem, cenarioNome, snapshot, simRows: chosenSimRows, savedAt: new Date().toISOString() });
   save(); closeModal('mvModalModelo'); renderModelos();
-  toast('✓ Modelo "' + nome + '" salvo com ' + snapshot.length + ' itens!');
+  toast('✓ Modelo "' + nome + '" salvo' + (cenarioNome ? ' com cenário "' + cenarioNome + '"' : '') + '!');
 }
 
 function mvDelModelo(id) {
