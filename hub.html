@@ -263,8 +263,12 @@ function closeLock() {
 function checkLock() {
   var val = document.getElementById('lockInput').value;
   if (val === LOCK_PASS) {
-    closeLock();
-    window.location.href = _lockTarget;
+    var target = _lockTarget;
+    _lockTarget = '';
+    document.getElementById('lockOverlay').classList.remove('show');
+    document.getElementById('lockInput').value = '';
+    document.getElementById('lockErr').textContent = '';
+    window.location.assign(target);
   } else {
     document.getElementById('lockErr').textContent = 'Senha incorreta.';
     document.getElementById('lockInput').value = '';
