@@ -375,44 +375,43 @@ select.sel:focus{border-color:var(--gold)}
 <!-- CONFIG -->
 
 <!-- ══════ MODELOS DE CASA ══════ -->
-<!-- ══════ MODELOS DE CASA ══════ -->
 <div class="page" id="page-modelos">
 
   <!-- LISTA DE MODELOS -->
-  <div id="view-modelos-list">
+  <div id="mv-lista">
     <div class="section-head" style="margin-bottom:20px;">
       <div>
         <div class="section-title">Modelos de Casa</div>
-        <div style="font-size:13px;color:var(--muted);margin-top:4px;">Cada modelo tem seus próprios itens e quantidades. Preços são compartilhados do catálogo.</div>
+        <div style="font-size:13px;color:var(--muted);margin-top:3px;">Cada modelo tem seus próprios itens e quantidades independentes.</div>
       </div>
       <div style="display:flex;gap:8px;">
-        <button class="btn btn-outline btn-sm" onclick="showModelosCompare()" id="btnCompare" style="display:none">📊 Comparar</button>
-        <button class="btn btn-gold btn-sm" onclick="openAddModelo()">+ Novo Modelo</button>
+        <button class="btn btn-outline btn-sm" id="btnCompare" onclick="mvShowCompare()" style="display:none">📊 Comparar Modelos</button>
+        <button class="btn btn-gold btn-sm" onclick="mvOpenNew()">+ Novo Modelo</button>
       </div>
     </div>
-    <div id="modelosGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;"></div>
+    <div id="mvGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;"></div>
   </div>
 
-  <!-- DETALHE DO MODELO (ITENS) -->
-  <div id="view-modelo-detalhe" style="display:none;">
-    <div class="section-head" style="margin-bottom:20px;">
-      <div style="display:flex;align-items:center;gap:12px;">
-        <button onclick="closeModeloDetalhe()" style="background:none;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:6px 12px;cursor:pointer;font-family:inherit;">← Voltar</button>
+  <!-- DETALHE DO MODELO -->
+  <div id="mv-detalhe" style="display:none;">
+    <div class="section-head" style="margin-bottom:16px;flex-wrap:wrap;gap:12px;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <button onclick="mvBackToList()" style="background:none;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:7px 14px;cursor:pointer;font-family:inherit;font-size:13px;">← Voltar</button>
         <div>
-          <div class="section-title" id="detalhe-nome">Modelo</div>
-          <div style="font-size:12px;color:var(--muted)" id="detalhe-sub"></div>
+          <div class="section-title" id="mvDetNome" style="margin:0;"></div>
+          <div style="font-size:12px;color:var(--muted)" id="mvDetSub"></div>
         </div>
       </div>
-      <div style="display:flex;gap:8px;align-items:center;">
-        <div style="background:var(--surface2);border-radius:10px;padding:10px 16px;text-align:center;">
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+        <div style="background:var(--surface2);border-radius:10px;padding:10px 18px;text-align:center;">
           <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;">Custo Total</div>
-          <div style="font-size:20px;font-weight:700;color:var(--gold)" id="detalhe-total">R$ 0,00</div>
+          <div style="font-size:22px;font-weight:700;color:var(--gold)" id="mvDetTotal">R$ 0,00</div>
         </div>
-        <div style="background:var(--surface2);border-radius:10px;padding:10px 16px;text-align:center;">
+        <div style="background:var(--surface2);border-radius:10px;padding:10px 18px;text-align:center;">
           <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;">Preço Venda</div>
-          <div style="font-size:20px;font-weight:700;color:#27c482" id="detalhe-preco">R$ 0,00</div>
+          <div style="font-size:22px;font-weight:700;color:#27c482" id="mvDetPreco">R$ 0,00</div>
         </div>
-        <button class="btn btn-gold btn-sm" onclick="openAddItemModelo()">+ Adicionar Item</button>
+        <button class="btn btn-gold btn-sm" onclick="mvOpenAddItem()">+ Adicionar Item</button>
       </div>
     </div>
     <div class="table-box">
@@ -424,77 +423,66 @@ select.sel:focus{border-color:var(--gold)}
           <th style="text-align:right">Total</th>
           <th style="text-align:right">Ações</th>
         </tr></thead>
-        <tbody id="detalhe-tbody"></tbody>
+        <tbody id="mvDetBody"></tbody>
       </table>
     </div>
+    <div id="mvDetCats" style="margin-top:24px;display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;"></div>
   </div>
 
   <!-- COMPARAÇÃO -->
-  <div id="view-modelos-compare" style="display:none;">
+  <div id="mv-compare" style="display:none;">
     <div class="section-head" style="margin-bottom:16px;">
       <div class="section-title">Comparação entre Modelos</div>
-      <button onclick="closeModelosCompare()" style="background:none;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:6px 12px;cursor:pointer;font-family:inherit;">← Voltar</button>
+      <button onclick="mvBackToList()" style="background:none;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:7px 14px;cursor:pointer;font-family:inherit;font-size:13px;">← Voltar</button>
     </div>
-    <div class="table-box" style="overflow-x:auto;">
-      <table>
-        <thead><tr id="compareThead"></tr></thead>
-        <tbody id="compareTbody"></tbody>
-      </table>
-    </div>
+    <div class="table-box" style="overflow-x:auto;"><table>
+      <thead><tr id="mvCompareThead"></tr></thead>
+      <tbody id="mvCompareTbody"></tbody>
+    </table></div>
   </div>
 </div>
 
-<!-- MODAL NOVO/EDITAR MODELO -->
-<div class="overlay" id="modeloModal">
+<!-- MODAL: NOVO/EDITAR MODELO -->
+<div class="overlay" id="mvModalModelo">
   <div class="modal" style="max-width:420px;">
     <div class="modal-head">
-      <div class="modal-title" id="modeloModalTitle">Novo Modelo</div>
-      <button class="modal-x" onclick="closeModal('modeloModal')">×</button>
+      <div class="modal-title" id="mvModalTitle">Novo Modelo</div>
+      <button class="modal-x" onclick="closeModal('mvModalModelo')">×</button>
     </div>
-    <div class="modal-body">
-      <div class="field-row">
-        <label class="field-label">Nome do Modelo</label>
-        <input class="field-inp" id="mNome" placeholder="Ex: Casa 60m² Padrão" style="width:100%">
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px;">
-        <div>
-          <label class="field-label">Área (m²)</label>
-          <input class="field-inp" id="mArea" type="number" min="1" placeholder="60" style="width:100%">
-        </div>
-        <div>
-          <label class="field-label">Margem de Lucro (%)</label>
-          <input class="field-inp" id="mMargem" type="number" min="0" max="100" placeholder="25" style="width:100%">
-        </div>
+    <div class="modal-body" style="padding:20px;">
+      <label class="field-label">Nome do Modelo</label>
+      <input class="field-inp" id="mvNome" placeholder="Ex: Casa 60m² Padrão" style="width:100%;margin-bottom:14px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div><label class="field-label">Área (m²)</label>
+          <input class="field-inp" id="mvArea" type="number" min="1" placeholder="60" style="width:100%"></div>
+        <div><label class="field-label">Margem de Lucro (%)</label>
+          <input class="field-inp" id="mvMargem" type="number" min="0" max="100" placeholder="25" style="width:100%"></div>
       </div>
     </div>
     <div class="modal-foot">
-      <button class="btn btn-outline btn-sm" onclick="closeModal('modeloModal')">Cancelar</button>
-      <button class="btn btn-gold btn-sm" onclick="saveModelo()">Salvar</button>
+      <button class="btn btn-outline btn-sm" onclick="closeModal('mvModalModelo')">Cancelar</button>
+      <button class="btn btn-gold btn-sm" onclick="mvSaveModelo()">Salvar</button>
     </div>
   </div>
 </div>
 
-<!-- MODAL ADICIONAR ITEM AO MODELO -->
-<div class="overlay" id="modeloItemModal">
-  <div class="modal" style="max-width:480px;">
+<!-- MODAL: ADICIONAR ITEM AO MODELO -->
+<div class="overlay" id="mvModalItem">
+  <div class="modal" style="max-width:500px;">
     <div class="modal-head">
-      <div class="modal-title" id="modeloItemModalTitle">Adicionar Item ao Modelo</div>
-      <button class="modal-x" onclick="closeModal('modeloItemModal')">×</button>
+      <div class="modal-title">Adicionar Item ao Modelo</div>
+      <button class="modal-x" onclick="closeModal('mvModalItem')">×</button>
     </div>
-    <div class="modal-body">
-      <div class="field-row">
-        <label class="field-label">Item do Catálogo</label>
-        <input class="field-inp" id="miSearch" placeholder="Buscar item..." oninput="filterCatalogItems()" style="width:100%;margin-bottom:8px;">
-        <select id="miItemId" size="6" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;font-family:inherit;padding:6px;outline:none;"></select>
-      </div>
-      <div style="margin-top:12px;">
-        <label class="field-label">Quantidade</label>
-        <input class="field-inp" id="miQty" type="number" min="0" step="0.01" placeholder="1" style="width:100%">
-      </div>
+    <div class="modal-body" style="padding:20px;">
+      <label class="field-label">Buscar no Catálogo</label>
+      <input class="field-inp" id="mvItemSearch" placeholder="Digite para filtrar..." oninput="mvFilterItems()" style="width:100%;margin-bottom:8px;">
+      <select id="mvItemSel" size="7" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;font-family:inherit;padding:6px;outline:none;margin-bottom:14px;"></select>
+      <label class="field-label">Quantidade</label>
+      <input class="field-inp" id="mvItemQty" type="number" min="0" step="0.01" value="1" style="width:100%">
     </div>
     <div class="modal-foot">
-      <button class="btn btn-outline btn-sm" onclick="closeModal('modeloItemModal')">Cancelar</button>
-      <button class="btn btn-gold btn-sm" onclick="saveItemModelo()">Adicionar</button>
+      <button class="btn btn-outline btn-sm" onclick="closeModal('mvModalItem')">Cancelar</button>
+      <button class="btn btn-gold btn-sm" onclick="mvSaveItem()">Adicionar</button>
     </div>
   </div>
 </div>
@@ -619,8 +607,7 @@ function load(){
       {name:'Agressivo',  rows:mkScenRows(35),area:42},
     ];
   if(!S.modelos) S.modelos=[];
-  // Migrate old modelos without items array
-  S.modelos.forEach(m => { if(!m.items) m.items = []; });
+  S.modelos.forEach(m => { if(!m.items) m.items = []; m.id = String(m.id); });
   }catch(e){ S.items=DEFAULT_ITEMS.map((x,i)=>({...x,id:i+1})); }
 }
 function mkScenRows(lucro){ return SIM_DEFAULTS.map(r=>({...r,value:r.id==='margem'?lucro:r.value})); }
@@ -1095,75 +1082,95 @@ async function sbLoadAll() {
 
 
 // ═══════════════════════════════════════════════════
-// MODELOS DE CASA — Itens Independentes
+// MODELOS DE CASA — Sistema Independente por Modelo
 // ═══════════════════════════════════════════════════
-let _currentModeloId = null;
+let _mvCurrentId = null;
 
-function getModelo(id) { return S.modelos.find(m => m.id === id); }
+// Each modelo: { id, nome, area, margem, items: [{nome, qty}] }
+// Items are stored by NOME to survive ID changes
 
-function modeloTotal(m) {
-  return (m.items||[]).reduce((s,i) => {
-    const cat = S.items.find(c => c.id === i.itemId);
-    return s + (cat ? cat.preco_unit * i.qty : 0);
-  }, 0);
+function mvGetModelo(id) {
+  return (S.modelos||[]).find(m => String(m.id) === String(id));
 }
 
-function calcPrecoVenda(custo, margem) {
-  if (margem >= 100) return custo;
-  return custo / (1 - (margem / 100));
+function mvItemPrice(nome) {
+  const i = S.items.find(x => x.nome === nome);
+  return i ? (i.preco_unit || 0) : 0;
 }
 
-function modeloCats(m) {
+function mvItemCat(nome) {
+  const i = S.items.find(x => x.nome === nome);
+  return i ? (i.categoria || '—') : '—';
+}
+
+function mvModeloTotal(m) {
+  return (m.items||[]).reduce((s,mi) => s + mvItemPrice(mi.nome) * (mi.qty||0), 0);
+}
+
+function mvPrecoVenda(custo, margem) {
+  const m = parseFloat(margem)||0;
+  return m >= 100 ? custo : custo / (1 - m/100);
+}
+
+function mvModeloCats(m) {
   const cats = {};
   (m.items||[]).forEach(mi => {
-    const cat = S.items.find(c => c.id === mi.itemId);
-    if (cat) cats[cat.categoria] = (cats[cat.categoria]||0) + cat.preco_unit * mi.qty;
+    const cat = mvItemCat(mi.nome);
+    cats[cat] = (cats[cat]||0) + mvItemPrice(mi.nome) * (mi.qty||0);
   });
   return cats;
 }
 
-// ── LIST VIEW ────────────────────────────────────────
+// ── VIEWS ────────────────────────────────────────────
+function mvShowView(which) {
+  ['mv-lista','mv-detalhe','mv-compare'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = (id === which) ? '' : 'none';
+  });
+}
+
+// ── LIST VIEW ─────────────────────────────────────────
 function renderModelos() {
-  document.getElementById('view-modelos-list').style.display = '';
-  document.getElementById('view-modelo-detalhe').style.display = 'none';
-  document.getElementById('view-modelos-compare').style.display = 'none';
-
+  mvShowView('mv-lista');
   const btn = document.getElementById('btnCompare');
-  if (btn) btn.style.display = S.modelos.length >= 2 ? '' : 'none';
+  if (btn) btn.style.display = (S.modelos||[]).length >= 2 ? '' : 'none';
 
-  const grid = document.getElementById('modelosGrid');
-  if (!S.modelos.length) {
-    grid.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:20px 0;">Nenhum modelo cadastrado. Clique em + Novo Modelo para começar.</div>';
+  const grid = document.getElementById('mvGrid');
+  if (!S.modelos || !S.modelos.length) {
+    grid.innerHTML = '<div style="color:var(--muted);font-size:14px;padding:24px 0;">Nenhum modelo ainda. Clique em <strong>+ Novo Modelo</strong> para começar.</div>';
     return;
   }
+
   grid.innerHTML = S.modelos.map(m => {
-    const custo = modeloTotal(m);
-    const preco = calcPrecoVenda(custo, m.margem||25);
-    const custoM2 = m.area ? custo/m.area : 0;
-    return `<div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px;cursor:pointer;transition:border-color 0.15s;" 
-      onmouseover="this.style.borderColor='var(--gold)'" 
-      onmouseout="this.style.borderColor='var(--border)'">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;">
-        <div style="font-size:16px;font-weight:700;color:var(--text)">${esc(m.nome)}</div>
-        <div style="display:flex;gap:6px;">
-          <button onclick="event.stopPropagation();editModelo(${m.id})" style="background:none;border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:3px 8px;cursor:pointer;font-size:11px;">✏️</button>
-          <button onclick="event.stopPropagation();delModelo(${m.id})" style="background:none;border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:3px 8px;cursor:pointer;font-size:11px;">🗑</button>
+    const custo = mvModeloTotal(m);
+    const preco = mvPrecoVenda(custo, m.margem||25);
+    const custoM2 = (m.area||1) > 0 ? custo/(m.area||1) : 0;
+    const precoM2 = (m.area||1) > 0 ? preco/(m.area||1) : 0;
+    const nitens = (m.items||[]).length;
+    return `<div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px;transition:border-color .15s;"
+      onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border)'">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
+        <div style="font-size:16px;font-weight:700;">${esc(m.nome)}</div>
+        <div style="display:flex;gap:5px;">
+          <button onclick="mvEditModelo('${m.id}')" style="background:none;border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:3px 8px;cursor:pointer;font-size:11px;" title="Editar">✏️</button>
+          <button onclick="mvDelModelo('${m.id}')" style="background:none;border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:3px 8px;cursor:pointer;font-size:11px;" title="Excluir">🗑</button>
         </div>
       </div>
-      <div style="font-size:12px;color:var(--muted);margin-bottom:16px;">${m.area} m² · Margem: ${m.margem||25}% · ${(m.items||[]).length} itens</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:16px;">${m.area||0} m² &nbsp;·&nbsp; Margem: ${m.margem||25}% &nbsp;·&nbsp; ${nitens} item(s)</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">
         <div style="background:var(--surface2);border-radius:8px;padding:10px;">
-          <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:4px;">Custo Total</div>
-          <div style="font-size:17px;font-weight:700;color:var(--gold)">${brl(custo)}</div>
-          <div style="font-size:11px;color:var(--muted)">${brl(custoM2)}/m²</div>
+          <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:3px;">Custo Total</div>
+          <div style="font-size:17px;font-weight:700;color:var(--gold);">${brl(custo)}</div>
+          <div style="font-size:11px;color:var(--muted);">${brl(custoM2)}/m²</div>
         </div>
         <div style="background:var(--surface2);border-radius:8px;padding:10px;">
-          <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:4px;">Preço Venda</div>
-          <div style="font-size:17px;font-weight:700;color:#27c482">${brl(preco)}</div>
-          <div style="font-size:11px;color:var(--muted)">${brl(preco/m.area)}/m²</div>
+          <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:3px;">Preço Venda</div>
+          <div style="font-size:17px;font-weight:700;color:#27c482;">${brl(preco)}</div>
+          <div style="font-size:11px;color:var(--muted);">${brl(precoM2)}/m²</div>
         </div>
       </div>
-      <button onclick="openModeloDetalhe(${m.id})" style="margin-top:14px;width:100%;background:none;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:8px;cursor:pointer;font-family:inherit;font-size:12px;transition:all 0.15s;"
+      <button onclick="mvOpenDetalhe('${m.id}')"
+        style="width:100%;background:none;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:9px;cursor:pointer;font-family:inherit;font-size:13px;transition:all .15s;"
         onmouseover="this.style.borderColor='var(--gold)';this.style.color='var(--gold)'"
         onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">
         📋 Ver / Editar Itens
@@ -1173,180 +1180,188 @@ function renderModelos() {
 }
 
 // ── DETALHE VIEW ─────────────────────────────────────
-function openModeloDetalhe(id) {
-  _currentModeloId = id;
-  const m = getModelo(id);
-  if (!m) return;
-  document.getElementById('view-modelos-list').style.display = 'none';
-  document.getElementById('view-modelo-detalhe').style.display = '';
-  document.getElementById('view-modelos-compare').style.display = 'none';
-  document.getElementById('detalhe-nome').textContent = m.nome;
-  document.getElementById('detalhe-sub').textContent = m.area + ' m² · Margem: ' + (m.margem||25) + '%';
-  renderModeloDetalhe();
+function mvOpenDetalhe(id) {
+  _mvCurrentId = String(id);
+  mvShowView('mv-detalhe');
+  mvRenderDetalhe();
 }
 
-function renderModeloDetalhe() {
-  const m = getModelo(_currentModeloId);
-  if (!m) return;
-  const custo = modeloTotal(m);
-  const preco = calcPrecoVenda(custo, m.margem||25);
-  document.getElementById('detalhe-total').textContent = brl(custo);
-  document.getElementById('detalhe-preco').textContent = brl(preco);
-
-  const tbody = document.getElementById('detalhe-tbody');
-  if (!m.items || !m.items.length) {
-    tbody.innerHTML = '<tr><td colspan="6"><div class="empty">Nenhum item. Clique em + Adicionar Item.</div></td></tr>';
-    return;
-  }
-  tbody.innerHTML = m.items.map((mi, idx) => {
-    const cat = S.items.find(c => c.id === mi.itemId);
-    if (!cat) return '';
-    const total = cat.preco_unit * mi.qty;
-    const col = catColor(cat.categoria);
-    return `<tr>
-      <td style="font-weight:600">${esc(cat.nome)}</td>
-      <td><span class="badge" style="background:${col}22;color:${col}">${esc(cat.categoria)}</span></td>
-      <td class="r">
-        <input type="number" min="0" step="0.01" value="${mi.qty}" 
-          style="width:80px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:inherit;font-size:13px;padding:4px 8px;text-align:right;outline:none;"
-          onchange="updateModeloItemQty(${idx}, this.value)">
-      </td>
-      <td class="r" style="color:var(--muted)">${brl(cat.preco_unit)}</td>
-      <td class="r" style="font-weight:700;color:var(--gold)">${brl(total)}</td>
-      <td class="r"><button class="icon-btn del" onclick="removeItemModelo(${idx})" title="Remover">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-      </button></td>
-    </tr>`;
-  }).join('');
-}
-
-function closeModeloDetalhe() {
-  _currentModeloId = null;
+function mvBackToList() {
+  _mvCurrentId = null;
   renderModelos();
 }
 
-function updateModeloItemQty(idx, val) {
-  const m = getModelo(_currentModeloId);
-  if (!m) return;
-  m.items[idx].qty = parseFloat(val) || 0;
-  save();
-  renderModeloDetalhe();
+function mvRenderDetalhe() {
+  const m = mvGetModelo(_mvCurrentId);
+  if (!m) { mvBackToList(); return; }
+
+  document.getElementById('mvDetNome').textContent = m.nome;
+  document.getElementById('mvDetSub').textContent = (m.area||0) + ' m²  ·  Margem: ' + (m.margem||25) + '%';
+
+  const custo = mvModeloTotal(m);
+  const preco = mvPrecoVenda(custo, m.margem||25);
+  document.getElementById('mvDetTotal').textContent = brl(custo);
+  document.getElementById('mvDetPreco').textContent = brl(preco);
+
+  const tbody = document.getElementById('mvDetBody');
+  if (!m.items || !m.items.length) {
+    tbody.innerHTML = '<tr><td colspan="6"><div class="empty">Nenhum item. Clique em + Adicionar Item.</div></td></tr>';
+  } else {
+    tbody.innerHTML = m.items.map((mi, idx) => {
+      const price = mvItemPrice(mi.nome);
+      const cat   = mvItemCat(mi.nome);
+      const total = price * (mi.qty||0);
+      const col   = catColor(cat);
+      return `<tr>
+        <td style="font-weight:600">${esc(mi.nome)}</td>
+        <td><span class="badge" style="background:${col}22;color:${col}">${esc(cat)}</span></td>
+        <td class="r">
+          <input type="number" min="0" step="0.01" value="${mi.qty}"
+            style="width:80px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:inherit;font-size:13px;padding:5px 8px;text-align:right;outline:none;"
+            onchange="mvUpdateQty(${idx}, this.value)" oninput="mvUpdateQty(${idx}, this.value)">
+        </td>
+        <td class="r" style="color:var(--muted)">${brl(price)}</td>
+        <td class="r" style="font-weight:700;color:var(--gold)">${brl(total)}</td>
+        <td class="r">
+          <button class="icon-btn del" onclick="mvRemoveItem(${idx})" title="Remover">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+          </button>
+        </td>
+      </tr>`;
+    }).join('');
+  }
+
+  // Categories summary
+  const catsEl = document.getElementById('mvDetCats');
+  const catTotals = mvModeloCats(m);
+  const catEntries = Object.entries(catTotals).sort((a,b) => b[1]-a[1]);
+  catsEl.innerHTML = catEntries.length ? catEntries.map(([cat, val]) => {
+    const col = catColor(cat);
+    return `<div style="background:var(--surface2);border-radius:10px;padding:12px 16px;">
+      <div style="font-size:11px;color:${col};font-weight:700;margin-bottom:4px;">${esc(cat)}</div>
+      <div style="font-size:16px;font-weight:700;color:var(--text)">${brl(val)}</div>
+      <div style="font-size:11px;color:var(--muted)">${custo > 0 ? (val/custo*100).toFixed(1) : 0}% do total</div>
+    </div>`;
+  }).join('') : '';
 }
 
-function removeItemModelo(idx) {
-  const m = getModelo(_currentModeloId);
+function mvUpdateQty(idx, val) {
+  const m = mvGetModelo(_mvCurrentId);
+  if (!m) return;
+  m.items[idx].qty = parseFloat(val)||0;
+  save();
+  // Update totals without full re-render
+  const custo = mvModeloTotal(m);
+  const preco = mvPrecoVenda(custo, m.margem||25);
+  document.getElementById('mvDetTotal').textContent = brl(custo);
+  document.getElementById('mvDetPreco').textContent = brl(preco);
+  // Update row total
+  const rows = document.getElementById('mvDetBody').querySelectorAll('tr');
+  if (rows[idx]) {
+    const price = mvItemPrice(m.items[idx].nome);
+    const totalEl = rows[idx].querySelectorAll('td')[4];
+    if (totalEl) totalEl.textContent = brl(price * (parseFloat(val)||0));
+  }
+}
+
+function mvRemoveItem(idx) {
+  const m = mvGetModelo(_mvCurrentId);
   if (!m) return;
   m.items.splice(idx, 1);
-  save(); renderModeloDetalhe(); toast('Item removido');
+  save(); mvRenderDetalhe(); toast('Item removido');
 }
 
-// ── ADD ITEM TO MODELO ───────────────────────────────
-function openAddItemModelo() {
-  document.getElementById('modeloItemModalTitle').textContent = 'Adicionar Item';
-  document.getElementById('miSearch').value = '';
-  document.getElementById('miQty').value = '1';
-  filterCatalogItems();
-  document.getElementById('modeloItemModal').classList.add('open');
-  setTimeout(() => document.getElementById('miSearch').focus(), 50);
+// ── ADD ITEM TO MODELO ────────────────────────────────
+function mvOpenAddItem() {
+  document.getElementById('mvItemSearch').value = '';
+  document.getElementById('mvItemQty').value = '1';
+  mvFilterItems();
+  document.getElementById('mvModalItem').classList.add('open');
+  setTimeout(() => document.getElementById('mvItemSearch').focus(), 50);
 }
 
-function filterCatalogItems() {
-  const q = document.getElementById('miSearch').value.toLowerCase();
-  const sel = document.getElementById('miItemId');
-  const items = S.items.filter(i => !q || i.nome.toLowerCase().includes(q) || i.categoria.toLowerCase().includes(q));
-  sel.innerHTML = items.map(i => `<option value="${i.id}">${i.nome} — ${i.categoria} (${brl(i.preco_unit)})</option>`).join('');
+function mvFilterItems() {
+  const q = document.getElementById('mvItemSearch').value.toLowerCase();
+  const sel = document.getElementById('mvItemSel');
+  const items = [...S.items]
+    .filter(i => !q || i.nome.toLowerCase().includes(q) || (i.categoria||'').toLowerCase().includes(q))
+    .sort((a,b) => a.nome.localeCompare(b.nome));
+  sel.innerHTML = items.map(i =>
+    `<option value="${esc(i.nome)}">${esc(i.nome)} — ${esc(i.categoria||'')} (${brl(i.preco_unit||0)})</option>`
+  ).join('');
 }
 
-function saveItemModelo() {
-  const m = getModelo(_currentModeloId);
+function mvSaveItem() {
+  const m = mvGetModelo(_mvCurrentId);
   if (!m) return;
-  const sel = document.getElementById('miItemId');
-  const itemId = sel.value ? parseInt(sel.value) || sel.value : null;
-  const qty = parseFloat(document.getElementById('miQty').value) || 1;
-  if (!itemId) { toast('Selecione um item', 'err'); return; }
-  // Check if already exists
-  const existing = m.items.findIndex(i => String(i.itemId) === String(itemId));
+  const sel = document.getElementById('mvItemSel');
+  const nome = sel.value;
+  const qty  = parseFloat(document.getElementById('mvItemQty').value)||1;
+  if (!nome) { toast('Selecione um item', 'err'); return; }
+  const existing = m.items.findIndex(i => i.nome === nome);
   if (existing >= 0) {
-    m.items[existing].qty += qty;
+    m.items[existing].qty = (m.items[existing].qty||0) + qty;
     toast('Quantidade atualizada!');
   } else {
-    m.items.push({ itemId, qty });
+    m.items.push({ nome, qty });
     toast('Item adicionado!');
   }
-  save(); closeModal('modeloItemModal'); renderModeloDetalhe();
+  save(); closeModal('mvModalItem'); mvRenderDetalhe();
 }
 
-// ── COMPARE VIEW ─────────────────────────────────────
-function showModelosCompare() {
-  document.getElementById('view-modelos-list').style.display = 'none';
-  document.getElementById('view-modelo-detalhe').style.display = 'none';
-  document.getElementById('view-modelos-compare').style.display = '';
-  
-  const allCats = [...new Set(S.items.map(i => i.categoria))].sort();
-  const thead = document.getElementById('compareThead');
-  const tbody = document.getElementById('compareTbody');
-  
-  thead.innerHTML = '<th>Categoria</th>' + S.modelos.map(m =>
-    `<th style="text-align:right">${esc(m.nome)}<br><span style="font-size:10px;font-weight:400;color:var(--muted)">${m.area}m²</span></th>`
+// ── COMPARE VIEW ──────────────────────────────────────
+function mvShowCompare() {
+  mvShowView('mv-compare');
+  const modelos = S.modelos||[];
+  const allCats = [...new Set(modelos.flatMap(m => Object.keys(mvModeloCats(m))))].sort();
+  const thead = document.getElementById('mvCompareThead');
+  const tbody = document.getElementById('mvCompareTbody');
+  thead.innerHTML = '<th>Categoria</th>' + modelos.map(m =>
+    `<th style="text-align:right">${esc(m.nome)}<br><span style="font-size:10px;font-weight:400;color:var(--muted)">${m.area||0}m²</span></th>`
   ).join('');
-
-  const usedCats = [...new Set(S.modelos.flatMap(m => Object.keys(modeloCats(m))))].sort();
-  
-  tbody.innerHTML = usedCats.map(cat => {
-    const vals = S.modelos.map(m => { const cs = modeloCats(m); return cs[cat]||0; });
-    const hasAny = vals.some(v => v > 0);
-    if (!hasAny) return '';
-    return `<tr>
-      <td><span class="badge" style="background:${catColor(cat)}22;color:${catColor(cat)}">${esc(cat)}</span></td>
+  tbody.innerHTML = allCats.map(cat => {
+    const vals = modelos.map(m => { const cs = mvModeloCats(m); return cs[cat]||0; });
+    if (!vals.some(v => v > 0)) return '';
+    return `<tr><td><span class="badge" style="background:${catColor(cat)}22;color:${catColor(cat)}">${esc(cat)}</span></td>
       ${vals.map(v => `<td class="r">${v > 0 ? brl(v) : '<span style="color:var(--muted)">—</span>'}</td>`).join('')}
     </tr>`;
   }).join('') +
-  `<tr style="border-top:2px solid var(--border);font-weight:700;">
-    <td>CUSTO TOTAL</td>
-    ${S.modelos.map(m => `<td class="r" style="color:var(--gold)">${brl(modeloTotal(m))}</td>`).join('')}
-  </tr>
-  <tr style="font-weight:700;">
-    <td>PREÇO VENDA</td>
-    ${S.modelos.map(m => `<td class="r" style="color:#27c482">${brl(calcPrecoVenda(modeloTotal(m), m.margem||25))}</td>`).join('')}
-  </tr>
-  <tr>
-    <td style="color:var(--muted)">Custo por m²</td>
-    ${S.modelos.map(m => `<td class="r" style="color:var(--muted)">${brl(modeloTotal(m)/(m.area||1))}</td>`).join('')}
-  </tr>`;
+  `<tr style="border-top:2px solid var(--border);font-weight:700;"><td>CUSTO TOTAL</td>${modelos.map(m=>`<td class="r" style="color:var(--gold)">${brl(mvModeloTotal(m))}</td>`).join('')}</tr>
+  <tr style="font-weight:700;"><td>PREÇO VENDA</td>${modelos.map(m=>`<td class="r" style="color:#27c482">${brl(mvPrecoVenda(mvModeloTotal(m),m.margem||25))}</td>`).join('')}</tr>
+  <tr><td style="color:var(--muted)">Custo/m²</td>${modelos.map(m=>`<td class="r" style="color:var(--muted)">${brl(mvModeloTotal(m)/(m.area||1))}</td>`).join('')}</tr>`;
 }
 
-function closeModelosCompare() { renderModelos(); }
-
-// ── ADD/EDIT MODELO ──────────────────────────────────
-function openAddModelo() {
+// ── ADD/EDIT/DEL MODELO ───────────────────────────────
+function mvOpenNew() {
   S.modeloEditId = null;
-  document.getElementById('modeloModalTitle').textContent = 'Novo Modelo';
-  document.getElementById('mNome').value = '';
-  document.getElementById('mArea').value = '';
-  document.getElementById('mMargem').value = '25';
-  document.getElementById('modeloModal').classList.add('open');
-  setTimeout(() => document.getElementById('mNome').focus(), 50);
+  document.getElementById('mvModalTitle').textContent = 'Novo Modelo';
+  document.getElementById('mvNome').value = '';
+  document.getElementById('mvArea').value = '';
+  document.getElementById('mvMargem').value = '25';
+  document.getElementById('mvModalModelo').classList.add('open');
+  setTimeout(() => document.getElementById('mvNome').focus(), 50);
 }
 
-function editModelo(id) {
-  const m = getModelo(id);
+function mvEditModelo(id) {
+  const m = mvGetModelo(id);
   if (!m) return;
-  S.modeloEditId = id;
-  document.getElementById('modeloModalTitle').textContent = 'Editar Modelo';
-  document.getElementById('mNome').value = m.nome;
-  document.getElementById('mArea').value = m.area;
-  document.getElementById('mMargem').value = m.margem||25;
-  document.getElementById('modeloModal').classList.add('open');
-  setTimeout(() => document.getElementById('mNome').focus(), 50);
+  S.modeloEditId = String(id);
+  document.getElementById('mvModalTitle').textContent = 'Editar Modelo';
+  document.getElementById('mvNome').value = m.nome;
+  document.getElementById('mvArea').value = m.area||'';
+  document.getElementById('mvMargem').value = m.margem||25;
+  document.getElementById('mvModalModelo').classList.add('open');
+  setTimeout(() => document.getElementById('mvNome').focus(), 50);
 }
 
-function saveModelo() {
-  const nome   = document.getElementById('mNome').value.trim();
-  const area   = parseFloat(document.getElementById('mArea').value);
-  const margem = parseFloat(document.getElementById('mMargem').value)||25;
-  if (!nome || !area || area <= 0) { toast('Preencha nome e área', 'err'); return; }
-  if (S.modeloEditId !== null) {
-    const idx = S.modelos.findIndex(x => x.id === S.modeloEditId);
+function mvSaveModelo() {
+  const nome   = document.getElementById('mvNome').value.trim();
+  const area   = parseFloat(document.getElementById('mvArea').value)||0;
+  const margem = parseFloat(document.getElementById('mvMargem').value)||25;
+  if (!nome || !area) { toast('Preencha nome e área', 'err'); return; }
+  if (!S.modelos) S.modelos = [];
+  if (S.modeloEditId) {
+    const idx = S.modelos.findIndex(m => String(m.id) === String(S.modeloEditId));
     if (idx >= 0) S.modelos[idx] = { ...S.modelos[idx], nome, area, margem };
     toast('Modelo atualizado!');
   } else {
@@ -1354,15 +1369,20 @@ function saveModelo() {
     toast('Modelo criado!');
   }
   S.modeloEditId = null;
-  save(); closeModal('modeloModal'); renderModelos();
+  save(); closeModal('mvModalModelo'); renderModelos();
 }
 
-function delModelo(id) {
-  const m = getModelo(id);
-  if (!confirm(`Excluir o modelo "${m?.nome}"? Os itens deste modelo serão perdidos.`)) return;
-  S.modelos = S.modelos.filter(x => x.id !== id);
+function mvDelModelo(id) {
+  const m = mvGetModelo(id);
+  if (!m || !confirm('Excluir o modelo "' + m.nome + '"?')) return;
+  S.modelos = S.modelos.filter(x => String(x.id) !== String(id));
   save(); renderModelos(); toast('Modelo excluído');
 }
+// ── Aliases for old function names ────────────────────
+var openAddModelo = mvOpenNew;
+var editModelo    = mvEditModelo;
+var saveModelo    = mvSaveModelo;
+var delModelo     = mvDelModelo;
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
 load();
