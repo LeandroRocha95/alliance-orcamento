@@ -243,6 +243,10 @@ select.sel:focus{border-color:var(--gold)}
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
       CSV
     </button>
+    <button class="btn btn-sm" onclick="sbSyncAll()" style="background:linear-gradient(135deg,#e8541a,#f5a623);color:#fff;border:none;cursor:pointer;display:flex;align-items:center;gap:6px;font-family:inherit;font-weight:600;font-size:13px;padding:7px 14px;border-radius:8px;">
+      ☁️ Salvar Nuvem
+    </button>
+    <div id="syncStatus" style="font-size:11px;color:#7a7f9a;white-space:nowrap;"></div>
     <button class="btn btn-gold btn-sm" onclick="openAdd()">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
       Novo Item
