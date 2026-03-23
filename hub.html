@@ -203,7 +203,7 @@
       <div class="card-btn">Abrir Sistema →</div>
     </a>
 
-    <a class="card" href="#" onclick="openLock('https://leandrorocha95.github.io/alliance-orcamento/CUSTO%2042%20M2%20C%20FORRO%20ELEVADO.html','Gestão de Custos','Área restrita — digite a senha'); return false;">
+    <a class="card" href="#" onclick="openLock('https://leandrorocha95.github.io/alliance-orcamento/alliance-custos.html','Gestão de Custos','Área restrita — digite a senha'); return false;">
       <span class="card-tag" style="background:rgba(46,204,113,0.15);color:#2ecc71;">Online</span>
       <div class="card-icon">💰</div>
       <div class="card-title">Gestão de Custos</div>
@@ -264,9 +264,7 @@ function checkLock() {
   var val = document.getElementById('lockInput').value;
   if (val === LOCK_PASS) {
     closeLock();
-    var a = document.getElementById('lockLink');
-    a.href = _lockTarget;
-    a.click();
+    window.location.href = _lockTarget;
   } else {
     document.getElementById('lockErr').textContent = 'Senha incorreta.';
     document.getElementById('lockInput').value = '';
