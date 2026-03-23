@@ -995,16 +995,21 @@ function setSyncStatus(msg, color) {
 async function sbSyncAll() {
   setSyncStatus('⏳ Salvando...', '#f5a623');
   try {
-    // Save config (area, history, scenarios, simRows)
+    // Save config including modelos
     const cfg = {
-      id: 1,
+      id:         1,
       categorias: JSON.stringify(S.scenarios || []),
       revisoes:   JSON.stringify(S.history   || []),
-      cenarios:   JSON.stringify({ area: S.area, simRows: S.simRows })
+      cenarios:   JSON.stringify({ area: S.area, simRows: S.simRows }),
+      modelos:    JSON.stringify(S.modelos   || [])
     };
-    await sbFetch('POST', SB_URL + '/rest/v1/custos_config?on_conflict=id', cfg);
+    const cfgRes = await sbFetch('POST', SB_URL + '/rest/v1/custos_config?on_conflict=id', cfg);
+    if (!cfgRes.ok) {
+      const err = await cfgRes.text();
+      throw new Error('Config save failed: ' + err);
+    }
 
-    // Save items — upsert all
+    // Save items
     if (S.items && S.items.length) {
       const items = S.items.map(i => ({
         id:         String(i.id),
@@ -1015,18 +1020,22 @@ async function sbSyncAll() {
         unidade:    i.unidade     || '',
         obs:        i.obs         || ''
       }));
-      await sbFetch('POST', SB_URL + '/rest/v1/custos?on_conflict=id', items);
+      const itemsRes = await sbFetch('POST', SB_URL + '/rest/v1/custos?on_conflict=id', items);
+      if (!itemsRes.ok) {
+        const err = await itemsRes.text();
+        throw new Error('Items save failed: ' + err);
+      }
     }
     setSyncStatus('✓ Sincronizado ' + new Date().toLocaleTimeString('pt-BR'), '#2ecc71');
     toast('✓ Dados salvos na nuvem!');
   } catch(e) {
-    setSyncStatus('✗ Erro ao sincronizar', '#e74c3c');
-    toast('Erro ao salvar na nuvem', 'err');
-    console.error(e);
+    setSyncStatus('✗ Erro: ' + e.message, '#e74c3c');
+    toast('Erro: ' + e.message, 'err');
+    console.error('sbSyncAll error:', e);
   }
 }
 
-// Load data from Supabase (overrides localStorage)
+// Load data from Supabase
 async function sbLoadAll() {
   setSyncStatus('⏳ Carregando da nuvem...', '#f5a623');
   try {
@@ -1055,13 +1064,23 @@ async function sbLoadAll() {
         if (extra.area)    S.area    = extra.area;
         if (extra.simRows) S.simRows = extra.simRows;
       } catch(e) {}
+      // Load modelos
+      try {
+        if (c.modelos) {
+          const modelos = JSON.parse(c.modelos);
+          if (Array.isArray(modelos) && modelos.length) {
+            S.modelos = modelos;
+            S.modelos.forEach(m => { m.id = String(m.id); });
+          }
+        }
+      } catch(e) {}
     }
-    save(); // persist to localStorage as cache
+    save();
     setSyncStatus('✓ Carregado da nuvem', '#2ecc71');
     renderDash();
   } catch(e) {
     setSyncStatus('Sem conexão — usando dados locais', '#7a7f9a');
-    console.warn('Supabase load failed, using localStorage:', e);
+    console.warn('Supabase load failed:', e);
     renderDash();
   }
 }
@@ -1270,25 +1289,4 @@ function mvSaveModelo() {
   }));
   S.modelos.push({ id: String(Date.now()), nome, area, margem, snapshot, savedAt: new Date().toISOString() });
   save(); closeModal('mvModalModelo'); renderModelos();
-  toast('✓ Modelo "' + nome + '" salvo com ' + snapshot.length + ' itens!');
-}
-
-function mvDelModelo(id) {
-  const m = mvGetModelo(String(id));
-  if (!m || !confirm('Excluir o modelo "' + m.nome + '"?')) return;
-  S.modelos = (S.modelos||[]).filter(x => String(x.id) !== String(id));
-  save(); renderModelos(); toast('Modelo excluído');
-}
-
-// Aliases
-var openAddModelo = mvOpenNew;
-var saveModelo    = mvSaveModelo;
-var delModelo     = mvDelModelo;
-
-// ── INIT ──────────────────────────────────────────────────────────────────────
-load();
-renderDash();
-sbLoadAll(); // Load from cloud on startup
-</script>
-</body>
-</html>
+  toast('✓ Modelo "' + nome + '" salvo com ' + snapshot.length + ' itens!'
