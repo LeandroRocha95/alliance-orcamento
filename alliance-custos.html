@@ -1089,6 +1089,7 @@ async function sbLoadAll() {
   } catch(e) {
     setSyncStatus('Sem conexão — usando dados locais', '#7a7f9a');
     console.warn('Supabase load failed, using localStorage:', e);
+    renderDash();
   }
 }
 
@@ -1156,4 +1157,217 @@ function renderModelos() {
           <div style="font-size:17px;font-weight:700;color:var(--gold)">${brl(custo)}</div>
           <div style="font-size:11px;color:var(--muted)">${brl(custoM2)}/m²</div>
         </div>
-        <div style
+        <div style="background:var(--surface2);border-radius:8px;padding:10px;">
+          <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:4px;">Preço Venda</div>
+          <div style="font-size:17px;font-weight:700;color:#27c482">${brl(preco)}</div>
+          <div style="font-size:11px;color:var(--muted)">${brl(preco/m.area)}/m²</div>
+        </div>
+      </div>
+      <button onclick="openModeloDetalhe(${m.id})" style="margin-top:14px;width:100%;background:none;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:8px;cursor:pointer;font-family:inherit;font-size:12px;transition:all 0.15s;"
+        onmouseover="this.style.borderColor='var(--gold)';this.style.color='var(--gold)'"
+        onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">
+        📋 Ver / Editar Itens
+      </button>
+    </div>`;
+  }).join('');
+}
+
+// ── DETALHE VIEW ─────────────────────────────────────
+function openModeloDetalhe(id) {
+  _currentModeloId = id;
+  const m = getModelo(id);
+  if (!m) return;
+  document.getElementById('view-modelos-list').style.display = 'none';
+  document.getElementById('view-modelo-detalhe').style.display = '';
+  document.getElementById('view-modelos-compare').style.display = 'none';
+  document.getElementById('detalhe-nome').textContent = m.nome;
+  document.getElementById('detalhe-sub').textContent = m.area + ' m² · Margem: ' + (m.margem||25) + '%';
+  renderModeloDetalhe();
+}
+
+function renderModeloDetalhe() {
+  const m = getModelo(_currentModeloId);
+  if (!m) return;
+  const custo = modeloTotal(m);
+  const preco = calcPrecoVenda(custo, m.margem||25);
+  document.getElementById('detalhe-total').textContent = brl(custo);
+  document.getElementById('detalhe-preco').textContent = brl(preco);
+
+  const tbody = document.getElementById('detalhe-tbody');
+  if (!m.items || !m.items.length) {
+    tbody.innerHTML = '<tr><td colspan="6"><div class="empty">Nenhum item. Clique em + Adicionar Item.</div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = m.items.map((mi, idx) => {
+    const cat = S.items.find(c => c.id === mi.itemId);
+    if (!cat) return '';
+    const total = cat.preco_unit * mi.qty;
+    const col = catColor(cat.categoria);
+    return `<tr>
+      <td style="font-weight:600">${esc(cat.nome)}</td>
+      <td><span class="badge" style="background:${col}22;color:${col}">${esc(cat.categoria)}</span></td>
+      <td class="r">
+        <input type="number" min="0" step="0.01" value="${mi.qty}" 
+          style="width:80px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:inherit;font-size:13px;padding:4px 8px;text-align:right;outline:none;"
+          onchange="updateModeloItemQty(${idx}, this.value)">
+      </td>
+      <td class="r" style="color:var(--muted)">${brl(cat.preco_unit)}</td>
+      <td class="r" style="font-weight:700;color:var(--gold)">${brl(total)}</td>
+      <td class="r"><button class="icon-btn del" onclick="removeItemModelo(${idx})" title="Remover">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+      </button></td>
+    </tr>`;
+  }).join('');
+}
+
+function closeModeloDetalhe() {
+  _currentModeloId = null;
+  renderModelos();
+}
+
+function updateModeloItemQty(idx, val) {
+  const m = getModelo(_currentModeloId);
+  if (!m) return;
+  m.items[idx].qty = parseFloat(val) || 0;
+  save();
+  renderModeloDetalhe();
+}
+
+function removeItemModelo(idx) {
+  const m = getModelo(_currentModeloId);
+  if (!m) return;
+  m.items.splice(idx, 1);
+  save(); renderModeloDetalhe(); toast('Item removido');
+}
+
+// ── ADD ITEM TO MODELO ───────────────────────────────
+function openAddItemModelo() {
+  document.getElementById('modeloItemModalTitle').textContent = 'Adicionar Item';
+  document.getElementById('miSearch').value = '';
+  document.getElementById('miQty').value = '1';
+  filterCatalogItems();
+  document.getElementById('modeloItemModal').classList.add('open');
+  setTimeout(() => document.getElementById('miSearch').focus(), 50);
+}
+
+function filterCatalogItems() {
+  const q = document.getElementById('miSearch').value.toLowerCase();
+  const sel = document.getElementById('miItemId');
+  const items = S.items.filter(i => !q || i.nome.toLowerCase().includes(q) || i.categoria.toLowerCase().includes(q));
+  sel.innerHTML = items.map(i => `<option value="${i.id}">${i.nome} — ${i.categoria} (${brl(i.preco_unit)})</option>`).join('');
+}
+
+function saveItemModelo() {
+  const m = getModelo(_currentModeloId);
+  if (!m) return;
+  const sel = document.getElementById('miItemId');
+  const itemId = sel.value ? parseInt(sel.value) || sel.value : null;
+  const qty = parseFloat(document.getElementById('miQty').value) || 1;
+  if (!itemId) { toast('Selecione um item', 'err'); return; }
+  // Check if already exists
+  const existing = m.items.findIndex(i => String(i.itemId) === String(itemId));
+  if (existing >= 0) {
+    m.items[existing].qty += qty;
+    toast('Quantidade atualizada!');
+  } else {
+    m.items.push({ itemId, qty });
+    toast('Item adicionado!');
+  }
+  save(); closeModal('modeloItemModal'); renderModeloDetalhe();
+}
+
+// ── COMPARE VIEW ─────────────────────────────────────
+function showModelosCompare() {
+  document.getElementById('view-modelos-list').style.display = 'none';
+  document.getElementById('view-modelo-detalhe').style.display = 'none';
+  document.getElementById('view-modelos-compare').style.display = '';
+  
+  const allCats = [...new Set(S.items.map(i => i.categoria))].sort();
+  const thead = document.getElementById('compareThead');
+  const tbody = document.getElementById('compareTbody');
+  
+  thead.innerHTML = '<th>Categoria</th>' + S.modelos.map(m =>
+    `<th style="text-align:right">${esc(m.nome)}<br><span style="font-size:10px;font-weight:400;color:var(--muted)">${m.area}m²</span></th>`
+  ).join('');
+
+  const usedCats = [...new Set(S.modelos.flatMap(m => Object.keys(modeloCats(m))))].sort();
+  
+  tbody.innerHTML = usedCats.map(cat => {
+    const vals = S.modelos.map(m => { const cs = modeloCats(m); return cs[cat]||0; });
+    const hasAny = vals.some(v => v > 0);
+    if (!hasAny) return '';
+    return `<tr>
+      <td><span class="badge" style="background:${catColor(cat)}22;color:${catColor(cat)}">${esc(cat)}</span></td>
+      ${vals.map(v => `<td class="r">${v > 0 ? brl(v) : '<span style="color:var(--muted)">—</span>'}</td>`).join('')}
+    </tr>`;
+  }).join('') +
+  `<tr style="border-top:2px solid var(--border);font-weight:700;">
+    <td>CUSTO TOTAL</td>
+    ${S.modelos.map(m => `<td class="r" style="color:var(--gold)">${brl(modeloTotal(m))}</td>`).join('')}
+  </tr>
+  <tr style="font-weight:700;">
+    <td>PREÇO VENDA</td>
+    ${S.modelos.map(m => `<td class="r" style="color:#27c482">${brl(calcPrecoVenda(modeloTotal(m), m.margem||25))}</td>`).join('')}
+  </tr>
+  <tr>
+    <td style="color:var(--muted)">Custo por m²</td>
+    ${S.modelos.map(m => `<td class="r" style="color:var(--muted)">${brl(modeloTotal(m)/(m.area||1))}</td>`).join('')}
+  </tr>`;
+}
+
+function closeModelosCompare() { renderModelos(); }
+
+// ── ADD/EDIT MODELO ──────────────────────────────────
+function openAddModelo() {
+  S.modeloEditId = null;
+  document.getElementById('modeloModalTitle').textContent = 'Novo Modelo';
+  document.getElementById('mNome').value = '';
+  document.getElementById('mArea').value = '';
+  document.getElementById('mMargem').value = '25';
+  document.getElementById('modeloModal').classList.add('open');
+  setTimeout(() => document.getElementById('mNome').focus(), 50);
+}
+
+function editModelo(id) {
+  const m = getModelo(id);
+  if (!m) return;
+  S.modeloEditId = id;
+  document.getElementById('modeloModalTitle').textContent = 'Editar Modelo';
+  document.getElementById('mNome').value = m.nome;
+  document.getElementById('mArea').value = m.area;
+  document.getElementById('mMargem').value = m.margem||25;
+  document.getElementById('modeloModal').classList.add('open');
+  setTimeout(() => document.getElementById('mNome').focus(), 50);
+}
+
+function saveModelo() {
+  const nome   = document.getElementById('mNome').value.trim();
+  const area   = parseFloat(document.getElementById('mArea').value);
+  const margem = parseFloat(document.getElementById('mMargem').value)||25;
+  if (!nome || !area || area <= 0) { toast('Preencha nome e área', 'err'); return; }
+  if (S.modeloEditId !== null) {
+    const idx = S.modelos.findIndex(x => x.id === S.modeloEditId);
+    if (idx >= 0) S.modelos[idx] = { ...S.modelos[idx], nome, area, margem };
+    toast('Modelo atualizado!');
+  } else {
+    S.modelos.push({ id: Date.now(), nome, area, margem, items: [] });
+    toast('Modelo criado!');
+  }
+  S.modeloEditId = null;
+  save(); closeModal('modeloModal'); renderModelos();
+}
+
+function delModelo(id) {
+  const m = getModelo(id);
+  if (!confirm(`Excluir o modelo "${m?.nome}"? Os itens deste modelo serão perdidos.`)) return;
+  S.modelos = S.modelos.filter(x => x.id !== id);
+  save(); renderModelos(); toast('Modelo excluído');
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+load();
+renderDash();
+sbLoadAll(); // Load from cloud on startup
+</script>
+</body>
+</html>
