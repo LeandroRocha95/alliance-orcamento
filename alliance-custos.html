@@ -375,22 +375,65 @@ select.sel:focus{border-color:var(--gold)}
 <!-- CONFIG -->
 
 <!-- ══════ MODELOS DE CASA ══════ -->
+<!-- ══════ MODELOS DE CASA ══════ -->
 <div class="page" id="page-modelos">
-  <div class="section-head" style="margin-bottom:20px;">
-    <div>
-      <div class="section-title">Modelos de Casa</div>
-      <div style="font-size:13px;color:var(--muted);margin-top:4px;">Calcule o custo para diferentes metragens usando sua base de itens cadastrada.</div>
+
+  <!-- LISTA DE MODELOS -->
+  <div id="view-modelos-list">
+    <div class="section-head" style="margin-bottom:20px;">
+      <div>
+        <div class="section-title">Modelos de Casa</div>
+        <div style="font-size:13px;color:var(--muted);margin-top:4px;">Cada modelo tem seus próprios itens e quantidades. Preços são compartilhados do catálogo.</div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-outline btn-sm" onclick="showModelosCompare()" id="btnCompare" style="display:none">📊 Comparar</button>
+        <button class="btn btn-gold btn-sm" onclick="openAddModelo()">+ Novo Modelo</button>
+      </div>
     </div>
-    <button class="btn btn-gold btn-sm" onclick="openAddModelo()">+ Novo Modelo</button>
+    <div id="modelosGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;"></div>
   </div>
 
-  <!-- Comparação rápida -->
-  <div id="modelosGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin-bottom:32px;"></div>
+  <!-- DETALHE DO MODELO (ITENS) -->
+  <div id="view-modelo-detalhe" style="display:none;">
+    <div class="section-head" style="margin-bottom:20px;">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <button onclick="closeModeloDetalhe()" style="background:none;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:6px 12px;cursor:pointer;font-family:inherit;">← Voltar</button>
+        <div>
+          <div class="section-title" id="detalhe-nome">Modelo</div>
+          <div style="font-size:12px;color:var(--muted)" id="detalhe-sub"></div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <div style="background:var(--surface2);border-radius:10px;padding:10px 16px;text-align:center;">
+          <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;">Custo Total</div>
+          <div style="font-size:20px;font-weight:700;color:var(--gold)" id="detalhe-total">R$ 0,00</div>
+        </div>
+        <div style="background:var(--surface2);border-radius:10px;padding:10px 16px;text-align:center;">
+          <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;">Preço Venda</div>
+          <div style="font-size:20px;font-weight:700;color:#27c482" id="detalhe-preco">R$ 0,00</div>
+        </div>
+        <button class="btn btn-gold btn-sm" onclick="openAddItemModelo()">+ Adicionar Item</button>
+      </div>
+    </div>
+    <div class="table-box">
+      <table>
+        <thead><tr>
+          <th>Item</th><th>Categoria</th>
+          <th style="text-align:right">Qtd</th>
+          <th style="text-align:right">Preço Unit.</th>
+          <th style="text-align:right">Total</th>
+          <th style="text-align:right">Ações</th>
+        </tr></thead>
+        <tbody id="detalhe-tbody"></tbody>
+      </table>
+    </div>
+  </div>
 
-  <!-- Tabela comparativa -->
-  <div id="modelosCompare" style="display:none;">
-    <div class="section-head" style="margin-bottom:12px;">
-      <div class="section-title" style="font-size:15px;">Comparação entre Modelos</div>
+  <!-- COMPARAÇÃO -->
+  <div id="view-modelos-compare" style="display:none;">
+    <div class="section-head" style="margin-bottom:16px;">
+      <div class="section-title">Comparação entre Modelos</div>
+      <button onclick="closeModelosCompare()" style="background:none;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:6px 12px;cursor:pointer;font-family:inherit;">← Voltar</button>
     </div>
     <div class="table-box" style="overflow-x:auto;">
       <table>
@@ -401,7 +444,7 @@ select.sel:focus{border-color:var(--gold)}
   </div>
 </div>
 
-<!-- MODAL NOVO MODELO -->
+<!-- MODAL NOVO/EDITAR MODELO -->
 <div class="overlay" id="modeloModal">
   <div class="modal" style="max-width:420px;">
     <div class="modal-head">
@@ -413,21 +456,45 @@ select.sel:focus{border-color:var(--gold)}
         <label class="field-label">Nome do Modelo</label>
         <input class="field-inp" id="mNome" placeholder="Ex: Casa 60m² Padrão" style="width:100%">
       </div>
-      <div class="field-row" style="margin-top:12px;">
-        <label class="field-label">Área Total (m²)</label>
-        <input class="field-inp" id="mArea" type="number" min="1" placeholder="Ex: 60" style="width:100%">
-      </div>
-      <div class="field-row" style="margin-top:12px;">
-        <label class="field-label">Margem de Lucro (%)</label>
-        <input class="field-inp" id="mMargem" type="number" min="0" max="100" placeholder="Ex: 25" style="width:100%">
-      </div>
-      <div style="background:var(--surface2);border-radius:8px;padding:12px;margin-top:14px;font-size:12px;color:var(--muted);line-height:1.6;">
-        💡 Itens cadastrados como <strong style="color:var(--text)">por m²</strong> serão multiplicados pela área. Itens por <strong style="color:var(--text)">unidade</strong> mantêm sua quantidade fixa.
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px;">
+        <div>
+          <label class="field-label">Área (m²)</label>
+          <input class="field-inp" id="mArea" type="number" min="1" placeholder="60" style="width:100%">
+        </div>
+        <div>
+          <label class="field-label">Margem de Lucro (%)</label>
+          <input class="field-inp" id="mMargem" type="number" min="0" max="100" placeholder="25" style="width:100%">
+        </div>
       </div>
     </div>
     <div class="modal-foot">
       <button class="btn btn-outline btn-sm" onclick="closeModal('modeloModal')">Cancelar</button>
-      <button class="btn btn-gold btn-sm" onclick="saveModelo()">Salvar Modelo</button>
+      <button class="btn btn-gold btn-sm" onclick="saveModelo()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ADICIONAR ITEM AO MODELO -->
+<div class="overlay" id="modeloItemModal">
+  <div class="modal" style="max-width:480px;">
+    <div class="modal-head">
+      <div class="modal-title" id="modeloItemModalTitle">Adicionar Item ao Modelo</div>
+      <button class="modal-x" onclick="closeModal('modeloItemModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="field-row">
+        <label class="field-label">Item do Catálogo</label>
+        <input class="field-inp" id="miSearch" placeholder="Buscar item..." oninput="filterCatalogItems()" style="width:100%;margin-bottom:8px;">
+        <select id="miItemId" size="6" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;font-family:inherit;padding:6px;outline:none;"></select>
+      </div>
+      <div style="margin-top:12px;">
+        <label class="field-label">Quantidade</label>
+        <input class="field-inp" id="miQty" type="number" min="0" step="0.01" placeholder="1" style="width:100%">
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline btn-sm" onclick="closeModal('modeloItemModal')">Cancelar</button>
+      <button class="btn btn-gold btn-sm" onclick="saveItemModelo()">Adicionar</button>
     </div>
   </div>
 </div>
@@ -551,9 +618,9 @@ function load(){
       {name:'Moderado',   rows:mkScenRows(25),area:42},
       {name:'Agressivo',  rows:mkScenRows(35),area:42},
     ];
-  if(!S.modelos) S.modelos=[
-      {id:1, nome:'Casa 42m² (Atual)', area:42, margem:25}
-    ];
+  if(!S.modelos) S.modelos=[];
+  // Migrate old modelos without items array
+  S.modelos.forEach(m => { if(!m.items) m.items = []; });
   }catch(e){ S.items=DEFAULT_ITEMS.map((x,i)=>({...x,id:i+1})); }
 }
 function mkScenRows(lucro){ return SIM_DEFAULTS.map(r=>({...r,value:r.id==='margem'?lucro:r.value})); }
@@ -1027,153 +1094,66 @@ async function sbLoadAll() {
 
 
 // ═══════════════════════════════════════════════════
-// MODELOS DE CASA
+// MODELOS DE CASA — Itens Independentes
 // ═══════════════════════════════════════════════════
+let _currentModeloId = null;
 
-function calcModelo(area) {
-  // For each item: if unit is m² multiply by area ratio, else keep fixed qty
-  const ratio = area / (S.area || 42);
-  return S.items.map(i => {
-    const isM2 = i.unidade === 'm²' || i.unidade === 'm2' || (!i.unidade && i.qty > 1);
-    const qty = isM2 ? i.qty * ratio : i.qty;
-    return { ...i, qty_calc: qty, total_calc: qty * i.preco_unit };
-  });
-}
+function getModelo(id) { return S.modelos.find(m => m.id === id); }
 
-function calcModeloTotal(area) {
-  return calcModelo(area).reduce((s, i) => s + i.total_calc, 0);
-}
-
-function calcModeloCats(area) {
-  const items = calcModelo(area);
-  const m = {};
-  items.forEach(i => { m[i.categoria] = (m[i.categoria] || 0) + i.total_calc; });
-  return m;
+function modeloTotal(m) {
+  return (m.items||[]).reduce((s,i) => {
+    const cat = S.items.find(c => c.id === i.itemId);
+    return s + (cat ? cat.preco_unit * i.qty : 0);
+  }, 0);
 }
 
 function calcPrecoVenda(custo, margem) {
+  if (margem >= 100) return custo;
   return custo / (1 - (margem / 100));
 }
 
+function modeloCats(m) {
+  const cats = {};
+  (m.items||[]).forEach(mi => {
+    const cat = S.items.find(c => c.id === mi.itemId);
+    if (cat) cats[cat.categoria] = (cats[cat.categoria]||0) + cat.preco_unit * mi.qty;
+  });
+  return cats;
+}
+
+// ── LIST VIEW ────────────────────────────────────────
 function renderModelos() {
+  document.getElementById('view-modelos-list').style.display = '';
+  document.getElementById('view-modelo-detalhe').style.display = 'none';
+  document.getElementById('view-modelos-compare').style.display = 'none';
+
+  const btn = document.getElementById('btnCompare');
+  if (btn) btn.style.display = S.modelos.length >= 2 ? '' : 'none';
+
   const grid = document.getElementById('modelosGrid');
-  if (!S.modelos || !S.modelos.length) {
-    grid.innerHTML = '<div style="color:var(--muted);font-size:13px;">Nenhum modelo cadastrado.</div>';
-    document.getElementById('modelosCompare').style.display = 'none';
+  if (!S.modelos.length) {
+    grid.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:20px 0;">Nenhum modelo cadastrado. Clique em + Novo Modelo para começar.</div>';
     return;
   }
-
   grid.innerHTML = S.modelos.map(m => {
-    const custo = calcModeloTotal(m.area);
-    const margem = m.margem || 25;
-    const preco = calcPrecoVenda(custo, margem);
-    const custoM2 = custo / m.area;
-    const precoM2 = preco / m.area;
-    return `<div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px;position:relative;">
-      <div style="position:absolute;top:12px;right:12px;display:flex;gap:6px;">
-        <button onclick="editModelo(${m.id})" style="background:none;border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:3px 8px;cursor:pointer;font-size:11px;">✏️</button>
-        <button onclick="delModelo(${m.id})" style="background:none;border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:3px 8px;cursor:pointer;font-size:11px;">🗑</button>
+    const custo = modeloTotal(m);
+    const preco = calcPrecoVenda(custo, m.margem||25);
+    const custoM2 = m.area ? custo/m.area : 0;
+    return `<div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px;cursor:pointer;transition:border-color 0.15s;" 
+      onmouseover="this.style.borderColor='var(--gold)'" 
+      onmouseout="this.style.borderColor='var(--border)'">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;">
+        <div style="font-size:16px;font-weight:700;color:var(--text)">${esc(m.nome)}</div>
+        <div style="display:flex;gap:6px;">
+          <button onclick="event.stopPropagation();editModelo(${m.id})" style="background:none;border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:3px 8px;cursor:pointer;font-size:11px;">✏️</button>
+          <button onclick="event.stopPropagation();delModelo(${m.id})" style="background:none;border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:3px 8px;cursor:pointer;font-size:11px;">🗑</button>
+        </div>
       </div>
-      <div style="font-family:inherit;font-size:16px;font-weight:700;color:var(--text);margin-bottom:4px;">${esc(m.nome)}</div>
-      <div style="font-size:12px;color:var(--muted);margin-bottom:16px;">${m.area} m² · Margem: ${margem}%</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:16px;">${m.area} m² · Margem: ${m.margem||25}% · ${(m.items||[]).length} itens</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
         <div style="background:var(--surface2);border-radius:8px;padding:10px;">
           <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:4px;">Custo Total</div>
-          <div style="font-size:18px;font-weight:700;color:var(--gold)">${brl(custo)}</div>
+          <div style="font-size:17px;font-weight:700;color:var(--gold)">${brl(custo)}</div>
           <div style="font-size:11px;color:var(--muted)">${brl(custoM2)}/m²</div>
         </div>
-        <div style="background:var(--surface2);border-radius:8px;padding:10px;">
-          <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:4px;">Preço Venda</div>
-          <div style="font-size:18px;font-weight:700;color:#27c482">${brl(preco)}</div>
-          <div style="font-size:11px;color:var(--muted)">${brl(precoM2)}/m²</div>
-        </div>
-      </div>
-    </div>`;
-  }).join('');
-
-  // Comparison table
-  if (S.modelos.length >= 2) {
-    document.getElementById('modelosCompare').style.display = '';
-    const allCats = [...new Set(S.items.map(i => i.categoria))].sort();
-    const thead = document.getElementById('compareThead');
-    const tbody = document.getElementById('compareTbody');
-    thead.innerHTML = '<th>Categoria</th>' + S.modelos.map(m =>
-      `<th style="text-align:right">${esc(m.nome)}<br><span style="font-size:10px;font-weight:400;color:var(--muted)">${m.area}m²</span></th>`
-    ).join('');
-    tbody.innerHTML = allCats.map(cat => {
-      const vals = S.modelos.map(m => {
-        const cs = calcModeloCats(m.area);
-        return cs[cat] || 0;
-      });
-      return `<tr>
-        <td><span class="badge" style="background:${catColor(cat)}22;color:${catColor(cat)}">${esc(cat)}</span></td>
-        ${vals.map(v => `<td class="r">${brl(v)}</td>`).join('')}
-      </tr>`;
-    }).join('') +
-    `<tr style="border-top:2px solid var(--border);font-weight:700;">
-      <td>TOTAL</td>
-      ${S.modelos.map(m => `<td class="r" style="color:var(--gold)">${brl(calcModeloTotal(m.area))}</td>`).join('')}
-    </tr>
-    <tr style="font-weight:700;">
-      <td>PREÇO VENDA</td>
-      ${S.modelos.map(m => `<td class="r" style="color:#27c482">${brl(calcPrecoVenda(calcModeloTotal(m.area), m.margem||25))}</td>`).join('')}
-    </tr>`;
-  } else {
-    document.getElementById('modelosCompare').style.display = 'none';
-  }
-}
-
-function openAddModelo() {
-  S.modeloEditId = null;
-  document.getElementById('modeloModalTitle').textContent = 'Novo Modelo';
-  document.getElementById('mNome').value = '';
-  document.getElementById('mArea').value = '';
-  document.getElementById('mMargem').value = '25';
-  document.getElementById('modeloModal').classList.add('open');
-  setTimeout(() => document.getElementById('mNome').focus(), 50);
-}
-
-function editModelo(id) {
-  const m = S.modelos.find(x => x.id === id);
-  if (!m) return;
-  S.modeloEditId = id;
-  document.getElementById('modeloModalTitle').textContent = 'Editar Modelo';
-  document.getElementById('mNome').value = m.nome;
-  document.getElementById('mArea').value = m.area;
-  document.getElementById('mMargem').value = m.margem || 25;
-  document.getElementById('modeloModal').classList.add('open');
-  setTimeout(() => document.getElementById('mNome').focus(), 50);
-}
-
-function saveModelo() {
-  const nome   = document.getElementById('mNome').value.trim();
-  const area   = parseFloat(document.getElementById('mArea').value);
-  const margem = parseFloat(document.getElementById('mMargem').value) || 25;
-  if (!nome || !area || area <= 0) { toast('Preencha nome e área', 'err'); return; }
-  if (S.modeloEditId !== null) {
-    const idx = S.modelos.findIndex(x => x.id === S.modeloEditId);
-    if (idx >= 0) S.modelos[idx] = { ...S.modelos[idx], nome, area, margem };
-    toast('Modelo atualizado!');
-  } else {
-    const newId = Date.now();
-    S.modelos.push({ id: newId, nome, area, margem });
-    toast('Modelo adicionado!');
-  }
-  S.modeloEditId = null;
-  save();
-  closeModal('modeloModal');
-  renderModelos();
-}
-
-function delModelo(id) {
-  if (!confirm('Excluir este modelo?')) return;
-  S.modelos = S.modelos.filter(x => x.id !== id);
-  save(); renderModelos(); toast('Modelo excluído');
-}
-
-// ── INIT ──────────────────────────────────────────────────────────────────────
-load();
-sbLoadAll(); // Load from cloud on startup
-</script>
-</body>
-</html>
+        <div style
