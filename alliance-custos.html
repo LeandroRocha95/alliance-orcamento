@@ -233,6 +233,10 @@ select.sel:focus{border-color:var(--gold)}
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
       Simulador
     </button>
+    <button class="nav-btn" onclick="goTo('modelos')">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+      Modelos
+    </button>
     <button class="nav-btn" onclick="goTo('config')">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>
       Configurações
@@ -369,6 +373,65 @@ select.sel:focus{border-color:var(--gold)}
 </div>
 
 <!-- CONFIG -->
+
+<!-- ══════ MODELOS DE CASA ══════ -->
+<div class="page" id="page-modelos">
+  <div class="section-head" style="margin-bottom:20px;">
+    <div>
+      <div class="section-title">Modelos de Casa</div>
+      <div style="font-size:13px;color:var(--muted);margin-top:4px;">Calcule o custo para diferentes metragens usando sua base de itens cadastrada.</div>
+    </div>
+    <button class="btn btn-gold btn-sm" onclick="openAddModelo()">+ Novo Modelo</button>
+  </div>
+
+  <!-- Comparação rápida -->
+  <div id="modelosGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin-bottom:32px;"></div>
+
+  <!-- Tabela comparativa -->
+  <div id="modelosCompare" style="display:none;">
+    <div class="section-head" style="margin-bottom:12px;">
+      <div class="section-title" style="font-size:15px;">Comparação entre Modelos</div>
+    </div>
+    <div class="table-box" style="overflow-x:auto;">
+      <table>
+        <thead><tr id="compareThead"></tr></thead>
+        <tbody id="compareTbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL NOVO MODELO -->
+<div class="overlay" id="modeloModal">
+  <div class="modal" style="max-width:420px;">
+    <div class="modal-head">
+      <div class="modal-title" id="modeloModalTitle">Novo Modelo</div>
+      <button class="modal-x" onclick="closeModal('modeloModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="field-row">
+        <label class="field-label">Nome do Modelo</label>
+        <input class="field-inp" id="mNome" placeholder="Ex: Casa 60m² Padrão" style="width:100%">
+      </div>
+      <div class="field-row" style="margin-top:12px;">
+        <label class="field-label">Área Total (m²)</label>
+        <input class="field-inp" id="mArea" type="number" min="1" placeholder="Ex: 60" style="width:100%">
+      </div>
+      <div class="field-row" style="margin-top:12px;">
+        <label class="field-label">Margem de Lucro (%)</label>
+        <input class="field-inp" id="mMargem" type="number" min="0" max="100" placeholder="Ex: 25" style="width:100%">
+      </div>
+      <div style="background:var(--surface2);border-radius:8px;padding:12px;margin-top:14px;font-size:12px;color:var(--muted);line-height:1.6;">
+        💡 Itens cadastrados como <strong style="color:var(--text)">por m²</strong> serão multiplicados pela área. Itens por <strong style="color:var(--text)">unidade</strong> mantêm sua quantidade fixa.
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline btn-sm" onclick="closeModal('modeloModal')">Cancelar</button>
+      <button class="btn btn-gold btn-sm" onclick="saveModelo()">Salvar Modelo</button>
+    </div>
+  </div>
+</div>
+
 <div class="page" id="page-config">
   <div class="settings-wrap">
     <div class="setting-block">
@@ -469,7 +532,7 @@ const SIM_DEFAULTS=[
 ];
 
 // ── STATE ─────────────────────────────────────────────────────────────────────
-let S = {items:[],area:42,history:[],simRows:null,scenarios:null,activeScen:null,editId:null,delId:null};
+let S = {items:[],area:42,history:[],simRows:null,scenarios:null,activeScen:null,editId:null,delId:null,modelos:[],modeloEditId:null};
 
 function save(){
   localStorage.setItem('ac2', JSON.stringify(S));
@@ -487,6 +550,9 @@ function load(){
       {name:'Conservador',rows:mkScenRows(15),area:42},
       {name:'Moderado',   rows:mkScenRows(25),area:42},
       {name:'Agressivo',  rows:mkScenRows(35),area:42},
+    ];
+  if(!S.modelos) S.modelos=[
+      {id:1, nome:'Casa 42m² (Atual)', area:42, margem:25}
     ];
   }catch(e){ S.items=DEFAULT_ITEMS.map((x,i)=>({...x,id:i+1})); }
 }
@@ -522,6 +588,7 @@ function goTo(id){
   if(id==='categorias') renderCats();
   if(id==='simulador') renderSim();
   if(id==='config') renderConfig();
+  if(id==='modelos') renderModelos();
 }
 
 // ── DASHBOARD ─────────────────────────────────────────────────────────────────
@@ -956,6 +1023,152 @@ async function sbLoadAll() {
     setSyncStatus('Sem conexão — usando dados locais', '#7a7f9a');
     console.warn('Supabase load failed, using localStorage:', e);
   }
+}
+
+
+// ═══════════════════════════════════════════════════
+// MODELOS DE CASA
+// ═══════════════════════════════════════════════════
+
+function calcModelo(area) {
+  // For each item: if unit is m² multiply by area ratio, else keep fixed qty
+  const ratio = area / (S.area || 42);
+  return S.items.map(i => {
+    const isM2 = i.unidade === 'm²' || i.unidade === 'm2' || (!i.unidade && i.qty > 1);
+    const qty = isM2 ? i.qty * ratio : i.qty;
+    return { ...i, qty_calc: qty, total_calc: qty * i.preco_unit };
+  });
+}
+
+function calcModeloTotal(area) {
+  return calcModelo(area).reduce((s, i) => s + i.total_calc, 0);
+}
+
+function calcModeloCats(area) {
+  const items = calcModelo(area);
+  const m = {};
+  items.forEach(i => { m[i.categoria] = (m[i.categoria] || 0) + i.total_calc; });
+  return m;
+}
+
+function calcPrecoVenda(custo, margem) {
+  return custo / (1 - (margem / 100));
+}
+
+function renderModelos() {
+  const grid = document.getElementById('modelosGrid');
+  if (!S.modelos || !S.modelos.length) {
+    grid.innerHTML = '<div style="color:var(--muted);font-size:13px;">Nenhum modelo cadastrado.</div>';
+    document.getElementById('modelosCompare').style.display = 'none';
+    return;
+  }
+
+  grid.innerHTML = S.modelos.map(m => {
+    const custo = calcModeloTotal(m.area);
+    const margem = m.margem || 25;
+    const preco = calcPrecoVenda(custo, margem);
+    const custoM2 = custo / m.area;
+    const precoM2 = preco / m.area;
+    return `<div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px;position:relative;">
+      <div style="position:absolute;top:12px;right:12px;display:flex;gap:6px;">
+        <button onclick="editModelo(${m.id})" style="background:none;border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:3px 8px;cursor:pointer;font-size:11px;">✏️</button>
+        <button onclick="delModelo(${m.id})" style="background:none;border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:3px 8px;cursor:pointer;font-size:11px;">🗑</button>
+      </div>
+      <div style="font-family:inherit;font-size:16px;font-weight:700;color:var(--text);margin-bottom:4px;">${esc(m.nome)}</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:16px;">${m.area} m² · Margem: ${margem}%</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div style="background:var(--surface2);border-radius:8px;padding:10px;">
+          <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:4px;">Custo Total</div>
+          <div style="font-size:18px;font-weight:700;color:var(--gold)">${brl(custo)}</div>
+          <div style="font-size:11px;color:var(--muted)">${brl(custoM2)}/m²</div>
+        </div>
+        <div style="background:var(--surface2);border-radius:8px;padding:10px;">
+          <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:4px;">Preço Venda</div>
+          <div style="font-size:18px;font-weight:700;color:#27c482">${brl(preco)}</div>
+          <div style="font-size:11px;color:var(--muted)">${brl(precoM2)}/m²</div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Comparison table
+  if (S.modelos.length >= 2) {
+    document.getElementById('modelosCompare').style.display = '';
+    const allCats = [...new Set(S.items.map(i => i.categoria))].sort();
+    const thead = document.getElementById('compareThead');
+    const tbody = document.getElementById('compareTbody');
+    thead.innerHTML = '<th>Categoria</th>' + S.modelos.map(m =>
+      `<th style="text-align:right">${esc(m.nome)}<br><span style="font-size:10px;font-weight:400;color:var(--muted)">${m.area}m²</span></th>`
+    ).join('');
+    tbody.innerHTML = allCats.map(cat => {
+      const vals = S.modelos.map(m => {
+        const cs = calcModeloCats(m.area);
+        return cs[cat] || 0;
+      });
+      return `<tr>
+        <td><span class="badge" style="background:${catColor(cat)}22;color:${catColor(cat)}">${esc(cat)}</span></td>
+        ${vals.map(v => `<td class="r">${brl(v)}</td>`).join('')}
+      </tr>`;
+    }).join('') +
+    `<tr style="border-top:2px solid var(--border);font-weight:700;">
+      <td>TOTAL</td>
+      ${S.modelos.map(m => `<td class="r" style="color:var(--gold)">${brl(calcModeloTotal(m.area))}</td>`).join('')}
+    </tr>
+    <tr style="font-weight:700;">
+      <td>PREÇO VENDA</td>
+      ${S.modelos.map(m => `<td class="r" style="color:#27c482">${brl(calcPrecoVenda(calcModeloTotal(m.area), m.margem||25))}</td>`).join('')}
+    </tr>`;
+  } else {
+    document.getElementById('modelosCompare').style.display = 'none';
+  }
+}
+
+function openAddModelo() {
+  S.modeloEditId = null;
+  document.getElementById('modeloModalTitle').textContent = 'Novo Modelo';
+  document.getElementById('mNome').value = '';
+  document.getElementById('mArea').value = '';
+  document.getElementById('mMargem').value = '25';
+  document.getElementById('modeloModal').classList.add('open');
+  setTimeout(() => document.getElementById('mNome').focus(), 50);
+}
+
+function editModelo(id) {
+  const m = S.modelos.find(x => x.id === id);
+  if (!m) return;
+  S.modeloEditId = id;
+  document.getElementById('modeloModalTitle').textContent = 'Editar Modelo';
+  document.getElementById('mNome').value = m.nome;
+  document.getElementById('mArea').value = m.area;
+  document.getElementById('mMargem').value = m.margem || 25;
+  document.getElementById('modeloModal').classList.add('open');
+  setTimeout(() => document.getElementById('mNome').focus(), 50);
+}
+
+function saveModelo() {
+  const nome   = document.getElementById('mNome').value.trim();
+  const area   = parseFloat(document.getElementById('mArea').value);
+  const margem = parseFloat(document.getElementById('mMargem').value) || 25;
+  if (!nome || !area || area <= 0) { toast('Preencha nome e área', 'err'); return; }
+  if (S.modeloEditId !== null) {
+    const idx = S.modelos.findIndex(x => x.id === S.modeloEditId);
+    if (idx >= 0) S.modelos[idx] = { ...S.modelos[idx], nome, area, margem };
+    toast('Modelo atualizado!');
+  } else {
+    const newId = Date.now();
+    S.modelos.push({ id: newId, nome, area, margem });
+    toast('Modelo adicionado!');
+  }
+  S.modeloEditId = null;
+  save();
+  closeModal('modeloModal');
+  renderModelos();
+}
+
+function delModelo(id) {
+  if (!confirm('Excluir este modelo?')) return;
+  S.modelos = S.modelos.filter(x => x.id !== id);
+  save(); renderModelos(); toast('Modelo excluído');
 }
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
