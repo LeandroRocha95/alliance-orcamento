@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alliance Casas · Custos</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0c0e14;
+  --surface:#13161f;
+  --surface2:#1a1e2b;
+  --surface3:#222638;
+  --border:#2d3348;
+  --text:#eef0f6;
+  --muted:#5a6282;
+  --soft:#8892b0;
+  --gold:#f5a623;
+  --gold2:#e8920d;
+  --green:#27c482;
+  --red:#e55;
+  --blue:#4b9fff;
+  --purple:#9b7fff;
+  --r:10px;
+}
+body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;line-height:1.6}
+
+/* ── HEADER ── */
+.header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 28px;display:flex;align-items:center;gap:20px}
+.logo{display:flex;align-items:center;gap:10px;padding:14px 0;border-right:1px solid var(--border);padding-right:20px;margin-right:4px;white-space:nowrap}
+.logo-box{width:34px;height:34px;background:var(--gold);border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:#0c0e14}
+.logo-name{font-weight:700;font-size:15px}
+.logo-sub{font-size:10px;color:var(--muted);letter-spacing:.5px}
+.nav{display:flex;gap:2px;flex:1}
+.nav-btn{padding:18px 16px;background:none;border:none;color:var(--soft);font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap;display:flex;align-items:center;gap:6px}
+.nav-btn:hover{color:var(--text)}
+.nav-btn.active{color:var(--gold);border-bottom-color:var(--gold)}
+.nav-btn svg{width:15px;height:15px;flex-shrink:0}
+.header-right{display:flex;gap:8px;margin-left:auto}
+
+/* ── LAYOUT ── */
+.page{display:none;padding:28px;max-width:1400px;margin:0 auto}
+.page.active{display:block}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;border:none;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;transition:all .15s}
+.btn svg{width:14px;height:14px}
+.btn-gold{background:var(--gold);color:#0c0e14}.btn-gold:hover{background:var(--gold2)}
+.btn-outline{background:transparent;color:var(--soft);border:1px solid var(--border)}.btn-outline:hover{border-color:var(--gold);color:var(--gold)}
+.btn-sm{padding:6px 12px;font-size:12px}
+.btn-danger{background:rgba(238,85,85,.12);color:var(--red);border:1px solid rgba(238,85,85,.25)}.btn-danger:hover{background:rgba(238,85,85,.2)}
+
+/* ── CARDS ── */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:28px}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px;position:relative;overflow:hidden}
+.kpi::after{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.kpi.gold::after{background:var(--gold)}.kpi.green::after{background:var(--green)}.kpi.blue::after{background:var(--blue)}.kpi.purple::after{background:var(--purple)}
+.kpi-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.kpi-val{font-size:26px;font-weight:800;line-height:1}
+.kpi-sub{font-size:12px;color:var(--muted);margin-top:5px}
+
+/* ── CAT GRID ── */
+.cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.cat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px;cursor:pointer;transition:all .15s}
+.cat-card:hover{border-color:var(--gold);transform:translateY(-1px);box-shadow:0 4px 20px rgba(0,0,0,.3)}
+.cat-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.cat-name{font-weight:700;font-size:13px;line-height:1.3}
+.cat-val{font-weight:800;font-size:15px;white-space:nowrap}
+.cat-meta{font-size:11px;color:var(--muted);margin-bottom:10px}
+.bar{height:4px;background:var(--surface3);border-radius:2px;overflow:hidden}
+.bar-inner{height:100%;border-radius:2px;transition:width .5s ease}
+
+/* ── TABLE ── */
+.section-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.section-title{font-size:15px;font-weight:700}
+.table-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+table{width:100%;border-collapse:collapse}
+thead{background:var(--surface2)}
+th{padding:10px 14px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);font-weight:600;border-bottom:1px solid var(--border)}
+th.r,td.r{text-align:right}
+tr{border-bottom:1px solid var(--border)}
+tr:last-child{border-bottom:none}
+tbody tr:hover{background:rgba(255,255,255,.02)}
+td{padding:10px 14px;font-size:13px}
+.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600}
+.actions{display:flex;gap:6px;justify-content:flex-end}
+.icon-btn{width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:var(--muted);cursor:pointer;transition:all .15s}
+.icon-btn svg{width:13px;height:13px}
+.icon-btn.ed:hover{border-color:var(--blue);color:var(--blue);background:rgba(75,159,255,.1)}
+.icon-btn.del:hover{border-color:var(--red);color:var(--red);background:rgba(238,85,85,.1)}
+
+/* ── FILTERS ── */
+.filters{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+.search-wrap{position:relative;flex:1;min-width:200px}
+.search-wrap svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted);width:14px;height:14px}
+.search-input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:9px 12px 9px 34px;color:var(--text);font-family:inherit;font-size:13px;outline:none}
+.search-input:focus{border-color:var(--gold)}
+.search-input::placeholder{color:var(--muted)}
+select.sel{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-family:inherit;font-size:13px;outline:none;cursor:pointer}
+select.sel:focus{border-color:var(--gold)}
+
+/* ── SIMULATOR ── */
+.sim-grid{display:grid;grid-template-columns:360px 1fr;gap:24px;align-items:start}
+@media(max-width:900px){.sim-grid{grid-template-columns:1fr}}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:16px}
+.panel-head{padding:14px 18px;border-bottom:1px solid var(--border);font-weight:700;font-size:13px;display:flex;justify-content:space-between;align-items:center}
+.panel-head span{font-size:11px;color:var(--muted);font-weight:400}
+.panel-body{padding:16px 18px}
+.cost-row{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)}
+.cost-row:last-child{border-bottom:none}
+.cr-label{font-size:13px;font-weight:600}
+.cr-sub{font-size:11px;color:var(--muted)}
+.toggle{display:flex;background:var(--surface2);border-radius:6px;padding:2px;gap:2px}
+.tgl-btn{padding:4px 9px;border:none;background:none;color:var(--muted);font-family:inherit;font-size:11px;font-weight:700;cursor:pointer;border-radius:4px;transition:all .15s}
+.tgl-btn.on{background:var(--gold);color:#0c0e14}
+.val-wrap{position:relative}
+.val-wrap .pfx{position:absolute;left:9px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--muted);pointer-events:none}
+.val-wrap input{width:80px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:7px 8px 7px 24px;color:var(--text);font-family:inherit;font-size:13px;font-weight:700;outline:none}
+.val-wrap input:focus{border-color:var(--gold)}
+
+.result-card{background:linear-gradient(135deg,#161b2e 0%,#0c0e14 100%);border:1px solid var(--border);border-radius:var(--r);padding:24px;margin-bottom:16px;position:relative;overflow:hidden}
+.result-card::before{content:'';position:absolute;top:-60px;right:-60px;width:200px;height:200px;background:radial-gradient(circle,rgba(245,166,35,.1) 0%,transparent 70%);pointer-events:none}
+.rc-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.rc-price{font-size:44px;font-weight:800;color:var(--gold);line-height:1;margin-bottom:4px}
+.rc-sub{font-size:13px;color:var(--soft)}
+.rc-divider{height:1px;background:var(--border);margin:16px 0}
+.rc-total{display:flex;justify-content:space-between;align-items:center}
+.rc-total-label{font-size:13px;color:var(--soft)}
+.rc-total-val{font-size:20px;font-weight:800}
+
+.breakdown{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.bk-item{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:11px 14px;display:flex;justify-content:space-between;align-items:center}
+.bk-item.base{border-color:rgba(75,159,255,.3);background:rgba(75,159,255,.05)}
+.bk-item.total{border-color:rgba(245,166,35,.3);background:rgba(245,166,35,.05)}
+.bk-left{display:flex;align-items:center;gap:10px}
+.bk-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.bk-name{font-size:13px;font-weight:600}
+.bk-hint{font-size:11px;color:var(--muted)}
+.bk-right{text-align:right}
+.bk-val{font-size:14px;font-weight:700}
+.bk-m2{font-size:11px;color:var(--muted)}
+
+.sc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px}
+@media(max-width:700px){.sc-grid{grid-template-columns:1fr}}
+.sc-card{background:var(--surface);border:2px solid var(--border);border-radius:var(--r);padding:16px;cursor:pointer;transition:all .15s;position:relative}
+.sc-card:hover{border-color:var(--soft)}
+.sc-card.active{border-color:var(--gold)}
+.sc-card.active::after{content:'✓';position:absolute;top:10px;right:12px;font-size:11px;font-weight:800;color:var(--gold)}
+.sc-name{font-size:12px;font-weight:700;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px}
+.sc-price{font-size:22px;font-weight:800;color:var(--gold)}
+.sc-info{font-size:11px;color:var(--muted);margin-top:2px}
+.sc-tag{display:inline-block;margin-top:8px;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700}
+.tag-low{background:rgba(39,196,130,.15);color:var(--green)}
+.tag-mid{background:rgba(245,166,35,.15);color:var(--gold)}
+.tag-high{background:rgba(155,127,255,.15);color:var(--purple)}
+
+/* ── SETTINGS ── */
+.settings-wrap{max-width:620px}
+.setting-block{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:22px;margin-bottom:16px}
+.setting-block h3{font-size:15px;font-weight:700;margin-bottom:4px}
+.setting-block p{font-size:13px;color:var(--muted);margin-bottom:18px}
+.inline-form{display:flex;gap:10px;align-items:flex-end}
+.field{flex:1}
+.field label{display:block;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px}
+.field input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-family:inherit;font-size:14px;outline:none}
+.field input:focus{border-color:var(--gold)}
+.history-list{display:flex;flex-direction:column;gap:8px;margin-top:16px}
+.hist-item{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center}
+.hist-date{font-size:11px;color:var(--muted);margin-top:2px}
+.htag{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700}
+.htag-up{background:rgba(238,85,85,.15);color:var(--red)}
+.htag-dn{background:rgba(39,196,130,.15);color:var(--green)}
+.htag-eq{background:var(--surface3);color:var(--muted)}
+
+/* ── MODALS ── */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:100;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.overlay.open{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:26px;width:460px;max-width:94vw;max-height:90vh;overflow-y:auto}
+.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px}
+.modal-title{font-size:17px;font-weight:800}
+.modal-x{width:30px;height:30px;display:flex;align-items:center;justify-content:center;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:var(--muted);cursor:pointer;font-size:17px;line-height:1}
+.modal-x:hover{color:var(--text)}
+.fg{margin-bottom:14px}
+.fg label{display:block;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:5px}
+.fg input,.fg select{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-family:inherit;font-size:14px;outline:none}
+.fg input:focus,.fg select:focus{border-color:var(--gold)}
+.fg-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.modal-foot{display:flex;gap:8px;justify-content:flex-end;margin-top:20px}
+
+/* ── TOAST ── */
+.toasts{position:fixed;bottom:20px;right:20px;z-index:200;display:flex;flex-direction:column;gap:7px}
+.toast{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:11px 15px;font-size:13px;display:flex;align-items:center;gap:8px;animation:tin .2s ease;min-width:200px}
+.toast.ok{border-color:rgba(39,196,130,.4)}.toast.ok svg{color:var(--green)}
+.toast.err{border-color:rgba(238,85,85,.4)}
+@keyframes tin{from{transform:translateX(16px);opacity:0}to{transform:translateX(0);opacity:1}}
+
+/* ── MISC ── */
+.back-btn{display:inline-flex;align-items:center;gap:6px;background:none;border:none;color:var(--muted);font-family:inherit;font-size:13px;cursor:pointer;margin-bottom:18px}
+.back-btn:hover{color:var(--text)}
+.empty{text-align:center;padding:44px;color:var(--muted)}
+.divider{height:1px;background:var(--border);margin:18px 0}
+.count-label{font-size:12px;color:var(--muted);text-align:right;margin-top:10px}
+.confirm-sub{font-size:14px;color:var(--soft);margin-bottom:6px}
+.confirm-name{font-weight:700;word-break:break-word}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="logo">
+    <div class="logo-box">AC</div>
+    <div>
+      <div class="logo-name">Alliance Casas</div>
+      <div class="logo-sub">Gestão de Custos</div>
+    </div>
+  </div>
+  <nav class="nav">
+    <button class="nav-btn active" onclick="goTo('dashboard')">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h4a1 1 0 011 1v5a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v2a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zM14 13a1 1 0 011-1h4a1 1 0 011 1v6a1 1 0 01-1 1h-4a1 1 0 01-1-1v-6z"/></svg>
+      Dashboard
+    </button>
+    <button class="nav-btn" onclick="goTo('itens')">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+      Itens
+    </button>
+    <button class="nav-btn" onclick="goTo('categorias')">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a2 2 0 014-4z"/></svg>
+      Categorias
+    </button>
+    <button class="nav-btn" onclick="goTo('simulador')">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+      Simulador
+    </button>
+    <button class="nav-btn" onclick="goTo('config')">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>
+      Configurações
+    </button>
+  </nav>
+  <div class="header-right">
+    <button class="btn btn-outline btn-sm" onclick="exportCSV()">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+      CSV
+    </button>
+    <button class="btn btn-gold btn-sm" onclick="openAdd()">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+      Novo Item
+    </button>
+  </div>
+</header>
+
+<!-- DASHBOARD -->
+<div class="page active" id="page-dashboard">
+  <div class="kpi-grid" id="kpiGrid"></div>
+  <div class="section-head">
+    <div class="section-title">Custo por Categoria</div>
+    <div style="font-size:12px;color:var(--muted)">Clique para detalhar</div>
+  </div>
+  <div class="cat-grid" id="dashCatGrid"></div>
+</div>
+
+<!-- ITENS -->
+<div class="page" id="page-itens">
+  <div class="filters">
+    <div class="search-wrap">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/></svg>
+      <input class="search-input" id="srch" placeholder="Buscar item..." oninput="renderItens()">
+    </div>
+    <select class="sel" id="catFil" onchange="renderItens()"><option value="">Todas as categorias</option></select>
+    <select class="sel" id="sortFil" onchange="renderItens()">
+      <option value="nome">Nome A→Z</option>
+      <option value="td">Total ↓</option>
+      <option value="ta">Total ↑</option>
+      <option value="pd">Preço Unit. ↓</option>
+      <option value="cat">Categoria</option>
+    </select>
+  </div>
+  <div class="table-box">
+    <table>
+      <thead><tr>
+        <th>Item</th><th>Categoria</th><th class="r">Qtd</th><th class="r">Preço Unit.</th><th class="r">Total</th><th class="r">Ações</th>
+      </tr></thead>
+      <tbody id="itensBody"></tbody>
+    </table>
+  </div>
+  <div class="count-label" id="countLabel"></div>
+</div>
+
+<!-- CATEGORIAS -->
+<div class="page" id="page-categorias">
+  <div id="catDetail" style="display:none">
+    <button class="back-btn" onclick="closeCatDetail()">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+      Voltar
+    </button>
+    <div id="catDetailBody"></div>
+  </div>
+  <div id="catList">
+    <div class="filters">
+      <div class="search-wrap">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/></svg>
+        <input class="search-input" id="catSrch" placeholder="Buscar categoria..." oninput="renderCats()">
+      </div>
+    </div>
+    <div class="cat-grid" id="catListGrid"></div>
+  </div>
+</div>
+
+<!-- SIMULADOR -->
+<div class="page" id="page-simulador">
+  <div class="section-head" style="margin-bottom:14px">
+    <div class="section-title">Cenários Rápidos</div>
+    <div style="font-size:12px;color:var(--muted)">Clique para aplicar</div>
+  </div>
+  <div class="sc-grid" id="scenGrid"></div>
+  <div class="sim-grid">
+    <div>
+      <div class="panel">
+        <div class="panel-head">Base de Cálculo</div>
+        <div class="panel-body">
+          <div class="cost-row" style="grid-template-columns:1fr auto">
+            <div><div class="cr-label">Área da Casa</div><div class="cr-sub">m² para o cálculo</div></div>
+            <div class="val-wrap"><span class="pfx">m²</span><input type="number" id="simArea" value="42" min="1" step="0.5" oninput="calcSim()"></div>
+          </div>
+          <div style="margin-top:12px;background:var(--surface2);border-radius:8px;padding:12px;display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:12px;color:var(--muted)">Custo base (materiais)</span>
+            <span style="font-weight:800;font-size:15px;color:var(--blue)" id="simBase">—</span>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-head">Custos Adicionais <span>% = sobre custo base · R$ = fixo</span></div>
+        <div class="panel-body" id="simRows"></div>
+      </div>
+    </div>
+    <div>
+      <div class="result-card">
+        <div class="rc-label">Preço de Venda Sugerido</div>
+        <div class="rc-price" id="resM2">—</div>
+        <div class="rc-sub">por metro quadrado</div>
+        <div class="rc-divider"></div>
+        <div class="rc-total">
+          <div class="rc-total-label">Total da obra (<span id="resAreaLabel">42</span> m²)</div>
+          <div class="rc-total-val" id="resTotal">—</div>
+        </div>
+      </div>
+      <div class="section-head" style="margin-bottom:10px">
+        <div class="section-title" style="font-size:13px">Detalhamento</div>
+      </div>
+      <div class="breakdown" id="breakdown"></div>
+      <div class="divider"></div>
+      <div style="display:flex;gap:8px;justify-content:flex-end">
+        <button class="btn btn-outline btn-sm" onclick="openSaveScen()">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>
+          Salvar Cenário
+        </button>
+        <button class="btn btn-outline btn-sm" onclick="exportSim()">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+          Exportar CSV
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIG -->
+<div class="page" id="page-config">
+  <div class="settings-wrap">
+    <div class="setting-block">
+      <h3>Área da Casa</h3>
+      <p>Define o m² base para o cálculo de custo/m².</p>
+      <div class="inline-form">
+        <div class="field"><label>Área (m²)</label><input type="number" id="areaInp" min="1" step="0.5"></div>
+        <button class="btn btn-gold" onclick="saveArea()">Salvar</button>
+      </div>
+    </div>
+    <div class="setting-block">
+      <h3>Revisão Trimestral de Preços</h3>
+      <p>Registre quando atualizar os preços dos materiais.</p>
+      <button class="btn btn-outline" onclick="registerUpdate()">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+        Registrar Atualização Agora
+      </button>
+      <div class="history-list" id="histList"></div>
+    </div>
+    <div class="setting-block">
+      <h3>Dados</h3>
+      <p>Backup e restauração dos dados do sistema.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-outline" onclick="exportJSON()">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+          Exportar Backup JSON
+        </button>
+        <label class="btn btn-outline" style="cursor:pointer">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l4-4m0 0l4 4m-4-4v12"/></svg>
+          Importar JSON
+          <input type="file" accept=".json" style="display:none" onchange="importJSON(event)">
+        </label>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: ADD/EDIT -->
+<div class="overlay" id="itemModal">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="modalTitle">Novo Item</div>
+      <button class="modal-x" onclick="closeModal('itemModal')">×</button>
+    </div>
+    <div class="fg"><label>Nome do Item</label><input id="fNome" placeholder="Ex: CIMENTO 50KG CPII-Z"></div>
+    <div class="fg-row">
+      <div class="fg"><label>Categoria</label><input id="fCat" list="catSug" placeholder="Ex: Fundação e Alvenaria"><datalist id="catSug"></datalist></div>
+      <div class="fg"><label>Quantidade</label><input id="fQty" type="number" min="0" step="0.01" placeholder="30"></div>
+    </div>
+    <div class="fg"><label>Preço Unitário (R$)</label><input id="fPrice" type="number" min="0" step="0.01" placeholder="43.50"></div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" onclick="closeModal('itemModal')">Cancelar</button>
+      <button class="btn btn-gold" id="saveItemBtn" onclick="saveItem()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: DELETE -->
+<div class="overlay" id="delModal">
+  <div class="modal" style="max-width:360px">
+    <div class="modal-head"><div class="modal-title">Excluir Item</div><button class="modal-x" onclick="closeModal('delModal')">×</button></div>
+    <div class="confirm-sub">Tem certeza que deseja excluir:</div>
+    <div class="confirm-name" id="delName">—</div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" onclick="closeModal('delModal')">Cancelar</button>
+      <button class="btn btn-danger" onclick="confirmDel()">Excluir</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: SAVE SCENARIO -->
+<div class="overlay" id="scenModal">
+  <div class="modal" style="max-width:380px">
+    <div class="modal-head"><div class="modal-title">Salvar Cenário</div><button class="modal-x" onclick="closeModal('scenModal')">×</button></div>
+    <div class="fg"><label>Nome do Cenário</label><input id="scenName" placeholder="Ex: Margem Conservadora"></div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" onclick="closeModal('scenModal')">Cancelar</button>
+      <button class="btn btn-gold" onclick="confirmSaveScen()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toasts" id="toasts"></div>
+
+<script>
+// ── DATA ─────────────────────────────────────────────────────────────────────
+const DEFAULT_ITEMS = [{"qty":1,"nome":"ARAME RECUZIDO N18","categoria":"Fundação e Alvenaria","preco_unit":14.47},{"qty":1,"nome":"AREIA FINA PARA REBOCO","categoria":"Minérios","preco_unit":212.5},{"qty":1,"nome":"AREIA MÉDIA DE ASSENTAMENTO","categoria":"Minérios","preco_unit":170},{"qty":16,"nome":"BARRO PARA ATERRO","categoria":"Minérios","preco_unit":80},{"qty":6,"nome":"BRITADO PARA CONCRETO (AREIA + BRITA 0)","categoria":"Minérios","preco_unit":155},{"qty":1,"nome":"BROXA GRANDE","categoria":"Fundação e Alvenaria","preco_unit":14.78},{"qty":1,"nome":"CAIXA SIFONADA 100X100X50","categoria":"Fundação e Alvenaria","preco_unit":15.58},{"qty":5,"nome":"CANAFLEX PRETO 1.1/4\"","categoria":"Fundação e Alvenaria","preco_unit":2.86},{"qty":30,"nome":"CIMENTO 50KG CPII-Z - VOTORAN","categoria":"Fundação e Alvenaria","preco_unit":43.5},{"qty":7,"nome":"FERRO 5/16 12m","categoria":"Fundação e Alvenaria","preco_unit":36.6},{"qty":1,"nome":"JOELHO ESGOTO 100mm 90º","categoria":"Fundação e Alvenaria","preco_unit":6.14},{"qty":3,"nome":"JOELHO ESGOTO 40mm 90º","categoria":"Fundação e Alvenaria","preco_unit":1.35},{"qty":4,"nome":"JOELHO ESGOTO 50mm 90º","categoria":"Fundação e Alvenaria","preco_unit":3.4},{"qty":1,"nome":"NEUTROL 900ml","categoria":"Fundação e Alvenaria","preco_unit":36.16},{"qty":10,"nome":"SARRAFO CAIXARIA BRUTO PINUS 2,5x5 - 3M","categoria":"Fundação e Alvenaria","preco_unit":4.9},{"qty":700,"nome":"TIJOLO 8F 9X19X19","categoria":"Fundação e Alvenaria","preco_unit":0.85},{"qty":2,"nome":"TUBO ESGOTO BRANCO 100mm","categoria":"Fundação e Alvenaria","preco_unit":15.16},{"qty":3,"nome":"TUBO ESGOTO BRANCO 40mm","categoria":"Fundação e Alvenaria","preco_unit":7.9},{"qty":4,"nome":"TUBO ESGOTO BRANCO 50mm","categoria":"Fundação e Alvenaria","preco_unit":12.26},{"qty":5,"nome":"FERRO 5/16 12m","categoria":"Fundação e Alvenaria","preco_unit":36.6},{"qty":12,"nome":"CX LUZ AMARELA 4X2","categoria":"Fundação e Alvenaria","preco_unit":2.98},{"qty":1,"nome":"JOELHO 90 SOLD 25mm","categoria":"Hidraulica","preco_unit":0.54},{"qty":20,"nome":"LONA PRETA","categoria":"Fundação e Alvenaria","preco_unit":5.64},{"qty":2,"nome":"PREGO C/C POL 17X27","categoria":"Fundação e Alvenaria","preco_unit":14.64},{"qty":200,"nome":"BLOCO CONCRETO 14X19X39 Com Encaixe Estrutural","categoria":"Fundação e Alvenaria","preco_unit":3.95},{"qty":30,"nome":"CORRUGADO AMARELO 3/4","categoria":"Fundação e Alvenaria","preco_unit":1.59},{"qty":1,"nome":"VEDA REBOCO 5 Litros - QUEVEKS","categoria":"Fundação e Alvenaria","preco_unit":153.44},{"qty":6,"nome":"TUBO SOLD 25mm","categoria":"Hidraulica","preco_unit":4.77},{"qty":20,"nome":"TABUA CAXARIA PINUS 20CM 3m","categoria":"Fundação e Alvenaria","preco_unit":19.6},{"qty":30,"nome":"PARAFUSOS 6,0x90mm C/ BUCHA 8","categoria":"Insumos de Estrutura e Cobertura","preco_unit":0.39},{"qty":4,"nome":"PREGO C/C GALV 16X24 (SARRAFOS)","categoria":"Insumos de Estrutura e Cobertura","preco_unit":14.98},{"qty":1,"nome":"PREGO C/C GALV 17X27","categoria":"Insumos de Estrutura e Cobertura","preco_unit":13.66},{"qty":2,"nome":"PREGO C/C GALV 18X36 (CAIBROS)","categoria":"Insumos de Estrutura e Cobertura","preco_unit":14.34},{"qty":2,"nome":"PREGO S/C GALV 18X36 (caibro frisado)","categoria":"Insumos de Estrutura e Cobertura","preco_unit":14.34},{"qty":1,"nome":"PREGO C/C GALV 19X39 (pé + terças)","categoria":"Insumos de Estrutura e Cobertura","preco_unit":14.34},{"qty":1,"nome":"QUADRO DE DISTRIBUIÇÃO 12/18 EMBUTIR","categoria":"Elétrica","preco_unit":53.29},{"qty":1,"nome":"MANTA TERMICA (25 m²)","categoria":"Insumos de Estrutura e Cobertura","preco_unit":75},{"qty":2,"nome":"PINO F40 (CX) (Frontal)","categoria":"Insumos de Estrutura e Cobertura","preco_unit":37.2},{"qty":1,"nome":"PINO F25 (CX) (Forro + acabamento)","categoria":"Insumos de Estrutura e Cobertura","preco_unit":25.56},{"qty":14,"nome":"FORRO ANGELIM (EITÃO)","categoria":"Forro Madeira","preco_unit":62},{"qty":20,"nome":"FORRO ANGELIM (ELEVADO)","categoria":"Forro Madeira","preco_unit":62},{"qty":1,"nome":"FITA ALUMINIO (ROLO)","categoria":"Insumos de Estrutura e Cobertura","preco_unit":10},{"qty":6,"nome":"CAIBRO PEROBA 4,5x9 (Beneficiado Inteiro) 2,5m","categoria":"Madeiras Quadradas","preco_unit":41.25},{"qty":49,"nome":"CAIBRO PEROBA 4,5x9 (Beneficiado Inteiro) 3m","categoria":"Madeiras Quadradas","preco_unit":49.5},{"qty":38,"nome":"CAIBRO PEROBA 4,5x9 (Beneficiado Inteiro) 4m","categoria":"Madeiras Quadradas","preco_unit":66},{"qty":6,"nome":"CAIBRO PEROBA 4,5x9 (Beneficiado Inteiro) 5m","categoria":"Madeiras Quadradas","preco_unit":82.5},{"qty":23,"nome":"CAIBRO PEROBA 4,5x9 (Com Fresa e Beneficiado Inteiro) 3m","categoria":"Madeiras Quadradas","preco_unit":49.5},{"qty":1,"nome":"CAIBRO PEROBA 5x15 (Beneficiado Inteiro) 4m","categoria":"Madeiras Quadradas","preco_unit":126},{"qty":1,"nome":"PÉ DIREITO PEROBA 15x15 (Beneficiado Inteiro) 2,5m","categoria":"Madeiras Quadradas","preco_unit":280},{"qty":80,"nome":"SARRAFO PEROBA 2,5x5 (Beneficiado Inteiro) 4m","categoria":"Madeiras Quadradas","preco_unit":18.8},{"qty":20,"nome":"SARRAFO PEROBA 2,5x5 (Beneficiado Inteiro) 3m","categoria":"Madeiras Quadradas","preco_unit":14.1},{"qty":30,"nome":"SARRAFO PEROBA 4,5x4,5 (Beneficiado Inteiro) 3m","categoria":"Madeiras Quadradas","preco_unit":27},{"qty":1300,"nome":"TELHA PORTUGUESA ISOPPO (NATURAL)","categoria":"Telhas","preco_unit":1.5},{"qty":40,"nome":"TELHA DUPLA PORTUGUESA ISOPPO (NATURAL)","categoria":"Telhas","preco_unit":7.9},{"qty":30,"nome":"TELHÃO PORTUGUESA ISOPPO (NATURAL)","categoria":"Telhas","preco_unit":5},{"qty":79,"nome":"FRONTAL GRAPIA ESTREITA","categoria":"Frontal","preco_unit":110},{"qty":35,"nome":"ARGAMASSA AC2 20KG","categoria":"Insumos Cerâmica","preco_unit":13.7},{"qty":5,"nome":"FUGA CRUZ PISO 5mm","categoria":"Insumos Cerâmica","preco_unit":12.14},{"qty":42,"nome":"CERAMICA COMUM (CHÃO)","categoria":"Cerâmica","preco_unit":25},{"qty":30,"nome":"CERAMICA COMUM (PAREDE)","categoria":"Cerâmica","preco_unit":25},{"qty":14,"nome":"REJUNTES (CHÃO)","categoria":"Insumos Cerâmica","preco_unit":4.4},{"qty":10,"nome":"REJUNTES (PAREDES)","categoria":"Insumos Cerâmica","preco_unit":4.4},{"qty":42,"nome":"KIT MATERIAL DE ELÉTRICA + CABOS","categoria":"Elétrica","preco_unit":25},{"qty":42,"nome":"MÃO DE OBRA (ELETRICA)","categoria":"Mão de Obra (Elétrica)","preco_unit":22},{"qty":5,"nome":"ADAPTADOR SOLD 25x3/4","categoria":"Hidraulica","preco_unit":0.57},{"qty":1,"nome":"BOIA 3/4","categoria":"Hidraulica","preco_unit":8.31},{"qty":1,"nome":"CAIXA D'AGUA 500LT","categoria":"Hidraulica","preco_unit":218},{"qty":1,"nome":"COLA C/ PINCEL 175G","categoria":"Hidraulica","preco_unit":13.27},{"qty":3,"nome":"CURVA 90 SOLD 25mm","categoria":"Hidraulica","preco_unit":2.13},{"qty":2,"nome":"FLANGE SOLD 25mm","categoria":"Hidraulica","preco_unit":5.08},{"qty":1,"nome":"FLANGE SOLD 50mm","categoria":"Hidraulica","preco_unit":12.98},{"qty":4,"nome":"JOELHO 90 SOLD 25mm","categoria":"Hidraulica","preco_unit":0.54},{"qty":1,"nome":"JOELHO 90 SOLD 50mm","categoria":"Hidraulica","preco_unit":2.5},{"qty":4,"nome":"JOELHO AZUL 25X1/2 COM METAL","categoria":"Hidraulica","preco_unit":3.81},{"qty":1,"nome":"LIXA G150","categoria":"Hidraulica","preco_unit":3.1},{"qty":1,"nome":"LUVA AZUL 25X3/4 COM METAL","categoria":"Hidraulica","preco_unit":5.03},{"qty":3,"nome":"LUVA SOLD 25mm","categoria":"Hidraulica","preco_unit":0.52},{"qty":4,"nome":"PLUG 1/2","categoria":"Hidraulica","preco_unit":0.43},{"qty":1,"nome":"REDUÇÃO SOLD 50x25mm","categoria":"Hidraulica","preco_unit":6.8},{"qty":1,"nome":"REGISTRO SOLD ESFERA 50mm","categoria":"Hidraulica","preco_unit":19.94},{"qty":2,"nome":"REGISTRO DE GAVETA METAL 25x3/4","categoria":"Hidraulica","preco_unit":38.31},{"qty":1,"nome":"REGISTRO DE PRESSÃO METAL 25x3/4","categoria":"Hidraulica","preco_unit":38.4},{"qty":2,"nome":"TE SOLD 25mm","categoria":"Hidraulica","preco_unit":0.86},{"qty":2,"nome":"TE SOLD REDUÇÃO 50x25mm","categoria":"Hidraulica","preco_unit":6.39},{"qty":18,"nome":"TUBO SOLD 25mm","categoria":"Hidraulica","preco_unit":4.77},{"qty":3,"nome":"TUBO SOLD 50mm","categoria":"Hidraulica","preco_unit":5.28},{"qty":1,"nome":"VEDA ROSCA 25 metros","categoria":"Hidraulica","preco_unit":4.86},{"qty":1,"nome":"KIT CAIXILHO CAMBARA CX13","categoria":"Aberturas (Caixilhos e Testeiras)","preco_unit":120},{"qty":3,"nome":"KIT CAIXILHO CAMBARA CX10","categoria":"Aberturas (Caixilhos e Testeiras)","preco_unit":110},{"qty":38,"nome":"RODAPE PEROBA","categoria":"Acabamentos em Madeira","preco_unit":4.25},{"qty":10,"nome":"TRIANGULO PEROBA - 2m","categoria":"Acabamentos em Madeira","preco_unit":4.5},{"qty":16,"nome":"VISTA LISA GRAPIA 1,40M","categoria":"Acabamentos em Madeira","preco_unit":10.5},{"qty":10,"nome":"VISTA LISA GRAPIA 2,20M","categoria":"Acabamentos em Madeira","preco_unit":15.75},{"qty":20,"nome":"VISTA LISA GRAPIA 1,60M","categoria":"Acabamentos em Madeira","preco_unit":12},{"qty":5,"nome":"VISTA LISA GRAPIA (JOGO)","categoria":"Acabamentos em Madeira","preco_unit":66.96},{"qty":1,"nome":"PORTA GRAPIA EXTERNA 80X210 (POR 03)","categoria":"Esquadrias (Portas e Janelas)","preco_unit":440},{"qty":3,"nome":"JANELA GRAPIA 4 FOLHAS CORRER 130x110cm CX10 (DIAGONAL)","categoria":"Esquadrias (Portas e Janelas)","preco_unit":460},{"qty":1,"nome":"JANELA GRAPIA BASCULANTE 120x60cm CX13 (DIAGONAL)","categoria":"Esquadrias (Portas e Janelas)","preco_unit":320},{"qty":1,"nome":"JANELA GRAPIA BASCULANTE 60x40cm CX13 (DIAGONAL)","categoria":"Esquadrias (Portas e Janelas)","preco_unit":130},{"qty":1,"nome":"PORTA JANELA GRAPIA 4 FOLHAS CORRER 180x210cm CX10 (DIAGONAL)","categoria":"Esquadrias (Portas e Janelas)","preco_unit":1200},{"qty":3,"nome":"PERNA CAIXILHO CAMBARA CX13,5 C/ 2,20M","categoria":"Aberturas (Caixilhos e Testeiras)","preco_unit":31.5},{"qty":1,"nome":"BOX RETO (INCOLOR/BRANCO)","categoria":"Vidraceiro","preco_unit":850},{"qty":1,"nome":"VIDRO INCOLOR DIAGONAL COMUM 4MM JANELA 60X40","categoria":"Vidraceiro","preco_unit":50},{"qty":3,"nome":"VIDRO INCOLOR DIAGONAL COMUM 4MM JANELA 140X110","categoria":"Vidraceiro","preco_unit":230},{"qty":1,"nome":"VIDRO INCOLOR DIAGONAL COMUM 4MM JANELA 120X100","categoria":"Vidraceiro","preco_unit":200},{"qty":1,"nome":"VIDRO INCOLOR DIAGONAL COMUM 4MM PORTA JANELA 180X210","categoria":"Vidraceiro","preco_unit":740},{"qty":1,"nome":"VIDRO FIXO EITÃO (Fachada 3m)","categoria":"Vidraceiro","preco_unit":630},{"qty":6,"nome":"PERFIL PVC COR BARRA - 6m","categoria":"Forro PVC","preco_unit":25.2},{"qty":1,"nome":"PARAFUSO FLANGEADO P/ FORRO (500PÇS)","categoria":"Insumos Forro","preco_unit":4.24},{"qty":3,"nome":"ACABAMENTO DE REGISTRO","categoria":"Acabamentos e Ferranges","preco_unit":17},{"qty":1,"nome":"ACESSORIOS INSTALAÇÃO VASO SANITÁRIO","categoria":"Acabamentos e Ferranges","preco_unit":15.7},{"qty":2,"nome":"ESPUMA EXPANSIVA TUBO","categoria":"Acabamentos e Ferranges","preco_unit":27.6},{"qty":1,"nome":"PORTA INTERNA ANGELIM LISTA 70X210","categoria":"Esquadrias (Portas e Janelas)","preco_unit":147},{"qty":2,"nome":"PORTA INTERNA ANGELIM LISA 80X210","categoria":"Esquadrias (Portas e Janelas)","preco_unit":147},{"qty":2,"nome":"FECHADURA INTERNA","categoria":"Acabamentos e Ferranges","preco_unit":46.36},{"qty":1,"nome":"FECHADURA EXTERNA","categoria":"Acabamentos e Ferranges","preco_unit":56.05},{"qty":1,"nome":"FECHADURA PORTA JANELA","categoria":"Acabamentos e Ferranges","preco_unit":54.15},{"qty":1,"nome":"FECHADURA BANHEIRO","categoria":"Acabamentos e Ferranges","preco_unit":46.36},{"qty":4,"nome":"PUXADOR DE PORTA + PARAFUSOS","categoria":"Acabamentos e Ferranges","preco_unit":9},{"qty":3,"nome":"PUXADOR DE JANELA","categoria":"Acabamentos e Ferranges","preco_unit":11.12},{"qty":50,"nome":"PARAFUSO 4,5x60mm P/ABERTURAS","categoria":"Acabamentos e Ferranges","preco_unit":0.14},{"qty":1,"nome":"PO XADREZ 250G","categoria":"Acabamentos e Ferranges","preco_unit":12.63},{"qty":2,"nome":"SILICONE TUBO","categoria":"Acabamentos e Ferranges","preco_unit":13.99},{"qty":1,"nome":"VASO SANITÁRIO C/ CX ACOPLADA","categoria":"Acabamentos e Ferranges","preco_unit":386},{"qty":42,"nome":"MÃO DE OBRA (CONSTRUTOR) - T1","categoria":"Mão de Obra (Construtor)","preco_unit":420},{"qty":6,"nome":"CALHEIRO (RUFOS)","categoria":"Calheiro","preco_unit":90}];
+
+const COLORS=['#f5a623','#e05a2b','#4b9fff','#27c482','#9b7fff','#ff6b9d','#00cec9','#fdcb6e','#a29bfe','#55efc4','#74b9ff','#fd79a8','#6c5ce7','#00b894','#e17055','#fab1a0','#81ecec','#d63031','#0984e3','#b2bec3'];
+
+const SIM_DEFAULTS=[
+  {id:'admin',    label:'Administrativo',        sub:'Gestão e overhead',          type:'pct',value:5},
+  {id:'logistica',label:'Logística / Frete',     sub:'Transporte de materiais',    type:'pct',value:3},
+  {id:'encarg',   label:'Comissão Encarregado',  sub:'Responsável técnico',        type:'pct',value:3},
+  {id:'vendedor', label:'Comissão Vendedor',     sub:'Comissão sobre a venda',     type:'pct',value:4},
+  {id:'impostos', label:'Impostos / Taxas',      sub:'DAS, NF, taxas fiscais',     type:'pct',value:6},
+  {id:'margem',   label:'Margem de Lucro',       sub:'Lucro líquido desejado',     type:'pct',value:20},
+];
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let S = {items:[],area:42,history:[],simRows:null,scenarios:null,activeScen:null,editId:null,delId:null};
+
+function save(){ localStorage.setItem('ac2',JSON.stringify(S)); }
+function load(){
+  try{
+    const r=localStorage.getItem('ac2');
+    if(r){ const p=JSON.parse(r); Object.assign(S,p); }
+    if(!S.items||!S.items.length) S.items=DEFAULT_ITEMS.map((x,i)=>({...x,id:i+1}));
+    if(!S.simRows) S.simRows=SIM_DEFAULTS.map(x=>({...x}));
+    if(!S.scenarios) S.scenarios=[
+      {name:'Conservador',rows:mkScenRows(15),area:42},
+      {name:'Moderado',   rows:mkScenRows(25),area:42},
+      {name:'Agressivo',  rows:mkScenRows(35),area:42},
+    ];
+  }catch(e){ S.items=DEFAULT_ITEMS.map((x,i)=>({...x,id:i+1})); }
+}
+function mkScenRows(lucro){ return SIM_DEFAULTS.map(r=>({...r,value:r.id==='margem'?lucro:r.value})); }
+
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+function brl(v){ return 'R$ '+Number(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function itot(i){ return i.qty*i.preco_unit; }
+function grand(){ return S.items.reduce((s,i)=>s+itot(i),0); }
+function cats(){
+  const m={};
+  S.items.forEach(i=>{ m[i.categoria]=(m[i.categoria]||0)+itot(i); });
+  return m;
+}
+function catColor(c){
+  const all=[...new Set(S.items.map(i=>i.categoria))].sort();
+  return COLORS[all.indexOf(c)%COLORS.length];
+}
+function uid(){ return Date.now()+Math.random(); }
+
+// ── NAVIGATION ────────────────────────────────────────────────────────────────
+function goTo(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b=>{
+    if(b.getAttribute('onclick')===`goTo('${id}')`) b.classList.add('active');
+  });
+  window.scrollTo(0,0);
+  if(id==='dashboard') renderDash();
+  if(id==='itens') renderItens();
+  if(id==='categorias') renderCats();
+  if(id==='simulador') renderSim();
+  if(id==='config') renderConfig();
+}
+
+// ── DASHBOARD ─────────────────────────────────────────────────────────────────
+function renderDash(){
+  const total=grand(), area=S.area;
+  document.getElementById('kpiGrid').innerHTML=`
+    <div class="kpi gold"><div class="kpi-label">Custo Total</div><div class="kpi-val">${brl(total)}</div><div class="kpi-sub">${S.items.length} itens cadastrados</div></div>
+    <div class="kpi green"><div class="kpi-label">Custo por m²</div><div class="kpi-val">${brl(total/area)}</div><div class="kpi-sub">Base: ${area} m²</div></div>
+    <div class="kpi blue"><div class="kpi-label">Categorias</div><div class="kpi-val">${Object.keys(cats()).length}</div><div class="kpi-sub">grupos de materiais</div></div>
+    <div class="kpi purple"><div class="kpi-label">Última Revisão</div><div class="kpi-val" style="font-size:18px;margin-top:4px">${S.history.length?new Date(S.history[S.history.length-1].date).toLocaleDateString('pt-BR'):'—'}</div><div class="kpi-sub">de preços</div></div>
+  `;
+  const cs=cats(), mx=Math.max(...Object.values(cs));
+  const sorted=Object.entries(cs).sort((a,b)=>b[1]-a[1]);
+  document.getElementById('dashCatGrid').innerHTML=sorted.map(([cat,val])=>{
+    const col=catColor(cat), pct=(val/mx*100).toFixed(1), tpct=(val/total*100).toFixed(1);
+    const cnt=S.items.filter(i=>i.categoria===cat).length;
+    return `<div class="cat-card" onclick="openCatDetail('${esc(cat)}')">
+      <div class="cat-top"><div class="cat-name">${esc(cat)}</div><div class="cat-val" style="color:${col}">${brl(val)}</div></div>
+      <div class="cat-meta">${cnt} item(s) · ${tpct}% do total</div>
+      <div class="bar"><div class="bar-inner" style="width:${pct}%;background:${col}"></div></div>
+    </div>`;
+  }).join('');
+}
+
+// ── ITENS ─────────────────────────────────────────────────────────────────────
+function renderItens(){
+  const q=(document.getElementById('srch')?.value||'').toLowerCase();
+  const cf=document.getElementById('catFil');
+  const catF=cf?cf.value:'';
+  const sort=document.getElementById('sortFil')?.value||'nome';
+  // rebuild filter
+  const allCats=[...new Set(S.items.map(i=>i.categoria))].sort();
+  if(cf){ const cur=cf.value; cf.innerHTML='<option value="">Todas as categorias</option>'+allCats.map(c=>`<option value="${esc(c)}"${c===cur?' selected':''}>${esc(c)}</option>`).join(''); }
+  let items=S.items.filter(i=>(!q||i.nome.toLowerCase().includes(q)||i.categoria.toLowerCase().includes(q))&&(!catF||i.categoria===catF));
+  if(sort==='nome') items.sort((a,b)=>a.nome.localeCompare(b.nome));
+  else if(sort==='td') items.sort((a,b)=>itot(b)-itot(a));
+  else if(sort==='ta') items.sort((a,b)=>itot(a)-itot(b));
+  else if(sort==='pd') items.sort((a,b)=>b.preco_unit-a.preco_unit);
+  else if(sort==='cat') items.sort((a,b)=>a.categoria.localeCompare(b.categoria));
+  const body=document.getElementById('itensBody');
+  if(!items.length){ body.innerHTML=`<tr><td colspan="6"><div class="empty">Nenhum item encontrado</div></td></tr>`; }
+  else body.innerHTML=items.map(item=>{
+    const col=catColor(item.categoria);
+    return `<tr>
+      <td style="font-weight:600;max-width:260px">${esc(item.nome)}</td>
+      <td><span class="badge" style="background:${col}22;color:${col}">${esc(item.categoria)}</span></td>
+      <td class="r" style="color:var(--muted)">${item.qty}</td>
+      <td class="r">${brl(item.preco_unit)}</td>
+      <td class="r" style="font-weight:700;color:var(--gold)">${brl(itot(item))}</td>
+      <td class="r"><div class="actions">
+        <button class="icon-btn ed" onclick="openEdit(${item.id})" title="Editar"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg></button>
+        <button class="icon-btn del" onclick="openDel(${item.id})" title="Excluir"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+      </div></td>
+    </tr>`;
+  }).join('');
+  document.getElementById('countLabel').textContent=`${items.length} item(s) exibido(s)`;
+}
+
+// ── CATEGORIAS ────────────────────────────────────────────────────────────────
+function renderCats(){
+  const q=(document.getElementById('catSrch')?.value||'').toLowerCase();
+  const cs=cats(), total=grand(), mx=Math.max(...Object.values(cs));
+  const sorted=Object.entries(cs).sort((a,b)=>b[1]-a[1]).filter(([c])=>!q||c.toLowerCase().includes(q));
+  document.getElementById('catListGrid').innerHTML=sorted.map(([cat,val])=>{
+    const col=catColor(cat), pct=(val/mx*100).toFixed(1), tpct=(val/total*100).toFixed(1);
+    const cnt=S.items.filter(i=>i.categoria===cat).length;
+    return `<div class="cat-card" onclick="openCatDetail('${esc(cat)}')">
+      <div class="cat-top"><div class="cat-name">${esc(cat)}</div><div class="cat-val" style="color:${col}">${brl(val)}</div></div>
+      <div class="cat-meta">${cnt} item(s) · ${tpct}% do total</div>
+      <div class="bar"><div class="bar-inner" style="width:${pct}%;background:${col}"></div></div>
+    </div>`;
+  }).join('');
+}
+
+function openCatDetail(cat){
+  if(!document.getElementById('page-categorias').classList.contains('active')) goTo('categorias');
+  document.getElementById('catList').style.display='none';
+  document.getElementById('catDetail').style.display='block';
+  const items=S.items.filter(i=>i.categoria===cat).sort((a,b)=>itot(b)-itot(a));
+  const total=items.reduce((s,i)=>s+itot(i),0);
+  const col=catColor(cat);
+  document.getElementById('catDetailBody').innerHTML=`
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:22px;flex-wrap:wrap">
+      <div style="width:12px;height:12px;border-radius:3px;background:${col}"></div>
+      <div style="font-size:19px;font-weight:800">${esc(cat)}</div>
+      <div style="margin-left:auto;font-size:22px;font-weight:800;color:${col}">${brl(total)}</div>
+    </div>
+    <div class="table-box">
+      <table>
+        <thead><tr><th>Item</th><th class="r">Qtd</th><th class="r">Preço Unit.</th><th class="r">Total</th><th class="r">Ações</th></tr></thead>
+        <tbody>
+          ${items.map(item=>`<tr>
+            <td style="font-weight:600">${esc(item.nome)}</td>
+            <td class="r" style="color:var(--muted)">${item.qty}</td>
+            <td class="r">${brl(item.preco_unit)}</td>
+            <td class="r" style="font-weight:700;color:${col}">${brl(itot(item))}</td>
+            <td class="r"><div class="actions">
+              <button class="icon-btn ed" onclick="openEdit(${item.id})"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg></button>
+              <button class="icon-btn del" onclick="openDel(${item.id})"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+            </div></td>
+          </tr>`).join('')}
+          <tr style="background:var(--surface2)"><td colspan="3" style="text-align:right;font-weight:700">Total da categoria</td><td class="r" style="font-weight:800;color:${col}">${brl(total)}</td><td></td></tr>
+        </tbody>
+      </table>
+    </div>`;
+}
+
+function closeCatDetail(){
+  document.getElementById('catList').style.display='block';
+  document.getElementById('catDetail').style.display='none';
+  renderCats();
+}
+
+// ── SIMULATOR ─────────────────────────────────────────────────────────────────
+function renderSim(){
+  document.getElementById('simArea').value=S.area;
+  renderSimRows();
+  renderScenCards();
+  calcSim();
+}
+
+function renderSimRows(){
+  document.getElementById('catSug').innerHTML=[...new Set(S.items.map(i=>i.categoria))].sort().map(c=>`<option value="${esc(c)}">`).join('');
+  document.getElementById('simRows').innerHTML=S.simRows.map((r,i)=>`
+    <div class="cost-row">
+      <div><div class="cr-label">${esc(r.label)}</div><div class="cr-sub">${esc(r.sub)}</div></div>
+      <div class="toggle">
+        <button class="tgl-btn${r.type==='pct'?' on':''}" onclick="setType(${i},'pct')">%</button>
+        <button class="tgl-btn${r.type==='brl'?' on':''}" onclick="setType(${i},'brl')">R$</button>
+      </div>
+      <div class="val-wrap">
+        <span class="pfx">${r.type==='pct'?'%':'R$'}</span>
+        <input type="number" min="0" step="${r.type==='pct'?'0.5':'10'}" value="${r.value}" oninput="setVal(${i},this.value)">
+      </div>
+    </div>`).join('');
+}
+
+function setType(i,t){ S.simRows[i].type=t; S.simRows[i].value=t==='pct'?5:1000; renderSimRows(); calcSim(); save(); }
+function setVal(i,v){ S.simRows[i].value=parseFloat(v)||0; calcSim(); save(); }
+
+function calcSim(){
+  const area=parseFloat(document.getElementById('simArea')?.value)||S.area;
+  const base=grand();
+  document.getElementById('simBase').textContent=brl(base);
+  document.getElementById('resAreaLabel').textContent=area;
+  let cum=base;
+  const rows=[{name:'Custo Base (materiais)',val:base,color:'#4b9fff',hint:'100% base'}];
+  S.simRows.forEach((r,i)=>{
+    const v=r.type==='pct'?base*(r.value/100):r.value;
+    cum+=v;
+    rows.push({name:r.label,val:v,color:COLORS[(i+2)%COLORS.length],hint:r.type==='pct'?r.value+'%':brl(r.value)});
+  });
+  const pm2=cum/area;
+  document.getElementById('resM2').textContent=brl(pm2);
+  document.getElementById('resTotal').textContent=brl(cum);
+  document.getElementById('breakdown').innerHTML=rows.map(r=>`
+    <div class="bk-item${r.hint==='100% base'?' base':''}">
+      <div class="bk-left"><div class="bk-dot" style="background:${r.color}"></div>
+        <div><div class="bk-name">${esc(r.name)}</div><div class="bk-hint">${esc(r.hint)}</div></div>
+      </div>
+      <div class="bk-right"><div class="bk-val" style="color:${r.color}">${brl(r.val)}</div><div class="bk-m2">${brl(r.val/area)}/m²</div></div>
+    </div>`).join('')+`
+    <div class="bk-item total">
+      <div class="bk-left"><div class="bk-dot" style="background:var(--gold)"></div>
+        <div><div class="bk-name" style="font-weight:800">Total Venda</div><div class="bk-hint">${((cum/base-1)*100).toFixed(1)}% acima do custo</div></div>
+      </div>
+      <div class="bk-right"><div class="bk-val" style="color:var(--gold);font-size:16px">${brl(pm2)}/m²</div><div class="bk-m2">${brl(cum)} total</div></div>
+    </div>`;
+}
+
+function renderScenCards(){
+  const base=grand();
+  document.getElementById('scenGrid').innerHTML=S.scenarios.map((sc,i)=>{
+    const t=scTotal(sc,base), pm2=t/(sc.area||S.area);
+    const mr=sc.rows.find(r=>r.id==='margem'); const m=mr?mr.value:0;
+    const tc=m<=15?'tag-low':m<=28?'tag-mid':'tag-high';
+    return `<div class="sc-card${S.activeScen===i?' active':''}" onclick="applyScen(${i})">
+      <div class="sc-name">${esc(sc.name)}</div>
+      <div class="sc-price">${brl(pm2)}</div>
+      <div class="sc-info">${brl(t)} total · ${sc.area||S.area} m²</div>
+      <span class="sc-tag ${tc}">Lucro ${m}%</span>
+    </div>`;
+  }).join('');
+}
+
+function scTotal(sc,base){ let t=base; sc.rows.forEach(r=>{ t+=r.type==='pct'?base*(r.value/100):r.value; }); return t; }
+
+function applyScen(i){
+  S.activeScen=i; const sc=S.scenarios[i];
+  S.simRows=sc.rows.map(r=>({...r}));
+  document.getElementById('simArea').value=sc.area||S.area;
+  renderSimRows(); renderScenCards(); calcSim(); save();
+  toast('Cenário "'+sc.name+'" aplicado!');
+}
+
+function openSaveScen(){ document.getElementById('scenName').value=''; document.getElementById('scenModal').classList.add('open'); setTimeout(()=>document.getElementById('scenName').focus(),50); }
+function confirmSaveScen(){
+  const n=document.getElementById('scenName').value.trim();
+  if(!n){ toast('Digite um nome','err'); return; }
+  const area=parseFloat(document.getElementById('simArea')?.value)||S.area;
+  S.scenarios.push({name:n,rows:S.simRows.map(r=>({...r})),area});
+  S.activeScen=S.scenarios.length-1;
+  save(); closeModal('scenModal'); renderScenCards();
+  toast('Cenário "'+n+'" salvo!');
+}
+
+function exportSim(){
+  const area=parseFloat(document.getElementById('simArea')?.value)||S.area;
+  const base=grand(); let cum=base;
+  const rows=[['Item','Tipo','Taxa/Valor','R$','R$/m²']];
+  rows.push(['Custo Base','base','—',base.toFixed(2),(base/area).toFixed(2)]);
+  S.simRows.forEach(r=>{ const v=r.type==='pct'?base*(r.value/100):r.value; cum+=v; rows.push([r.label,r.type==='pct'?'%':'R$',r.value,v.toFixed(2),(v/area).toFixed(2)]); });
+  rows.push(['PREÇO FINAL','—','—',cum.toFixed(2),(cum/area).toFixed(2)]);
+  dl('simulacao.csv','text/csv;charset=utf-8;\uFEFF'+rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n'));
+  toast('Exportado!');
+}
+
+// ── CONFIG ────────────────────────────────────────────────────────────────────
+function renderConfig(){
+  document.getElementById('areaInp').value=S.area;
+  const list=document.getElementById('histList');
+  if(!S.history.length){ list.innerHTML='<div style="color:var(--muted);font-size:13px;padding:8px 0">Nenhum registro ainda.</div>'; return; }
+  list.innerHTML=[...S.history].reverse().map(h=>{
+    const d=new Date(h.date).toLocaleString('pt-BR');
+    const d2=h.diff!=null?parseFloat(h.diff):null;
+    const tag=d2==null?`<span class="htag htag-eq">inicial</span>`:d2>0?`<span class="htag htag-up">+${h.diff}%</span>`:d2<0?`<span class="htag htag-dn">${h.diff}%</span>`:`<span class="htag htag-eq">sem alteração</span>`;
+    return `<div class="hist-item"><div><div style="font-weight:700">${brl(h.total)}</div><div class="hist-date">${d}</div></div>${tag}</div>`;
+  }).join('');
+}
+
+function saveArea(){
+  const v=parseFloat(document.getElementById('areaInp').value);
+  if(!v||v<=0){ toast('Área inválida','err'); return; }
+  S.area=v; save(); toast('Área atualizada: '+v+' m²');
+}
+
+function registerUpdate(){
+  const total=grand(), last=S.history[S.history.length-1];
+  const diff=last?((total-last.total)/last.total*100).toFixed(1):null;
+  S.history.push({date:new Date().toISOString(),total,diff});
+  save(); renderConfig(); toast('Revisão registrada!');
+}
+
+// ── ITEM MODAL ────────────────────────────────────────────────────────────────
+function openAdd(){
+  S.editId=null;
+  document.getElementById('modalTitle').textContent='Novo Item';
+  document.getElementById('saveItemBtn').textContent='Adicionar';
+  ['fNome','fCat','fQty','fPrice'].forEach(id=>document.getElementById(id).value='');
+  fillCatSug();
+  document.getElementById('itemModal').classList.add('open');
+  setTimeout(()=>document.getElementById('fNome').focus(),50);
+}
+
+function openEdit(id){
+  const item=S.items.find(i=>i.id===id); if(!item) return;
+  S.editId=id;
+  document.getElementById('modalTitle').textContent='Editar Item';
+  document.getElementById('saveItemBtn').textContent='Salvar Alterações';
+  document.getElementById('fNome').value=item.nome;
+  document.getElementById('fCat').value=item.categoria;
+  document.getElementById('fQty').value=item.qty;
+  document.getElementById('fPrice').value=item.preco_unit;
+  fillCatSug();
+  document.getElementById('itemModal').classList.add('open');
+  setTimeout(()=>document.getElementById('fNome').focus(),50);
+}
+
+function fillCatSug(){
+  document.getElementById('catSug').innerHTML=[...new Set(S.items.map(i=>i.categoria))].sort().map(c=>`<option value="${esc(c)}">`).join('');
+}
+
+function saveItem(){
+  const nome=document.getElementById('fNome').value.trim();
+  const cat=document.getElementById('fCat').value.trim();
+  const qty=parseFloat(document.getElementById('fQty').value);
+  const price=parseFloat(document.getElementById('fPrice').value);
+  if(!nome||!cat||isNaN(qty)||isNaN(price)||qty<0||price<0){ toast('Preencha todos os campos','err'); return; }
+  if(S.editId!==null){
+    const idx=S.items.findIndex(i=>i.id===S.editId);
+    if(idx>=0) S.items[idx]={...S.items[idx],nome,categoria:cat,qty,preco_unit:price};
+    toast('Item atualizado!');
+  } else {
+    S.items.push({id:uid(),nome,categoria:cat,qty,preco_unit:price});
+    toast('Item adicionado!');
+  }
+  save(); closeModal('itemModal');
+  const cur=document.querySelector('.page.active').id;
+  if(cur==='page-itens') renderItens();
+  if(cur==='page-dashboard') renderDash();
+  if(cur==='page-categorias') renderCats();
+}
+
+// ── DELETE ────────────────────────────────────────────────────────────────────
+function openDel(id){
+  const item=S.items.find(i=>i.id===id); if(!item) return;
+  S.delId=id;
+  document.getElementById('delName').textContent=item.nome;
+  document.getElementById('delModal').classList.add('open');
+}
+function confirmDel(){
+  S.items=S.items.filter(i=>i.id!==S.delId);
+  save(); closeModal('delModal'); toast('Item excluído');
+  const cur=document.querySelector('.page.active').id;
+  if(cur==='page-itens') renderItens();
+  if(cur==='page-dashboard') renderDash();
+  if(cur==='page-categorias'){ closeCatDetail(); renderCats(); }
+}
+
+// ── MODALS ────────────────────────────────────────────────────────────────────
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{ if(e.target===o) o.classList.remove('open'); }));
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') document.querySelectorAll('.overlay.open').forEach(o=>o.classList.remove('open')); });
+
+// ── EXPORT ────────────────────────────────────────────────────────────────────
+function exportCSV(){
+  const rows=[['Nome','Categoria','Quantidade','Preço Unitário','Total']];
+  S.items.forEach(i=>rows.push([i.nome,i.categoria,i.qty,i.preco_unit.toFixed(2),itot(i).toFixed(2)]));
+  dl('materiais.csv','text/csv;charset=utf-8;\uFEFF'+rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n'));
+  toast('CSV exportado!');
+}
+function exportJSON(){ dl('backup.json','application/json',JSON.stringify(S,null,2)); toast('Backup exportado!'); }
+function importJSON(e){
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader(); r.onload=ev=>{ try{ const p=JSON.parse(ev.target.result); if(p.items){ Object.assign(S,p); save(); renderConfig(); toast('Dados importados!'); }else toast('Arquivo inválido','err'); }catch{ toast('Erro ao ler arquivo','err'); } }; r.readAsText(f); e.target.value='';
+}
+function dl(name,type,content){ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([content],{type})); a.download=name; a.click(); }
+
+// ── TOAST ─────────────────────────────────────────────────────────────────────
+function toast(msg,type='ok'){
+  const ic=type==='ok'?`<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="15" height="15"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>`:`<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="15" height="15"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>`;
+  const t=document.createElement('div'); t.className=`toast ${type}`; t.innerHTML=ic+msg;
+  document.getElementById('toasts').appendChild(t);
+  setTimeout(()=>t.remove(),3000);
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+load();
+renderDash();
+</script>
+</body>
+</html>
