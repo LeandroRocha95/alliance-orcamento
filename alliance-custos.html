@@ -1147,35 +1147,68 @@ function setSyncStatus(msg, color) {
 async function sbSyncAll() {
   setSyncStatus('⏳ Salvando...', '#f5a623');
   try {
+    // 1. Save catalog to custos_catalogo (one row per material)
+    if (S.catalog && S.catalog.length) {
+      const rows = S.catalog.map(i => ({
+        id:         String(i.id),
+        nome:       i.nome       || '',
+        categoria:  i.categoria  || '',
+        unidade:    i.unidade    || '',
+        preco_unit: Number(i.preco_unit) || 0,
+        updated_at: new Date().toISOString()
+      }));
+      const catRes = await sbFetch('POST', SB_URL + '/rest/v1/custos_catalogo?on_conflict=id', rows);
+      if (!catRes.ok) {
+        const e = await catRes.text();
+        throw new Error('Catalog save failed: ' + e);
+      }
+    }
+
+    // 2. Save everything else to custos_config
     const cfg = {
       id:         1,
       categorias: JSON.stringify(S.scenarios || []),
       revisoes:   JSON.stringify(S.history   || []),
       cenarios:   JSON.stringify({ area: S.area, simRows: S.simRows }),
       modelos:    JSON.stringify(S.modelos   || []),
-      catalog:    JSON.stringify(S.catalog   || []),
       items:      JSON.stringify(S.items     || []),
       updated_at: new Date().toISOString()
     };
     const cfgRes = await sbFetch('POST', SB_URL + '/rest/v1/custos_config?on_conflict=id', cfg);
     if (!cfgRes.ok) {
-      const err = await cfgRes.text();
-      throw new Error('Save failed: ' + err);
+      const e = await cfgRes.text();
+      throw new Error('Config save failed: ' + e);
     }
+
     setSyncStatus('✓ Sincronizado ' + new Date().toLocaleTimeString('pt-BR'), '#2ecc71');
     toast('✓ Dados salvos na nuvem!');
   } catch(e) {
     setSyncStatus('✗ Erro: ' + e.message, '#e74c3c');
-    toast('Erro ao salvar: ' + e.message, 'err');
+    toast('Erro: ' + e.message, 'err');
     console.error('sbSyncAll error:', e);
   }
 }
 
-
 async function sbLoadAll() {
   setSyncStatus('⏳ Carregando da nuvem...', '#f5a623');
   try {
-    const cfgRes = await sbFetch('GET', SB_URL + '/rest/v1/custos_config?id=eq.1').then(r => r.json());
+    const [cfgRes, catRes] = await Promise.all([
+      sbFetch('GET', SB_URL + '/rest/v1/custos_config?id=eq.1').then(r => r.json()),
+      sbFetch('GET', SB_URL + '/rest/v1/custos_catalogo?order=nome').then(r => r.json()).catch(() => [])
+    ]);
+
+    // Load catalog from dedicated table
+    if (Array.isArray(catRes) && catRes.length) {
+      S.catalog = catRes.map(i => ({
+        id:         String(i.id),
+        nome:       i.nome       || '',
+        categoria:  i.categoria  || '',
+        unidade:    i.unidade    || '',
+        preco_unit: Number(i.preco_unit) || 0
+      }));
+    }
+
+    // Load rest from custos_config
     if (cfgRes && cfgRes[0]) {
       const c = cfgRes[0];
       try { S.scenarios = JSON.parse(c.categorias); } catch(e) {}
@@ -1187,26 +1220,28 @@ async function sbLoadAll() {
       } catch(e) {}
       try {
         if (c.modelos) {
-          const modelos = JSON.parse(c.modelos);
-          if (Array.isArray(modelos) && modelos.length) {
-            S.modelos = modelos;
-            S.modelos.forEach(m => { m.id = String(m.id); });
+          const m = JSON.parse(c.modelos);
+          if (Array.isArray(m) && m.length) {
+            S.modelos = m;
+            S.modelos.forEach(x => { x.id = String(x.id); });
           }
         }
       } catch(e) {}
       try {
-        if (c.catalog) {
-          const catalog = JSON.parse(c.catalog);
-          if (Array.isArray(catalog) && catalog.length) S.catalog = catalog;
+        if (c.items) {
+          const it = JSON.parse(c.items);
+          if (Array.isArray(it)) S.items = it;
         }
       } catch(e) {}
+      // Fallback: catalog in old JSON format
       try {
-        if (c.items) {
-          const items = JSON.parse(c.items);
-          if (Array.isArray(items)) S.items = items;
+        if (!S.catalog.length && c.catalog) {
+          const old = JSON.parse(c.catalog);
+          if (Array.isArray(old) && old.length) S.catalog = old;
         }
       } catch(e) {}
     }
+
     save();
     setSyncStatus('✓ Carregado da nuvem', '#2ecc71');
     renderDash();
@@ -1216,7 +1251,6 @@ async function sbLoadAll() {
     renderDash();
   }
 }
-
 
 // ═══════════════════════════════════════════════════
 // CATÁLOGO DE MATERIAIS
@@ -1306,9 +1340,12 @@ function openDelCatalogo(id) {
 }
 
 function confirmDelCatalogo() {
-  S.catalog = (S.catalog||[]).filter(x=>x.id!==S.catalogDelId);
+  const delId = S.catalogDelId;
+  S.catalog = (S.catalog||[]).filter(x=>x.id!==delId);
   S.catalogDelId = null;
   save(); closeModal('catalogoDelModal'); renderCatalogo();
+  // Delete from Supabase too
+  sbFetch('DELETE', SB_URL + '/rest/v1/custos_catalogo?id=eq.' + encodeURIComponent(delId)).catch(()=>{});
   toast('Material excluído');
 }
 
