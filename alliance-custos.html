@@ -631,6 +631,7 @@ select.sel:focus{border-color:var(--gold)}
 
 <div class="toasts" id="toasts"></div>
 
+
 <script>
 // ── DATA ─────────────────────────────────────────────────────────────────────
 const DEFAULT_ITEMS = [{"qty":1,"nome":"ARAME RECUZIDO N18","categoria":"Fundação e Alvenaria","preco_unit":14.47},{"qty":1,"nome":"AREIA FINA PARA REBOCO","categoria":"Minérios","preco_unit":212.5},{"qty":1,"nome":"AREIA MÉDIA DE ASSENTAMENTO","categoria":"Minérios","preco_unit":170},{"qty":16,"nome":"BARRO PARA ATERRO","categoria":"Minérios","preco_unit":80},{"qty":6,"nome":"BRITADO PARA CONCRETO (AREIA + BRITA 0)","categoria":"Minérios","preco_unit":155},{"qty":1,"nome":"BROXA GRANDE","categoria":"Fundação e Alvenaria","preco_unit":14.78},{"qty":1,"nome":"CAIXA SIFONADA 100X100X50","categoria":"Fundação e Alvenaria","preco_unit":15.58},{"qty":5,"nome":"CANAFLEX PRETO 1.1/4\"","categoria":"Fundação e Alvenaria","preco_unit":2.86},{"qty":30,"nome":"CIMENTO 50KG CPII-Z - VOTORAN","categoria":"Fundação e Alvenaria","preco_unit":43.5},{"qty":7,"nome":"FERRO 5/16 12m","categoria":"Fundação e Alvenaria","preco_unit":36.6},{"qty":1,"nome":"JOELHO ESGOTO 100mm 90º","categoria":"Fundação e Alvenaria","preco_unit":6.14},{"qty":3,"nome":"JOELHO ESGOTO 40mm 90º","categoria":"Fundação e Alvenaria","preco_unit":1.35},{"qty":4,"nome":"JOELHO ESGOTO 50mm 90º","categoria":"Fundação e Alvenaria","preco_unit":3.4},{"qty":1,"nome":"NEUTROL 900ml","categoria":"Fundação e Alvenaria","preco_unit":36.16},{"qty":10,"nome":"SARRAFO CAIXARIA BRUTO PINUS 2,5x5 - 3M","categoria":"Fundação e Alvenaria","preco_unit":4.9},{"qty":700,"nome":"TIJOLO 8F 9X19X19","categoria":"Fundação e Alvenaria","preco_unit":0.85},{"qty":2,"nome":"TUBO ESGOTO BRANCO 100mm","categoria":"Fundação e Alvenaria","preco_unit":15.16},{"qty":3,"nome":"TUBO ESGOTO BRANCO 40mm","categoria":"Fundação e Alvenaria","preco_unit":7.9},{"qty":4,"nome":"TUBO ESGOTO BRANCO 50mm","categoria":"Fundação e Alvenaria","preco_unit":12.26},{"qty":5,"nome":"FERRO 5/16 12m","categoria":"Fundação e Alvenaria","preco_unit":36.6},{"qty":12,"nome":"CX LUZ AMARELA 4X2","categoria":"Fundação e Alvenaria","preco_unit":2.98},{"qty":1,"nome":"JOELHO 90 SOLD 25mm","categoria":"Hidraulica","preco_unit":0.54},{"qty":20,"nome":"LONA PRETA","categoria":"Fundação e Alvenaria","preco_unit":5.64},{"qty":2,"nome":"PREGO C/C POL 17X27","categoria":"Fundação e Alvenaria","preco_unit":14.64},{"qty":200,"nome":"BLOCO CONCRETO 14X19X39 Com Encaixe Estrutural","categoria":"Fundação e Alvenaria","preco_unit":3.95},{"qty":30,"nome":"CORRUGADO AMARELO 3/4","categoria":"Fundação e Alvenaria","preco_unit":1.59},{"qty":1,"nome":"VEDA REBOCO 5 Litros - QUEVEKS","categoria":"Fundação e Alvenaria","preco_unit":153.44},{"qty":6,"nome":"TUBO SOLD 25mm","categoria":"Hidraulica","preco_unit":4.77},{"qty":20,"nome":"TABUA CAXARIA PINUS 20CM 3m","categoria":"Fundação e Alvenaria","preco_unit":19.6},{"qty":30,"nome":"PARAFUSOS 6,0x90mm C/ BUCHA 8","categoria":"Insumos de Estrutura e Cobertura","preco_unit":0.39},{"qty":4,"nome":"PREGO C/C GALV 16X24 (SARRAFOS)","categoria":"Insumos de Estrutura e Cobertura","preco_unit":14.98},{"qty":1,"nome":"PREGO C/C GALV 17X27","categoria":"Insumos de Estrutura e Cobertura","preco_unit":13.66},{"qty":2,"nome":"PREGO C/C GALV 18X36 (CAIBROS)","categoria":"Insumos de Estrutura e Cobertura","preco_unit":14.34},{"qty":2,"nome":"PREGO S/C GALV 18X36 (caibro frisado)","categoria":"Insumos de Estrutura e Cobertura","preco_unit":14.34},{"qty":1,"nome":"PREGO C/C GALV 19X39 (pé + terças)","categoria":"Insumos de Estrutura e Cobertura","preco_unit":14.34},{"qty":1,"nome":"QUADRO DE DISTRIBUIÇÃO 12/18 EMBUTIR","categoria":"Elétrica","preco_unit":53.29},{"qty":1,"nome":"MANTA TERMICA (25 m²)","categoria":"Insumos de Estrutura e Cobertura","preco_unit":75},{"qty":2,"nome":"PINO F40 (CX) (Frontal)","categoria":"Insumos de Estrutura e Cobertura","preco_unit":37.2},{"qty":1,"nome":"PINO F25 (CX) (Forro + acabamento)","categoria":"Insumos de Estrutura e Cobertura","preco_unit":25.56},{"qty":14,"nome":"FORRO ANGELIM (EITÃO)","categoria":"Forro Madeira","preco_unit":62},{"qty":20,"nome":"FORRO ANGELIM (ELEVADO)","categoria":"Forro Madeira","preco_unit":62},{"qty":1,"nome":"FITA ALUMINIO (ROLO)","categoria":"Insumos de Estrutura e Cobertura","preco_unit":10},{"qty":6,"nome":"CAIBRO PEROBA 4,5x9 (Beneficiado Inteiro) 2,5m","categoria":"Madeiras Quadradas","preco_unit":41.25},{"qty":49,"nome":"CAIBRO PEROBA 4,5x9 (Beneficiado Inteiro) 3m","categoria":"Madeiras Quadradas","preco_unit":49.5},{"qty":38,"nome":"CAIBRO PEROBA 4,5x9 (Beneficiado Inteiro) 4m","categoria":"Madeiras Quadradas","preco_unit":66},{"qty":6,"nome":"CAIBRO PEROBA 4,5x9 (Beneficiado Inteiro) 5m","categoria":"Madeiras Quadradas","preco_unit":82.5},{"qty":23,"nome":"CAIBRO PEROBA 4,5x9 (Com Fresa e Beneficiado Inteiro) 3m","categoria":"Madeiras Quadradas","preco_unit":49.5},{"qty":1,"nome":"CAIBRO PEROBA 5x15 (Beneficiado Inteiro) 4m","categoria":"Madeiras Quadradas","preco_unit":126},{"qty":1,"nome":"PÉ DIREITO PEROBA 15x15 (Beneficiado Inteiro) 2,5m","categoria":"Madeiras Quadradas","preco_unit":280},{"qty":80,"nome":"SARRAFO PEROBA 2,5x5 (Beneficiado Inteiro) 4m","categoria":"Madeiras Quadradas","preco_unit":18.8},{"qty":20,"nome":"SARRAFO PEROBA 2,5x5 (Beneficiado Inteiro) 3m","categoria":"Madeiras Quadradas","preco_unit":14.1},{"qty":30,"nome":"SARRAFO PEROBA 4,5x4,5 (Beneficiado Inteiro) 3m","categoria":"Madeiras Quadradas","preco_unit":27},{"qty":1300,"nome":"TELHA PORTUGUESA ISOPPO (NATURAL)","categoria":"Telhas","preco_unit":1.5},{"qty":40,"nome":"TELHA DUPLA PORTUGUESA ISOPPO (NATURAL)","categoria":"Telhas","preco_unit":7.9},{"qty":30,"nome":"TELHÃO PORTUGUESA ISOPPO (NATURAL)","categoria":"Telhas","preco_unit":5},{"qty":79,"nome":"FRONTAL GRAPIA ESTREITA","categoria":"Frontal","preco_unit":110},{"qty":35,"nome":"ARGAMASSA AC2 20KG","categoria":"Insumos Cerâmica","preco_unit":13.7},{"qty":5,"nome":"FUGA CRUZ PISO 5mm","categoria":"Insumos Cerâmica","preco_unit":12.14},{"qty":42,"nome":"CERAMICA COMUM (CHÃO)","categoria":"Cerâmica","preco_unit":25},{"qty":30,"nome":"CERAMICA COMUM (PAREDE)","categoria":"Cerâmica","preco_unit":25},{"qty":14,"nome":"REJUNTES (CHÃO)","categoria":"Insumos Cerâmica","preco_unit":4.4},{"qty":10,"nome":"REJUNTES (PAREDES)","categoria":"Insumos Cerâmica","preco_unit":4.4},{"qty":42,"nome":"KIT MATERIAL DE ELÉTRICA + CABOS","categoria":"Elétrica","preco_unit":25},{"qty":42,"nome":"MÃO DE OBRA (ELETRICA)","categoria":"Mão de Obra (Elétrica)","preco_unit":22},{"qty":5,"nome":"ADAPTADOR SOLD 25x3/4","categoria":"Hidraulica","preco_unit":0.57},{"qty":1,"nome":"BOIA 3/4","categoria":"Hidraulica","preco_unit":8.31},{"qty":1,"nome":"CAIXA D'AGUA 500LT","categoria":"Hidraulica","preco_unit":218},{"qty":1,"nome":"COLA C/ PINCEL 175G","categoria":"Hidraulica","preco_unit":13.27},{"qty":3,"nome":"CURVA 90 SOLD 25mm","categoria":"Hidraulica","preco_unit":2.13},{"qty":2,"nome":"FLANGE SOLD 25mm","categoria":"Hidraulica","preco_unit":5.08},{"qty":1,"nome":"FLANGE SOLD 50mm","categoria":"Hidraulica","preco_unit":12.98},{"qty":4,"nome":"JOELHO 90 SOLD 25mm","categoria":"Hidraulica","preco_unit":0.54},{"qty":1,"nome":"JOELHO 90 SOLD 50mm","categoria":"Hidraulica","preco_unit":2.5},{"qty":4,"nome":"JOELHO AZUL 25X1/2 COM METAL","categoria":"Hidraulica","preco_unit":3.81},{"qty":1,"nome":"LIXA G150","categoria":"Hidraulica","preco_unit":3.1},{"qty":1,"nome":"LUVA AZUL 25X3/4 COM METAL","categoria":"Hidraulica","preco_unit":5.03},{"qty":3,"nome":"LUVA SOLD 25mm","categoria":"Hidraulica","preco_unit":0.52},{"qty":4,"nome":"PLUG 1/2","categoria":"Hidraulica","preco_unit":0.43},{"qty":1,"nome":"REDUÇÃO SOLD 50x25mm","categoria":"Hidraulica","preco_unit":6.8},{"qty":1,"nome":"REGISTRO SOLD ESFERA 50mm","categoria":"Hidraulica","preco_unit":19.94},{"qty":2,"nome":"REGISTRO DE GAVETA METAL 25x3/4","categoria":"Hidraulica","preco_unit":38.31},{"qty":1,"nome":"REGISTRO DE PRESSÃO METAL 25x3/4","categoria":"Hidraulica","preco_unit":38.4},{"qty":2,"nome":"TE SOLD 25mm","categoria":"Hidraulica","preco_unit":0.86},{"qty":2,"nome":"TE SOLD REDUÇÃO 50x25mm","categoria":"Hidraulica","preco_unit":6.39},{"qty":18,"nome":"TUBO SOLD 25mm","categoria":"Hidraulica","preco_unit":4.77},{"qty":3,"nome":"TUBO SOLD 50mm","categoria":"Hidraulica","preco_unit":5.28},{"qty":1,"nome":"VEDA ROSCA 25 metros","categoria":"Hidraulica","preco_unit":4.86},{"qty":1,"nome":"KIT CAIXILHO CAMBARA CX13","categoria":"Aberturas (Caixilhos e Testeiras)","preco_unit":120},{"qty":3,"nome":"KIT CAIXILHO CAMBARA CX10","categoria":"Aberturas (Caixilhos e Testeiras)","preco_unit":110},{"qty":38,"nome":"RODAPE PEROBA","categoria":"Acabamentos em Madeira","preco_unit":4.25},{"qty":10,"nome":"TRIANGULO PEROBA - 2m","categoria":"Acabamentos em Madeira","preco_unit":4.5},{"qty":16,"nome":"VISTA LISA GRAPIA 1,40M","categoria":"Acabamentos em Madeira","preco_unit":10.5},{"qty":10,"nome":"VISTA LISA GRAPIA 2,20M","categoria":"Acabamentos em Madeira","preco_unit":15.75},{"qty":20,"nome":"VISTA LISA GRAPIA 1,60M","categoria":"Acabamentos em Madeira","preco_unit":12},{"qty":5,"nome":"VISTA LISA GRAPIA (JOGO)","categoria":"Acabamentos em Madeira","preco_unit":66.96},{"qty":1,"nome":"PORTA GRAPIA EXTERNA 80X210 (POR 03)","categoria":"Esquadrias (Portas e Janelas)","preco_unit":440},{"qty":3,"nome":"JANELA GRAPIA 4 FOLHAS CORRER 130x110cm CX10 (DIAGONAL)","categoria":"Esquadrias (Portas e Janelas)","preco_unit":460},{"qty":1,"nome":"JANELA GRAPIA BASCULANTE 120x60cm CX13 (DIAGONAL)","categoria":"Esquadrias (Portas e Janelas)","preco_unit":320},{"qty":1,"nome":"JANELA GRAPIA BASCULANTE 60x40cm CX13 (DIAGONAL)","categoria":"Esquadrias (Portas e Janelas)","preco_unit":130},{"qty":1,"nome":"PORTA JANELA GRAPIA 4 FOLHAS CORRER 180x210cm CX10 (DIAGONAL)","categoria":"Esquadrias (Portas e Janelas)","preco_unit":1200},{"qty":3,"nome":"PERNA CAIXILHO CAMBARA CX13,5 C/ 2,20M","categoria":"Aberturas (Caixilhos e Testeiras)","preco_unit":31.5},{"qty":1,"nome":"BOX RETO (INCOLOR/BRANCO)","categoria":"Vidraceiro","preco_unit":850},{"qty":1,"nome":"VIDRO INCOLOR DIAGONAL COMUM 4MM JANELA 60X40","categoria":"Vidraceiro","preco_unit":50},{"qty":3,"nome":"VIDRO INCOLOR DIAGONAL COMUM 4MM JANELA 140X110","categoria":"Vidraceiro","preco_unit":230},{"qty":1,"nome":"VIDRO INCOLOR DIAGONAL COMUM 4MM JANELA 120X100","categoria":"Vidraceiro","preco_unit":200},{"qty":1,"nome":"VIDRO INCOLOR DIAGONAL COMUM 4MM PORTA JANELA 180X210","categoria":"Vidraceiro","preco_unit":740},{"qty":1,"nome":"VIDRO FIXO EITÃO (Fachada 3m)","categoria":"Vidraceiro","preco_unit":630},{"qty":6,"nome":"PERFIL PVC COR BARRA - 6m","categoria":"Forro PVC","preco_unit":25.2},{"qty":1,"nome":"PARAFUSO FLANGEADO P/ FORRO (500PÇS)","categoria":"Insumos Forro","preco_unit":4.24},{"qty":3,"nome":"ACABAMENTO DE REGISTRO","categoria":"Acabamentos e Ferranges","preco_unit":17},{"qty":1,"nome":"ACESSORIOS INSTALAÇÃO VASO SANITÁRIO","categoria":"Acabamentos e Ferranges","preco_unit":15.7},{"qty":2,"nome":"ESPUMA EXPANSIVA TUBO","categoria":"Acabamentos e Ferranges","preco_unit":27.6},{"qty":1,"nome":"PORTA INTERNA ANGELIM LISTA 70X210","categoria":"Esquadrias (Portas e Janelas)","preco_unit":147},{"qty":2,"nome":"PORTA INTERNA ANGELIM LISA 80X210","categoria":"Esquadrias (Portas e Janelas)","preco_unit":147},{"qty":2,"nome":"FECHADURA INTERNA","categoria":"Acabamentos e Ferranges","preco_unit":46.36},{"qty":1,"nome":"FECHADURA EXTERNA","categoria":"Acabamentos e Ferranges","preco_unit":56.05},{"qty":1,"nome":"FECHADURA PORTA JANELA","categoria":"Acabamentos e Ferranges","preco_unit":54.15},{"qty":1,"nome":"FECHADURA BANHEIRO","categoria":"Acabamentos e Ferranges","preco_unit":46.36},{"qty":4,"nome":"PUXADOR DE PORTA + PARAFUSOS","categoria":"Acabamentos e Ferranges","preco_unit":9},{"qty":3,"nome":"PUXADOR DE JANELA","categoria":"Acabamentos e Ferranges","preco_unit":11.12},{"qty":50,"nome":"PARAFUSO 4,5x60mm P/ABERTURAS","categoria":"Acabamentos e Ferranges","preco_unit":0.14},{"qty":1,"nome":"PO XADREZ 250G","categoria":"Acabamentos e Ferranges","preco_unit":12.63},{"qty":2,"nome":"SILICONE TUBO","categoria":"Acabamentos e Ferranges","preco_unit":13.99},{"qty":1,"nome":"VASO SANITÁRIO C/ CX ACOPLADA","categoria":"Acabamentos e Ferranges","preco_unit":386},{"qty":42,"nome":"MÃO DE OBRA (CONSTRUTOR) - T1","categoria":"Mão de Obra (Construtor)","preco_unit":420},{"qty":6,"nome":"CALHEIRO (RUFOS)","categoria":"Calheiro","preco_unit":90}];
@@ -1070,8 +1071,10 @@ function confirmDel(){
 
 // ── MODALS ────────────────────────────────────────────────────────────────────
 function closeModal(id){ document.getElementById(id).classList.remove('open'); }
-document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{ if(e.target===o) o.classList.remove('open'); }));
-document.addEventListener('keydown',e=>{ if(e.key==='Escape') document.querySelectorAll('.overlay.open').forEach(o=>o.classList.remove('open')); });
+function initModalListeners(){
+  document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{ if(e.target===o) o.classList.remove('open'); }));
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape') document.querySelectorAll('.overlay.open').forEach(o=>o.classList.remove('open')); });
+}
 
 // ── EXPORT ────────────────────────────────────────────────────────────────────
 function exportCSV(){
@@ -1379,4 +1382,210 @@ function mvShowView(which) {
 // ── LIST ──────────────────────────────────────────────
 function renderModelos() {
   mvShowView('mv-lista');
-  const btn = document.getElementById('btnCompare
+  const btn = document.getElementById('btnCompare');
+  if (btn) btn.style.display = (S.modelos||[]).length >= 2 ? '' : 'none';
+  const grid = document.getElementById('mvGrid');
+  if (!S.modelos || !S.modelos.length) {
+    grid.innerHTML = '<div style="color:var(--muted);font-size:14px;padding:24px 0;">Nenhum modelo salvo ainda.<br>Configure seus itens na aba <strong>Itens</strong> e clique em <strong>💾 Salvar Modelo Atual</strong>.</div>';
+    return;
+  }
+  grid.innerHTML = S.modelos.map(m => {
+    const snap  = m.snapshot||[];
+    const custo = mvSnapshotTotal(snap);
+    const preco = mvPrecoVendaModelo(custo, m.margem||25, m.simRows||S.simRows||[]);
+    const data  = m.savedAt ? new Date(m.savedAt).toLocaleDateString('pt-BR') : '—';
+    return `<div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px;transition:border-color .15s"
+      onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border)'">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
+        <div style="font-size:16px;font-weight:700;">${esc(m.nome)}</div>
+        <div style="display:flex;gap:5px;">
+          <button onclick="mvDelModelo('${m.id}')" style="background:none;border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:3px 8px;cursor:pointer;font-size:11px;" title="Excluir">🗑</button>
+        </div>
+      </div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:16px;">${m.area||0} m² &nbsp;·&nbsp; ${m.cenarioNome ? '<span style="color:var(--gold)">'+esc(m.cenarioNome)+'</span>' : 'Margem: '+(m.margem||25)+'%'} &nbsp;·&nbsp; ${snap.length} itens &nbsp;·&nbsp; Salvo: ${data}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">
+        <div style="background:var(--surface2);border-radius:8px;padding:10px;">
+          <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:3px;">Custo Total</div>
+          <div style="font-size:17px;font-weight:700;color:var(--gold)">${brl(custo)}</div>
+          <div style="font-size:11px;color:var(--muted)">${brl((m.area||1)>0?custo/(m.area||1):0)}/m²</div>
+        </div>
+        <div style="background:var(--surface2);border-radius:8px;padding:10px;">
+          <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:3px;">Preço Venda</div>
+          <div style="font-size:17px;font-weight:700;color:#27c482">${brl(preco)}</div>
+          <div style="font-size:11px;color:var(--muted)">${brl((m.area||1)>0?preco/(m.area||1):0)}/m²</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <button onclick="mvOpenDetalhe('${m.id}')"
+          style="background:none;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:9px;cursor:pointer;font-family:inherit;font-size:12px;transition:all .15s"
+          onmouseover="this.style.borderColor='var(--gold)';this.style.color='var(--gold)'"
+          onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">
+          📋 Ver Detalhes
+        </button>
+        <button onclick="mvLoadIntoDashById('${m.id}')"
+          style="background:linear-gradient(135deg,#1a6b8a,#2196b0);border:none;color:#fff;border-radius:8px;padding:9px;cursor:pointer;font-family:inherit;font-size:12px;font-weight:600;">
+          📊 Abrir no Dashboard
+        </button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── DETALHE ───────────────────────────────────────────
+function mvOpenDetalhe(id) {
+  _mvCurrentId = String(id);
+  const m = mvGetModelo(_mvCurrentId);
+  if (!m) return;
+  mvShowView('mv-detalhe');
+  const snap  = m.snapshot||[];
+  const custo = mvSnapshotTotal(snap);
+  const preco = mvPrecoVendaModelo(custo, m.margem||25, m.simRows||S.simRows||[]);
+  document.getElementById('mvDetNome').textContent = m.nome;
+  document.getElementById('mvDetSub').textContent  = (m.area||0) + ' m²  ·  Margem: ' + (m.margem||25) + '%  ·  ' + snap.length + ' itens';
+  document.getElementById('mvDetTotal').textContent = brl(custo);
+  document.getElementById('mvDetPreco').textContent = brl(preco);
+
+  // Categories
+  const catTotals = mvSnapshotCats(snap);
+  const catArr = Object.entries(catTotals).sort((a,b)=>b[1]-a[1]);
+  document.getElementById('mvDetCats').innerHTML = catArr.map(([cat,val]) => {
+    const col = catColor(cat);
+    return `<div style="background:var(--surface2);border-radius:10px;padding:12px 14px;">
+      <div style="font-size:10px;color:${col};font-weight:700;margin-bottom:3px;">${esc(cat)}</div>
+      <div style="font-size:15px;font-weight:700">${brl(val)}</div>
+      <div style="font-size:11px;color:var(--muted)">${custo>0?(val/custo*100).toFixed(1):0}% do total</div>
+    </div>`;
+  }).join('');
+
+  // Items table
+  const tbody = document.getElementById('mvDetBody');
+  if (!snap.length) {
+    tbody.innerHTML = '<tr><td colspan="5"><div class="empty">Nenhum item neste modelo.</div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = snap.map(i => {
+    const col = catColor(i.categoria||'');
+    return `<tr>
+      <td style="font-weight:600">${esc(i.nome||'')}</td>
+      <td><span class="badge" style="background:${col}22;color:${col}">${esc(i.categoria||'')}</span></td>
+      <td class="r">${i.qty||0}</td>
+      <td class="r" style="color:var(--muted)">${brl(i.preco_unit||0)}</td>
+      <td class="r" style="font-weight:700;color:var(--gold)">${brl((i.preco_unit||0)*(i.qty||0))}</td>
+    </tr>`;
+  }).join('');
+}
+
+function mvBackToList() {
+  _mvCurrentId = null;
+  renderModelos();
+}
+
+// ── LOAD INTO DASHBOARD ───────────────────────────────
+function mvLoadIntoDash() {
+  mvLoadIntoDashById(_mvCurrentId);
+}
+
+function mvLoadIntoDashById(id) {
+  const m = mvGetModelo(String(id));
+  if (!m || !m.snapshot || !m.snapshot.length) { toast('Modelo sem itens', 'err'); return; }
+  if (!confirm('Carregar o modelo "' + m.nome + '" como itens ativos? Os itens atuais serão substituídos.')) return;
+  S.items = m.snapshot.map((i,idx) => ({...i, id: idx+1}));
+  S.area  = m.area || S.area;
+  save();
+  renderDash();
+  renderItens();
+  goTo('dashboard');
+  toast('✓ Modelo "' + m.nome + '" carregado no Dashboard!');
+}
+
+// ── COMPARE ───────────────────────────────────────────
+function mvShowCompare() {
+  mvShowView('mv-compare');
+  const modelos = S.modelos||[];
+  const allCats = [...new Set(modelos.flatMap(m => Object.keys(mvSnapshotCats(m.snapshot||[]))))].sort();
+  document.getElementById('mvCompareThead').innerHTML =
+    '<th>Categoria</th>' + modelos.map(m =>
+      `<th style="text-align:right">${esc(m.nome)}<br><span style="font-size:10px;font-weight:400;color:var(--muted)">${m.area||0}m²</span></th>`
+    ).join('');
+  const tbody = document.getElementById('mvCompareTbody');
+  tbody.innerHTML = allCats.map(cat => {
+    const vals = modelos.map(m => { const cs = mvSnapshotCats(m.snapshot||[]); return cs[cat]||0; });
+    if (!vals.some(v=>v>0)) return '';
+    return `<tr><td><span class="badge" style="background:${catColor(cat)}22;color:${catColor(cat)}">${esc(cat)}</span></td>
+      ${vals.map(v=>`<td class="r">${v>0?brl(v):'<span style="color:var(--muted)">—</span>'}</td>`).join('')}</tr>`;
+  }).join('') +
+  `<tr style="border-top:2px solid var(--border);font-weight:700;"><td>CUSTO TOTAL</td>
+    ${modelos.map(m=>`<td class="r" style="color:var(--gold)">${brl(mvSnapshotTotal(m.snapshot||[]))}</td>`).join('')}</tr>
+  <tr style="font-weight:700;"><td>PREÇO VENDA</td>
+    ${modelos.map(m=>`<td class="r" style="color:#27c482">${brl(mvPrecoVendaModelo(mvSnapshotTotal(m.snapshot||[]),m.margem||25,m.simRows||S.simRows||[]))}</td>`).join('')}</tr>
+  <tr><td style="color:var(--muted)">Custo/m²</td>
+    ${modelos.map(m=>`<td class="r" style="color:var(--muted)">${brl(mvSnapshotTotal(m.snapshot||[])/(m.area||1))}</td>`).join('')}</tr>`;
+}
+
+// ── SAVE / DEL MODELO ─────────────────────────────────
+function mvOpenNew() {
+  document.getElementById('mvModalTitle').textContent = 'Salvar Modelo Atual';
+  document.getElementById('mvNome').value = '';
+  document.getElementById('mvArea').value = S.area||'';
+  document.getElementById('mvMargem').value = '25';
+  // Populate scenario selector
+  const sel = document.getElementById('mvCenario');
+  sel.innerHTML = '<option value="">— Usar apenas margem simples —</option>' +
+    (S.scenarios||[]).map((sc,i) => {
+      const mr = sc.rows.find(r=>r.id==='margem'); const m = mr?mr.value:0;
+      return `<option value="${i}">${esc(sc.name)} (Lucro ${m}%)</option>`;
+    }).join('');
+  // Pre-select active scenario if any
+  if (S.activeScen !== null && S.activeScen !== undefined && S.activeScen >= 0) {
+    sel.value = String(S.activeScen);
+  }
+  document.getElementById('mvModalItemCount').textContent = S.items.length + ' itens serão incluídos no modelo.';
+  document.getElementById('mvModalModelo').classList.add('open');
+  setTimeout(() => document.getElementById('mvNome').focus(), 50);
+}
+
+function mvSaveModelo() {
+  const nome   = document.getElementById('mvNome').value.trim();
+  const area   = parseFloat(document.getElementById('mvArea').value)||0;
+  const margem = parseFloat(document.getElementById('mvMargem').value)||25;
+  if (!nome) { toast('Digite um nome para o modelo', 'err'); return; }
+  if (!S.modelos) S.modelos = [];
+  // Snapshot: only nome + qty — price always comes from catalog
+  const snapshot = S.items.map(i => ({
+    nome: i.nome || '',
+    qty:  i.qty  || 0
+  }));
+  // Use selected scenario's simRows if chosen
+  const cenSel = document.getElementById('mvCenario');
+  const cenIdx = cenSel && cenSel.value !== '' ? parseInt(cenSel.value) : -1;
+  const chosenScen = cenIdx >= 0 && S.scenarios[cenIdx] ? S.scenarios[cenIdx] : null;
+  const chosenSimRows = chosenScen ? chosenScen.rows.map(r=>({...r})) : (S.simRows||[]).map(r=>({...r}));
+  const chosenMargem = chosenScen ? (chosenScen.rows.find(r=>r.id==='margem')?.value || margem) : margem;
+  const cenarioNome = chosenScen ? chosenScen.name : null;
+  S.modelos.push({ id: String(Date.now()), nome, area, margem: chosenMargem, cenarioNome, snapshot, simRows: chosenSimRows, savedAt: new Date().toISOString() });
+  save(); closeModal('mvModalModelo'); renderModelos();
+  toast('✓ Modelo "' + nome + '" salvo' + (cenarioNome ? ' com cenário "' + cenarioNome + '"' : '') + '!');
+}
+
+function mvDelModelo(id) {
+  const m = mvGetModelo(String(id));
+  if (!m || !confirm('Excluir o modelo "' + m.nome + '"?')) return;
+  S.modelos = (S.modelos||[]).filter(x => String(x.id) !== String(id));
+  save(); renderModelos(); toast('Modelo excluído');
+}
+
+// Aliases
+var openAddModelo = mvOpenNew;
+var saveModelo    = mvSaveModelo;
+var delModelo     = mvDelModelo;
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+window.addEventListener("DOMContentLoaded", function() {
+  initModalListeners();
+  load();
+  renderDash();
+  sbLoadAll();
+});
+</script>
+</body>
+</html>
