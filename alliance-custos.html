@@ -1131,7 +1131,7 @@ function sbFetch(method, url, body) {
       'apikey': SB_KEY,
       'Authorization': 'Bearer ' + SB_KEY,
       'Content-Type': 'application/json',
-      'Prefer': method === 'POST' ? 'resolution=merge-duplicates' : ''
+      'Prefer': method === 'POST' ? 'return=minimal,resolution=merge-duplicates' : ''
     }
   };
   if (body) opts.body = JSON.stringify(body);
@@ -1154,7 +1154,8 @@ async function sbSyncAll() {
       cenarios:   JSON.stringify({ area: S.area, simRows: S.simRows }),
       modelos:    JSON.stringify(S.modelos   || []),
       catalog:    JSON.stringify(S.catalog   || []),
-      items:      JSON.stringify(S.items     || [])
+      items:      JSON.stringify(S.items     || []),
+      updated_at: new Date().toISOString()
     };
     const cfgRes = await sbFetch('POST', SB_URL + '/rest/v1/custos_config?on_conflict=id', cfg);
     if (!cfgRes.ok) {
