@@ -259,7 +259,7 @@ select.sel:focus{border-color:var(--gold)}
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
       Novo Material
     </button>
-    <button class="btn btn-gold btn-sm" onclick="openAdd()">
+    <button class="btn btn-gold btn-sm" id="btnNovoItem" onclick="openAdd()" style="display:none">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
       Novo Item
     </button>
@@ -661,11 +661,24 @@ function load(){
     const r=localStorage.getItem('ac2');
     if(r){ const p=JSON.parse(r); Object.assign(S,p); }
     if(!S.items||!S.items.length) S.items=DEFAULT_ITEMS.map((x,i)=>({...x,id:String(i+1)}));
-    // Init catalog from items if empty (migration)
+    // Init catalog from DEFAULT_ITEMS if empty
     if(!S.catalog||!S.catalog.length){
       const seen=new Set();
       S.catalog=DEFAULT_ITEMS.filter(x=>{ if(seen.has(x.nome)) return false; seen.add(x.nome); return true; })
         .map((x,i)=>({id:'cat_'+(i+1), nome:x.nome, categoria:x.categoria, unidade:x.unidade||'', preco_unit:x.preco_unit}));
+    }
+    // Migrate: add any S.items not in catalog to catalog
+    if(S.items && S.items.length && S.catalog){
+      S.items.forEach(item => {
+        if(item.preco_unit && item.preco_unit > 0 && item.nome) {
+          const exists = S.catalog.find(c => c.nome === item.nome);
+          if(!exists) {
+            S.catalog.push({id:'cat_mig_'+Date.now()+'_'+Math.random().toString(36).slice(2,6), nome:item.nome, categoria:item.categoria||'Outros', unidade:item.unidade||'', preco_unit:item.preco_unit||0});
+          }
+        }
+      });
+      // Clean items to only nome+qty after migration
+      S.items = S.items.map(i => ({id:String(i.id), nome:i.nome, qty:i.qty||0}));
     }
     if(!S.simRows) S.simRows=SIM_DEFAULTS.map(x=>({...x}));
     if(!S.scenarios) S.scenarios=[
@@ -719,9 +732,14 @@ function goTo(id){
     if(b.getAttribute('onclick')===`goTo('${id}')`) b.classList.add('active');
   });
   window.scrollTo(0,0);
-  if(id==='dashboard') { renderDash(); const b=document.getElementById('btnNovoCatalogo'); if(b) b.style.display='none'; }
-  if(id==='catalogo') { renderCatalogo(); const b=document.getElementById('btnNovoCatalogo'); if(b) b.style.display=''; }
-  if(id==='itens') { renderItens(); const b=document.getElementById('btnNovoCatalogo'); if(b) b.style.display='none'; }
+  if(id==='dashboard') { renderDash(); }
+  if(id==='catalogo') { renderCatalogo(); }
+  if(id==='itens') { renderItens(); }
+  // Show correct action button per tab
+  const bCat  = document.getElementById('btnNovoCatalogo');
+  const bItem = document.getElementById('btnNovoItem');
+  if(bCat)  bCat.style.display  = (id==='catalogo') ? '' : 'none';
+  if(bItem) bItem.style.display = (id==='itens')    ? '' : 'none';
   if(id==='categorias') renderCats();
   if(id==='simulador') renderSim();
   if(id==='config') renderConfig();
@@ -769,7 +787,7 @@ function renderItens(){
   else if(sort==='pd') items.sort((a,b)=>b.preco_unit-a.preco_unit);
   else if(sort==='cat') items.sort((a,b)=>a.categoria.localeCompare(b.categoria));
   const body=document.getElementById('itensBody');
-  if(!items.length){ body.innerHTML=`<tr><td colspan="5"><div class="empty">Nenhum item encontrado</div></td></tr>`; }
+  if(!items.length){ body.innerHTML=`<tr><td colspan="7"><div class="empty">Nenhum item encontrado. Adicione itens do catálogo.</div></td></tr>`; }
   else body.innerHTML=items.map(item=>{
     const col=catColor(item.categoria);
     const catNome=getCatalogCat(item.nome)||item.categoria||'—';
@@ -1133,7 +1151,7 @@ async function sbSyncAll() {
       id:         1,
       categorias: JSON.stringify(S.scenarios || []),
       revisoes:   JSON.stringify(S.history   || []),
-      cenarios:   JSON.stringify({ area: S.area, simRows: S.simRows, catalog: S.catalog||[] }),
+      cenarios:   JSON.stringify({ area: S.area, simRows: S.simRows }),
       modelos:    JSON.stringify(S.modelos   || [])
     };
     const cfgRes = await sbFetch('POST', SB_URL + '/rest/v1/custos_config?on_conflict=id', cfg);
@@ -1142,16 +1160,32 @@ async function sbSyncAll() {
       throw new Error('Config save failed: ' + err);
     }
 
-    // Save items
+    // Save catalog (preços centrais) - tabela custos_catalogo
+    if (S.catalog && S.catalog.length) {
+      const catalogItems = S.catalog.map(i => ({
+        id:         String(i.id),
+        nome:       i.nome       || '',
+        categoria:  i.categoria  || '',
+        unidade:    i.unidade    || '',
+        preco_unit: i.preco_unit || 0
+      }));
+      const catRes = await sbFetch('POST', SB_URL + '/rest/v1/custos_catalogo?on_conflict=id', catalogItems);
+      if (!catRes.ok) {
+        const catErr = await catRes.text();
+        // If table doesn't exist yet, store in config as fallback
+        console.warn('custos_catalogo table not ready, using config fallback:', catErr);
+      }
+    }
+    // Save items (nome+qty do projeto ativo)
     if (S.items && S.items.length) {
       const items = S.items.map(i => ({
         id:         String(i.id),
-        nome:       i.nome        || '',
-        categoria:  i.categoria   || '',
-        qty:        i.qty         || 0,
-        preco_unit: i.preco_unit  || 0,
-        unidade:    i.unidade     || '',
-        obs:        i.obs         || ''
+        nome:       i.nome    || '',
+        categoria:  '',
+        qty:        i.qty     || 0,
+        preco_unit: 0,
+        unidade:    '',
+        obs:        ''
       }));
       const itemsRes = await sbFetch('POST', SB_URL + '/rest/v1/custos?on_conflict=id', items);
       if (!itemsRes.ok) {
@@ -1172,20 +1206,28 @@ async function sbSyncAll() {
 async function sbLoadAll() {
   setSyncStatus('⏳ Carregando da nuvem...', '#f5a623');
   try {
-    const [itemsRes, cfgRes] = await Promise.all([
+    const [itemsRes, cfgRes, catalogRes] = await Promise.all([
       sbFetch('GET', SB_URL + '/rest/v1/custos?order=id').then(r => r.json()),
-      sbFetch('GET', SB_URL + '/rest/v1/custos_config?id=eq.1').then(r => r.json())
+      sbFetch('GET', SB_URL + '/rest/v1/custos_config?id=eq.1').then(r => r.json()),
+      sbFetch('GET', SB_URL + '/rest/v1/custos_catalogo?order=nome').then(r => r.json()).catch(()=>[])
     ]);
 
+    // Load catalog from dedicated table
+    if (Array.isArray(catalogRes) && catalogRes.length) {
+      S.catalog = catalogRes.map(i => ({
+        id:         String(i.id),
+        nome:       i.nome       || '',
+        categoria:  i.categoria  || '',
+        unidade:    i.unidade    || '',
+        preco_unit: Number(i.preco_unit) || 0
+      }));
+    }
+    // Load project items (just nome + qty)
     if (Array.isArray(itemsRes) && itemsRes.length) {
-      S.items = itemsRes.map(i => ({
-        id:         i.id,
-        nome:       i.nome,
-        categoria:  i.categoria,
-        qty:        Number(i.qty),
-        preco_unit: Number(i.preco_unit),
-        unidade:    i.unidade || '',
-        obs:        i.obs     || ''
+      S.items = itemsRes.filter(i => i.qty > 0 || Number(i.qty) > 0).map(i => ({
+        id:   String(i.id),
+        nome: i.nome || '',
+        qty:  Number(i.qty) || 0
       }));
     }
     if (cfgRes && cfgRes[0]) {
@@ -1196,7 +1238,8 @@ async function sbLoadAll() {
         const extra = JSON.parse(c.cenarios);
         if (extra.area)    S.area    = extra.area;
         if (extra.simRows) S.simRows = extra.simRows;
-        if (extra.catalog && extra.catalog.length) S.catalog = extra.catalog;
+        // catalog now has dedicated table - no longer in cenarios
+        if (!S.catalog.length && extra.catalog && extra.catalog.length) S.catalog = extra.catalog;
       } catch(e) {}
       // Load modelos
       try {
@@ -1545,47 +1588,4 @@ function mvOpenNew() {
 }
 
 function mvSaveModelo() {
-  const nome   = document.getElementById('mvNome').value.trim();
-  const area   = parseFloat(document.getElementById('mvArea').value)||0;
-  const margem = parseFloat(document.getElementById('mvMargem').value)||25;
-  if (!nome) { toast('Digite um nome para o modelo', 'err'); return; }
-  if (!S.modelos) S.modelos = [];
-  // Snapshot: only nome + qty — price always comes from catalog
-  const snapshot = S.items.map(i => ({
-    nome: i.nome || '',
-    qty:  i.qty  || 0
-  }));
-  // Use selected scenario's simRows if chosen
-  const cenSel = document.getElementById('mvCenario');
-  const cenIdx = cenSel && cenSel.value !== '' ? parseInt(cenSel.value) : -1;
-  const chosenScen = cenIdx >= 0 && S.scenarios[cenIdx] ? S.scenarios[cenIdx] : null;
-  const chosenSimRows = chosenScen ? chosenScen.rows.map(r=>({...r})) : (S.simRows||[]).map(r=>({...r}));
-  const chosenMargem = chosenScen ? (chosenScen.rows.find(r=>r.id==='margem')?.value || margem) : margem;
-  const cenarioNome = chosenScen ? chosenScen.name : null;
-  S.modelos.push({ id: String(Date.now()), nome, area, margem: chosenMargem, cenarioNome, snapshot, simRows: chosenSimRows, savedAt: new Date().toISOString() });
-  save(); closeModal('mvModalModelo'); renderModelos();
-  toast('✓ Modelo "' + nome + '" salvo' + (cenarioNome ? ' com cenário "' + cenarioNome + '"' : '') + '!');
-}
-
-function mvDelModelo(id) {
-  const m = mvGetModelo(String(id));
-  if (!m || !confirm('Excluir o modelo "' + m.nome + '"?')) return;
-  S.modelos = (S.modelos||[]).filter(x => String(x.id) !== String(id));
-  save(); renderModelos(); toast('Modelo excluído');
-}
-
-// Aliases
-var openAddModelo = mvOpenNew;
-var saveModelo    = mvSaveModelo;
-var delModelo     = mvDelModelo;
-
-// ── INIT ──────────────────────────────────────────────────────────────────────
-window.addEventListener("DOMContentLoaded", function() {
-  initModalListeners();
-  load();
-  renderDash();
-  sbLoadAll();
-});
-</script>
-</body>
-</html>
+  const nome   = document
