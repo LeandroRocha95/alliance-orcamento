@@ -1147,90 +1147,34 @@ function setSyncStatus(msg, color) {
 async function sbSyncAll() {
   setSyncStatus('⏳ Salvando...', '#f5a623');
   try {
-    // Save config including modelos
     const cfg = {
       id:         1,
       categorias: JSON.stringify(S.scenarios || []),
       revisoes:   JSON.stringify(S.history   || []),
       cenarios:   JSON.stringify({ area: S.area, simRows: S.simRows }),
-      modelos:    JSON.stringify(S.modelos   || [])
+      modelos:    JSON.stringify(S.modelos   || []),
+      catalog:    JSON.stringify(S.catalog   || []),
+      items:      JSON.stringify(S.items     || [])
     };
     const cfgRes = await sbFetch('POST', SB_URL + '/rest/v1/custos_config?on_conflict=id', cfg);
     if (!cfgRes.ok) {
       const err = await cfgRes.text();
-      throw new Error('Config save failed: ' + err);
-    }
-
-    // Save catalog (preços centrais) - tabela custos_catalogo
-    if (S.catalog && S.catalog.length) {
-      const catalogItems = S.catalog.map(i => ({
-        id:         String(i.id),
-        nome:       i.nome       || '',
-        categoria:  i.categoria  || '',
-        unidade:    i.unidade    || '',
-        preco_unit: i.preco_unit || 0
-      }));
-      const catRes = await sbFetch('POST', SB_URL + '/rest/v1/custos_catalogo?on_conflict=id', catalogItems);
-      if (!catRes.ok) {
-        const catErr = await catRes.text();
-        // If table doesn't exist yet, store in config as fallback
-        console.warn('custos_catalogo table not ready, using config fallback:', catErr);
-      }
-    }
-    // Save items (nome+qty do projeto ativo)
-    if (S.items && S.items.length) {
-      const items = S.items.map(i => ({
-        id:         String(i.id),
-        nome:       i.nome    || '',
-        categoria:  '',
-        qty:        i.qty     || 0,
-        preco_unit: 0,
-        unidade:    '',
-        obs:        ''
-      }));
-      const itemsRes = await sbFetch('POST', SB_URL + '/rest/v1/custos?on_conflict=id', items);
-      if (!itemsRes.ok) {
-        const err = await itemsRes.text();
-        throw new Error('Items save failed: ' + err);
-      }
+      throw new Error('Save failed: ' + err);
     }
     setSyncStatus('✓ Sincronizado ' + new Date().toLocaleTimeString('pt-BR'), '#2ecc71');
     toast('✓ Dados salvos na nuvem!');
   } catch(e) {
     setSyncStatus('✗ Erro: ' + e.message, '#e74c3c');
-    toast('Erro: ' + e.message, 'err');
+    toast('Erro ao salvar: ' + e.message, 'err');
     console.error('sbSyncAll error:', e);
   }
 }
 
-// Load data from Supabase
+
 async function sbLoadAll() {
   setSyncStatus('⏳ Carregando da nuvem...', '#f5a623');
   try {
-    const [itemsRes, cfgRes, catalogRes] = await Promise.all([
-      sbFetch('GET', SB_URL + '/rest/v1/custos?order=id').then(r => r.json()),
-      sbFetch('GET', SB_URL + '/rest/v1/custos_config?id=eq.1').then(r => r.json()),
-      sbFetch('GET', SB_URL + '/rest/v1/custos_catalogo?order=nome').then(r => r.json()).catch(()=>[])
-    ]);
-
-    // Load catalog from dedicated table
-    if (Array.isArray(catalogRes) && catalogRes.length) {
-      S.catalog = catalogRes.map(i => ({
-        id:         String(i.id),
-        nome:       i.nome       || '',
-        categoria:  i.categoria  || '',
-        unidade:    i.unidade    || '',
-        preco_unit: Number(i.preco_unit) || 0
-      }));
-    }
-    // Load project items (just nome + qty)
-    if (Array.isArray(itemsRes) && itemsRes.length) {
-      S.items = itemsRes.filter(i => i.qty > 0 || Number(i.qty) > 0).map(i => ({
-        id:   String(i.id),
-        nome: i.nome || '',
-        qty:  Number(i.qty) || 0
-      }));
-    }
+    const cfgRes = await sbFetch('GET', SB_URL + '/rest/v1/custos_config?id=eq.1').then(r => r.json());
     if (cfgRes && cfgRes[0]) {
       const c = cfgRes[0];
       try { S.scenarios = JSON.parse(c.categorias); } catch(e) {}
@@ -1239,10 +1183,7 @@ async function sbLoadAll() {
         const extra = JSON.parse(c.cenarios);
         if (extra.area)    S.area    = extra.area;
         if (extra.simRows) S.simRows = extra.simRows;
-        // catalog now has dedicated table - no longer in cenarios
-        if (!S.catalog.length && extra.catalog && extra.catalog.length) S.catalog = extra.catalog;
       } catch(e) {}
-      // Load modelos
       try {
         if (c.modelos) {
           const modelos = JSON.parse(c.modelos);
@@ -1250,6 +1191,18 @@ async function sbLoadAll() {
             S.modelos = modelos;
             S.modelos.forEach(m => { m.id = String(m.id); });
           }
+        }
+      } catch(e) {}
+      try {
+        if (c.catalog) {
+          const catalog = JSON.parse(c.catalog);
+          if (Array.isArray(catalog) && catalog.length) S.catalog = catalog;
+        }
+      } catch(e) {}
+      try {
+        if (c.items) {
+          const items = JSON.parse(c.items);
+          if (Array.isArray(items)) S.items = items;
         }
       } catch(e) {}
     }
