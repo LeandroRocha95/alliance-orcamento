@@ -497,6 +497,15 @@
     </div>
   </div>
 
+  <!-- Código do orçamento -->
+  <div style="display:flex;align-items:center;gap:10px;padding:0 0 12px 0;">
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:8px;">
+      <span>Orçamento:</span>
+      <strong id="quoteCodeDisplay" style="color:var(--accent);font-family:monospace;letter-spacing:1px;">NOVO</strong>
+    </div>
+    <button class="btn btn-ghost btn-sm" onclick="newQuote()" style="font-size:12px;padding:7px 14px;">+ Novo Orçamento</button>
+  </div>
+
   <div class="actions">
     <button class="btn btn-ghost" onclick="resetAll()" style="flex:none;">🗑 Limpar</button>
     <button class="btn btn-ghost" onclick="saveToHistory()" style="flex:none;">💾 Salvar</button>
@@ -1111,6 +1120,8 @@ function recalc() {
 
 function resetAll() {
   if (!confirm('Limpar todos os valores?')) return;
+  _currentQuoteId = null;
+  updateQuoteCodeDisplay();
   state = {};
   ['clientName','vendorName','clientCity','clientPhone','quoteObs','discountVal','acrescimoVal'].forEach(function(id){
     var el = document.getElementById(id); if(el) el.value='';
@@ -1221,7 +1232,7 @@ function onLoginSuccess() {
   .then(function(r){ return r.json(); })
   .then(function(rows) {
     _isAdmin = Array.isArray(rows) && rows.length > 0;
-    loadConfig(function() { renderOrcamento(); renderPaymentRows(); });
+    loadConfig(function() { renderOrcamento(); renderPaymentRows(); updateQuoteCodeDisplay(); });
   })
   .catch(function(){ loadConfig(function() { renderOrcamento(); renderPaymentRows(); }); });
 }
@@ -1247,7 +1258,7 @@ function restoreSession() {
           .then(function(r){ return r.json(); })
           .then(function(rows) {
             _isAdmin = Array.isArray(rows) && rows.length > 0;
-            loadConfig(function() { renderOrcamento(); renderPaymentRows(); });
+            loadConfig(function() { renderOrcamento(); renderPaymentRows(); updateQuoteCodeDisplay(); });
           });
         } else {
           _currentUser = null;
@@ -1271,7 +1282,8 @@ function saveToHistory() {
   if (!client) { showToast('Informe o nome do cliente antes de salvar','error'); return; }
   showToast('⏳ Salvando na nuvem...','success');
 
-  var id = Date.now();
+  // Use existing ID (update) or create new one
+  var id = _currentQuoteId || Date.now();
   var entry = {
     id:            id,
     client:        client,
@@ -1296,8 +1308,10 @@ function saveToHistory() {
   sbFetch('POST', TABLE_URL + '?on_conflict=id', entry)
   .then(function(r) {
     if (r.ok || r.status === 201) {
+      _currentQuoteId = id;
+      updateQuoteCodeDisplay();
       _historyCache = null;
-      showToast('✓ Orçamento salvo na nuvem!');
+      showToast('✓ Orçamento ' + genQuoteCode(id) + ' salvo!');
     } else {
       r.text().then(function(t){ showToast('Erro: ' + t, 'error'); });
     }
@@ -1356,6 +1370,8 @@ function renderHistory() {
 function loadFromHistory(id) {
   function applyEntry(e) {
     if (!e) { showToast('Orçamento não encontrado','error'); return; }
+    _currentQuoteId = e.id;
+    updateQuoteCodeDisplay();
     state = (e.state && typeof e.state === 'object') ? JSON.parse(JSON.stringify(e.state)) : {};
     document.getElementById('clientName').value    = e.client        || '';
     document.getElementById('vendorName').value    = e.vendor        || '';
@@ -1981,6 +1997,48 @@ function toggleGroupField() {
   var selectedSec = SECTIONS.find(function(s){ return s.id === sec.value; });
   // Show group selector only for non-log sections
   wrap.style.display = (sec.value && sec.value !== 'log') ? '' : 'none';
+}
+
+
+function genQuoteCode(id) {
+  // Format: ORC-2024-00123
+  var d = new Date(id);
+  var year = d.getFullYear();
+  var num  = String(id).slice(-5);
+  return 'ORC-' + year + '-' + num;
+}
+
+function updateQuoteCodeDisplay() {
+  var el = document.getElementById('quoteCodeDisplay');
+  if (!el) return;
+  el.textContent = _currentQuoteId ? genQuoteCode(_currentQuoteId) : 'NOVO';
+  el.style.color = _currentQuoteId ? 'var(--accent)' : 'var(--muted)';
+}
+
+function newQuote() {
+  if (_currentQuoteId) {
+    if (!confirm('Criar um novo orçamento em branco? O atual permanece salvo no histórico.')) return;
+  }
+  _currentQuoteId = null;
+  state = {};
+  ['clientName','vendorName','clientCity','clientPhone','quoteObs','discountVal','acrescimoVal'].forEach(function(id){
+    var el = document.getElementById(id); if(el) el.value='';
+  });
+  document.getElementById('discountType').value = 'pct';
+  paymentRows = [
+    {id:1,label:'Até o dia Anterior ao início da Obra',pct:25},
+    {id:2,label:'Após o Fundamento Concretado e Paredes de Alvenaria Erguidas, Sem Reboco',pct:25},
+    {id:3,label:'Estrutura em Madeira Erguida e Telhas Colocadas',pct:25},
+    {id:4,label:'Apos Paredes Fechadas de Frontal, Hidraulica e Reboco Pronto',pct:25}
+  ]; paymentNextId=5; renderPaymentRows();
+  document.getElementById('discountResult').style.display = 'none';
+  setStatus('negociacao');
+  var v = new Date(); v.setDate(v.getDate()+15);
+  document.getElementById('quoteValidity').value = v.toISOString().split('T')[0];
+  document.getElementById('quoteDate').value = new Date().toISOString().split('T')[0];
+  renderOrcamento();
+  updateQuoteCodeDisplay();
+  showToast('Novo orçamento iniciado!');
 }
 
 // ═══════════════════════════════════════════════════
