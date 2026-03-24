@@ -600,7 +600,7 @@ function load(){
       {name:'Agressivo',  rows:mkScenRows(35),area:42},
     ];
   if(!S.modelos) S.modelos=[];
-  S.modelos.forEach(m => { m.id = String(m.id); if(!m.snapshot && m.items) { m.snapshot = m.items.map(i=>({nome:i.nome||'',categoria:i.categoria||'',qty:i.qty||0,preco_unit:i.preco_unit||0})); } });
+  S.modelos.forEach(m => { m.id = String(m.id); if(!m.snapshot && m.items) { m.snapshot = m.items.map(i=>({nome:i.nome||'',qty:i.qty||0})); } });
   }catch(e){ S.items=DEFAULT_ITEMS.map((x,i)=>({...x,id:i+1})); }
 }
 function mkScenRows(lucro){ return SIM_DEFAULTS.map(r=>({...r,value:r.id==='margem'?lucro:r.value})); }
@@ -685,6 +685,7 @@ function renderItens(){
     return `<tr>
       <td style="font-weight:600;max-width:260px">${esc(item.nome)}</td>
       <td><span class="badge" style="background:${col}22;color:${col}">${esc(item.categoria)}</span></td>
+      <td style="color:var(--muted);font-size:12px">${esc(item.unidade||'—')}</td>
       <td class="r" style="color:var(--muted)">${item.qty}</td>
       <td class="r">${brl(item.preco_unit)}</td>
       <td class="r" style="font-weight:700;color:var(--gold)">${brl(itot(item))}</td>
@@ -913,6 +914,7 @@ function openEdit(id){
   document.getElementById('saveItemBtn').textContent='Salvar Alterações';
   document.getElementById('fNome').value=item.nome;
   document.getElementById('fCat').value=item.categoria;
+  if(document.getElementById('fUnidade')) document.getElementById('fUnidade').value=item.unidade||'';
   document.getElementById('fQty').value=item.qty;
   document.getElementById('fPrice').value=item.preco_unit;
   fillCatSug();
@@ -927,15 +929,16 @@ function fillCatSug(){
 function saveItem(){
   const nome=document.getElementById('fNome').value.trim();
   const cat=document.getElementById('fCat').value.trim();
+  const unidade=document.getElementById('fUnidade')?.value.trim()||'';
   const qty=parseFloat(document.getElementById('fQty').value);
   const price=parseFloat(document.getElementById('fPrice').value);
   if(!nome||!cat||isNaN(qty)||isNaN(price)||qty<0||price<0){ toast('Preencha todos os campos','err'); return; }
   if(S.editId!==null){
     const idx=S.items.findIndex(i=>i.id===S.editId);
-    if(idx>=0) S.items[idx]={...S.items[idx],nome,categoria:cat,qty,preco_unit:price};
+    if(idx>=0) S.items[idx]={...S.items[idx],nome,categoria:cat,unidade,qty,preco_unit:price};
     toast('Item atualizado!');
   } else {
-    S.items.push({id:uid(),nome,categoria:cat,qty,preco_unit:price});
+    S.items.push({id:uid(),nome,categoria:cat,unidade,qty,preco_unit:price});
     toast('Item adicionado!');
   }
   save(); closeModal('itemModal');
@@ -1118,8 +1121,15 @@ function mvGetModelo(id) {
   return (S.modelos||[]).find(m => String(m.id) === String(id));
 }
 
+function mvGetCatalogItem(nome) {
+  return S.items.find(x => x.nome === nome);
+}
 function mvSnapshotTotal(snap) {
-  return (snap||[]).reduce((s,i) => s + (i.preco_unit||0)*(i.qty||0), 0);
+  return (snap||[]).reduce((s,i) => {
+    const cat = mvGetCatalogItem(i.nome);
+    const price = cat ? (cat.preco_unit||0) : (i.preco_unit||0);
+    return s + price * (i.qty||0);
+  }, 0);
 }
 
 
@@ -1137,8 +1147,10 @@ function mvPrecoVendaModelo(custo, margem, simRows) {
 function mvSnapshotCats(snap) {
   const cats = {};
   (snap||[]).forEach(i => {
-    const c = i.categoria||'Outros';
-    cats[c] = (cats[c]||0) + (i.preco_unit||0)*(i.qty||0);
+    const cat = mvGetCatalogItem(i.nome);
+    const price = cat ? (cat.preco_unit||0) : (i.preco_unit||0);
+    const categoria = cat ? (cat.categoria||'Outros') : (i.categoria||'Outros');
+    cats[categoria] = (cats[categoria]||0) + price*(i.qty||0);
   });
   return cats;
 }
@@ -1336,11 +1348,10 @@ function mvSaveModelo() {
   const margem = parseFloat(document.getElementById('mvMargem').value)||25;
   if (!nome) { toast('Digite um nome para o modelo', 'err'); return; }
   if (!S.modelos) S.modelos = [];
+  // Snapshot: only nome + qty — price always comes from catalog
   const snapshot = S.items.map(i => ({
-    nome:       i.nome       || '',
-    categoria:  i.categoria  || '',
-    qty:        i.qty        || 0,
-    preco_unit: i.preco_unit || 0
+    nome: i.nome || '',
+    qty:  i.qty  || 0
   }));
   // Use selected scenario's simRows if chosen
   const cenSel = document.getElementById('mvCenario');
