@@ -660,7 +660,7 @@ function load(){
   try{
     const r=localStorage.getItem('ac2');
     if(r){ const p=JSON.parse(r); Object.assign(S,p); }
-    if(!S.items||!S.items.length) S.items=DEFAULT_ITEMS.map((x,i)=>({...x,id:String(i+1)}));
+    if(!S.items) S.items=[]; // items are now nome+qty only, catalog has prices
     // Init catalog from DEFAULT_ITEMS if empty
     if(!S.catalog||!S.catalog.length){
       const seen=new Set();
@@ -688,7 +688,7 @@ function load(){
     ];
   if(!S.modelos) S.modelos=[];
   S.modelos.forEach(m => { m.id = String(m.id); if(!m.snapshot && m.items) { m.snapshot = m.items.map(i=>({nome:i.nome||'',qty:i.qty||0})); } });
-  }catch(e){ S.items=DEFAULT_ITEMS.map((x,i)=>({...x,id:i+1})); }
+  }catch(e){ S.items=[]; }
 }
 function mkScenRows(lucro){ return SIM_DEFAULTS.map(r=>({...r,value:r.id==='margem'?lucro:r.value})); }
 
@@ -712,8 +712,9 @@ function grand(){ return S.items.reduce((s,i)=>s+itot(i),0); }
 function cats(){
   const m={};
   S.items.forEach(i=>{
-    const cat=getCatalogCat(i.nome)||i.categoria||'Outros';
-    m[cat]=(m[cat]||0)+itot(i);
+    const cat=getCatalogCat(i.nome)||(i.categoria)||'Outros';
+    const total=itot(i);
+    if(total>0) m[cat]=(m[cat]||0)+total;
   });
   return m;
 }
@@ -750,19 +751,19 @@ function goTo(id){
 function renderDash(){
   const total=grand(), area=S.area;
   document.getElementById('kpiGrid').innerHTML=`
-    <div class="kpi gold"><div class="kpi-label">Custo Total</div><div class="kpi-val">${brl(total)}</div><div class="kpi-sub">${S.items.length} itens cadastrados</div></div>
-    <div class="kpi green"><div class="kpi-label">Custo por m²</div><div class="kpi-val">${brl(total/area)}</div><div class="kpi-sub">Base: ${area} m²</div></div>
-    <div class="kpi blue"><div class="kpi-label">Categorias</div><div class="kpi-val">${Object.keys(cats()).length}</div><div class="kpi-sub">grupos de materiais</div></div>
+    <div class="kpi gold"><div class="kpi-label">Custo Total</div><div class="kpi-val">${brl(total)}</div><div class="kpi-sub">${S.items.filter(i=>i.qty>0).length} itens no projeto</div></div>
+    <div class="kpi green"><div class="kpi-label">Custo por m²</div><div class="kpi-val">${area>0?brl(total/area):'—'}</div><div class="kpi-sub">Base: ${area} m²</div></div>
+    <div class="kpi blue"><div class="kpi-label">Catálogo</div><div class="kpi-val">${(S.catalog||[]).length}</div><div class="kpi-sub">materiais cadastrados</div></div>
     <div class="kpi purple"><div class="kpi-label">Última Revisão</div><div class="kpi-val" style="font-size:18px;margin-top:4px">${S.history.length?new Date(S.history[S.history.length-1].date).toLocaleDateString('pt-BR'):'—'}</div><div class="kpi-sub">de preços</div></div>
   `;
   const cs=cats();
   const csVals=Object.values(cs);
-  if(!csVals.length){ document.getElementById('dashCatGrid').innerHTML='<div style="color:var(--muted);font-size:13px;padding:16px 0;">Nenhum item cadastrado ainda.</div>'; return; }
+  if(!csVals.length){ document.getElementById('dashCatGrid').innerHTML='<div style="color:var(--muted);font-size:13px;padding:16px 0;">Nenhum item no projeto ativo.<br>Vá em <strong>Itens</strong> e adicione itens do catálogo, ou em <strong>Modelos</strong> clique em 📊 Abrir no Dashboard.</div>'; return; }
   const mx=Math.max(...csVals);
   const sorted=Object.entries(cs).sort((a,b)=>b[1]-a[1]);
   document.getElementById('dashCatGrid').innerHTML=sorted.map(([cat,val])=>{
     const col=catColor(cat), pct=(val/mx*100).toFixed(1), tpct=(val/total*100).toFixed(1);
-    const cnt=S.items.filter(i=>i.categoria===cat).length;
+    const cnt=S.items.filter(i=>(getCatalogCat(i.nome)||i.categoria||'Outros')===cat&&i.qty>0).length;
     return `<div class="cat-card" onclick="openCatDetail('${esc(cat)}')">
       <div class="cat-top"><div class="cat-name">${esc(cat)}</div><div class="cat-val" style="color:${col}">${brl(val)}</div></div>
       <div class="cat-meta">${cnt} item(s) · ${tpct}% do total</div>
@@ -778,7 +779,7 @@ function renderItens(){
   const catF=cf?cf.value:'';
   const sort=document.getElementById('sortFil')?.value||'nome';
   // rebuild filter
-  const allCats=[...new Set(S.items.map(i=>i.categoria))].sort();
+  const allCats=[...new Set((S.catalog||[]).map(i=>i.categoria).filter(Boolean))].sort();
   if(cf){ const cur=cf.value; cf.innerHTML='<option value="">Todas as categorias</option>'+allCats.map(c=>`<option value="${esc(c)}"${c===cur?' selected':''}>${esc(c)}</option>`).join(''); }
   let items=S.items.filter(i=>(!q||i.nome.toLowerCase().includes(q)||i.categoria.toLowerCase().includes(q))&&(!catF||i.categoria===catF));
   if(sort==='nome') items.sort((a,b)=>a.nome.localeCompare(b.nome));
@@ -819,7 +820,7 @@ function renderCats(){
   const sorted=Object.entries(cs).sort((a,b)=>b[1]-a[1]).filter(([c])=>!q||c.toLowerCase().includes(q));
   document.getElementById('catListGrid').innerHTML=sorted.map(([cat,val])=>{
     const col=catColor(cat), pct=(val/mx*100).toFixed(1), tpct=(val/total*100).toFixed(1);
-    const cnt=S.items.filter(i=>i.categoria===cat).length;
+    const cnt=S.items.filter(i=>(getCatalogCat(i.nome)||i.categoria||'Outros')===cat&&i.qty>0).length;
     return `<div class="cat-card" onclick="openCatDetail('${esc(cat)}')">
       <div class="cat-top"><div class="cat-name">${esc(cat)}</div><div class="cat-val" style="color:${col}">${brl(val)}</div></div>
       <div class="cat-meta">${cnt} item(s) · ${tpct}% do total</div>
@@ -832,7 +833,7 @@ function openCatDetail(cat){
   if(!document.getElementById('page-categorias').classList.contains('active')) goTo('categorias');
   document.getElementById('catList').style.display='none';
   document.getElementById('catDetail').style.display='block';
-  const items=S.items.filter(i=>i.categoria===cat).sort((a,b)=>itot(b)-itot(a));
+  const items=S.items.filter(i=>(getCatalogCat(i.nome)||i.categoria||'Outros')===cat&&i.qty>0).sort((a,b)=>itot(b)-itot(a));
   const total=items.reduce((s,i)=>s+itot(i),0);
   const col=catColor(cat);
   document.getElementById('catDetailBody').innerHTML=`
@@ -1016,7 +1017,7 @@ function openAdd(){
   ['fNome','fQty'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
   // Populate catalog datalist
   const fNomeSug = document.getElementById('fNomeSug');
-  if(fNomeSug) fNomeSug.innerHTML=(S.catalog||[]).map(c=>`<option value="${esc(c.nome)}" data-cat="${esc(c.categoria||'')}">`).join('');
+  if(fNomeSug) fNomeSug.innerHTML=[...(S.catalog||[])].sort((a,b)=>a.nome.localeCompare(b.nome)).map(c=>`<option value="${esc(c.nome)}">${esc(c.nome)} (${esc(c.categoria||'')})</option>`).join('');
   fillCatSug();
   document.getElementById('itemModal').classList.add('open');
   setTimeout(()=>document.getElementById('fNome').focus(),50);
@@ -1588,4 +1589,47 @@ function mvOpenNew() {
 }
 
 function mvSaveModelo() {
-  const nome   = document
+  const nome   = document.getElementById('mvNome').value.trim();
+  const area   = parseFloat(document.getElementById('mvArea').value)||0;
+  const margem = parseFloat(document.getElementById('mvMargem').value)||25;
+  if (!nome) { toast('Digite um nome para o modelo', 'err'); return; }
+  if (!S.modelos) S.modelos = [];
+  // Snapshot: only nome + qty — price always comes from catalog
+  const snapshot = S.items.map(i => ({
+    nome: i.nome || '',
+    qty:  i.qty  || 0
+  }));
+  // Use selected scenario's simRows if chosen
+  const cenSel = document.getElementById('mvCenario');
+  const cenIdx = cenSel && cenSel.value !== '' ? parseInt(cenSel.value) : -1;
+  const chosenScen = cenIdx >= 0 && S.scenarios[cenIdx] ? S.scenarios[cenIdx] : null;
+  const chosenSimRows = chosenScen ? chosenScen.rows.map(r=>({...r})) : (S.simRows||[]).map(r=>({...r}));
+  const chosenMargem = chosenScen ? (chosenScen.rows.find(r=>r.id==='margem')?.value || margem) : margem;
+  const cenarioNome = chosenScen ? chosenScen.name : null;
+  S.modelos.push({ id: String(Date.now()), nome, area, margem: chosenMargem, cenarioNome, snapshot, simRows: chosenSimRows, savedAt: new Date().toISOString() });
+  save(); closeModal('mvModalModelo'); renderModelos();
+  toast('✓ Modelo "' + nome + '" salvo' + (cenarioNome ? ' com cenário "' + cenarioNome + '"' : '') + '!');
+}
+
+function mvDelModelo(id) {
+  const m = mvGetModelo(String(id));
+  if (!m || !confirm('Excluir o modelo "' + m.nome + '"?')) return;
+  S.modelos = (S.modelos||[]).filter(x => String(x.id) !== String(id));
+  save(); renderModelos(); toast('Modelo excluído');
+}
+
+// Aliases
+var openAddModelo = mvOpenNew;
+var saveModelo    = mvSaveModelo;
+var delModelo     = mvDelModelo;
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+window.addEventListener("DOMContentLoaded", function() {
+  initModalListeners();
+  load();
+  renderDash();
+  sbLoadAll();
+});
+</script>
+</body>
+</html>
