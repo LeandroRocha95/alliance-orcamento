@@ -221,6 +221,10 @@ select.sel:focus{border-color:var(--gold)}
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h4a1 1 0 011 1v5a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v2a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zM14 13a1 1 0 011-1h4a1 1 0 011 1v6a1 1 0 01-1 1h-4a1 1 0 01-1-1v-6z"/></svg>
       Dashboard
     </button>
+    <button class="nav-btn" onclick="goTo('catalogo')">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"/></svg>
+      Catálogo
+    </button>
     <button class="nav-btn" onclick="goTo('itens')">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
       Itens
@@ -251,6 +255,10 @@ select.sel:focus{border-color:var(--gold)}
       ☁️ Salvar Nuvem
     </button>
     <div id="syncStatus" style="font-size:11px;color:#7a7f9a;white-space:nowrap;"></div>
+    <button class="btn btn-outline btn-sm" id="btnNovoCatalogo" onclick="openAddCatalogo()" style="display:none">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+      Novo Material
+    </button>
     <button class="btn btn-gold btn-sm" onclick="openAdd()">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
       Novo Item
@@ -269,6 +277,32 @@ select.sel:focus{border-color:var(--gold)}
 </div>
 
 <!-- CATÁLOGO DE ITENS -->
+
+<!-- CATÁLOGO DE MATERIAIS -->
+<div class="page" id="page-catalogo">
+  <div class="filters">
+    <div class="search-wrap">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/></svg>
+      <input class="search-input" id="catSrchCat" placeholder="Buscar no catálogo..." oninput="renderCatalogo()">
+    </div>
+    <select class="sel" id="catFilCat" onchange="renderCatalogo()"><option value="">Todas as categorias</option></select>
+    <select class="sel" id="sortCat" onchange="renderCatalogo()">
+      <option value="nome">Nome A→Z</option>
+      <option value="pd">Preço ↓</option>
+      <option value="cat">Categoria</option>
+    </select>
+  </div>
+  <div class="table-box">
+    <table>
+      <thead><tr>
+        <th>Material</th><th>Categoria</th><th>Unidade</th><th class="r">Preço Unit.</th><th class="r">Ações</th>
+      </tr></thead>
+      <tbody id="catalogoBody"></tbody>
+    </table>
+  </div>
+  <div class="count-label" id="catalogoCount"></div>
+</div>
+
 <div class="page" id="page-itens">
   <div class="filters">
     <div class="search-wrap">
@@ -287,7 +321,7 @@ select.sel:focus{border-color:var(--gold)}
   <div class="table-box">
     <table>
       <thead><tr>
-        <th>Item</th><th>Categoria</th><th>Unidade</th><th class="r">Preço Unit.</th><th class="r">Ações</th>
+        <th>Item</th><th>Categoria</th><th>Unidade</th><th class="r">Qtd</th><th class="r">Preço Unit.</th><th class="r">Total</th><th class="r">Ações</th>
       </tr></thead>
       <tbody id="itensBody"></tbody>
     </table>
@@ -518,15 +552,48 @@ select.sel:focus{border-color:var(--gold)}
 </div>
 
 <!-- MODAL: ADD/EDIT -->
+
+<!-- MODAL: CATÁLOGO ADD/EDIT -->
+<div class="overlay" id="catalogoModal">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="catalogoModalTitle">Novo Material</div>
+      <button class="modal-x" onclick="closeModal('catalogoModal')">×</button>
+    </div>
+    <div class="fg"><label>Nome do Material</label><input id="cNome" placeholder="Ex: CIMENTO 50KG CPII-Z"></div>
+    <div class="fg-row">
+      <div class="fg"><label>Categoria</label><input id="cCat" list="cCatSug" placeholder="Ex: Fundação e Alvenaria"><datalist id="cCatSug"></datalist></div>
+      <div class="fg"><label>Unidade</label><input id="cUnidade" placeholder="Ex: saco, m², unid, kg"></div>
+    </div>
+    <div class="fg"><label>Preço Unitário (R$)</label><input id="cPrice" type="number" min="0" step="0.01" placeholder="43.50"></div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" onclick="closeModal('catalogoModal')">Cancelar</button>
+      <button class="btn btn-gold" onclick="saveCatalogo()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: CATÁLOGO DELETE -->
+<div class="overlay" id="catalogoDelModal">
+  <div class="modal" style="max-width:360px;">
+    <div class="modal-head"><div class="modal-title">Excluir Material</div><button class="modal-x" onclick="closeModal('catalogoDelModal')">×</button></div>
+    <p style="padding:0 20px 16px;color:var(--muted);font-size:14px;">Excluir <strong id="catalogoDelName" style="color:var(--text)"></strong>?</p>
+    <div class="modal-foot">
+      <button class="btn btn-outline" onclick="closeModal('catalogoDelModal')">Cancelar</button>
+      <button class="btn btn-danger" onclick="confirmDelCatalogo()">Excluir</button>
+    </div>
+  </div>
+</div>
+
 <div class="overlay" id="itemModal">
   <div class="modal">
     <div class="modal-head">
       <div class="modal-title" id="modalTitle">Novo Item</div>
       <button class="modal-x" onclick="closeModal('itemModal')">×</button>
     </div>
-    <div class="fg"><label>Nome do Item</label><input id="fNome" placeholder="Ex: CIMENTO 50KG CPII-Z"></div>
+    <div class="fg" style="margin-bottom:4px"><label>Nome do Item (busca no catálogo)</label><input id="fNome" list="fNomeSug" placeholder="Digite para buscar no catálogo..." oninput="onFNomeInput()"><datalist id="fNomeSug"></datalist></div>
     <div class="fg-row">
-      <div class="fg"><label>Categoria</label><input id="fCat" list="catSug" placeholder="Ex: Fundação e Alvenaria"><datalist id="catSug"></datalist></div>
+      <div class="fg" id="fCatRow" style="display:none"><label>Categoria</label><input id="fCat" list="catSug" placeholder=""><datalist id="catSug"></datalist></div>
       <div class="fg"><label>Quantidade</label><input id="fQty" type="number" min="0" step="0.01" placeholder="30"></div>
     </div>
     <div class="fg"><label>Preço Unitário (R$)</label><input id="fPrice" type="number" min="0" step="0.01" placeholder="43.50"></div>
@@ -580,7 +647,7 @@ const SIM_DEFAULTS=[
 ];
 
 // ── STATE ─────────────────────────────────────────────────────────────────────
-let S = {items:[],area:42,history:[],simRows:null,scenarios:null,activeScen:null,editId:null,delId:null,modelos:[],modeloEditId:null};
+let S = {items:[],catalog:[],area:42,history:[],simRows:null,scenarios:null,activeScen:null,editId:null,delId:null,modelos:[],modeloEditId:null,catalogEditId:null,catalogDelId:null};
 
 function save(){
   localStorage.setItem('ac2', JSON.stringify(S));
@@ -592,7 +659,13 @@ function load(){
   try{
     const r=localStorage.getItem('ac2');
     if(r){ const p=JSON.parse(r); Object.assign(S,p); }
-    if(!S.items||!S.items.length) S.items=DEFAULT_ITEMS.map((x,i)=>({...x,id:i+1}));
+    if(!S.items||!S.items.length) S.items=DEFAULT_ITEMS.map((x,i)=>({...x,id:String(i+1)}));
+    // Init catalog from items if empty (migration)
+    if(!S.catalog||!S.catalog.length){
+      const seen=new Set();
+      S.catalog=DEFAULT_ITEMS.filter(x=>{ if(seen.has(x.nome)) return false; seen.add(x.nome); return true; })
+        .map((x,i)=>({id:'cat_'+(i+1), nome:x.nome, categoria:x.categoria, unidade:x.unidade||'', preco_unit:x.preco_unit}));
+    }
     if(!S.simRows) S.simRows=SIM_DEFAULTS.map(x=>({...x}));
     if(!S.scenarios) S.scenarios=[
       {name:'Conservador',rows:mkScenRows(15),area:42},
@@ -608,11 +681,26 @@ function mkScenRows(lucro){ return SIM_DEFAULTS.map(r=>({...r,value:r.id==='marg
 // ── HELPERS ───────────────────────────────────────────────────────────────────
 function brl(v){ return 'R$ '+Number(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
 function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-function itot(i){ return i.qty*i.preco_unit; }
+function getCatalogPrice(nome) {
+  const c = (S.catalog||[]).find(x=>x.nome===nome);
+  return c ? (c.preco_unit||0) : 0;
+}
+function getCatalogCat(nome) {
+  const c = (S.catalog||[]).find(x=>x.nome===nome);
+  return c ? (c.categoria||'') : '';
+}
+function getCatalogUnit(nome) {
+  const c = (S.catalog||[]).find(x=>x.nome===nome);
+  return c ? (c.unidade||'') : '';
+}
+function itot(i){ return (i.qty||0)*(getCatalogPrice(i.nome)||i.preco_unit||0); }
 function grand(){ return S.items.reduce((s,i)=>s+itot(i),0); }
 function cats(){
   const m={};
-  S.items.forEach(i=>{ m[i.categoria]=(m[i.categoria]||0)+itot(i); });
+  S.items.forEach(i=>{
+    const cat=getCatalogCat(i.nome)||i.categoria||'Outros';
+    m[cat]=(m[cat]||0)+itot(i);
+  });
   return m;
 }
 function catColor(c){
@@ -630,8 +718,9 @@ function goTo(id){
     if(b.getAttribute('onclick')===`goTo('${id}')`) b.classList.add('active');
   });
   window.scrollTo(0,0);
-  if(id==='dashboard') renderDash();
-  if(id==='itens') renderItens();
+  if(id==='dashboard') { renderDash(); const b=document.getElementById('btnNovoCatalogo'); if(b) b.style.display='none'; }
+  if(id==='catalogo') { renderCatalogo(); const b=document.getElementById('btnNovoCatalogo'); if(b) b.style.display=''; }
+  if(id==='itens') { renderItens(); const b=document.getElementById('btnNovoCatalogo'); if(b) b.style.display='none'; }
   if(id==='categorias') renderCats();
   if(id==='simulador') renderSim();
   if(id==='config') renderConfig();
@@ -682,14 +771,20 @@ function renderItens(){
   if(!items.length){ body.innerHTML=`<tr><td colspan="5"><div class="empty">Nenhum item encontrado</div></td></tr>`; }
   else body.innerHTML=items.map(item=>{
     const col=catColor(item.categoria);
+    const catNome=getCatalogCat(item.nome)||item.categoria||'—';
+    const unitNome=getCatalogUnit(item.nome)||item.unidade||'—';
+    const priceNome=getCatalogPrice(item.nome)||item.preco_unit||0;
+    const col2=catColor(catNome);
     return `<tr>
       <td style="font-weight:600;max-width:260px">${esc(item.nome)}</td>
-      <td><span class="badge" style="background:${col}22;color:${col}">${esc(item.categoria)}</span></td>
-      <td style="color:var(--muted);font-size:12px">${esc(item.unidade||'—')}</td>
-      <td class="r">${brl(item.preco_unit)}</td>
+      <td><span class="badge" style="background:${col2}22;color:${col2}">${esc(catNome)}</span></td>
+      <td style="color:var(--muted);font-size:12px">${esc(unitNome)}</td>
+      <td class="r" style="color:var(--muted)">${item.qty||0}</td>
+      <td class="r">${brl(priceNome)}</td>
+      <td class="r" style="font-weight:700;color:var(--gold)">${brl((item.qty||0)*priceNome)}</td>
       <td class="r"><div class="actions">
-        <button class="icon-btn ed" onclick="openEdit(String(${JSON.stringify(item.id)}))" title="Editar"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg></button>
-        <button class="icon-btn del" onclick="openDel(String(${JSON.stringify(item.id)}))" title="Excluir"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+        <button class="icon-btn ed" onclick="openEdit('${item.id}')" title="Editar"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg></button>
+        <button class="icon-btn del" onclick="openDel('${item.id}')" title="Excluir"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
       </div></td>
     </tr>`;
   }).join('');
@@ -899,10 +994,22 @@ function openAdd(){
   S.editId=null;
   document.getElementById('modalTitle').textContent='Novo Item';
   document.getElementById('saveItemBtn').textContent='Adicionar';
-  ['fNome','fCat','fQty','fPrice'].forEach(id=>document.getElementById(id).value='');
+  ['fNome','fQty'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+  // Populate catalog datalist
+  const fNomeSug = document.getElementById('fNomeSug');
+  if(fNomeSug) fNomeSug.innerHTML=(S.catalog||[]).map(c=>`<option value="${esc(c.nome)}" data-cat="${esc(c.categoria||'')}">`).join('');
   fillCatSug();
   document.getElementById('itemModal').classList.add('open');
   setTimeout(()=>document.getElementById('fNome').focus(),50);
+}
+
+function onFNomeInput(){
+  const val = document.getElementById('fNome').value;
+  const c = (S.catalog||[]).find(x=>x.nome===val);
+  if(c){
+    const info = document.getElementById('fItemInfo');
+    if(info) info.innerHTML = '<span style="color:var(--gold)">'+esc(c.categoria||'')+'</span> · '+esc(c.unidade||'')+(c.preco_unit?' · '+brl(c.preco_unit):'');
+  }
 }
 
 function openEdit(id){
@@ -911,10 +1018,8 @@ function openEdit(id){
   document.getElementById('modalTitle').textContent='Editar Item';
   document.getElementById('saveItemBtn').textContent='Salvar Alterações';
   document.getElementById('fNome').value=item.nome;
-  document.getElementById('fCat').value=item.categoria;
-  if(document.getElementById('fUnidade')) document.getElementById('fUnidade').value=item.unidade||'';
-  document.getElementById('fQty').value=item.qty;
-  document.getElementById('fPrice').value=item.preco_unit;
+  document.getElementById('fQty').value=item.qty||0;
+  onFNomeInput();
   fillCatSug();
   document.getElementById('itemModal').classList.add('open');
   setTimeout(()=>document.getElementById('fNome').focus(),50);
@@ -1025,7 +1130,7 @@ async function sbSyncAll() {
       id:         1,
       categorias: JSON.stringify(S.scenarios || []),
       revisoes:   JSON.stringify(S.history   || []),
-      cenarios:   JSON.stringify({ area: S.area, simRows: S.simRows }),
+      cenarios:   JSON.stringify({ area: S.area, simRows: S.simRows, catalog: S.catalog||[] }),
       modelos:    JSON.stringify(S.modelos   || [])
     };
     const cfgRes = await sbFetch('POST', SB_URL + '/rest/v1/custos_config?on_conflict=id', cfg);
@@ -1088,6 +1193,7 @@ async function sbLoadAll() {
         const extra = JSON.parse(c.cenarios);
         if (extra.area)    S.area    = extra.area;
         if (extra.simRows) S.simRows = extra.simRows;
+        if (extra.catalog && extra.catalog.length) S.catalog = extra.catalog;
       } catch(e) {}
       // Load modelos
       try {
@@ -1112,6 +1218,100 @@ async function sbLoadAll() {
 
 
 // ═══════════════════════════════════════════════════
+// CATÁLOGO DE MATERIAIS
+// ═══════════════════════════════════════════════════
+function renderCatalogo() {
+  const q = (document.getElementById('catSrchCat')?.value||'').toLowerCase();
+  const cf = document.getElementById('catFilCat');
+  const catF = cf ? cf.value : '';
+  const sort = document.getElementById('sortCat')?.value||'nome';
+
+  const allCats = [...new Set((S.catalog||[]).map(i=>i.categoria))].sort();
+  if(cf){ const cur=cf.value; cf.innerHTML='<option value="">Todas as categorias</option>'+allCats.map(c=>`<option value="${esc(c)}"${c===cur?' selected':''}>${esc(c)}</option>`).join(''); }
+
+  let items = (S.catalog||[]).filter(i=>(!q||i.nome.toLowerCase().includes(q)||(i.categoria||'').toLowerCase().includes(q))&&(!catF||i.categoria===catF));
+  if(sort==='nome') items.sort((a,b)=>a.nome.localeCompare(b.nome));
+  else if(sort==='pd') items.sort((a,b)=>b.preco_unit-a.preco_unit);
+  else if(sort==='cat') items.sort((a,b)=>(a.categoria||'').localeCompare(b.categoria||''));
+
+  const body = document.getElementById('catalogoBody');
+  if(!items.length){ body.innerHTML=`<tr><td colspan="5"><div class="empty">Nenhum material encontrado</div></td></tr>`; return; }
+  body.innerHTML = items.map(item=>{
+    const col = catColor(item.categoria||'');
+    return `<tr>
+      <td style="font-weight:600;max-width:280px">${esc(item.nome)}</td>
+      <td><span class="badge" style="background:${col}22;color:${col}">${esc(item.categoria||'—')}</span></td>
+      <td style="color:var(--muted);font-size:12px">${esc(item.unidade||'—')}</td>
+      <td class="r" style="font-weight:600">${brl(item.preco_unit||0)}</td>
+      <td class="r"><div class="actions">
+        <button class="icon-btn ed" onclick="openEditCatalogo('${item.id}')" title="Editar"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg></button>
+        <button class="icon-btn del" onclick="openDelCatalogo('${item.id}')" title="Excluir"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+      </div></td>
+    </tr>`;
+  }).join('');
+  document.getElementById('catalogoCount').textContent = items.length + ' material(is) exibido(s)';
+}
+
+function openAddCatalogo() {
+  S.catalogEditId = null;
+  document.getElementById('catalogoModalTitle').textContent = 'Novo Material';
+  ['cNome','cCat','cUnidade','cPrice'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+  // Fill category suggestions
+  const sug = document.getElementById('cCatSug');
+  if(sug) sug.innerHTML = [...new Set((S.catalog||[]).map(i=>i.categoria).filter(Boolean))].sort().map(c=>`<option value="${esc(c)}">`).join('');
+  document.getElementById('catalogoModal').classList.add('open');
+  setTimeout(()=>document.getElementById('cNome').focus(),50);
+}
+
+function openEditCatalogo(id) {
+  const item = (S.catalog||[]).find(x=>x.id===id);
+  if(!item) return;
+  S.catalogEditId = id;
+  document.getElementById('catalogoModalTitle').textContent = 'Editar Material';
+  document.getElementById('cNome').value  = item.nome||'';
+  document.getElementById('cCat').value   = item.categoria||'';
+  document.getElementById('cUnidade').value = item.unidade||'';
+  document.getElementById('cPrice').value = item.preco_unit||'';
+  document.getElementById('catalogoModal').classList.add('open');
+  setTimeout(()=>document.getElementById('cNome').focus(),50);
+}
+
+function saveCatalogo() {
+  const nome  = document.getElementById('cNome').value.trim();
+  const cat   = document.getElementById('cCat').value.trim();
+  const unit  = document.getElementById('cUnidade').value.trim();
+  const price = parseFloat(document.getElementById('cPrice').value)||0;
+  if(!nome||!cat) { toast('Preencha nome e categoria','err'); return; }
+  if(!S.catalog) S.catalog=[];
+  if(S.catalogEditId) {
+    const idx = S.catalog.findIndex(x=>x.id===S.catalogEditId);
+    if(idx>=0) { S.catalog[idx]={...S.catalog[idx],nome,categoria:cat,unidade:unit,preco_unit:price}; toast('Material atualizado!'); }
+  } else {
+    S.catalog.push({id:'cat_'+Date.now(),nome,categoria:cat,unidade:unit,preco_unit:price});
+    toast('Material adicionado!');
+  }
+  S.catalogEditId=null;
+  save(); closeModal('catalogoModal'); renderCatalogo();
+  // Re-render itens to reflect catalog changes
+  if(document.getElementById('page-itens').classList.contains('active')) renderItens();
+}
+
+function openDelCatalogo(id) {
+  const item = (S.catalog||[]).find(x=>x.id===id);
+  if(!item) return;
+  S.catalogDelId = id;
+  document.getElementById('catalogoDelName').textContent = item.nome;
+  document.getElementById('catalogoDelModal').classList.add('open');
+}
+
+function confirmDelCatalogo() {
+  S.catalog = (S.catalog||[]).filter(x=>x.id!==S.catalogDelId);
+  S.catalogDelId = null;
+  save(); closeModal('catalogoDelModal'); renderCatalogo();
+  toast('Material excluído');
+}
+
+// ═══════════════════════════════════════════════════
 // MODELOS DE CASA — Snapshot Independente
 // ═══════════════════════════════════════════════════
 let _mvCurrentId = null;
@@ -1121,7 +1321,7 @@ function mvGetModelo(id) {
 }
 
 function mvGetCatalogItem(nome) {
-  return S.items.find(x => x.nome === nome);
+  return (S.catalog||[]).find(x => x.nome === nome) || S.items.find(x => x.nome === nome);
 }
 function mvSnapshotTotal(snap) {
   return (snap||[]).reduce((s,i) => {
@@ -1179,207 +1379,4 @@ function mvShowView(which) {
 // ── LIST ──────────────────────────────────────────────
 function renderModelos() {
   mvShowView('mv-lista');
-  const btn = document.getElementById('btnCompare');
-  if (btn) btn.style.display = (S.modelos||[]).length >= 2 ? '' : 'none';
-  const grid = document.getElementById('mvGrid');
-  if (!S.modelos || !S.modelos.length) {
-    grid.innerHTML = '<div style="color:var(--muted);font-size:14px;padding:24px 0;">Nenhum modelo salvo ainda.<br>Configure seus itens na aba <strong>Itens</strong> e clique em <strong>💾 Salvar Modelo Atual</strong>.</div>';
-    return;
-  }
-  grid.innerHTML = S.modelos.map(m => {
-    const snap  = m.snapshot||[];
-    const custo = mvSnapshotTotal(snap);
-    const preco = mvPrecoVendaModelo(custo, m.margem||25, m.simRows||S.simRows||[]);
-    const data  = m.savedAt ? new Date(m.savedAt).toLocaleDateString('pt-BR') : '—';
-    return `<div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px;transition:border-color .15s"
-      onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border)'">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
-        <div style="font-size:16px;font-weight:700;">${esc(m.nome)}</div>
-        <div style="display:flex;gap:5px;">
-          <button onclick="mvDelModelo('${m.id}')" style="background:none;border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:3px 8px;cursor:pointer;font-size:11px;" title="Excluir">🗑</button>
-        </div>
-      </div>
-      <div style="font-size:12px;color:var(--muted);margin-bottom:16px;">${m.area||0} m² &nbsp;·&nbsp; ${m.cenarioNome ? '<span style="color:var(--gold)">'+esc(m.cenarioNome)+'</span>' : 'Margem: '+(m.margem||25)+'%'} &nbsp;·&nbsp; ${snap.length} itens &nbsp;·&nbsp; Salvo: ${data}</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">
-        <div style="background:var(--surface2);border-radius:8px;padding:10px;">
-          <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:3px;">Custo Total</div>
-          <div style="font-size:17px;font-weight:700;color:var(--gold)">${brl(custo)}</div>
-          <div style="font-size:11px;color:var(--muted)">${brl((m.area||1)>0?custo/(m.area||1):0)}/m²</div>
-        </div>
-        <div style="background:var(--surface2);border-radius:8px;padding:10px;">
-          <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:3px;">Preço Venda</div>
-          <div style="font-size:17px;font-weight:700;color:#27c482">${brl(preco)}</div>
-          <div style="font-size:11px;color:var(--muted)">${brl((m.area||1)>0?preco/(m.area||1):0)}/m²</div>
-        </div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-        <button onclick="mvOpenDetalhe('${m.id}')"
-          style="background:none;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:9px;cursor:pointer;font-family:inherit;font-size:12px;transition:all .15s"
-          onmouseover="this.style.borderColor='var(--gold)';this.style.color='var(--gold)'"
-          onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">
-          📋 Ver Detalhes
-        </button>
-        <button onclick="mvLoadIntoDashById('${m.id}')"
-          style="background:linear-gradient(135deg,#1a6b8a,#2196b0);border:none;color:#fff;border-radius:8px;padding:9px;cursor:pointer;font-family:inherit;font-size:12px;font-weight:600;">
-          📊 Abrir no Dashboard
-        </button>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-// ── DETALHE ───────────────────────────────────────────
-function mvOpenDetalhe(id) {
-  _mvCurrentId = String(id);
-  const m = mvGetModelo(_mvCurrentId);
-  if (!m) return;
-  mvShowView('mv-detalhe');
-  const snap  = m.snapshot||[];
-  const custo = mvSnapshotTotal(snap);
-  const preco = mvPrecoVendaModelo(custo, m.margem||25, m.simRows||S.simRows||[]);
-  document.getElementById('mvDetNome').textContent = m.nome;
-  document.getElementById('mvDetSub').textContent  = (m.area||0) + ' m²  ·  Margem: ' + (m.margem||25) + '%  ·  ' + snap.length + ' itens';
-  document.getElementById('mvDetTotal').textContent = brl(custo);
-  document.getElementById('mvDetPreco').textContent = brl(preco);
-
-  // Categories
-  const catTotals = mvSnapshotCats(snap);
-  const catArr = Object.entries(catTotals).sort((a,b)=>b[1]-a[1]);
-  document.getElementById('mvDetCats').innerHTML = catArr.map(([cat,val]) => {
-    const col = catColor(cat);
-    return `<div style="background:var(--surface2);border-radius:10px;padding:12px 14px;">
-      <div style="font-size:10px;color:${col};font-weight:700;margin-bottom:3px;">${esc(cat)}</div>
-      <div style="font-size:15px;font-weight:700">${brl(val)}</div>
-      <div style="font-size:11px;color:var(--muted)">${custo>0?(val/custo*100).toFixed(1):0}% do total</div>
-    </div>`;
-  }).join('');
-
-  // Items table
-  const tbody = document.getElementById('mvDetBody');
-  if (!snap.length) {
-    tbody.innerHTML = '<tr><td colspan="5"><div class="empty">Nenhum item neste modelo.</div></td></tr>';
-    return;
-  }
-  tbody.innerHTML = snap.map(i => {
-    const col = catColor(i.categoria||'');
-    return `<tr>
-      <td style="font-weight:600">${esc(i.nome||'')}</td>
-      <td><span class="badge" style="background:${col}22;color:${col}">${esc(i.categoria||'')}</span></td>
-      <td class="r">${i.qty||0}</td>
-      <td class="r" style="color:var(--muted)">${brl(i.preco_unit||0)}</td>
-      <td class="r" style="font-weight:700;color:var(--gold)">${brl((i.preco_unit||0)*(i.qty||0))}</td>
-    </tr>`;
-  }).join('');
-}
-
-function mvBackToList() {
-  _mvCurrentId = null;
-  renderModelos();
-}
-
-// ── LOAD INTO DASHBOARD ───────────────────────────────
-function mvLoadIntoDash() {
-  mvLoadIntoDashById(_mvCurrentId);
-}
-
-function mvLoadIntoDashById(id) {
-  const m = mvGetModelo(String(id));
-  if (!m || !m.snapshot || !m.snapshot.length) { toast('Modelo sem itens', 'err'); return; }
-  if (!confirm('Carregar o modelo "' + m.nome + '" como itens ativos? Os itens atuais serão substituídos.')) return;
-  S.items = m.snapshot.map((i,idx) => ({...i, id: idx+1}));
-  S.area  = m.area || S.area;
-  save();
-  renderDash();
-  renderItens();
-  goTo('dashboard');
-  toast('✓ Modelo "' + m.nome + '" carregado no Dashboard!');
-}
-
-// ── COMPARE ───────────────────────────────────────────
-function mvShowCompare() {
-  mvShowView('mv-compare');
-  const modelos = S.modelos||[];
-  const allCats = [...new Set(modelos.flatMap(m => Object.keys(mvSnapshotCats(m.snapshot||[]))))].sort();
-  document.getElementById('mvCompareThead').innerHTML =
-    '<th>Categoria</th>' + modelos.map(m =>
-      `<th style="text-align:right">${esc(m.nome)}<br><span style="font-size:10px;font-weight:400;color:var(--muted)">${m.area||0}m²</span></th>`
-    ).join('');
-  const tbody = document.getElementById('mvCompareTbody');
-  tbody.innerHTML = allCats.map(cat => {
-    const vals = modelos.map(m => { const cs = mvSnapshotCats(m.snapshot||[]); return cs[cat]||0; });
-    if (!vals.some(v=>v>0)) return '';
-    return `<tr><td><span class="badge" style="background:${catColor(cat)}22;color:${catColor(cat)}">${esc(cat)}</span></td>
-      ${vals.map(v=>`<td class="r">${v>0?brl(v):'<span style="color:var(--muted)">—</span>'}</td>`).join('')}</tr>`;
-  }).join('') +
-  `<tr style="border-top:2px solid var(--border);font-weight:700;"><td>CUSTO TOTAL</td>
-    ${modelos.map(m=>`<td class="r" style="color:var(--gold)">${brl(mvSnapshotTotal(m.snapshot||[]))}</td>`).join('')}</tr>
-  <tr style="font-weight:700;"><td>PREÇO VENDA</td>
-    ${modelos.map(m=>`<td class="r" style="color:#27c482">${brl(mvPrecoVendaModelo(mvSnapshotTotal(m.snapshot||[]),m.margem||25,m.simRows||S.simRows||[]))}</td>`).join('')}</tr>
-  <tr><td style="color:var(--muted)">Custo/m²</td>
-    ${modelos.map(m=>`<td class="r" style="color:var(--muted)">${brl(mvSnapshotTotal(m.snapshot||[])/(m.area||1))}</td>`).join('')}</tr>`;
-}
-
-// ── SAVE / DEL MODELO ─────────────────────────────────
-function mvOpenNew() {
-  document.getElementById('mvModalTitle').textContent = 'Salvar Modelo Atual';
-  document.getElementById('mvNome').value = '';
-  document.getElementById('mvArea').value = S.area||'';
-  document.getElementById('mvMargem').value = '25';
-  // Populate scenario selector
-  const sel = document.getElementById('mvCenario');
-  sel.innerHTML = '<option value="">— Usar apenas margem simples —</option>' +
-    (S.scenarios||[]).map((sc,i) => {
-      const mr = sc.rows.find(r=>r.id==='margem'); const m = mr?mr.value:0;
-      return `<option value="${i}">${esc(sc.name)} (Lucro ${m}%)</option>`;
-    }).join('');
-  // Pre-select active scenario if any
-  if (S.activeScen !== null && S.activeScen !== undefined && S.activeScen >= 0) {
-    sel.value = String(S.activeScen);
-  }
-  document.getElementById('mvModalItemCount').textContent = S.items.length + ' itens serão incluídos no modelo.';
-  document.getElementById('mvModalModelo').classList.add('open');
-  setTimeout(() => document.getElementById('mvNome').focus(), 50);
-}
-
-function mvSaveModelo() {
-  const nome   = document.getElementById('mvNome').value.trim();
-  const area   = parseFloat(document.getElementById('mvArea').value)||0;
-  const margem = parseFloat(document.getElementById('mvMargem').value)||25;
-  if (!nome) { toast('Digite um nome para o modelo', 'err'); return; }
-  if (!S.modelos) S.modelos = [];
-  // Snapshot: only nome + qty — price always comes from catalog
-  const snapshot = S.items.map(i => ({
-    nome: i.nome || '',
-    qty:  i.qty  || 0
-  }));
-  // Use selected scenario's simRows if chosen
-  const cenSel = document.getElementById('mvCenario');
-  const cenIdx = cenSel && cenSel.value !== '' ? parseInt(cenSel.value) : -1;
-  const chosenScen = cenIdx >= 0 && S.scenarios[cenIdx] ? S.scenarios[cenIdx] : null;
-  const chosenSimRows = chosenScen ? chosenScen.rows.map(r=>({...r})) : (S.simRows||[]).map(r=>({...r}));
-  const chosenMargem = chosenScen ? (chosenScen.rows.find(r=>r.id==='margem')?.value || margem) : margem;
-  const cenarioNome = chosenScen ? chosenScen.name : null;
-  S.modelos.push({ id: String(Date.now()), nome, area, margem: chosenMargem, cenarioNome, snapshot, simRows: chosenSimRows, savedAt: new Date().toISOString() });
-  save(); closeModal('mvModalModelo'); renderModelos();
-  toast('✓ Modelo "' + nome + '" salvo' + (cenarioNome ? ' com cenário "' + cenarioNome + '"' : '') + '!');
-}
-
-function mvDelModelo(id) {
-  const m = mvGetModelo(String(id));
-  if (!m || !confirm('Excluir o modelo "' + m.nome + '"?')) return;
-  S.modelos = (S.modelos||[]).filter(x => String(x.id) !== String(id));
-  save(); renderModelos(); toast('Modelo excluído');
-}
-
-// Aliases
-var openAddModelo = mvOpenNew;
-var saveModelo    = mvSaveModelo;
-var delModelo     = mvDelModelo;
-
-// ── INIT ──────────────────────────────────────────────────────────────────────
-load();
-renderDash();
-sbLoadAll(); // Load from cloud on startup
-</script>
-</body>
-</html>
+  const btn = document.getElementById('btnCompare
