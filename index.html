@@ -1352,6 +1352,7 @@ function renderHistory() {
         '<div class="history-item-info">' +
           '<div class="history-item-name">' + e.client +
             '<span class="history-status" style="background:' + (statusColor[e.status]||'#7a7f9a') + '22;color:' + (statusColor[e.status]||'#7a7f9a') + '">' + (statusLabel[e.status]||'—') + '</span>' +
+            '<span style="font-size:11px;font-family:monospace;color:var(--accent);background:rgba(245,166,35,0.1);border-radius:4px;padding:2px 7px;margin-left:6px;letter-spacing:0.5px;">' + genQuoteCode(e.id) + '</span>' +
           '</div>' +
           '<div class="history-item-meta">' + (_isAdmin && e.vendor ? '<strong style="color:var(--accent)">' + e.vendor + '</strong>' : (e.vendor||'')) + (e.city?' · '+e.city:'') + (e.date?' · '+e.date:'') + (e.validity?' · Válido até: '+e.validity:'') + '</div>' +
           (e.saved_at ? '<div style="font-size:11px;color:var(--muted);margin-top:2px;">Salvo em: ' + e.saved_at + '</div>' : '') +
@@ -1825,6 +1826,7 @@ function printQuote() {
     + '<div class="hdr-cnpj">Alliance Casas Pré Fabricadas</div>'
     + '<div class="hdr-cnpj">CNPJ: 26.520.516/0001-50</div>'
     + '<div class="hdr-date">Emitido em: ' + date + '</div>'
+    + (_currentQuoteId ? '<div class="hdr-date" style="color:rgba(255,255,255,0.6);font-size:10px;margin-top:2px;font-family:monospace;letter-spacing:0.5px;">' + genQuoteCode(_currentQuoteId) + '</div>' : '')
     + '</div></div>'
     + '<div class="m2bar"><div class="m2bar-label">M² Total da Casa</div><div class="m2bar-val">' + m2 + '</div></div>'
     + '<div class="body">'
@@ -2103,16 +2105,4 @@ function onDrop(e) {
 // INIT
 // ═══════════════════════════════════════════════════
 document.getElementById('quoteDate').value = new Date().toISOString().split('T')[0];
-var defValidity = new Date(); defValidity.setDate(defValidity.getDate()+15);
-document.getElementById('quoteValidity').value = defValidity.toISOString().split('T')[0];
-setStatus('negociacao');
-document.addEventListener('click', function(e) {
-  document.querySelectorAll('.dropdown-suggestions').forEach(function(el) {
-    if (!el.parentElement.contains(e.target)) el.style.display = 'none';
-  });
-});
-// Restore session and load
-restoreSession();
-</script>
-</body>
-</html>
+var defValidity = new Date(); defValid
