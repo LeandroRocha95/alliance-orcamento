@@ -268,7 +268,7 @@ select.sel:focus{border-color:var(--gold)}
   <div class="cat-grid" id="dashCatGrid"></div>
 </div>
 
-<!-- ITENS -->
+<!-- CATÁLOGO DE ITENS -->
 <div class="page" id="page-itens">
   <div class="filters">
     <div class="search-wrap">
@@ -287,7 +287,7 @@ select.sel:focus{border-color:var(--gold)}
   <div class="table-box">
     <table>
       <thead><tr>
-        <th>Item</th><th>Categoria</th><th class="r">Qtd</th><th class="r">Preço Unit.</th><th class="r">Total</th><th class="r">Ações</th>
+        <th>Item</th><th>Categoria</th><th>Unidade</th><th class="r">Preço Unit.</th><th class="r">Ações</th>
       </tr></thead>
       <tbody id="itensBody"></tbody>
     </table>
@@ -679,19 +679,17 @@ function renderItens(){
   else if(sort==='pd') items.sort((a,b)=>b.preco_unit-a.preco_unit);
   else if(sort==='cat') items.sort((a,b)=>a.categoria.localeCompare(b.categoria));
   const body=document.getElementById('itensBody');
-  if(!items.length){ body.innerHTML=`<tr><td colspan="6"><div class="empty">Nenhum item encontrado</div></td></tr>`; }
+  if(!items.length){ body.innerHTML=`<tr><td colspan="5"><div class="empty">Nenhum item encontrado</div></td></tr>`; }
   else body.innerHTML=items.map(item=>{
     const col=catColor(item.categoria);
     return `<tr>
       <td style="font-weight:600;max-width:260px">${esc(item.nome)}</td>
       <td><span class="badge" style="background:${col}22;color:${col}">${esc(item.categoria)}</span></td>
       <td style="color:var(--muted);font-size:12px">${esc(item.unidade||'—')}</td>
-      <td class="r" style="color:var(--muted)">${item.qty}</td>
       <td class="r">${brl(item.preco_unit)}</td>
-      <td class="r" style="font-weight:700;color:var(--gold)">${brl(itot(item))}</td>
       <td class="r"><div class="actions">
-        <button class="icon-btn ed" onclick="openEdit(${item.id})" title="Editar"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg></button>
-        <button class="icon-btn del" onclick="openDel(${item.id})" title="Excluir"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+        <button class="icon-btn ed" onclick="openEdit(String(${JSON.stringify(item.id)}))" title="Editar"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg></button>
+        <button class="icon-btn del" onclick="openDel(String(${JSON.stringify(item.id)}))" title="Excluir"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
       </div></td>
     </tr>`;
   }).join('');
@@ -740,7 +738,7 @@ function openCatDetail(cat){
             <td class="r" style="font-weight:700;color:${col}">${brl(itot(item))}</td>
             <td class="r"><div class="actions">
               <button class="icon-btn ed" onclick="openEdit(${item.id})"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg></button>
-              <button class="icon-btn del" onclick="openDel(${item.id})"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+              <button class="icon-btn del" onclick="openDel(String(${JSON.stringify(item.id)}))"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
             </div></td>
           </tr>`).join('')}
           <tr style="background:var(--surface2)"><td colspan="3" style="text-align:right;font-weight:700">Total da categoria</td><td class="r" style="font-weight:800;color:${col}">${brl(total)}</td><td></td></tr>
@@ -908,7 +906,7 @@ function openAdd(){
 }
 
 function openEdit(id){
-  const item=S.items.find(i=>i.id===id); if(!item) return;
+  const item=S.items.find(i=>String(i.id)===String(id)); if(!item) return;
   S.editId=id;
   document.getElementById('modalTitle').textContent='Editar Item';
   document.getElementById('saveItemBtn').textContent='Salvar Alterações';
@@ -950,13 +948,14 @@ function saveItem(){
 
 // ── DELETE ────────────────────────────────────────────────────────────────────
 function openDel(id){
-  const item=S.items.find(i=>i.id===id); if(!item) return;
-  S.delId=id;
+  const sid=String(id);
+  const item=S.items.find(i=>String(i.id)===sid); if(!item) return;
+  S.delId=sid;
   document.getElementById('delName').textContent=item.nome;
   document.getElementById('delModal').classList.add('open');
 }
 function confirmDel(){
-  S.items=S.items.filter(i=>i.id!==S.delId);
+  S.items=S.items.filter(i=>String(i.id)!==String(S.delId));
   save(); closeModal('delModal'); toast('Item excluído');
   const cur=document.querySelector('.page.active').id;
   if(cur==='page-itens') renderItens();
