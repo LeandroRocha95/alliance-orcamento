@@ -1362,6 +1362,7 @@ function renderHistory() {
         '<div class="history-item-total">' + e.total + '</div>' +
         '<div class="history-item-actions">' +
           '<button class="btn btn-ghost btn-sm" onclick="loadFromHistory(\'' + e.id + '\')">📂 Abrir</button>' +
+          '<button class="btn btn-ghost btn-sm" onclick="duplicateFromHistory(\'' + e.id + '\')" title="Usar como modelo para novo orçamento">📋 Duplicar</button>' +
           '<button class="btn btn-danger btn-sm" onclick="deleteFromHistory(\'' + e.id + '\')">🗑</button>' +
         '</div>';
       list.appendChild(div);
@@ -1401,6 +1402,39 @@ function loadFromHistory(id) {
   .then(function(r){ return r.json(); })
   .then(function(rows){ applyEntry(rows && rows[0]); })
   .catch(function(){ showToast('Erro ao carregar','error'); });
+}
+
+function duplicateFromHistory(id) {
+  function applyAsCopy(e) {
+    if (!e) { showToast('Orçamento não encontrado','error'); return; }
+    _currentQuoteId = null; // Novo orçamento, sem vínculo com o original
+    updateQuoteCodeDisplay();
+    state = (e.state && typeof e.state === 'object') ? JSON.parse(JSON.stringify(e.state)) : {};
+    document.getElementById('clientName').value    = e.client        || '';
+    document.getElementById('vendorName').value    = e.vendor        || '';
+    document.getElementById('clientCity').value    = e.city          || '';
+    document.getElementById('clientPhone').value   = e.phone         || '';
+    document.getElementById('quoteDate').value     = '';
+    document.getElementById('quoteValidity').value = '';
+    document.getElementById('quoteObs').value      = e.obs           || '';
+    document.getElementById('discountVal').value   = e.discount_val  || '';
+    document.getElementById('discountType').value  = e.discount_type || 'pct';
+    document.getElementById('acrescimoVal').value  = e.acrescimo_val || '';
+    try { if (e.payment_data) setPaymentData(JSON.parse(e.payment_data)); } catch(ex){}
+    setStatus('negociacao');
+    switchTab('orcamento');
+    renderOrcamento();
+    showToast('✓ Orçamento duplicado! Faça as alterações e salve.');
+  }
+  if (_historyCache) {
+    applyAsCopy(_historyCache.find(function(x){ return String(x.id)===String(id); }));
+    return;
+  }
+  showToast('⏳ Carregando...','success');
+  sbFetch('GET', TABLE_URL + '?id=eq.' + id)
+  .then(function(r){ return r.json(); })
+  .then(function(rows){ applyAsCopy(rows && rows[0]); })
+  .catch(function(){ showToast('Erro ao duplicar','error'); });
 }
 
 function deleteFromHistory(id) {
