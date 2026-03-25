@@ -1462,7 +1462,9 @@ function sendWhatsApp() {
   var lines = ['*Orçamento – Alliance Casas Pré Fabricadas*',''];
   lines.push('Olá ' + client + '! Segue o resumo do seu orçamento:','');
   active.forEach(function(i){
-    lines.push('• ' + i.label + ': ' + state[i.id] + ' ' + i.unit + ' → ' + fmt(state[i.id] * i.price));
+    var line = '• ' + i.label + ': ' + state[i.id] + ' ' + i.unit;
+    if (i.obs) line += ' _(' + i.obs + ')_';
+    lines.push(line);
   });
   lines.push('','*Total: ' + total + '*');
   if (validity) lines.push('_Válido até: ' + validity + '_');
