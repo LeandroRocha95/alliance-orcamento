@@ -1161,6 +1161,7 @@ var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSI
 var TABLE_URL    = SUPABASE_URL + '/rest/v1/orcamentos';
 var AUTH_URL     = SUPABASE_URL + '/auth/v1';
 
+var _currentQuoteId = null; // ID do orçamento atual
 var _currentUser  = null;  // { id, email, access_token }
 var _isAdmin      = false;
 var _historyCache = null;
