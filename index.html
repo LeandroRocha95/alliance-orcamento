@@ -510,13 +510,13 @@
     <button class="btn btn-ghost" onclick="resetAll()" style="flex:none;">🗑 Limpar</button>
     <button class="btn btn-ghost" onclick="saveToHistory()" style="flex:none;">💾 Salvar</button>
     <button class="btn btn-ghost" onclick="openPresent()" style="flex:none;">🖥 Apresentar</button>
-    <button class="btn btn-ghost" onclick="sendWhatsApp()" style="flex:none;">💬 WhatsApp</button>
+    <button class="btn btn-ghost" onclick="openWhatsAppModal()" style="flex:none;">💬 WhatsApp</button>
     <div style="display:flex;gap:6px;align-items:center;flex:1;">
       <select id="pdfMode" style="background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:12px;font-family:'DM Sans',sans-serif;padding:10px 10px;outline:none;white-space:nowrap;">
         <option value="detailed">PDF Detalhado</option>
         <option value="simple">PDF Simplificado</option>
       </select>
-      <button class="btn btn-primary" onclick="printQuote()" style="white-space:nowrap;">🖨️ Gerar PDF</button>
+      <button class="btn btn-primary" onclick="openPdfModal()" style="white-space:nowrap;">🖨️ Gerar PDF</button>
     </div>
   </div>
 </div>
@@ -525,13 +525,24 @@
 <div class="container page" id="page-historico">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:10px;">
     <div class="section-title" style="margin:0;flex:1;">Orçamentos Salvos</div>
-    <select id="historyStatusFilter" onchange="renderHistory()" style="background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;font-family:'DM Sans',sans-serif;padding:8px 14px;outline:none;">
+    <button class="btn btn-danger btn-sm" onclick="clearHistory()">🗑 Limpar Tudo</button>
+  </div>
+  <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:16px;">
+    <div style="position:relative;flex:2;min-width:200px;">
+      <span style="position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:14px;pointer-events:none;">🔍</span>
+      <input id="historySearch" type="text" placeholder="Buscar por nome, código ou vendedor..."
+        oninput="renderHistory()"
+        style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;font-family:'DM Sans',sans-serif;padding:9px 14px 9px 36px;outline:none;">
+    </div>
+    <select id="historyVendorFilter" onchange="renderHistory()" style="background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;font-family:'DM Sans',sans-serif;padding:9px 14px;outline:none;min-width:160px;">
+      <option value="">Todos os vendedores</option>
+    </select>
+    <select id="historyStatusFilter" onchange="renderHistory()" style="background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;font-family:'DM Sans',sans-serif;padding:9px 14px;outline:none;">
       <option value="">Todos os status</option>
       <option value="negociacao">💬 Em Negociação</option>
       <option value="aprovado">✅ Aprovado</option>
       <option value="perdido">❌ Perdido</option>
     </select>
-    <button class="btn btn-danger btn-sm" onclick="clearHistory()">🗑 Limpar Tudo</button>
   </div>
   <div id="historyList" style="display:flex;flex-direction:column;gap:10px;margin-top:16px;"></div>
 </div>
@@ -598,6 +609,92 @@
   <div style="margin-top:10px;padding:12px 16px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;font-size:12px;color:var(--muted);line-height:1.6;">
     💡 <strong style="color:var(--text)">Como funciona:</strong>
     ao clicar em <em>Salvar Configurações na Nuvem</em>, todos os itens, seções e unidades ficam disponíveis para todos os vendedores automaticamente.
+  </div>
+</div>
+
+<!-- ══════════ MODAL PDF ══════════ -->
+<div id="pdfModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:400;align-items:center;justify-content:center;">
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px 32px;width:100%;max-width:420px;box-shadow:0 24px 64px rgba(0,0,0,0.5);">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;color:var(--accent);margin-bottom:6px;">🖨️ Gerar PDF</div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:22px;">Opções antes de gerar</div>
+
+    <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:22px;">
+      <div>
+        <div style="font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:8px;">Tipo de PDF</div>
+        <div style="display:flex;gap:8px;" id="pdfModeWrap">
+          <label style="flex:1;display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 14px;cursor:pointer;" id="pdfLblDetailed">
+            <input type="radio" name="pdfModalMode" value="detailed" id="pdfModeDetailed" style="accent-color:var(--accent);" checked onchange="pdfModeChange()">
+            <div><div style="font-size:13px;font-weight:600;">Detalhado</div><div style="font-size:11px;color:var(--muted);">Com preços unitários</div></div>
+          </label>
+          <label style="flex:1;display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 14px;cursor:pointer;" id="pdfLblSimple">
+            <input type="radio" name="pdfModalMode" value="simple" id="pdfModeSimple" style="accent-color:var(--accent);" onchange="pdfModeChange()">
+            <div><div style="font-size:13px;font-weight:600;">Simplificado</div><div style="font-size:11px;color:var(--muted);">Sem preços unitários</div></div>
+          </label>
+        </div>
+      </div>
+
+      <div>
+        <div style="font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:8px;">Opções de exibição</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:13px;color:var(--text);">
+            <span class="toggle"><input type="checkbox" id="pdfHideAcrescDesc"><span class="toggle-slider"></span></span>
+            Ocultar acréscimos e descontos
+          </label>
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:13px;color:var(--text);">
+            <span class="toggle"><input type="checkbox" id="pdfHideReg"><span class="toggle-slider"></span></span>
+            Ocultar itens de Regularização
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:10px;">
+      <button class="btn btn-ghost" onclick="closePdfModal()" style="flex:1;">Cancelar</button>
+      <button class="btn btn-primary" onclick="printQuote()" style="flex:2;">🖨️ Gerar PDF</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ MODAL WHATSAPP ══════════ -->
+<div id="waModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:400;align-items:center;justify-content:center;">
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px 32px;width:100%;max-width:440px;box-shadow:0 24px 64px rgba(0,0,0,0.5);">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;color:var(--accent);margin-bottom:6px;">💬 Enviar via WhatsApp</div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:22px;">Escolha as opções antes de enviar</div>
+
+    <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:22px;">
+      <div>
+        <div style="font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:8px;">Formato da mensagem</div>
+        <div style="display:flex;gap:8px;">
+          <label style="flex:1;display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 14px;cursor:pointer;transition:border-color 0.2s;" id="waLblSimple">
+            <input type="radio" name="waFormat" value="simple" id="waFmtSimple" style="accent-color:var(--accent);" checked onchange="waFormatChange()">
+            <div><div style="font-size:13px;font-weight:600;">Simplificado</div><div style="font-size:11px;color:var(--muted);">Itens sem valores</div></div>
+          </label>
+          <label style="flex:1;display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 14px;cursor:pointer;transition:border-color 0.2s;" id="waLblDetailed">
+            <input type="radio" name="waFormat" value="detailed" id="waFmtDetailed" style="accent-color:var(--accent);" onchange="waFormatChange()">
+            <div><div style="font-size:13px;font-weight:600;">Detalhado</div><div style="font-size:11px;color:var(--muted);">Itens com valores</div></div>
+          </label>
+        </div>
+      </div>
+
+      <div>
+        <div style="font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:8px;">Opções de exibição</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:13px;color:var(--text);">
+            <span class="toggle"><input type="checkbox" id="waHideAcrescDesc"><span class="toggle-slider"></span></span>
+            Ocultar acréscimos e descontos
+          </label>
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:13px;color:var(--text);">
+            <span class="toggle"><input type="checkbox" id="waHideReg"><span class="toggle-slider"></span></span>
+            Ocultar itens de Regularização
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:10px;">
+      <button class="btn btn-ghost" onclick="closeWhatsAppModal()" style="flex:1;">Cancelar</button>
+      <button class="btn btn-primary" onclick="sendWhatsApp()" style="flex:2;">📱 Enviar no WhatsApp</button>
+    </div>
   </div>
 </div>
 
@@ -1485,24 +1582,88 @@ document.addEventListener('keydown', function(e){ if(e.key==='Escape') closePres
 // ═══════════════════════════════════════════════════
 // WHATSAPP
 // ═══════════════════════════════════════════════════
+function openWhatsAppModal() {
+  var active = allItems().filter(function(i){ return (state[i.id]||0) > 0; });
+  if (!active.length) { showToast('Adicione itens ao orçamento primeiro','error'); return; }
+  document.getElementById('waModal').style.display = 'flex';
+  waFormatChange();
+}
+function closeWhatsAppModal() {
+  document.getElementById('waModal').style.display = 'none';
+}
+function waFormatChange() {
+  var isDetailed = document.getElementById('waFmtDetailed').checked;
+  var lblS = document.getElementById('waLblSimple');
+  var lblD = document.getElementById('waLblDetailed');
+  if (lblS) lblS.style.borderColor = isDetailed ? 'var(--border)' : 'var(--accent)';
+  if (lblD) lblD.style.borderColor = isDetailed ? 'var(--accent)' : 'var(--border)';
+}
 function sendWhatsApp() {
+  closeWhatsAppModal();
   var phone    = document.getElementById('clientPhone').value.replace(/\D/g,'');
   var client   = document.getElementById('clientName').value  || 'Cliente';
   var vendor   = document.getElementById('vendorName').value  || '';
-  var total    = document.getElementById('finalTotal').textContent;
   var validity = document.getElementById('quoteValidity').value;
-  var active   = allItems().filter(function(i){ return (state[i.id]||0) > 0; });
-  if (!active.length) { showToast('Adicione itens ao orçamento primeiro','error'); return; }
+  var isDetailed   = document.getElementById('waFmtDetailed') && document.getElementById('waFmtDetailed').checked;
+  var hideAcDesc   = document.getElementById('waHideAcrescDesc') && document.getElementById('waHideAcrescDesc').checked;
+  var hideReg      = document.getElementById('waHideReg') && document.getElementById('waHideReg').checked;
+
+  // Find id of "regularizacao" section
+  var regSecIds = SECTIONS.filter(function(s){
+    return s.label.toLowerCase().indexOf('regulariz') !== -1 || s.id.toLowerCase().indexOf('regulariz') !== -1;
+  }).map(function(s){ return s.id; });
+
+  var active = allItems().filter(function(i){
+    if ((state[i.id]||0) <= 0) return false;
+    if (hideReg && regSecIds.length) {
+      var sec = sectionOf(i.id);
+      if (regSecIds.indexOf(sec) !== -1) return false;
+    }
+    return true;
+  });
+
+  if (!active.length) { showToast('Nenhum item para enviar','error'); return; }
+
+  // Recalculate total considering hidden reg items
+  var subtotalWa = active.reduce(function(s,i){ return s + (state[i.id]||0)*i.price; }, 0);
+  var discVal    = parseFloat(document.getElementById('discountVal').value) || 0;
+  var discType   = document.getElementById('discountType').value;
+  var acrescimo  = parseFloat(document.getElementById('acrescimoVal').value) || 0;
+  var discAmt    = discVal > 0 ? Math.min(discType==='pct' ? subtotalWa*(discVal/100) : discVal, subtotalWa) : 0;
+  var totalWa    = subtotalWa - discAmt + acrescimo;
+  var totalFmt   = 'R$ ' + totalWa.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
+
   var lines = ['*Orçamento – Alliance Casas Pré Fabricadas*',''];
   lines.push('Olá ' + client + '! Segue o resumo do seu orçamento:','');
-  active.forEach(function(i){
-    var line = '• ' + i.label + ': ' + state[i.id] + ' ' + i.unit;
-    if (i.obs) line += ' _(' + i.obs + ')_';
-    lines.push(line);
-  });
-  lines.push('','*Total: ' + total + '*');
+
+  if (isDetailed) {
+    active.forEach(function(i){
+      var val = (state[i.id]||0) * i.price;
+      var valFmt = 'R$ ' + val.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
+      var line = '• ' + i.label + ': ' + state[i.id] + ' ' + i.unit + ' → *' + valFmt + '*';
+      if (i.obs) line += ' _(' + i.obs + ')_';
+      lines.push(line);
+    });
+    if (!hideAcDesc) {
+      if (discAmt > 0) {
+        lines.push('_Desconto: - R$ ' + discAmt.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}) + '_');
+      }
+      if (acrescimo > 0) {
+        lines.push('_Acréscimo: + R$ ' + acrescimo.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}) + '_');
+      }
+    }
+  } else {
+    active.forEach(function(i){
+      var line = '• ' + i.label + ': ' + state[i.id] + ' ' + i.unit;
+      if (i.obs) line += ' _(' + i.obs + ')_';
+      lines.push(line);
+    });
+  }
+
+  lines.push('','*Total: ' + totalFmt + '*');
   if (validity) lines.push('_Válido até: ' + validity + '_');
   if (vendor)   lines.push('_Vendedor: ' + vendor + '_');
+
   var url = phone
     ? 'https://wa.me/55' + phone + '?text=' + encodeURIComponent(lines.join('\n'))
     : 'https://wa.me/?text='                + encodeURIComponent(lines.join('\n'));
@@ -1763,7 +1924,35 @@ function importItems(e) {
 // ═══════════════════════════════════════════════════
 // PDF
 // ═══════════════════════════════════════════════════
+function openPdfModal() {
+  var active = allItems().filter(function(i){ return (state[i.id]||0) > 0; });
+  if (!active.length) { showToast('Adicione itens ao orçamento primeiro','error'); return; }
+  // Sync pdfMode select → modal radio
+  var mode = (document.getElementById('pdfMode')||{value:'detailed'}).value;
+  var detR = document.getElementById('pdfModeDetailed');
+  var simR = document.getElementById('pdfModeSimple');
+  if (detR) detR.checked = (mode !== 'simple');
+  if (simR) simR.checked = (mode === 'simple');
+  document.getElementById('pdfModal').style.display = 'flex';
+  pdfModeChange();
+}
+function closePdfModal() {
+  document.getElementById('pdfModal').style.display = 'none';
+}
+function pdfModeChange() {
+  var isDetailed = document.getElementById('pdfModeDetailed') && document.getElementById('pdfModeDetailed').checked;
+  var lblD = document.getElementById('pdfLblDetailed');
+  var lblS = document.getElementById('pdfLblSimple');
+  if (lblD) lblD.style.borderColor = isDetailed ? 'var(--accent)' : 'var(--border)';
+  if (lblS) lblS.style.borderColor = isDetailed ? 'var(--border)' : 'var(--accent)';
+}
 function printQuote() {
+  // Read modal settings if modal was used
+  var pdfModeEl = document.getElementById('pdfModeDetailed');
+  if (pdfModeEl) {
+    document.getElementById('pdfMode').value = pdfModeEl.checked ? 'detailed' : 'simple';
+  }
+  closePdfModal();
   var client   = document.getElementById('clientName').value || 'Cliente';
   var vendor   = document.getElementById('vendorName').value || '—';
   var city     = document.getElementById('clientCity').value || '—';
@@ -1781,7 +1970,19 @@ function printQuote() {
   var acrescimoAmt = parseFloat(document.getElementById('acrescimoVal').value) || 0;
 
   var pdfMode = (document.getElementById('pdfMode') || {value:'detailed'}).value;
-  var active  = allItems().filter(function(i){ return (state[i.id]||0) > 0 && !i.hidePdf; });
+  var pdfHideReg = document.getElementById('pdfHideReg') && document.getElementById('pdfHideReg').checked;
+  var pdfHideAD  = document.getElementById('pdfHideAcrescDesc') && document.getElementById('pdfHideAcrescDesc').checked;
+  var pdfRegSecIds = SECTIONS.filter(function(s){
+    return s.label.toLowerCase().indexOf('regulariz') !== -1 || s.id.toLowerCase().indexOf('regulariz') !== -1;
+  }).map(function(s){ return s.id; });
+  var active  = allItems().filter(function(i){
+    if ((state[i.id]||0) <= 0 || i.hidePdf) return false;
+    if (pdfHideReg && pdfRegSecIds.length) {
+      var sec = sectionOf(i.id);
+      if (pdfRegSecIds.indexOf(sec) !== -1) return false;
+    }
+    return true;
+  });
   // Collect obs from area items for PDF header
   var materialObs = [];
   allItems().forEach(function(i) {
@@ -1875,8 +2076,8 @@ function printQuote() {
     + '<div class="cbox"><div class="cbox-lbl">Validade</div><div class="cbox-val">' + validity + '</div></div>'
     + '</div>'
     + '<table class="items"><thead><tr>' + (pdfMode==='detailed' ? thDetailed : thSimple) + '</tr></thead><tbody>' + rows + '</tbody></table>'
-    + (discAmt > 0 ? '<div class="disc">Desconto: - ' + fmt(discAmt) + '</div>' : '')
-    + (pdfMode === 'detailed' && acrescimoAmt > 0 ? '<div class="disc" style="color:#27ae60">Acréscimo: + ' + fmt(acrescimoAmt) + '</div>' : '')
+    + (!pdfHideAD && discAmt > 0 ? '<div class="disc">Desconto: - ' + fmt(discAmt) + '</div>' : '')
+    + (!pdfHideAD && pdfMode === 'detailed' && acrescimoAmt > 0 ? '<div class="disc" style="color:#27ae60">Acréscimo: + ' + fmt(acrescimoAmt) + '</div>' : '')
     + '<div class="totalbar"><span class="totalbar-lbl">Valor Final</span><span class="totalbar-val">' + total + '</span></div>'
     + (obs ? '<div class="obsbox"><div class="obshdr">Observações</div><div class="obsbody">' + obs + '</div></div>' : '')
     + payHtml
