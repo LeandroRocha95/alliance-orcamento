@@ -812,19 +812,30 @@ function saveAll() {
 }
 
 function saveConfig() {
-  showToast('⏳ Salvando configurações...', 'success');
+  showToast('\u23f3 Salvando configurações...', 'success');
   var payload = {
     id: 1,
     units:    JSON.stringify(UNITS),
     sections: JSON.stringify(SECTIONS),
-    items:    JSON.stringify(ITEMS)
+    items:    JSON.stringify(ITEMS),
+    vendors:  JSON.stringify(VENDORS)
   };
-  sbFetch('POST', SUPABASE_URL + '/rest/v1/config?on_conflict=id', payload)
+  // Usa a anon key diretamente (policy config_publica permite ALL sem autenticação)
+  fetch(SUPABASE_URL + '/rest/v1/config?on_conflict=id', {
+    method: 'POST',
+    headers: {
+      'apikey':        SUPABASE_KEY,
+      'Authorization': 'Bearer ' + SUPABASE_KEY,
+      'Content-Type':  'application/json',
+      'Prefer':        'resolution=merge-duplicates'
+    },
+    body: JSON.stringify(payload)
+  })
   .then(function(r) {
     if (r.ok || r.status === 201) {
-      showToast('✓ Configurações salvas na nuvem!');
+      showToast('\u2713 Configurações salvas na nuvem!');
     } else {
-      r.text().then(function(t){ showToast('Erro: ' + t, 'error'); });
+      r.text().then(function(t){ showToast('Erro ao salvar: ' + t, 'error'); });
     }
   })
   .catch(function(){ showToast('Sem conexão com a nuvem', 'error'); });
@@ -838,9 +849,12 @@ function loadConfig(callback) {
       try { UNITS    = JSON.parse(rows[0].units);    } catch(e){}
       try { SECTIONS = JSON.parse(rows[0].sections); } catch(e){}
       try { ITEMS    = JSON.parse(rows[0].items);    } catch(e){}
+      try { if (rows[0].vendors) VENDORS = JSON.parse(rows[0].vendors); } catch(e){}
       syncItemKeys();
       saveAll(); // also update localStorage as cache
     }
+    // Populate vendor select immediately after data loads, before callback
+    if (typeof populateVendorSelect === 'function') populateVendorSelect();
     if (callback) callback();
   })
   .catch(function(){ if (callback) callback(); });
