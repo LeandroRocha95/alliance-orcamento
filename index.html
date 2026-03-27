@@ -406,7 +406,12 @@
   <div class="section-title">Dados do Cliente</div>
   <div class="client-section">
     <div class="field"><label>Nome do Cliente</label><input type="text" id="clientName" placeholder="Ex: João Silva"></div>
-    <div class="field"><label>Vendedor</label><input type="text" id="vendorName" placeholder="Seu nome"></div>
+    <div class="field">
+      <label>Vendedor</label>
+      <select id="vendorName" style="background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:14px;font-family:'DM Sans',sans-serif;padding:10px 14px;outline:none;transition:border-color 0.2s;width:100%;">
+        <option value="">— Selecione —</option>
+      </select>
+    </div>
     <div class="field"><label>Cidade / Endereço</label><input type="text" id="clientCity" placeholder="Ex: Joinville - SC"></div>
     <div class="field"><label>Telefone (WhatsApp)</label><input type="text" id="clientPhone" placeholder="Ex: 47 99999-9999"></div>
     <div class="field"><label>Data do Orçamento</label><input type="date" id="quoteDate"></div>
@@ -511,11 +516,8 @@
     <button class="btn btn-ghost" onclick="saveToHistory()" style="flex:none;">💾 Salvar</button>
     <button class="btn btn-ghost" onclick="openPresent()" style="flex:none;">🖥 Apresentar</button>
     <button class="btn btn-ghost" onclick="openWhatsAppModal()" style="flex:none;">💬 WhatsApp</button>
-    <div style="display:flex;gap:6px;align-items:center;flex:1;">
-      <select id="pdfMode" style="background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:12px;font-family:'DM Sans',sans-serif;padding:10px 10px;outline:none;white-space:nowrap;">
-        <option value="detailed">PDF Detalhado</option>
-        <option value="simple">PDF Simplificado</option>
-      </select>
+    <div style="display:flex;gap:6px;align-items:center;flex:none;">
+      <input type="hidden" id="pdfMode" value="detailed">
       <button class="btn btn-primary" onclick="openPdfModal()" style="white-space:nowrap;">🖨️ Gerar PDF</button>
     </div>
   </div>
@@ -567,6 +569,16 @@
         <input class="tag-input" id="newSecInput" placeholder="Nome da nova seção..." onkeydown="if(event.key==='Enter')addSection()">
         <button class="tag-add-btn" onclick="addSection()">+</button>
       </div>
+    </div>
+  </div>
+
+  <div class="section-title">Vendedores</div>
+  <div class="config-box" style="margin-bottom:24px;">
+    <div class="config-box-title">Vendedores Cadastrados</div>
+    <div class="tag-list" id="vendorTagList"></div>
+    <div class="tag-add-row">
+      <input class="tag-input" id="newVendorInput" placeholder="Nome do vendedor..." onkeydown="if(event.key==='Enter')addVendor()">
+      <button class="tag-add-btn" onclick="addVendor()">+</button>
     </div>
   </div>
 
@@ -793,6 +805,7 @@ function loadData(key, def) {
   catch(e) { return JSON.parse(JSON.stringify(def)); }
 }
 function saveAll() {
+  localStorage.setItem('obras_vendors',  JSON.stringify(VENDORS));
   localStorage.setItem('obras_units',    JSON.stringify(UNITS));
   localStorage.setItem('obras_sections', JSON.stringify(SECTIONS));
   localStorage.setItem('obras_items',    JSON.stringify(ITEMS));
@@ -836,6 +849,7 @@ function syncItemKeys() {
   SECTIONS.forEach(function(s) { if (!ITEMS[s.id]) ITEMS[s.id] = []; });
 }
 
+var VENDORS  = loadData('obras_vendors',  []);
 var UNITS    = loadData('obras_units',    DEFAULT_UNITS);
 var SECTIONS = loadData('obras_sections', DEFAULT_SECTIONS);
 var ITEMS    = loadData('obras_items',    DEFAULT_ITEMS);
@@ -931,6 +945,7 @@ function renderOrcamento() {
     }
   });
 
+  populateVendorSelect();
   recalc();
 }
 
@@ -1420,8 +1435,9 @@ function saveToHistory() {
 
 function renderHistory() {
   var list = document.getElementById('historyList');
+  // If cache exists, just re-filter (fast, no loader flash)
+  if (_historyCache) { _applyHistoryFilters(_historyCache); return; }
   list.innerHTML = '<div class="history-empty">⏳ Carregando orçamentos...</div>';
-
   var histUrl = _isAdmin
     ? TABLE_URL + '?order=id.desc'
     : TABLE_URL + '?order=id.desc&user_id=eq.' + (_currentUser ? _currentUser.id : 'none');
@@ -1429,43 +1445,72 @@ function renderHistory() {
   .then(function(r){ return r.json(); })
   .then(function(h) {
     _historyCache = h;
-    if (!Array.isArray(h) || !h.length) {
-      list.innerHTML = '<div class="history-empty">Nenhum orçamento salvo ainda.<br>Preencha um orçamento e clique em 💾 Salvar.</div>';
-      return;
-    }
-    // Apply status filter
-    var statusFilter = document.getElementById('historyStatusFilter');
-    var filterVal = statusFilter ? statusFilter.value : '';
-    if (filterVal) h = h.filter(function(e){ return e.status === filterVal; });
-    if (!h.length) {
-      list.innerHTML = '<div class="history-empty">Nenhum orçamento com esse status.</div>';
-      return;
-    }
-    var statusLabel = { negociacao:'💬 Negociação', aprovado:'✅ Aprovado', perdido:'❌ Perdido' };
-    var statusColor = { negociacao:'#3498db', aprovado:'#2ecc71', perdido:'#e74c3c' };
-    list.innerHTML = '';
-    h.forEach(function(e) {
-      var div = document.createElement('div');
-      div.className = 'history-item';
-      div.innerHTML =
-        '<div class="history-item-info">' +
-          '<div class="history-item-name">' + e.client +
-            '<span class="history-status" style="background:' + (statusColor[e.status]||'#7a7f9a') + '22;color:' + (statusColor[e.status]||'#7a7f9a') + '">' + (statusLabel[e.status]||'—') + '</span>' +
-            '<span style="font-size:11px;font-family:monospace;color:var(--accent);background:rgba(245,166,35,0.1);border-radius:4px;padding:2px 7px;margin-left:6px;letter-spacing:0.5px;">' + genQuoteCode(e.id) + '</span>' +
-          '</div>' +
-          '<div class="history-item-meta">' + (_isAdmin && e.vendor ? '<strong style="color:var(--accent)">' + e.vendor + '</strong>' : (e.vendor||'')) + (e.city?' · '+e.city:'') + (e.date?' · '+e.date:'') + (e.validity?' · Válido até: '+e.validity:'') + '</div>' +
-          (e.saved_at ? '<div style="font-size:11px;color:var(--muted);margin-top:2px;">Salvo em: ' + e.saved_at + '</div>' : '') +
-        '</div>' +
-        '<div class="history-item-total">' + e.total + '</div>' +
-        '<div class="history-item-actions">' +
-          '<button class="btn btn-ghost btn-sm" onclick="loadFromHistory(\'' + e.id + '\')">📂 Abrir</button>' +
-          '<button class="btn btn-ghost btn-sm" onclick="duplicateFromHistory(\'' + e.id + '\')" title="Usar como modelo para novo orçamento">📋 Duplicar</button>' +
-          '<button class="btn btn-danger btn-sm" onclick="deleteFromHistory(\'' + e.id + '\')">🗑</button>' +
-        '</div>';
-      list.appendChild(div);
-    });
+    _populateVendorHistDropdown(h);
+    _applyHistoryFilters(h);
   })
   .catch(function(){ list.innerHTML = '<div class="history-empty">❌ Sem conexão com a nuvem. Verifique sua internet.</div>'; });
+}
+
+function _populateVendorHistDropdown(h) {
+  var sel = document.getElementById('historyVendorFilter');
+  if (!sel) return;
+  var cur = sel.value;
+  var vendors = [];
+  (h||[]).forEach(function(e){ if (e.vendor && vendors.indexOf(e.vendor) === -1) vendors.push(e.vendor); });
+  vendors.sort();
+  sel.innerHTML = '<option value="">Todos os vendedores</option>' +
+    vendors.map(function(v){ return '<option value="' + v + '"' + (v===cur?' selected':'') + '>' + v + '</option>'; }).join('');
+}
+
+function _applyHistoryFilters(allData) {
+  var list = document.getElementById('historyList');
+  if (!Array.isArray(allData) || !allData.length) {
+    list.innerHTML = '<div class="history-empty">Nenhum orçamento salvo ainda.<br>Preencha um orçamento e clique em 💾 Salvar.</div>';
+    return;
+  }
+  var h = allData.slice();
+  // Status
+  var statusVal = ((document.getElementById('historyStatusFilter')||{}).value)||'';
+  if (statusVal) h = h.filter(function(e){ return e.status === statusVal; });
+  // Vendor
+  var vendorVal = ((document.getElementById('historyVendorFilter')||{}).value)||'';
+  if (vendorVal) h = h.filter(function(e){ return e.vendor === vendorVal; });
+  // Text search
+  var searchVal = (((document.getElementById('historySearch')||{}).value)||'').trim().toLowerCase();
+  if (searchVal) {
+    h = h.filter(function(e){
+      return (e.client||'').toLowerCase().indexOf(searchVal) !== -1
+          || genQuoteCode(e.id).toLowerCase().indexOf(searchVal) !== -1
+          || (e.vendor||'').toLowerCase().indexOf(searchVal) !== -1;
+    });
+  }
+  if (!h.length) {
+    list.innerHTML = '<div class="history-empty">Nenhum orçamento encontrado com esses filtros.</div>';
+    return;
+  }
+  var statusLabel = { negociacao:'💬 Negociação', aprovado:'✅ Aprovado', perdido:'❌ Perdido' };
+  var statusColor = { negociacao:'#3498db', aprovado:'#2ecc71', perdido:'#e74c3c' };
+  list.innerHTML = '';
+  h.forEach(function(e) {
+    var div = document.createElement('div');
+    div.className = 'history-item';
+    div.innerHTML =
+      '<div class="history-item-info">' +
+        '<div class="history-item-name">' + e.client +
+          '<span class="history-status" style="background:' + (statusColor[e.status]||'#7a7f9a') + '22;color:' + (statusColor[e.status]||'#7a7f9a') + '">' + (statusLabel[e.status]||'—') + '</span>' +
+          '<span style="font-size:11px;font-family:monospace;color:var(--accent);background:rgba(245,166,35,0.1);border-radius:4px;padding:2px 7px;margin-left:6px;letter-spacing:0.5px;">' + genQuoteCode(e.id) + '</span>' +
+        '</div>' +
+        '<div class="history-item-meta">' + (_isAdmin && e.vendor ? '<strong style="color:var(--accent)">' + e.vendor + '</strong>' : (e.vendor||'')) + (e.city?' · '+e.city:'') + (e.date?' · '+e.date:'') + (e.validity?' · Válido até: '+e.validity:'') + '</div>' +
+        (e.saved_at ? '<div style="font-size:11px;color:var(--muted);margin-top:2px;">Salvo em: ' + e.saved_at + '</div>' : '') +
+      '</div>' +
+      '<div class="history-item-total">' + e.total + '</div>' +
+      '<div class="history-item-actions">' +
+        '<button class="btn btn-ghost btn-sm" onclick="loadFromHistory(\'' + e.id + '\')">📂 Abrir</button>' +
+        '<button class="btn btn-ghost btn-sm" onclick="duplicateFromHistory(\'' + e.id + '\')" title="Usar como modelo para novo orçamento">📋 Duplicar</button>' +
+        '<button class="btn btn-danger btn-sm" onclick="deleteFromHistory(\'' + e.id + '\')">🗑</button>' +
+      '</div>';
+    list.appendChild(div);
+  });
 }
 
 function loadFromHistory(id) {
@@ -1633,6 +1678,11 @@ function sendWhatsApp() {
   var totalWa    = subtotalWa - discAmt + acrescimo;
   var totalFmt   = 'R$ ' + totalWa.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
 
+  // Se hideAcDesc: total mostrado é só subtotal (sem desc/acrescimo)
+  var totalDisplay = hideAcDesc
+    ? 'R$ ' + subtotalWa.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2})
+    : totalFmt;
+
   var lines = ['*Orçamento – Alliance Casas Pré Fabricadas*',''];
   lines.push('Olá ' + client + '! Segue o resumo do seu orçamento:','');
 
@@ -1644,14 +1694,6 @@ function sendWhatsApp() {
       if (i.obs) line += ' _(' + i.obs + ')_';
       lines.push(line);
     });
-    if (!hideAcDesc) {
-      if (discAmt > 0) {
-        lines.push('_Desconto: - R$ ' + discAmt.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}) + '_');
-      }
-      if (acrescimo > 0) {
-        lines.push('_Acréscimo: + R$ ' + acrescimo.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}) + '_');
-      }
-    }
   } else {
     active.forEach(function(i){
       var line = '• ' + i.label + ': ' + state[i.id] + ' ' + i.unit;
@@ -1660,7 +1702,17 @@ function sendWhatsApp() {
     });
   }
 
-  lines.push('','*Total: ' + totalFmt + '*');
+  // Desconto/acrescimo aparece em ambos os modos, a menos que hideAcDesc=true
+  if (!hideAcDesc) {
+    if (discAmt > 0) {
+      lines.push('_Desconto: - R$ ' + discAmt.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}) + '_');
+    }
+    if (acrescimo > 0) {
+      lines.push('_Acréscimo: + R$ ' + acrescimo.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}) + '_');
+    }
+  }
+
+  lines.push('','*Total: ' + totalDisplay + '*');
   if (validity) lines.push('_Válido até: ' + validity + '_');
   if (vendor)   lines.push('_Vendedor: ' + vendor + '_');
 
@@ -1671,7 +1723,41 @@ function sendWhatsApp() {
 }
 
 
-function renderConfigPanels() { renderUnitTags(); renderSecTags(); populateSelects(); }
+function renderConfigPanels() { renderUnitTags(); renderSecTags(); renderVendorTags(); populateSelects(); populateVendorSelect(); }
+
+function renderVendorTags() {
+  var list = document.getElementById('vendorTagList');
+  if (!list) return;
+  list.innerHTML = '';
+  VENDORS.forEach(function(v, i) {
+    var tag = document.createElement('div');
+    tag.className = 'tag';
+    tag.innerHTML = '<span>' + v + '</span><button class="tag-del" onclick="deleteVendor(' + i + ')" title="Remover">×</button>';
+    list.appendChild(tag);
+  });
+}
+function addVendor() {
+  var input = document.getElementById('newVendorInput');
+  var val = input.value.trim();
+  if (!val) return;
+  if (VENDORS.indexOf(val) !== -1) { showToast('Vendedor já cadastrado','error'); return; }
+  VENDORS.push(val); saveAll(); input.value = '';
+  renderVendorTags(); populateVendorSelect();
+  showToast('✓ Vendedor adicionado!');
+}
+function deleteVendor(i) {
+  if (!confirm('Remover o vendedor "' + VENDORS[i] + '"?')) return;
+  VENDORS.splice(i, 1); saveAll();
+  renderVendorTags(); populateVendorSelect();
+  showToast('Vendedor removido');
+}
+function populateVendorSelect() {
+  var sel = document.getElementById('vendorName');
+  if (!sel) return;
+  var cur = sel.value;
+  sel.innerHTML = '<option value="">— Selecione —</option>' +
+    VENDORS.map(function(v){ return '<option value="' + v + '"' + (v===cur?' selected':'') + '>' + v + '</option>'; }).join('');
+}
 
 function renderUnitTags() {
   var list = document.getElementById('unitTagList');
@@ -2077,7 +2163,7 @@ function printQuote() {
     + '</div>'
     + '<table class="items"><thead><tr>' + (pdfMode==='detailed' ? thDetailed : thSimple) + '</tr></thead><tbody>' + rows + '</tbody></table>'
     + (!pdfHideAD && discAmt > 0 ? '<div class="disc">Desconto: - ' + fmt(discAmt) + '</div>' : '')
-    + (!pdfHideAD && pdfMode === 'detailed' && acrescimoAmt > 0 ? '<div class="disc" style="color:#27ae60">Acréscimo: + ' + fmt(acrescimoAmt) + '</div>' : '')
+    + (!pdfHideAD && acrescimoAmt > 0 ? '<div class="disc" style="color:#27ae60">Acréscimo: + ' + fmt(acrescimoAmt) + '</div>' : '')
     + '<div class="totalbar"><span class="totalbar-lbl">Valor Final</span><span class="totalbar-val">' + total + '</span></div>'
     + (obs ? '<div class="obsbox"><div class="obshdr">Observações</div><div class="obsbody">' + obs + '</div></div>' : '')
     + payHtml
