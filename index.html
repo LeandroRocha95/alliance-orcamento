@@ -9,7 +9,6 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Alliance">
-<link rel="manifest" href="manifest.json">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -325,24 +324,6 @@
 <body>
 
 <!-- LOGIN OVERLAY -->
-<div class="login-overlay" id="loginOverlay" style="display:none;">
-  <div class="login-box">
-    <div class="login-logo"><img src="https://leandrorocha95.github.io/alliance-orcamento/logo_alliance.jpg" alt="Alliance" style="height:64px;width:auto;background:#fff;border-radius:10px;padding:6px 12px;"></div>
-    <div class="login-title">Bem-vindo</div>
-    <div class="login-sub">Alliance Casas Pré Fabricadas</div>
-    <div class="login-field">
-      <label>E-mail</label>
-      <input type="email" id="loginEmail" placeholder="seu@email.com" onkeydown="if(event.key==='Enter')document.getElementById('loginPass').focus()">
-    </div>
-    <div class="login-field">
-      <label>Senha</label>
-      <input type="password" id="loginPass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
-    </div>
-    <div class="login-err" id="loginErr"></div>
-    <button class="login-btn" id="loginBtn" onclick="doLogin()">Entrar</button>
-  </div>
-</div>
-
 <!-- MODAL SENHA -->
 <script>var _ORIGINAL_HTML = document.documentElement.outerHTML;</script>
 <div class="overlay" id="pwOverlay">
@@ -362,12 +343,7 @@
 <header>
   <div class="logo-wrap"><img src="https://leandrorocha95.github.io/alliance-orcamento/logo_alliance.jpg" alt="Alliance Casas Pré Fabricadas" style="height:48px;width:auto;"></div>
   <div class="header-right">
-    <button class="install-btn" id="installBtn" onclick="installApp()">📲 Instalar App</button>
-    <div class="user-info">
-      <span class="user-email" id="userEmail"></span>
-      <button class="logout-btn" onclick="doLogout()">Sair</button>
-    </div>
-    <button class="admin-btn" onclick="window.open('https://leandrorocha95.github.io/alliance-orcamento/catalogo.html?mode=internal','_blank')" style="color:var(--accent);border-color:rgba(245,166,35,.3);">🏠 Catálogo</button>
+    <span class="user-email" id="userEmail" style="font-size:12px;color:var(--muted);"></span>
     <button class="admin-btn" onclick="openAdminModal()">⚙️ Admin</button>
     <div>
       <div style="text-align:right;margin-right:16px;">
@@ -1318,100 +1294,23 @@ function sbFetch(method, url, body) {
 }
 
 // ── LOGIN ────────────────────────────────────────────────────────
-function doLogin() {
-  var email = document.getElementById('loginEmail').value.trim();
-  var pass  = document.getElementById('loginPass').value;
-  var btn   = document.getElementById('loginBtn');
-  var err   = document.getElementById('loginErr');
-  if (!email || !pass) { err.textContent = 'Preencha e-mail e senha.'; return; }
-  btn.disabled = true; btn.textContent = 'Entrando...'; err.textContent = '';
-
-  fetch(AUTH_URL + '/token?grant_type=password', {
-    method: 'POST',
-    headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: email, password: pass })
-  })
-  .then(function(r){ return r.json(); })
-  .then(function(data) {
-    if (data.access_token) {
-      _currentUser = { id: data.user.id, email: data.user.email, access_token: data.access_token };
-      localStorage.setItem('sb_session', JSON.stringify(_currentUser));
-      onLoginSuccess();
-    } else {
-      err.textContent = 'E-mail ou senha incorretos.';
-      btn.disabled = false; btn.textContent = 'Entrar';
-    }
-  })
-  .catch(function(){ err.textContent = 'Erro de conexão.'; btn.disabled = false; btn.textContent = 'Entrar'; });
-}
-
+// ── AUTH — recebido do hub via localStorage ──────────────────────
 function doLogout() {
-  if (!confirm('Deseja sair?')) return;
-  _currentUser = null; _isAdmin = false;
-  localStorage.removeItem('sb_session');
-  document.getElementById('loginEmail').value = '';
-  document.getElementById('loginPass').value  = '';
-  document.getElementById('loginErr').textContent = '';
-  document.getElementById('loginBtn').disabled = false;
-  document.getElementById('loginBtn').textContent = 'Entrar';
-  document.getElementById('loginOverlay').style.display = 'flex';
-  document.getElementById('tabAdm').style.display = 'none';
-  switchTab('orcamento');
+  localStorage.removeItem('alliance_session');
+  window.top.location.href = 'hub.html';
 }
 
-function onLoginSuccess() {
-  document.getElementById('loginOverlay').style.display = 'none';
-  document.getElementById('userEmail').textContent = _currentUser.email;
-  // Check if admin
-  fetch(SUPABASE_URL + '/rest/v1/admins?user_id=eq.' + _currentUser.id, {
-    headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + _currentUser.access_token }
-  })
-  .then(function(r){ return r.json(); })
-  .then(function(rows) {
-    _isAdmin = Array.isArray(rows) && rows.length > 0;
-    loadConfig(function() { renderOrcamento(); renderPaymentRows(); updateQuoteCodeDisplay(); });
-  })
-  .catch(function(){ loadConfig(function() { renderOrcamento(); renderPaymentRows(); }); });
-}
-
-// ── Restore session from localStorage ───────────────────────────
 function restoreSession() {
   try {
-    var saved = localStorage.getItem('sb_session');
+    var saved = localStorage.getItem('alliance_session');
     if (saved) {
-      _currentUser = JSON.parse(saved);
-      // Verify token is still valid
-      fetch(AUTH_URL + '/user', {
-        headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + _currentUser.access_token }
-      })
-      .then(function(r){ return r.json(); })
-      .then(function(data) {
-        if (data.id) {
-          document.getElementById('userEmail').textContent = _currentUser.email;
-          document.getElementById('loginOverlay').style.display = 'none';
-          fetch(SUPABASE_URL + '/rest/v1/admins?user_id=eq.' + _currentUser.id, {
-            headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + _currentUser.access_token }
-          })
-          .then(function(r){ return r.json(); })
-          .then(function(rows) {
-            _isAdmin = Array.isArray(rows) && rows.length > 0;
-            loadConfig(function() { renderOrcamento(); renderPaymentRows(); updateQuoteCodeDisplay(); });
-          });
-        } else {
-          _currentUser = null;
-          localStorage.removeItem('sb_session');
-          document.getElementById('loginOverlay').style.display = 'flex';
-        }
-      })
-      .catch(function(){
-        document.getElementById('loginOverlay').style.display = 'flex';
-      });
-    } else {
-      document.getElementById('loginOverlay').style.display = 'flex';
+      var s = JSON.parse(saved);
+      _currentUser = s.user  || null;
+      _isAdmin     = s.isAdmin || false;
+      if (_currentUser) document.getElementById('userEmail').textContent = _currentUser.email || '';
     }
-  } catch(e) {
-    document.getElementById('loginOverlay').style.display = 'flex';
-  }
+  } catch(e) {}
+  loadConfig(function() { renderOrcamento(); renderPaymentRows(); updateQuoteCodeDisplay(); });
 }
 
 function saveToHistory() {
@@ -2314,43 +2213,6 @@ function setPaymentData(data) {
 // ═══════════════════════════════════════════════════
 // PWA — Install & Service Worker
 // ═══════════════════════════════════════════════════
-var _deferredPrompt = null;
-
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function() {
-    navigator.serviceWorker.register('sw.js').catch(function(e){ console.log('SW error:', e); });
-  });
-}
-
-window.addEventListener('beforeinstallprompt', function(e) {
-  e.preventDefault();
-  _deferredPrompt = e;
-  var btn = document.getElementById('installBtn');
-  if (btn) btn.style.display = 'inline-block';
-});
-
-window.addEventListener('appinstalled', function() {
-  _deferredPrompt = null;
-  var btn = document.getElementById('installBtn');
-  if (btn) btn.style.display = 'none';
-  showToast('✓ App instalado com sucesso!');
-});
-
-function installApp() {
-  if (!_deferredPrompt) {
-    showToast('Use o menu do navegador para instalar: ⋮ → Instalar App', 'success');
-    return;
-  }
-  _deferredPrompt.prompt();
-  _deferredPrompt.userChoice.then(function(r) {
-    if (r.outcome === 'accepted') showToast('✓ Instalando...');
-    _deferredPrompt = null;
-    var btn = document.getElementById('installBtn');
-    if (btn) btn.style.display = 'none';
-  });
-}
-
-
 function toggleGroupField() {
   var sec = document.getElementById('newSection');
   var wrap = document.getElementById('groupFieldWrap');
