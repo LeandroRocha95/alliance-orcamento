@@ -2,7 +2,7 @@
   "name": "Alliance Orçamentos",
   "short_name": "Alliance",
   "description": "Sistema de orçamentos Alliance Casas Pré Fabricadas",
-  "start_url": "/alliance-orcamento/",
+  "start_url": "/alliance-orcamento/hub.html",
   "scope": "/alliance-orcamento/",
   "display": "standalone",
   "background_color": "#0f1117",
