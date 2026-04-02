@@ -400,6 +400,10 @@ body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif
       <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:5px;">Senha</div>
       <input class="lock-input" type="password" id="hubPass" placeholder="••••••••" style="letter-spacing:4px;font-size:14px;" onkeydown="if(event.key==='Enter')doLogin()">
     </div>
+    <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);cursor:pointer;margin-bottom:12px;">
+      <input type="checkbox" id="hubRemember" style="width:14px;height:14px;accent-color:var(--accent);">
+      Lembrar meu e-mail
+    </label>
     <div class="lock-err" id="hubLoginErr"></div>
     <button class="lock-btn" id="hubLoginBtn" onclick="doLogin()">Entrar</button>
   </div>
@@ -452,25 +456,50 @@ var _session  = null; // { user, isAdmin }
 
 // ── AUTH ─────────────────────────────────────────────────────────
 function initHub() {
+  // Restaurar email salvo
+  var savedEmail = localStorage.getItem('alliance_email');
+  if (savedEmail) {
+    document.getElementById('hubEmail').value = savedEmail;
+    document.getElementById('hubRemember').checked = true;
+  }
+
   try {
     var saved = localStorage.getItem('alliance_session');
     if (saved) {
       _session = JSON.parse(saved);
-      // Verificar token ainda válido
+      // Tentar refresh token primeiro (mantém sessão sem precisar logar de novo)
+      if (_session.user && _session.user.refresh_token) {
+        fetch(AUTH_URL + '/token?grant_type=refresh_token', {
+          method: 'POST',
+          headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ refresh_token: _session.user.refresh_token })
+        })
+        .then(function(r){ return r.json(); })
+        .then(function(data) {
+          if (data.access_token) {
+            _session.user.access_token  = data.access_token;
+            _session.user.refresh_token = data.refresh_token || _session.user.refresh_token;
+            localStorage.setItem('alliance_session', JSON.stringify(_session));
+            showHub();
+          } else {
+            _session = null;
+            localStorage.removeItem('alliance_session');
+            showLogin();
+          }
+        })
+        .catch(function(){ showHub(); }); // offline — libera mesmo assim
+        return;
+      }
+      // Sem refresh token — verificar token atual
       fetch(AUTH_URL + '/user', {
         headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + _session.user.access_token }
       })
       .then(function(r){ return r.json(); })
       .then(function(data) {
-        if (data.id) {
-          showHub();
-        } else {
-          _session = null;
-          localStorage.removeItem('alliance_session');
-          showLogin();
-        }
+        if (data.id) { showHub(); }
+        else { _session = null; localStorage.removeItem('alliance_session'); showLogin(); }
       })
-      .catch(function(){ showHub(); }); // offline — libera mesmo assim
+      .catch(function(){ showHub(); });
       return;
     }
   } catch(e) {}
@@ -504,7 +533,13 @@ function doLogin() {
   .then(function(r){ return r.json(); })
   .then(function(data) {
     if (data.access_token) {
-      var user = { id: data.user.id, email: data.user.email, access_token: data.access_token };
+      var user = { id: data.user.id, email: data.user.email, access_token: data.access_token, refresh_token: data.refresh_token || '' };
+      // Salvar email se "lembrar" marcado
+      if (document.getElementById('hubRemember').checked) {
+        localStorage.setItem('alliance_email', user.email);
+      } else {
+        localStorage.removeItem('alliance_email');
+      }
       // Checar se é admin
       fetch(SUPABASE_URL + '/rest/v1/admins?user_id=eq.' + user.id, {
         headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + data.access_token }
