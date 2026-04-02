@@ -588,6 +588,15 @@ function loadModule(module) {
     if (!iframe.src || iframe.src === 'about:blank' || iframe.src === window.location.href) {
       iframe.src = MODULES[module];
     }
+    // Passa sessão via postMessage quando iframe carregar
+    iframe.onload = function() {
+      if (_session) {
+        iframe.contentWindow.postMessage({
+          type: 'ALLIANCE_SESSION',
+          session: _session
+        }, '*');
+      }
+    };
   }
 
   // Nav highlight
