@@ -1,8 +1,14 @@
-const CACHE = 'alliance-v1';
+const CACHE = 'alliance-v2';
 const ASSETS = [
-  '/alliance-orcamento/',
-  '/alliance-orcamento/index.html',
-  '/alliance-orcamento/manifest.json'
+  '/',
+  '/hub',
+  '/hub.html',
+  '/index.html',
+  '/catalogo.html',
+  '/manifest.json',
+  '/logo_alliance.jpg',
+  '/icon-192.png',
+  '/icon-512.png'
 ];
 
 self.addEventListener('install', function(e) {
