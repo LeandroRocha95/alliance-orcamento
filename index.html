@@ -1461,6 +1461,8 @@ function _applyHistoryFilters(allData) {
     'Madeira de Lei': { bg:'rgba(245,166,35,0.15)', color:'var(--accent)' },
     'Pinus Tratado':  { bg:'rgba(46,204,113,0.15)', color:'#2ecc71' }
   };
+  var statusLabel = { negociacao:'💬 Negociação', aprovado:'✅ Aprovado', perdido:'❌ Perdido' };
+  var statusColor = { negociacao:'#3498db', aprovado:'#2ecc71', perdido:'#e74c3c' };
   list.innerHTML = '';
   h.forEach(function(e) {
     var mad = e.tipo_madeira && madeiraBadge[e.tipo_madeira] ? madeiraBadge[e.tipo_madeira] : null;
