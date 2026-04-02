@@ -1298,10 +1298,11 @@ function sbFetch(method, url, body) {
 window.addEventListener('message', function(e) {
   if (e.data && e.data.type === 'ALLIANCE_SESSION') {
     var s = e.data.session;
-    _currentUser = s.user  || null;
+    _currentUser = s.user    || null;
     _isAdmin     = s.isAdmin || false;
     localStorage.setItem('alliance_session', JSON.stringify(s));
     if (_currentUser) document.getElementById('userEmail').textContent = _currentUser.email || '';
+    // Recarregar dados agora que temos sessão
     loadConfig(function() { renderOrcamento(); renderPaymentRows(); updateQuoteCodeDisplay(); });
   }
 });
@@ -1316,12 +1317,18 @@ function restoreSession() {
     var saved = localStorage.getItem('alliance_session');
     if (saved) {
       var s = JSON.parse(saved);
-      _currentUser = s.user  || null;
+      _currentUser = s.user    || null;
       _isAdmin     = s.isAdmin || false;
       if (_currentUser) document.getElementById('userEmail').textContent = _currentUser.email || '';
+      loadConfig(function() { renderOrcamento(); renderPaymentRows(); updateQuoteCodeDisplay(); });
+      return;
     }
   } catch(e) {}
-  loadConfig(function() { renderOrcamento(); renderPaymentRows(); updateQuoteCodeDisplay(); });
+  // Sem sessão no localStorage — aguarda postMessage do hub (não tenta carregar ainda)
+  // Inicia só o render básico sem dados do servidor
+  renderOrcamento();
+  renderPaymentRows();
+  updateQuoteCodeDisplay();
 }
 
 function saveToHistory() {
@@ -1369,12 +1376,18 @@ function saveToHistory() {
 
 function renderHistory() {
   var list = document.getElementById('historyList');
+  // Se não tem sessão ainda, aguarda postMessage do hub
+  if (!_currentUser) {
+    list.innerHTML = '<div class="history-empty">⏳ Aguardando autenticação...</div>';
+    setTimeout(function() { if (_currentUser) renderHistory(); }, 800);
+    return;
+  }
   // If cache exists, just re-filter (fast, no loader flash)
   if (_historyCache) { _applyHistoryFilters(_historyCache); return; }
   list.innerHTML = '<div class="history-empty">⏳ Carregando orçamentos...</div>';
   var histUrl = _isAdmin
     ? TABLE_URL + '?order=id.desc'
-    : TABLE_URL + '?order=id.desc&user_id=eq.' + (_currentUser ? _currentUser.id : 'none');
+    : TABLE_URL + '?order=id.desc&user_id=eq.' + _currentUser.id;
   sbFetch('GET', histUrl)
   .then(function(r){ return r.json(); })
   .then(function(h) {
