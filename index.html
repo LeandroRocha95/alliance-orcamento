@@ -415,6 +415,14 @@
     </div>
     <div class="field"><label>Cidade / Endereço</label><input type="text" id="clientCity" placeholder="Ex: Joinville - SC"></div>
     <div class="field"><label>Telefone (WhatsApp)</label><input type="text" id="clientPhone" placeholder="Ex: 47 99999-9999"></div>
+    <div class="field">
+      <label>Tipo de Madeira</label>
+      <select id="tipoMadeira" style="background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:14px;font-family:'DM Sans',sans-serif;padding:10px 14px;outline:none;transition:border-color 0.2s;width:100%;">
+        <option value="">— Selecione —</option>
+        <option value="Madeira de Lei">Madeira de Lei</option>
+        <option value="Pinus Tratado">Pinus Tratado</option>
+      </select>
+    </div>
     <div class="field"><label>Data do Orçamento</label><input type="date" id="quoteDate"></div>
     <div class="field"><label>Validade do Orçamento</label><input type="date" id="quoteValidity"></div>
   </div>
@@ -1251,7 +1259,7 @@ function resetAll() {
   _currentQuoteId = null;
   updateQuoteCodeDisplay();
   state = {};
-  ['clientName','vendorName','clientCity','clientPhone','quoteObs','discountVal','acrescimoVal'].forEach(function(id){
+  ['clientName','vendorName','clientCity','clientPhone','quoteObs','discountVal','acrescimoVal','tipoMadeira'].forEach(function(id){
     var el = document.getElementById(id); if(el) el.value='';
   });
   document.getElementById('discountType').value = 'pct';
@@ -1427,6 +1435,7 @@ function saveToHistory() {
     discount_val:  document.getElementById('discountVal').value,
     discount_type: document.getElementById('discountType').value,
     acrescimo_val: document.getElementById('acrescimoVal').value,
+    tipo_madeira:  document.getElementById('tipoMadeira').value,
     payment_data:  JSON.stringify(getPaymentData()),
     state:         JSON.parse(JSON.stringify(state)),
     saved_at:      new Date().toLocaleString('pt-BR'),
@@ -1496,17 +1505,24 @@ function _applyHistoryFilters(allData) {
     h = h.filter(function(e){
       return (e.client||'').toLowerCase().indexOf(searchVal) !== -1
           || genQuoteCode(e.id).toLowerCase().indexOf(searchVal) !== -1
-          || (e.vendor||'').toLowerCase().indexOf(searchVal) !== -1;
+          || (e.vendor||'').toLowerCase().indexOf(searchVal) !== -1
+          || (e.tipo_madeira||'').toLowerCase().indexOf(searchVal) !== -1;
     });
   }
   if (!h.length) {
     list.innerHTML = '<div class="history-empty">Nenhum orçamento encontrado com esses filtros.</div>';
     return;
   }
-  var statusLabel = { negociacao:'💬 Negociação', aprovado:'✅ Aprovado', perdido:'❌ Perdido' };
-  var statusColor = { negociacao:'#3498db', aprovado:'#2ecc71', perdido:'#e74c3c' };
+  var madeiraBadge = {
+    'Madeira de Lei': { bg:'rgba(245,166,35,0.15)', color:'var(--accent)' },
+    'Pinus Tratado':  { bg:'rgba(46,204,113,0.15)', color:'#2ecc71' }
+  };
   list.innerHTML = '';
   h.forEach(function(e) {
+    var mad = e.tipo_madeira && madeiraBadge[e.tipo_madeira] ? madeiraBadge[e.tipo_madeira] : null;
+    var madHtml = mad
+      ? '<span style="font-size:11px;background:' + mad.bg + ';color:' + mad.color + ';border-radius:4px;padding:2px 7px;margin-left:6px;font-weight:600;">' + e.tipo_madeira + '</span>'
+      : '';
     var div = document.createElement('div');
     div.className = 'history-item';
     div.innerHTML =
@@ -1514,6 +1530,7 @@ function _applyHistoryFilters(allData) {
         '<div class="history-item-name">' + e.client +
           '<span class="history-status" style="background:' + (statusColor[e.status]||'#7a7f9a') + '22;color:' + (statusColor[e.status]||'#7a7f9a') + '">' + (statusLabel[e.status]||'—') + '</span>' +
           '<span style="font-size:11px;font-family:monospace;color:var(--accent);background:rgba(245,166,35,0.1);border-radius:4px;padding:2px 7px;margin-left:6px;letter-spacing:0.5px;">' + genQuoteCode(e.id) + '</span>' +
+          madHtml +
         '</div>' +
         '<div class="history-item-meta">' + (_isAdmin && e.vendor ? '<strong style="color:var(--accent)">' + e.vendor + '</strong>' : (e.vendor||'')) + (e.city?' · '+e.city:'') + (e.date?' · '+e.date:'') + (e.validity?' · Válido até: '+e.validity:'') + '</div>' +
         (e.saved_at ? '<div style="font-size:11px;color:var(--muted);margin-top:2px;">Salvo em: ' + e.saved_at + '</div>' : '') +
@@ -1544,6 +1561,7 @@ function loadFromHistory(id) {
     document.getElementById('discountVal').value   = e.discount_val  || '';
     document.getElementById('discountType').value  = e.discount_type || 'pct';
     document.getElementById('acrescimoVal').value   = e.acrescimo_val  || '';
+    document.getElementById('tipoMadeira').value    = e.tipo_madeira   || '';
     try { if (e.payment_data) setPaymentData(JSON.parse(e.payment_data)); } catch(ex){}
     setStatus(e.status || 'negociacao');
     switchTab('orcamento');
@@ -1577,6 +1595,7 @@ function duplicateFromHistory(id) {
     document.getElementById('discountVal').value   = e.discount_val  || '';
     document.getElementById('discountType').value  = e.discount_type || 'pct';
     document.getElementById('acrescimoVal').value  = e.acrescimo_val || '';
+    document.getElementById('tipoMadeira').value   = e.tipo_madeira  || '';
     try { if (e.payment_data) setPaymentData(JSON.parse(e.payment_data)); } catch(ex){}
     setStatus('negociacao');
     switchTab('orcamento');
@@ -2363,7 +2382,7 @@ function newQuote() {
   }
   _currentQuoteId = null;
   state = {};
-  ['clientName','vendorName','clientCity','clientPhone','quoteObs','discountVal','acrescimoVal'].forEach(function(id){
+  ['clientName','vendorName','clientCity','clientPhone','quoteObs','discountVal','acrescimoVal','tipoMadeira'].forEach(function(id){
     var el = document.getElementById(id); if(el) el.value='';
   });
   document.getElementById('discountType').value = 'pct';
