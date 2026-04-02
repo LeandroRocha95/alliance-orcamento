@@ -153,8 +153,7 @@ body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif
 .toggle-label { transition: opacity 0.2s; }
 .sidebar.collapsed .toggle-label { opacity: 0; }
 
-/* MAIN */
-.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; height: 100vh; }
 
 /* HOME */
 .home-screen {
@@ -165,6 +164,7 @@ body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif
   justify-content: center;
   padding: 40px 24px;
   overflow-y: auto;
+  height: 100%;
   background-image:
     radial-gradient(ellipse at 15% 0%, rgba(245,166,35,0.08) 0%, transparent 55%),
     radial-gradient(ellipse at 85% 100%, rgba(232,84,26,0.06) 0%, transparent 55%);
@@ -568,12 +568,27 @@ function loadModule(module) {
   document.querySelectorAll('.home-screen, .iframe-container').forEach(function(el) {
     el.classList.remove('active');
   });
+
+  if (module === 'home') {
+    var home = document.getElementById('module-home');
+    if (home) home.classList.add('active');
+    document.querySelectorAll('.nav-item').forEach(function(item) {
+      item.classList.toggle('active', item.dataset.module === 'home');
+    });
+    _current = 'home';
+    return;
+  }
+
   var el = document.getElementById('module-' + module);
   if (el) el.classList.add('active');
 
-  // Lazy load iframe
+  // Sempre (re)carrega o iframe com a URL correta
   var iframe = document.getElementById('iframe-' + module);
-  if (iframe && !iframe.src) iframe.src = MODULES[module];
+  if (iframe) {
+    if (!iframe.src || iframe.src === 'about:blank' || iframe.src === window.location.href) {
+      iframe.src = MODULES[module];
+    }
+  }
 
   // Nav highlight
   document.querySelectorAll('.nav-item').forEach(function(item) {
