@@ -880,6 +880,13 @@ async function loadCasas() {
     const adminBtn = document.getElementById('btnAdminToggle');
     if (adminBtn) adminBtn.style.display = 'none';
   }
+
+  // Abrir modal se URL tiver ?modelo=id (link compartilhado)
+  const modeloId = new URLSearchParams(location.search).get('modelo');
+  if (modeloId) {
+    const c = casas.find(x => x.id === modeloId);
+    if (c) openDetail(modeloId);
+  }
 }
 
 async function loadLojas() {
