@@ -1302,8 +1302,13 @@ window.addEventListener('message', function(e) {
     _isAdmin     = s.isAdmin || false;
     localStorage.setItem('alliance_session', JSON.stringify(s));
     if (_currentUser) document.getElementById('userEmail').textContent = _currentUser.email || '';
-    // Recarregar dados agora que temos sessão
+    _historyCache = null; // limpa cache para forçar nova busca com token correto
     loadConfig(function() { renderOrcamento(); renderPaymentRows(); updateQuoteCodeDisplay(); });
+    // Se histórico estiver visível, recarregar com token correto
+    var histPage = document.getElementById('page-historico');
+    if (histPage && histPage.classList.contains('active')) {
+      renderHistory();
+    }
   }
 });
 
@@ -1379,10 +1384,15 @@ function renderHistory() {
   // Se não tem sessão ainda, aguarda postMessage do hub
   if (!_currentUser) {
     list.innerHTML = '<div class="history-empty">⏳ Aguardando autenticação...</div>';
-    setTimeout(function() { if (_currentUser) renderHistory(); }, 800);
+    var tries = 0;
+    var wait = setInterval(function() {
+      tries++;
+      if (_currentUser) { clearInterval(wait); _historyCache = null; renderHistory(); }
+      else if (tries > 10) { clearInterval(wait); list.innerHTML = '<div class="history-empty">❌ Sessão não encontrada. Tente recarregar.</div>'; }
+    }, 500);
     return;
   }
-  // If cache exists, just re-filter (fast, no loader flash)
+  // Se cache existe, só re-filtra
   if (_historyCache) { _applyHistoryFilters(_historyCache); return; }
   list.innerHTML = '<div class="history-empty">⏳ Carregando orçamentos...</div>';
   var histUrl = _isAdmin
