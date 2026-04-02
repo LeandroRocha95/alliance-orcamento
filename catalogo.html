@@ -46,8 +46,30 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .filters-bar{padding:20px 28px 0;display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
 .filter-btn{background:var(--surface2);border:1px solid var(--border);color:var(--muted);border-radius:20px;padding:6px 14px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;transition:all .15s;white-space:nowrap;}
 .filter-btn:hover,.filter-btn.active{background:rgba(245,166,35,.15);border-color:var(--accent);color:var(--accent);}
-.filter-tag{background:rgba(52,152,219,.12);border:1px solid rgba(52,152,219,.3);color:var(--blue);}
-.filter-tag:hover,.filter-tag.active{background:rgba(52,152,219,.25);border-color:var(--blue);color:var(--blue);}
+.filter-select{background:var(--surface2);border:1px solid var(--border);color:var(--muted);border-radius:20px;padding:6px 30px 6px 14px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;transition:all .15s;white-space:nowrap;outline:none;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none' viewBox='0 0 10 6'%3E%3Cpath stroke='%237a7f9a' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M1 1l4 4 4-4'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;}
+.filter-select:hover{border-color:var(--accent);color:var(--accent);}
+.filter-select.active{background-color:rgba(245,166,35,.15);border-color:var(--accent);color:var(--accent);}
+.filter-select.active-tag{background-color:rgba(52,152,219,.15);border-color:var(--blue);color:var(--blue);}
+
+/* ── FILTROS AVANÇADOS ── */
+.fbar-top{display:flex;align-items:center;gap:8px;padding:16px 28px 0;flex-wrap:wrap;}
+.fbar-adv{padding:0 28px;overflow:hidden;max-height:0;transition:max-height .35s ease;}
+.fbar-adv.open{max-height:320px;}
+.fbar-adv-inner{display:flex;gap:10px;flex-wrap:wrap;padding:14px 0;border-bottom:1px solid var(--border);}
+.fadv-group{display:flex;flex-direction:column;gap:5px;min-width:140px;flex:1;}
+.fadv-label{font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);font-weight:700;}
+.fadv-select{background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:12px;padding:7px 28px 7px 10px;outline:none;cursor:pointer;transition:all .15s;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none' viewBox='0 0 10 6'%3E%3Cpath stroke='%237a7f9a' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M1 1l4 4 4-4'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 9px center;width:100%;}
+.fadv-select:focus{border-color:var(--accent);}
+.fadv-select.on{border-color:var(--accent);color:var(--text);background-color:rgba(245,166,35,.08);}
+.btn-filter-toggle{display:flex;align-items:center;gap:6px;background:var(--surface2);border:1px solid var(--border);color:var(--muted);border-radius:20px;padding:6px 14px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;transition:all .15s;white-space:nowrap;flex-shrink:0;}
+.btn-filter-toggle:hover,.btn-filter-toggle.on{border-color:var(--accent);color:var(--accent);background:rgba(245,166,35,.08);}
+.filter-badge{background:var(--accent);color:#000;border-radius:10px;padding:1px 6px;font-size:10px;font-weight:800;margin-left:2px;display:none;}
+.filter-badge.show{display:inline;}
+.fbar-chips{display:flex;gap:6px;flex-wrap:wrap;padding:8px 28px 0;min-height:0;}
+.fchip{display:flex;align-items:center;gap:4px;background:rgba(245,166,35,.12);border:1px solid rgba(245,166,35,.3);border-radius:20px;padding:3px 10px;font-size:11px;color:var(--accent);font-weight:600;}
+.fchip-rm{background:none;border:none;color:var(--accent);cursor:pointer;font-size:15px;line-height:1;padding:0;opacity:.7;}
+.fchip-rm:hover{opacity:1;}
+.results-count{font-size:11px;color:var(--muted);padding:6px 28px 0;}
 .search-wrap{margin-left:auto;position:relative;}
 .search-wrap svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:14px;height:14px;color:var(--muted);}
 .search-input{background:var(--surface2);border:1px solid var(--border);border-radius:20px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;padding:7px 14px 7px 34px;outline:none;width:220px;transition:border-color .15s;}
@@ -115,8 +137,8 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .modal-spec-lbl{font-size:10px;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:.5px;}
 .modal-section{margin-top:18px;}
 .modal-section-title{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:700;margin-bottom:8px;}
-.modal-desc{font-size:14px;color:var(--text);line-height:1.7;}
-.modal-notes{background:var(--surface2);border-radius:10px;padding:14px;font-size:13px;color:var(--muted);line-height:1.6;}
+.modal-desc{font-size:14px;color:var(--text);line-height:1.7;white-space:pre-wrap;}
+.modal-notes{background:var(--surface2);border-radius:10px;padding:14px;font-size:13px;color:var(--muted);line-height:1.6;white-space:pre-wrap;}
 .modal-links{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
 .link-btn{display:flex;align-items:center;gap:6px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px 14px;color:var(--text);text-decoration:none;font-size:13px;font-weight:500;transition:all .15s;}
 .link-btn:hover{border-color:var(--accent);color:var(--accent);}
@@ -140,7 +162,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .field-row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
 .field-row4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;}
 select.field-inp{cursor:pointer;}
-textarea.field-inp{resize:vertical;min-height:76px;}
+textarea.field-inp{resize:vertical;min-height:76px;white-space:pre-wrap;}
 .field-hint{font-size:10px;color:var(--muted);margin-top:3px;}
 .field-calc{font-size:11px;color:var(--accent);margin-top:4px;font-weight:600;}
 .modal-foot{padding:14px 24px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;position:sticky;bottom:0;background:var(--surface);}
@@ -194,7 +216,14 @@ textarea.field-inp{resize:vertical;min-height:76px;}
 .admin-login-title{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;margin-bottom:8px;}
 .admin-login-sub{font-size:13px;color:var(--muted);margin-bottom:20px;}
 
-/* ── TOAST ── */
+/* ── SELOS ── */
+.card-selo{position:absolute;top:12px;left:12px;z-index:5;display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:20px;font-size:10px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;box-shadow:0 2px 12px rgba(0,0,0,.35);backdrop-filter:blur(4px);}
+.card-selo svg{width:11px;height:11px;flex-shrink:0;}
+.selo-mais-vendido{background:linear-gradient(135deg,#f5a623,#e8541a);color:#fff;}
+.selo-novo{background:linear-gradient(135deg,#2ecc71,#1abc9c);color:#fff;}
+.selo-destaque{background:linear-gradient(135deg,#3498db,#2980b9);color:#fff;}
+.selo-lancamento{background:linear-gradient(135deg,#9b59b6,#8e44ad);color:#fff;}
+.card-img-wrap{position:relative;flex-shrink:0;}
 .toast{position:fixed;bottom:24px;right:24px;background:var(--surface3);border:1px solid var(--border);border-radius:10px;padding:12px 18px;font-size:13px;color:var(--text);z-index:999;transform:translateY(80px);opacity:0;transition:all .3s;pointer-events:none;}
 .toast.show{transform:translateY(0);opacity:1;}
 .toast.ok{border-color:var(--green);color:var(--green);}
@@ -226,13 +255,83 @@ textarea.field-inp{resize:vertical;min-height:76px;}
   <button class="btn-outline" style="font-size:12px;padding:6px 12px;" onclick="logoutAdmin()">Sair</button>
 </div>
 
-<!-- FILTERS (gerado via JS) -->
-<div class="filters-bar" id="filtersBar">
-  <div class="search-wrap">
+<!-- FILTERS -->
+<div class="fbar-top" id="filtersBar">
+  <!-- Tipo pills: gerados via JS -->
+  <select class="filter-select" id="filterModelo" onchange="onFilterModelo(this)">
+    <option value="">🏠 Todos os Modelos</option>
+  </select>
+  <select class="filter-select" id="filterTag" onchange="onFilterTag(this)">
+    <option value="">🏷️ Todas as Tags</option>
+  </select>
+  <button class="btn-filter-toggle" id="btnFilterAdv" onclick="toggleAdvFilters()">
+    ⚙️ Filtros <span class="filter-badge" id="advBadge">0</span>
+  </button>
+  <div class="search-wrap" style="margin-left:auto;">
     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/></svg>
-    <input class="search-input" id="searchInp" placeholder="Buscar modelo ou #tag..." oninput="renderCatalogo()">
+    <input class="search-input" id="searchInp" placeholder="Buscar... ex: casa 2 quartos, varanda" oninput="renderCatalogo()" style="width:280px;">
   </div>
 </div>
+
+<!-- PAINEL FILTROS AVANÇADOS -->
+<div class="fbar-adv" id="fbarAdv">
+  <div class="fbar-adv-inner">
+    <div class="fadv-group">
+      <span class="fadv-label">💰 Faixa de Preço</span>
+      <select class="fadv-select" id="fAdvPreco" onchange="applyAdvFilter()">
+        <option value="">Qualquer preço</option>
+        <option value="0-100000">Até R$ 100 mil</option>
+        <option value="100000-150000">R$ 100 a 150 mil</option>
+        <option value="150000-200000">R$ 150 a 200 mil</option>
+        <option value="200000-300000">R$ 200 a 300 mil</option>
+        <option value="300000-99999999">Acima de R$ 300 mil</option>
+      </select>
+    </div>
+    <div class="fadv-group">
+      <span class="fadv-label">🛏️ Quartos</span>
+      <select class="fadv-select" id="fAdvQuartos" onchange="applyAdvFilter()">
+        <option value="">Qualquer</option>
+        <option value="1">1 quarto</option>
+        <option value="2">2 quartos</option>
+        <option value="3">3 quartos</option>
+        <option value="4">4+ quartos</option>
+      </select>
+    </div>
+    <div class="fadv-group">
+      <span class="fadv-label">📐 Metragem</span>
+      <select class="fadv-select" id="fAdvArea" onchange="applyAdvFilter()">
+        <option value="">Qualquer</option>
+        <option value="0-50">Até 50 m²</option>
+        <option value="50-80">50 a 80 m²</option>
+        <option value="80-120">80 a 120 m²</option>
+        <option value="120-99999">Acima de 120 m²</option>
+      </select>
+    </div>
+    <div class="fadv-group">
+      <span class="fadv-label">🚗 Vagas</span>
+      <select class="fadv-select" id="fAdvVagas" onchange="applyAdvFilter()">
+        <option value="">Qualquer</option>
+        <option value="0">Sem vaga</option>
+        <option value="1">1 vaga</option>
+        <option value="2">2 vagas</option>
+        <option value="3">3+ vagas</option>
+      </select>
+    </div>
+    <div class="fadv-group">
+      <span class="fadv-label">🏡 Terreno</span>
+      <select class="fadv-select" id="fAdvTerreno" onchange="applyAdvFilter()">
+        <option value="">Qualquer</option>
+        <option value="pequeno">Terreno pequeno (≤ 10m frente)</option>
+        <option value="medio">Terreno médio (10–15m)</option>
+        <option value="grande">Terreno grande (15m+)</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<!-- CHIPS DE FILTROS ATIVOS -->
+<div class="fbar-chips" id="fbarChips"></div>
+<div class="results-count" id="resultsCount"></div>
 
 <!-- GRID -->
 <div class="grid" id="casasGrid"></div>
@@ -266,6 +365,11 @@ textarea.field-inp{resize:vertical;min-height:76px;}
       <div class="modal-section" id="detailCustomTagsWrap" style="display:none">
         <div class="modal-section-title">Características</div>
         <div class="modal-tags-row" id="detailCustomTags"></div>
+      </div>
+      <div class="modal-section" id="detailPlantaWrap" style="display:none">
+        <div class="modal-section-title">Planta Baixa</div>
+        <img id="detailPlantaImg" src="" alt="Planta Baixa" style="width:100%;border-radius:10px;border:1px solid var(--border);cursor:zoom-in;" onclick="window.open(this.src,'_blank')">
+        <div style="font-size:10px;color:var(--muted);margin-top:5px;">Clique na imagem para abrir em tamanho completo.</div>
       </div>
       <div class="modal-section" id="detailLinksWrap" style="display:none">
         <div class="modal-section-title">Arquivos e Portfólio</div>
@@ -317,6 +421,22 @@ textarea.field-inp{resize:vertical;min-height:76px;}
         <div class="field-group">
           <label class="field-label">Nome do Modelo</label>
           <input class="field-inp" id="fNome" placeholder="Ex: Casa 42m² — 2 Quartos">
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label">Selo Visual</label>
+          <select class="field-inp" id="fSelo" onchange="updateSeloPreview()">
+            <option value="">— Sem selo —</option>
+            <option value="mais-vendido">🏆 Mais Vendido</option>
+            <option value="novo">✨ Novo</option>
+            <option value="destaque">⭐ Destaque</option>
+            <option value="lancamento">🚀 Lançamento</option>
+          </select>
+        </div>
+        <div class="field-group" style="display:flex;align-items:flex-end;">
+          <div id="seloPreview" style="padding:6px 0;font-size:12px;color:var(--muted);">Nenhum selo selecionado</div>
         </div>
       </div>
 
@@ -377,6 +497,17 @@ textarea.field-inp{resize:vertical;min-height:76px;}
           <input class="field-inp" id="fVagas" type="number" min="0" placeholder="1">
         </div>
       </div>
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label">Lavanderia</label>
+          <select class="field-inp" id="fLavanderia">
+            <option value="">— Não informado —</option>
+            <option value="Interna">Interna</option>
+            <option value="Externa">Externa</option>
+            <option value="Área de Serviço">Área de Serviço</option>
+          </select>
+        </div>
+      </div>
 
       <!-- Preço e Descrição -->
       <div class="section-divider">Comercial</div>
@@ -398,9 +529,10 @@ textarea.field-inp{resize:vertical;min-height:76px;}
       <div class="field-group">
         <label class="field-label">Tags do Modelo</label>
         <div class="tags-input-wrap" id="tagsWrap" onclick="document.getElementById('tagsInp').focus()">
-          <input class="tags-input" id="tagsInp" placeholder="#moderna  #comvaranda  #altopadrao" onkeydown="onTagKey(event)">
+          <input class="tags-input" id="tagsInp" placeholder="Digite e pressione Enter..." onkeydown="onTagKey(event)" list="tagsDatalist" autocomplete="off">
+          <datalist id="tagsDatalist"></datalist>
         </div>
-        <div class="field-hint">Digite e pressione Enter ou vírgula para adicionar. Comece com # (opcional).</div>
+        <div class="field-hint">Enter ou vírgula para confirmar. Tags já usadas aparecem como sugestão.</div>
       </div>
 
       <!-- Fotos -->
@@ -469,6 +601,9 @@ let _isAdmin     = false;
 let _editId      = null;
 let _activeFilter= 'todos';
 let _activeTag   = '';
+let _activeModelo= '';
+let _advFilters  = { preco:'', quartos:'', area:'', vagas:'', terreno:'' };
+let _advOpen     = false;
 let _detailCasa  = null;
 
 // Upload
@@ -610,7 +745,9 @@ function onTagKey(e) {
     e.preventDefault();
     const raw = document.getElementById('tagsInp').value;
     const tag = normalizeTag(raw);
-    if (tag && !_formTags.includes(tag)) { _formTags.push(tag); renderFormTags(); }
+    if (!tag) return;
+    if (_formTags.includes(tag)) { toast('Tag já adicionada neste modelo','err'); document.getElementById('tagsInp').value=''; return; }
+    _formTags.push(tag); renderFormTags();
     document.getElementById('tagsInp').value = '';
   }
 }
@@ -641,31 +778,218 @@ function calcAreaTotal() {
 function getAllTags() {
   const set = new Set();
   casas.forEach(c => (Array.isArray(c.tags) ? c.tags : []).forEach(t => set.add(t)));
-  return [...set];
+  return [...set].sort();
+}
+
+function getAllModelos() {
+  return casas.map(c => ({id: c.id, nome: c.nome})).sort((a,b) => a.nome.localeCompare(b.nome));
 }
 
 function renderFilters() {
   const bar = document.getElementById('filtersBar');
-  const searchWrap = bar.querySelector('.search-wrap');
+  const modeloSel = document.getElementById('filterModelo');
+
+  // Remove old tipo btns
   bar.querySelectorAll('.filter-btn').forEach(b => b.remove());
 
-  // Tipo filters
+  // Tipo pills
   ['todos', ..._opts.tipo].forEach(v => {
     const b = document.createElement('button');
-    b.className = 'filter-btn' + (v===_activeFilter&&!_activeTag?' active':'');
+    b.className = 'filter-btn' + (v===_activeFilter&&!_activeTag&&!_activeModelo&&!hasAdvFilters()?' active':'');
     b.textContent = v==='todos' ? 'Todos' : v;
-    b.onclick = () => { _activeFilter=v; _activeTag=''; setFilterBtn(b); renderCatalogo(); };
-    bar.insertBefore(b, searchWrap);
+    b.onclick = () => { _activeFilter=v; _activeTag=''; _activeModelo=''; clearAdvFilters(); syncSelects(); setFilterBtn(b); renderCatalogo(); };
+    bar.insertBefore(b, modeloSel);
   });
 
-  // Tag filters
-  getAllTags().forEach(t => {
-    const b = document.createElement('button');
-    b.className = 'filter-btn filter-tag' + (t===_activeTag?' active':'');
-    b.textContent = '#' + t;
-    b.onclick = () => { _activeTag = _activeTag===t?'':t; _activeFilter='todos'; setFilterBtn(b); renderCatalogo(); };
-    bar.insertBefore(b, searchWrap);
+  // Select Modelos
+  modeloSel.innerHTML = '<option value="">🏠 Todos os Modelos</option>' +
+    getAllModelos().map(m => `<option value="${esc(m.id)}" ${m.id===_activeModelo?'selected':''}>${esc(m.nome)}</option>`).join('');
+  modeloSel.className = 'filter-select' + (_activeModelo ? ' active' : '');
+
+  // Select Tags
+  const tagSel = document.getElementById('filterTag');
+  tagSel.innerHTML = '<option value="">🏷️ Todas as Tags</option>' +
+    getAllTags().map(t => `<option value="${esc(t)}" ${t===_activeTag?'selected':''}>#${esc(t)}</option>`).join('');
+  tagSel.className = 'filter-select' + (_activeTag ? ' active-tag' : '');
+}
+
+// ── ADVANCED FILTERS ────────────────────────────────────────────
+function toggleAdvFilters() {
+  _advOpen = !_advOpen;
+  document.getElementById('fbarAdv').classList.toggle('open', _advOpen);
+  document.getElementById('btnFilterAdv').classList.toggle('on', _advOpen);
+}
+
+function hasAdvFilters() {
+  return Object.values(_advFilters).some(v => v !== '');
+}
+
+function clearAdvFilters() {
+  _advFilters = { preco:'', quartos:'', area:'', vagas:'', terreno:'' };
+  ['fAdvPreco','fAdvQuartos','fAdvArea','fAdvVagas','fAdvTerreno'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.value=''; el.classList.remove('on'); }
   });
+  updateAdvBadge();
+  renderChips();
+}
+
+function applyAdvFilter() {
+  _advFilters.preco   = document.getElementById('fAdvPreco').value;
+  _advFilters.quartos = document.getElementById('fAdvQuartos').value;
+  _advFilters.area    = document.getElementById('fAdvArea').value;
+  _advFilters.vagas   = document.getElementById('fAdvVagas').value;
+  _advFilters.terreno = document.getElementById('fAdvTerreno').value;
+  // highlight active selects
+  ['fAdvPreco','fAdvQuartos','fAdvArea','fAdvVagas','fAdvTerreno'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.toggle('on', el.value !== '');
+  });
+  updateAdvBadge();
+  renderChips();
+  renderCatalogo();
+}
+
+function updateAdvBadge() {
+  const count = Object.values(_advFilters).filter(v=>v!=='').length;
+  const badge = document.getElementById('advBadge');
+  badge.textContent = count;
+  badge.classList.toggle('show', count > 0);
+  document.getElementById('btnFilterAdv').classList.toggle('on', count > 0 || _advOpen);
+}
+
+// Chips showing active filters
+const CHIP_LABELS = {
+  preco:   {'0-100000':'Até R$100k','100000-150000':'R$100-150k','150000-200000':'R$150-200k','200000-300000':'R$200-300k','300000-99999999':'Acima R$300k'},
+  quartos: {'1':'1 quarto','2':'2 quartos','3':'3 quartos','4':'4+ quartos'},
+  area:    {'0-50':'Até 50m²','50-80':'50-80m²','80-120':'80-120m²','120-99999':'Acima 120m²'},
+  vagas:   {'0':'Sem vaga','1':'1 vaga','2':'2 vagas','3':'3+ vagas'},
+  terreno: {'pequeno':'Terreno pequeno','medio':'Terreno médio','grande':'Terreno grande'}
+};
+
+function renderChips() {
+  const wrap = document.getElementById('fbarChips');
+  let html = '';
+  Object.entries(_advFilters).forEach(([k,v]) => {
+    if (v && CHIP_LABELS[k] && CHIP_LABELS[k][v]) {
+      html += `<div class="fchip">${CHIP_LABELS[k][v]}<button class="fchip-rm" onclick="removeAdvChip('${k}')">×</button></div>`;
+    }
+  });
+  wrap.innerHTML = html;
+}
+
+function removeAdvChip(key) {
+  _advFilters[key] = '';
+  const elMap = {preco:'fAdvPreco',quartos:'fAdvQuartos',area:'fAdvArea',vagas:'fAdvVagas',terreno:'fAdvTerreno'};
+  const el = document.getElementById(elMap[key]);
+  if (el) { el.value=''; el.classList.remove('on'); }
+  updateAdvBadge(); renderChips(); renderCatalogo();
+}
+
+// ── SMART SEARCH ────────────────────────────────────────────────
+// Maps natural language keywords to fields
+const SEARCH_SYNONYMS = {
+  quartos: { '1 quarto':1, 'um quarto':1, '2 quartos':2, 'dois quartos':2, 'duas suites':2,
+             '3 quartos':3, 'três quartos':3, 'tres quartos':3, '4 quartos':4 },
+  features: {
+    'varanda':['comvaranda','varanda'], 'garagem':['comgaragem','garagem'], 'lavanderia':['lavanderia'],
+    'suíte':['suite','suíte'], 'suite':['suite','suíte'], 'alto padrão':['altopadrao','alto padrão'],
+    'alto padrao':['altopadrao','alto padrão'], 'campo':['casadecampo','campo'], 'moderna':['moderna'],
+    'compacta':['compacta'], 'chalé':['chale','chalé'], 'chale':['chale','chalé'],
+    'geminada':['geminado'], 'sobrado':['sobrado'], 'piscina':['compiscina','piscina']
+  }
+};
+
+function smartMatch(c, query) {
+  if (!query) return true;
+  const q = query.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+
+  // Direct text match
+  const haystack = [c.nome, c.codigo, c.descricao, c.notas, c.tipo, c.madeira,
+                    ...(Array.isArray(c.tags)?c.tags:[])].join(' ').toLowerCase()
+                    .normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+
+  if (haystack.includes(q)) return true;
+
+  // Word by word match
+  const words = q.split(/\s+/).filter(w=>w.length>2);
+  const matchCount = words.filter(w => haystack.includes(w)).length;
+  if (matchCount >= Math.ceil(words.length * 0.6)) return true;
+
+  // Quartos synonym
+  for (const [phrase, num] of Object.entries(SEARCH_SYNONYMS.quartos)) {
+    if (q.includes(phrase) && c.quartos == num) return true;
+  }
+
+  // Feature synonym
+  for (const [phrase, tags] of Object.entries(SEARCH_SYNONYMS.features)) {
+    const pNorm = phrase.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+    if (q.includes(pNorm)) {
+      const cTags = (Array.isArray(c.tags)?c.tags:[]).join(' ').toLowerCase();
+      const desc  = (c.descricao||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+      if (tags.some(t => cTags.includes(t) || desc.includes(t.normalize('NFD').replace(/[\u0300-\u036f]/g,'')))) return true;
+    }
+  }
+
+  return false;
+}
+
+// Advanced filter matcher
+function advMatch(c) {
+  // Preço
+  if (_advFilters.preco) {
+    const [min,max] = _advFilters.preco.split('-').map(Number);
+    if (!c.preco || c.preco < min || c.preco > max) return false;
+  }
+  // Quartos
+  if (_advFilters.quartos !== '') {
+    const q = parseInt(_advFilters.quartos);
+    if (q === 4) { if ((c.quartos||0) < 4) return false; }
+    else { if ((c.quartos||0) !== q) return false; }
+  }
+  // Área
+  if (_advFilters.area) {
+    const total = (parseFloat(c.area_interna)||0)+(parseFloat(c.area_ext)||0)||parseFloat(c.area)||0;
+    const [min,max] = _advFilters.area.split('-').map(Number);
+    if (total < min || total > max) return false;
+  }
+  // Vagas
+  if (_advFilters.vagas !== '') {
+    const v = parseInt(_advFilters.vagas);
+    if (v === 3) { if ((c.vagas||0) < 3) return false; }
+    else { if ((c.vagas||0) !== v) return false; }
+  }
+  // Terreno
+  if (_advFilters.terreno) {
+    const t = c.terreno||'';
+    const m = t.match(/(\d+)x/i);
+    const frente = m ? parseInt(m[1]) : 0;
+    if (_advFilters.terreno === 'pequeno' && frente > 10) return false;
+    if (_advFilters.terreno === 'medio'   && (frente < 10 || frente > 15)) return false;
+    if (_advFilters.terreno === 'grande'  && frente < 15) return false;
+  }
+  return true;
+}
+
+function onFilterModelo(sel) {
+  _activeModelo = sel.value; _activeTag=''; _activeFilter='todos';
+  syncSelects();
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.textContent==='Todos'&&!_activeModelo));
+  renderCatalogo();
+}
+
+function onFilterTag(sel) {
+  _activeTag=sel.value; _activeModelo=''; _activeFilter='todos';
+  syncSelects();
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.textContent==='Todos'&&!_activeTag));
+  renderCatalogo();
+}
+
+function syncSelects() {
+  const ms = document.getElementById('filterModelo');
+  const ts = document.getElementById('filterTag');
+  if (ms) { ms.value = _activeModelo; ms.className = 'filter-select' + (_activeModelo?' active':''); }
+  if (ts) { ts.value = _activeTag;    ts.className = 'filter-select' + (_activeTag?' active-tag':''); }
 }
 
 function setFilterBtn(el) {
@@ -674,24 +998,30 @@ function setFilterBtn(el) {
 }
 
 function setFilter(val, el) {
-  _activeFilter = val; _activeTag = '';
+  _activeFilter = val; _activeTag = ''; _activeModelo = '';
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  syncSelects();
   if (el) el.classList.add('active');
   renderCatalogo();
 }
 
 // ── RENDER ──────────────────────────────────────────────────────
 function renderCatalogo() {
-  const q = (document.getElementById('searchInp').value||'').toLowerCase().replace(/^#/,'');
+  const q = document.getElementById('searchInp').value.trim();
   const list = casas.filter(c => {
+    if (_activeModelo && c.id !== _activeModelo) return false;
     if (_activeTag && !(Array.isArray(c.tags)&&c.tags.includes(_activeTag))) return false;
     if (_activeFilter!=='todos' && c.tipo!==_activeFilter) return false;
-    if (q) {
-      const hay = [c.nome,c.codigo,c.descricao,...(c.tags||[])].join(' ').toLowerCase();
-      if (!hay.includes(q)) return false;
-    }
+    if (!advMatch(c)) return false;
+    if (!smartMatch(c, q)) return false;
     return true;
   });
+
+  // Results count
+  const countEl = document.getElementById('resultsCount');
+  countEl.textContent = list.length === casas.length
+    ? `${casas.length} modelo${casas.length!==1?'s':''} no catálogo`
+    : `${list.length} de ${casas.length} modelo${casas.length!==1?'s':''}`;
 
   const grid = document.getElementById('casasGrid');
   const ph = `<div class="card-img-ph"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg></div>`;
@@ -716,8 +1046,19 @@ function renderCatalogo() {
     if (c.lavabos)   specs.push(`<div class="spec"><div class="spec-val">${c.lavabos}</div><div class="spec-lbl">Lavabos</div></div>`);
     if (c.vagas)     specs.push(`<div class="spec"><div class="spec-val">${c.vagas}</div><div class="spec-lbl">Vagas</div></div>`);
 
+    const seloMap = {
+      'mais-vendido': {cls:'selo-mais-vendido', icon:'🏆', label:'Mais Vendido'},
+      'novo':         {cls:'selo-novo',         icon:'✨', label:'Novo'},
+      'destaque':     {cls:'selo-destaque',     icon:'⭐', label:'Destaque'},
+      'lancamento':   {cls:'selo-lancamento',   icon:'🚀', label:'Lançamento'},
+    };
+    const selo = c.selo && seloMap[c.selo] ? seloMap[c.selo] : null;
+
     return `<div class="card" onclick="openDetail('${c.id}')">
-      ${imgUrl ? `<img class="card-img" src="${esc(imgUrl)}" alt="${esc(c.nome)}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">${ph}` : ph}
+      <div class="card-img-wrap">
+        ${imgUrl ? `<img class="card-img" src="${esc(imgUrl)}" alt="${esc(c.nome)}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">${ph}` : ph}
+        ${selo ? `<div class="card-selo ${selo.cls}">${selo.icon} ${selo.label}</div>` : ''}
+      </div>
       <div class="card-body">
         ${c.codigo ? `<div class="card-code">${esc(c.codigo)}</div>` : ''}
         <div class="card-tags-row">
@@ -781,9 +1122,10 @@ function openDetail(id) {
   if (areaExt)     specs.push({val:areaExt,lbl:'m² Varanda/Gar.'});
   if (c.quartos)   specs.push({val:c.quartos,lbl:'Quartos'});
   if (c.banheiros) specs.push({val:c.banheiros,lbl:'Banheiros'});
-  if (c.lavabos)   specs.push({val:c.lavabos,lbl:'Lavabos'});
-  if (c.vagas)     specs.push({val:c.vagas,lbl:'Vagas'});
-  if (c.madeira)   specs.push({val:c.madeira,lbl:'Madeira',small:true});
+  if (c.lavabos)     specs.push({val:c.lavabos,lbl:'Lavabos'});
+  if (c.vagas)       specs.push({val:c.vagas,lbl:'Vagas'});
+  if (c.lavanderia)  specs.push({val:c.lavanderia,lbl:'Lavanderia',small:true});
+  if (c.madeira)     specs.push({val:c.madeira,lbl:'Madeira',small:true});
 
   const modalSpecs = document.getElementById('detailSpecs');
   modalSpecs.style.gridTemplateColumns = `repeat(${Math.min(specs.length,4)},1fr)`;
@@ -809,10 +1151,18 @@ function openDetail(id) {
     ctWrap.style.display='';
   } else ctWrap.style.display='none';
 
-  // Links
+  // Planta baixa como imagem
+  const plantaSecWrap = document.getElementById('detailPlantaWrap');
+  if (c.planta) {
+    document.getElementById('detailPlantaImg').src = c.planta;
+    plantaSecWrap.style.display = '';
+  } else {
+    plantaSecWrap.style.display = 'none';
+  }
+
+  // Links (só portfólio agora)
   const linksWrap = document.getElementById('detailLinksWrap');
   const links = [];
-  if (c.planta)    links.push(`<a class="link-btn" href="${esc(c.planta)}" target="_blank">📐 Planta Baixa</a>`);
   if (c.portfolio) links.push(`<a class="link-btn" href="${esc(c.portfolio)}" target="_blank">🗂️ Ver Portfólio</a>`);
   if (links.length) { document.getElementById('detailLinks').innerHTML=links.join(''); linksWrap.style.display=''; }
   else linksWrap.style.display='none';
@@ -900,8 +1250,12 @@ function renderPlantaPreview() {
 function clearForm() {
   ['fCodigo','fNome','fAreaInterna','fAreaExt','fTerreno','fQuartos','fBanheiros','fLavabos','fVagas','fPreco','fDesc','fNotes','fPortfolio']
     .forEach(id => document.getElementById(id).value='');
+  document.getElementById('fLavanderia').value = '';
+  document.getElementById('fSelo').value = '';
+  updateSeloPreview();
   document.getElementById('areaTotalCalc').textContent='';
   _formTags=[]; renderFormTags();
+  document.getElementById('tagsDatalist').innerHTML = getAllTags().map(t=>`<option value="#${esc(t)}">`).join('');
   _uploadFiles=[]; _existingPhotos=[]; _plantaFile=null; _existingPlanta='';
   renderUploadPreview(); renderPlantaPreview();
 }
@@ -930,13 +1284,19 @@ function openEditCasa(id) {
   document.getElementById('fBanheiros').value  = c.banheiros   ||'';
   document.getElementById('fLavabos').value    = c.lavabos     ||'';
   document.getElementById('fVagas').value      = c.vagas       ||'';
+  document.getElementById('fLavanderia').value = c.lavanderia  ||'';
   document.getElementById('fPreco').value      = c.preco       ||'';
   document.getElementById('fDesc').value       = c.descricao   ||'';
   document.getElementById('fNotes').value      = c.notas       ||'';
   document.getElementById('fPortfolio').value  = c.portfolio   ||'';
+  document.getElementById('fSelo').value       = c.selo        ||'';
+  updateSeloPreview();
   renderSelect('fTipo','tipo',c.tipo);
   renderSelect('fMadeira','madeira',c.madeira);
   _formTags = Array.isArray(c.tags)?[...c.tags]:[]; renderFormTags();
+  // populate tag datalist
+  const dl = document.getElementById('tagsDatalist');
+  dl.innerHTML = getAllTags().filter(t=>!_formTags.includes(t)).map(t=>`<option value="#${esc(t)}">`).join('');
   _existingPhotos = Array.isArray(c.fotos)?[...c.fotos]:(c.foto?[c.foto]:[]);
   _existingPlanta = c.planta||'';
   renderUploadPreview(); renderPlantaPreview(); calcAreaTotal();
@@ -985,10 +1345,12 @@ async function saveCasa() {
     banheiros:   parseInt(document.getElementById('fBanheiros').value)||0,
     lavabos:     parseInt(document.getElementById('fLavabos').value)||0,
     vagas:       parseInt(document.getElementById('fVagas').value)||0,
+    lavanderia:  document.getElementById('fLavanderia').value,
     preco:       parseFloat(document.getElementById('fPreco').value)||0,
     descricao:   document.getElementById('fDesc').value.trim(),
     notas:       document.getElementById('fNotes').value.trim(),
     portfolio:   document.getElementById('fPortfolio').value.trim(),
+    selo:        document.getElementById('fSelo').value,
     tags:        _formTags,
     fotos,
     foto:        fotos[0]||'',
@@ -1012,6 +1374,23 @@ async function delCasa() {
     casas=casas.filter(c=>c.id!==_editId);
     closeCasaForm(); renderFilters(); renderCatalogo(); toast('Casa excluída');
   } catch(e) { toast('Erro ao excluir: '+e.message,'err'); }
+}
+
+// ── SELO PREVIEW ────────────────────────────────────────────────
+function updateSeloPreview() {
+  const val = document.getElementById('fSelo').value;
+  const map = {
+    'mais-vendido': {cls:'selo-mais-vendido', icon:'🏆', label:'Mais Vendido'},
+    'novo':         {cls:'selo-novo',         icon:'✨', label:'Novo'},
+    'destaque':     {cls:'selo-destaque',     icon:'⭐', label:'Destaque'},
+    'lancamento':   {cls:'selo-lancamento',   icon:'🚀', label:'Lançamento'},
+  };
+  const prev = document.getElementById('seloPreview');
+  if (val && map[val]) {
+    prev.innerHTML = `<span class="card-selo ${map[val].cls}" style="position:static;box-shadow:none;">${map[val].icon} ${map[val].label}</span>`;
+  } else {
+    prev.innerHTML = `<span style="font-size:12px;color:var(--muted);">Nenhum selo</span>`;
+  }
 }
 
 // ── INIT ────────────────────────────────────────────────────────
