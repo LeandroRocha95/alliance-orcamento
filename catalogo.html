@@ -83,7 +83,11 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;display:none;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto;backdrop-filter:blur(4px);}
 .overlay.open{display:flex;}
 .modal-detail{background:var(--surface);border:1px solid var(--border);border-radius:18px;width:100%;max-width:780px;margin:auto;overflow:hidden;}
+.modal-gallery{position:relative;}
 .modal-detail-img{width:100%;height:320px;object-fit:cover;background:var(--surface2);display:block;}
+.gallery-thumbs{display:flex;gap:6px;padding:10px 14px;background:var(--surface2);overflow-x:auto;}
+.gallery-thumb{width:64px;height:52px;object-fit:cover;border-radius:6px;cursor:pointer;border:2px solid transparent;flex-shrink:0;transition:border-color .15s;}
+.gallery-thumb.active{border-color:var(--accent);}
 .modal-detail-body{padding:28px;}
 .modal-detail-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;}
 .modal-x{background:none;border:1px solid var(--border);color:var(--muted);width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;}
@@ -123,6 +127,38 @@ textarea.field-inp{resize:vertical;min-height:80px;}
 .btn-danger{background:rgba(231,76,60,.15);border:1px solid rgba(231,76,60,.3);color:#e74c3c;border-radius:8px;padding:10px 20px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;transition:all .15s;}
 .btn-danger:hover{background:rgba(231,76,60,.25);}
 
+/* SELECT + EDIT BTN */
+.select-wrap{display:flex;gap:6px;align-items:center;}
+.select-wrap select{flex:1;}
+.btn-edit-opts{background:none;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:10px 13px;cursor:pointer;font-size:17px;line-height:1;transition:all .15s;flex-shrink:0;}
+.btn-edit-opts:hover{border-color:var(--accent);color:var(--accent);}
+
+/* MINI MODAL OPTIONS */
+.opts-modal{background:var(--surface);border:1px solid var(--border);border-radius:14px;width:100%;max-width:340px;margin:auto;padding:22px;}
+.opts-title{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1.5px;margin-bottom:14px;color:var(--accent);}
+.opts-list{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;max-height:210px;overflow-y:auto;}
+.opt-item{display:flex;align-items:center;justify-content:space-between;background:var(--surface2);border-radius:8px;padding:9px 12px;font-size:13px;}
+.opt-item-rm{background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;padding:0 2px;line-height:1;transition:color .15s;}
+.opt-item-rm:hover{color:#e74c3c;}
+.opts-add{display:flex;gap:8px;}
+.opts-add-inp{flex:1;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;padding:9px 12px;outline:none;transition:border-color .15s;}
+.opts-add-inp:focus{border-color:var(--accent);}
+.opts-add-btn{background:linear-gradient(135deg,var(--accent2),var(--accent));border:none;color:#fff;border-radius:8px;padding:9px 14px;cursor:pointer;font-size:13px;font-weight:700;white-space:nowrap;}
+
+/* UPLOAD */
+.upload-area{border:2px dashed var(--border);border-radius:10px;padding:20px;text-align:center;cursor:pointer;transition:all .15s;background:var(--bg);}
+.upload-area:hover{border-color:var(--accent);background:rgba(245,166,35,.04);}
+.upload-icon{font-size:24px;margin-bottom:4px;}
+.upload-txt{font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px;}
+.upload-sub{font-size:11px;color:var(--muted);}
+.upload-preview{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
+.upload-thumb{position:relative;width:80px;height:68px;border-radius:8px;overflow:hidden;border:1px solid var(--border);}
+.upload-thumb img{width:100%;height:100%;object-fit:cover;}
+.upload-thumb-rm{position:absolute;top:2px;right:2px;background:rgba(0,0,0,.75);border:none;color:#fff;width:18px;height:18px;border-radius:50%;cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;}
+.upload-thumb-badge{position:absolute;bottom:2px;left:2px;border-radius:4px;font-size:9px;color:#fff;padding:1px 5px;font-weight:700;}
+.badge-saved{background:rgba(46,204,113,.85);}
+.badge-new{background:rgba(245,166,35,.85);}
+
 /* ADMIN BAR */
 .admin-bar{background:rgba(245,166,35,.08);border-bottom:1px solid rgba(245,166,35,.2);padding:10px 28px;display:none;align-items:center;gap:12px;}
 .admin-bar.show{display:flex;}
@@ -131,9 +167,6 @@ textarea.field-inp{resize:vertical;min-height:80px;}
 .toast.show{transform:translateY(0);opacity:1;}
 .toast.ok{border-color:var(--green);color:var(--green);}
 .toast.err{border-color:#e74c3c;color:#e74c3c;}
-
-/* PDF viewer */
-.pdf-frame{width:100%;height:500px;border:none;border-radius:10px;background:var(--surface2);}
 
 /* ADMIN password */
 .admin-login{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:32px;max-width:360px;text-align:center;}
@@ -165,15 +198,8 @@ textarea.field-inp{resize:vertical;min-height:80px;}
   <button class="btn-outline" style="font-size:12px;padding:6px 14px;" onclick="logoutAdmin()">Sair</button>
 </div>
 
-<!-- FILTERS -->
-<div class="filters-bar">
-  <button class="filter-btn active" onclick="setFilter('todos',this)">Todos</button>
-  <button class="filter-btn" onclick="setFilter('1 Quarto',this)">1 Quarto</button>
-  <button class="filter-btn" onclick="setFilter('2 Quartos',this)">2 Quartos</button>
-  <button class="filter-btn" onclick="setFilter('3 Quartos',this)">3 Quartos</button>
-  <button class="filter-btn" onclick="setFilter('Sobrado',this)">Sobrado</button>
-  <button class="filter-btn" onclick="setFilter('Geminado',this)">Geminado</button>
-  <button class="filter-btn" onclick="setFilter('Chalé',this)">Chalé</button>
+<!-- FILTERS (gerado via JS) -->
+<div class="filters-bar" id="filtersBar">
   <div class="search-wrap">
     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/></svg>
     <input class="search-input" id="searchInp" placeholder="Buscar modelo..." oninput="renderCatalogo()">
@@ -205,7 +231,7 @@ textarea.field-inp{resize:vertical;min-height:80px;}
         <div class="modal-notes" id="detailNotes"></div>
       </div>
       <div class="modal-section" id="detailLinksWrap" style="display:none">
-        <div class="modal-section-title">Arquivos e Plantas</div>
+        <div class="modal-section-title">Arquivos e Portfólio</div>
         <div class="modal-links" id="detailLinks"></div>
       </div>
     </div>
@@ -221,7 +247,7 @@ textarea.field-inp{resize:vertical;min-height:80px;}
   </div>
 </div>
 
-<!-- MODAL ADMIN PASSWORD -->
+<!-- MODAL SENHA ADMIN -->
 <div class="overlay" id="adminLoginOverlay" onclick="if(event.target===this)closeAdminLogin()">
   <div class="admin-login">
     <div style="font-size:32px;margin-bottom:12px;">🔐</div>
@@ -241,31 +267,29 @@ textarea.field-inp{resize:vertical;min-height:80px;}
       <button class="modal-x" onclick="closeCasaForm()">×</button>
     </div>
     <div class="modal-body">
+
       <div class="field-group">
         <label class="field-label">Nome do Modelo</label>
         <input class="field-inp" id="fNome" placeholder="Ex: Casa 42m² — 2 Quartos Madeira de Lei">
       </div>
+
       <div class="field-row">
         <div class="field-group">
           <label class="field-label">Tipo</label>
-          <select class="field-inp" id="fTipo">
-            <option value="1 Quarto">1 Quarto</option>
-            <option value="2 Quartos">2 Quartos</option>
-            <option value="3 Quartos">3 Quartos</option>
-            <option value="Sobrado">Sobrado</option>
-            <option value="Geminado">Geminado</option>
-            <option value="Chalé">Chalé</option>
-          </select>
+          <div class="select-wrap">
+            <select class="field-inp" id="fTipo"></select>
+            <button class="btn-edit-opts" onclick="openOptsModal('tipo')" title="Gerenciar opções">⋮</button>
+          </div>
         </div>
         <div class="field-group">
           <label class="field-label">Tipo de Madeira</label>
-          <select class="field-inp" id="fMadeira">
-            <option value="Pinus">Pinus</option>
-            <option value="Madeira de Lei">Madeira de Lei</option>
-            <option value="Ambos">Ambos</option>
-          </select>
+          <div class="select-wrap">
+            <select class="field-inp" id="fMadeira"></select>
+            <button class="btn-edit-opts" onclick="openOptsModal('madeira')" title="Gerenciar opções">⋮</button>
+          </div>
         </div>
       </div>
+
       <div class="field-row3">
         <div class="field-group">
           <label class="field-label">Área (m²)</label>
@@ -280,31 +304,51 @@ textarea.field-inp{resize:vertical;min-height:80px;}
           <input class="field-inp" id="fBanheiros" type="number" min="0" placeholder="1">
         </div>
       </div>
+
       <div class="field-group">
         <label class="field-label">Preço Base (R$)</label>
         <input class="field-inp" id="fPreco" type="number" min="0" placeholder="135000">
       </div>
+
       <div class="field-group">
         <label class="field-label">Descrição</label>
         <textarea class="field-inp" id="fDesc" placeholder="Descreva os diferenciais deste modelo..."></textarea>
       </div>
+
       <div class="field-group">
         <label class="field-label">Informações Adicionais</label>
         <textarea class="field-inp" id="fNotes" placeholder="Observações, prazo de entrega, opções de personalização..."></textarea>
       </div>
+
+      <!-- FOTOS -->
       <div class="field-group">
-        <label class="field-label">URL da Foto Principal</label>
-        <input class="field-inp" id="fFoto" placeholder="https://drive.google.com/...">
-        <div style="font-size:11px;color:var(--muted);margin-top:4px;">Use Google Drive (link de visualização direta) ou Dropbox</div>
+        <label class="field-label">Fotos da Casa <span style="font-weight:400;color:var(--muted);text-transform:none;letter-spacing:0;">(máx. 3 · salvas no Supabase)</span></label>
+        <div class="upload-area" id="uploadArea" onclick="document.getElementById('fImgFiles').click()">
+          <div class="upload-icon">📷</div>
+          <div class="upload-txt" id="uploadTxt">Clique para selecionar imagens</div>
+          <div class="upload-sub">JPG, PNG ou WEBP · máx. 5 MB cada</div>
+          <input type="file" id="fImgFiles" accept="image/*" multiple style="display:none" onchange="onFilesChange(event)">
+        </div>
+        <div class="upload-preview" id="uploadPreview"></div>
       </div>
+
+      <!-- PLANTA BAIXA -->
       <div class="field-group">
-        <label class="field-label">URL da Planta Baixa (imagem)</label>
-        <input class="field-inp" id="fPlanta" placeholder="https://drive.google.com/...">
+        <label class="field-label">Planta Baixa <span style="font-weight:400;color:var(--muted);text-transform:none;letter-spacing:0;">(imagem · salva no Supabase)</span></label>
+        <div class="upload-area" id="uploadPlantaArea" onclick="document.getElementById('fPlantaFile').click()" style="padding:14px 20px;">
+          <div style="font-size:13px;font-weight:600;color:var(--text);" id="uploadPlantaTxt">📐 Clique para selecionar a planta baixa</div>
+          <input type="file" id="fPlantaFile" accept="image/*" style="display:none" onchange="onPlantaChange(event)">
+        </div>
+        <div id="plantaPreview" style="margin-top:8px;"></div>
       </div>
+
+      <!-- PORTFÓLIO -->
       <div class="field-group">
-        <label class="field-label">URL do PDF da Planta</label>
-        <input class="field-inp" id="fPdf" placeholder="https://drive.google.com/...">
+        <label class="field-label">🔗 Link do Portfólio / Google Drive</label>
+        <input class="field-inp" id="fPortfolio" placeholder="https://drive.google.com/drive/folders/...">
+        <div style="font-size:11px;color:var(--muted);margin-top:4px;">Pasta com fotos extras, plantas e PDFs do modelo.</div>
       </div>
+
     </div>
     <div class="modal-foot">
       <button class="btn-outline" onclick="closeCasaForm()">Cancelar</button>
@@ -314,93 +358,183 @@ textarea.field-inp{resize:vertical;min-height:80px;}
   </div>
 </div>
 
+<!-- MODAL OPÇÕES DO SELECT -->
+<div class="overlay" id="optsOverlay" onclick="if(event.target===this)closeOptsModal()">
+  <div class="opts-modal">
+    <div class="opts-title" id="optsTitle">Opções</div>
+    <div class="opts-list" id="optsList"></div>
+    <div class="opts-add">
+      <input type="text" class="opts-add-inp" id="optsNewInp" placeholder="Nova opção..." onkeydown="if(event.key==='Enter')addOpt()">
+      <button class="opts-add-btn" onclick="addOpt()">+ Add</button>
+    </div>
+  </div>
+</div>
+
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
-<!-- SCRIPT -->
 <script>
 // ── CONFIG ──────────────────────────────────────────────────────
-const SB_URL = 'https://gzzclbxnohokttujvaqa.supabase.co';
-const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd6emNsYnhub2hva3R0dWp2YXFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4Njc0NDUsImV4cCI6MjA4OTQ0MzQ0NX0.6XPR0m90k6qd66rLeatapLQ8jZYMn-V1lB9h2YT34hc';
-const ADMIN_PASS = '1234';
-const CATALOG_TABLE = 'casas_catalogo';
+const SB_URL   = 'https://gzzclbxnohokttujvaqa.supabase.co';
+const SB_KEY   = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd6emNsYnhub2hva3R0dWp2YXFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4Njc0NDUsImV4cCI6MjA4OTQ0MzQ0NX0.6XPR0m90k6qd66rLeatapLQ8jZYMn-V1lB9h2YT34hc';
+const ADMIN_PASS     = '1234';
+const CATALOG_TABLE  = 'casas_catalogo';
+const STORAGE_BUCKET = 'catalogo-fotos';
 
 // ── STATE ───────────────────────────────────────────────────────
 let casas = [];
-let _isAdmin = false;
-let _editId = null;
-let _activeFilter = 'todos';
-let _detailCasa = null;
+let _isAdmin     = false;
+let _editId      = null;
+let _activeFilter= 'todos';
+let _detailCasa  = null;
+
+// Upload
+let _uploadFiles    = [];
+let _existingPhotos = [];
+let _plantaFile     = null;
+let _existingPlanta = '';
+
+// Options (Tipo / Madeira)
+let _optsKey = '';
+let _opts = {
+  tipo:    ['1 Quarto','2 Quartos','3 Quartos','Sobrado','Geminado','Chalé'],
+  madeira: ['Pinus','Madeira de Lei','Ambos']
+};
 
 // ── SUPABASE ────────────────────────────────────────────────────
 function sbFetch(method, url, body) {
-  const opts = {
+  return fetch(url, {
     method,
     headers: {
       'apikey': SB_KEY,
       'Authorization': 'Bearer ' + SB_KEY,
       'Content-Type': 'application/json',
       'Prefer': method === 'POST' ? 'return=minimal,resolution=merge-duplicates' : ''
-    }
-  };
-  if (body) opts.body = JSON.stringify(body);
-  return fetch(url, opts);
+    },
+    body: body ? JSON.stringify(body) : undefined
+  });
+}
+
+async function uploadToStorage(file, path) {
+  const r = await fetch(`${SB_URL}/storage/v1/object/${STORAGE_BUCKET}/${path}`, {
+    method: 'POST',
+    headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Content-Type': file.type },
+    body: file
+  });
+  if (!r.ok) throw new Error(await r.text());
+  return `${SB_URL}/storage/v1/object/public/${STORAGE_BUCKET}/${path}`;
+}
+
+function storagePath(file) {
+  const ext = file.name.split('.').pop();
+  return `${Date.now()}_${Math.random().toString(36).slice(2,6)}.${ext}`;
 }
 
 async function loadCasas() {
   try {
-    const r = await sbFetch('GET', SB_URL + '/rest/v1/' + CATALOG_TABLE + '?order=created_at.desc');
-    if (r.ok) {
-      casas = await r.json();
-      if (!Array.isArray(casas)) casas = [];
-    }
+    const r = await sbFetch('GET', `${SB_URL}/rest/v1/${CATALOG_TABLE}?order=created_at.desc`);
+    if (r.ok) { casas = await r.json(); if (!Array.isArray(casas)) casas = []; }
   } catch(e) {
     casas = JSON.parse(localStorage.getItem('alliance_casas') || '[]');
     toast('Modo offline — usando dados locais', 'err');
   }
+  loadOptsFromStorage();
+  renderFilters();
   renderCatalogo();
 }
 
 async function saveCasaToCloud(casa) {
-  const r = await sbFetch('POST', SB_URL + '/rest/v1/' + CATALOG_TABLE + '?on_conflict=id', casa);
-  if (!r.ok) { const e = await r.text(); throw new Error(e); }
+  const r = await sbFetch('POST', `${SB_URL}/rest/v1/${CATALOG_TABLE}?on_conflict=id`, casa);
+  if (!r.ok) throw new Error(await r.text());
   localStorage.setItem('alliance_casas', JSON.stringify(casas));
 }
 
 async function deleteCasaFromCloud(id) {
-  const r = await sbFetch('DELETE', SB_URL + '/rest/v1/' + CATALOG_TABLE + '?id=eq.' + id);
-  if (!r.ok) { const e = await r.text(); throw new Error(e); }
+  const r = await sbFetch('DELETE', `${SB_URL}/rest/v1/${CATALOG_TABLE}?id=eq.${id}`);
+  if (!r.ok) throw new Error(await r.text());
 }
 
 // ── HELPERS ─────────────────────────────────────────────────────
 function uid() { return 'casa_' + Date.now() + '_' + Math.random().toString(36).slice(2,6); }
 function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-function brl(v) { return 'R$ ' + Number(v).toLocaleString('pt-BR', {minimumFractionDigits:0, maximumFractionDigits:0}); }
+function brl(v) { return 'R$ ' + Number(v).toLocaleString('pt-BR',{minimumFractionDigits:0,maximumFractionDigits:0}); }
 
 function toast(msg, type) {
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.className = 'toast show ' + (type || 'ok');
   clearTimeout(toast._t);
-  toast._t = setTimeout(() => t.className = 'toast', 3000);
+  toast._t = setTimeout(() => t.className = 'toast', 3200);
 }
 
-function googleDriveDirectUrl(url) {
-  if (!url) return '';
-  // Convert Google Drive share link to direct view URL
-  const m = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
-  if (m) return 'https://drive.google.com/uc?export=view&id=' + m[1];
-  return url;
+// ── OPTIONS ─────────────────────────────────────────────────────
+function loadOptsFromStorage() {
+  try { const s = localStorage.getItem('alliance_opts'); if (s) Object.assign(_opts, JSON.parse(s)); } catch(e){}
+}
+function saveOpts() { localStorage.setItem('alliance_opts', JSON.stringify(_opts)); }
+
+function renderSelect(id, key, currentVal) {
+  const sel = document.getElementById(id);
+  const prev = sel.value || currentVal;
+  sel.innerHTML = _opts[key].map(o =>
+    `<option value="${esc(o)}" ${o===prev?'selected':''}>${esc(o)}</option>`
+  ).join('');
 }
 
-function googleDriveEmbedUrl(url) {
-  if (!url) return '';
-  const m = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
-  if (m) return 'https://drive.google.com/file/d/' + m[1] + '/preview';
-  return url;
+function openOptsModal(key) {
+  _optsKey = key;
+  document.getElementById('optsTitle').textContent = key==='tipo' ? 'Tipos de Casa' : 'Tipos de Madeira';
+  document.getElementById('optsNewInp').value = '';
+  renderOptsList();
+  document.getElementById('optsOverlay').classList.add('open');
+  setTimeout(() => document.getElementById('optsNewInp').focus(), 80);
+}
+
+function closeOptsModal() {
+  document.getElementById('optsOverlay').classList.remove('open');
+  renderSelect('fTipo',    'tipo',    document.getElementById('fTipo').value);
+  renderSelect('fMadeira', 'madeira', document.getElementById('fMadeira').value);
+  renderFilters();
+}
+
+function renderOptsList() {
+  document.getElementById('optsList').innerHTML = _opts[_optsKey].map((o,i) => `
+    <div class="opt-item">
+      <span>${esc(o)}</span>
+      <button class="opt-item-rm" onclick="removeOpt(${i})">×</button>
+    </div>`).join('');
+}
+
+function addOpt() {
+  const val = document.getElementById('optsNewInp').value.trim();
+  if (!val) return;
+  if (_opts[_optsKey].includes(val)) { toast('Opção já existe','err'); return; }
+  _opts[_optsKey].push(val);
+  saveOpts();
+  renderOptsList();
+  document.getElementById('optsNewInp').value = '';
+}
+
+function removeOpt(i) {
+  _opts[_optsKey].splice(i,1);
+  saveOpts();
+  renderOptsList();
 }
 
 // ── FILTERS ─────────────────────────────────────────────────────
+function renderFilters() {
+  const bar = document.getElementById('filtersBar');
+  const searchWrap = bar.querySelector('.search-wrap');
+  bar.querySelectorAll('.filter-btn').forEach(b => b.remove());
+  ['todos', ..._opts.tipo].forEach(v => {
+    const b = document.createElement('button');
+    b.className = 'filter-btn' + (v===_activeFilter?' active':'');
+    b.textContent = v==='todos' ? 'Todos' : v;
+    b.onclick = () => setFilter(v, b);
+    bar.insertBefore(b, searchWrap);
+  });
+}
+
 function setFilter(val, el) {
   _activeFilter = val;
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -410,46 +544,48 @@ function setFilter(val, el) {
 
 // ── RENDER ──────────────────────────────────────────────────────
 function renderCatalogo() {
-  const q = (document.getElementById('searchInp').value || '').toLowerCase();
-  let list = casas.filter(c => {
-    if (_activeFilter !== 'todos' && c.tipo !== _activeFilter) return false;
+  const q = (document.getElementById('searchInp').value||'').toLowerCase();
+  const list = casas.filter(c => {
+    if (_activeFilter!=='todos' && c.tipo!==_activeFilter) return false;
     if (q && !c.nome.toLowerCase().includes(q) && !(c.descricao||'').toLowerCase().includes(q)) return false;
     return true;
   });
 
   const grid = document.getElementById('casasGrid');
+  const ph = `<div class="card-img-placeholder"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg></div>`;
+
   if (!list.length) {
-    grid.innerHTML = '<div class="empty"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg><p>Nenhum modelo encontrado.</p></div>';
+    grid.innerHTML = `<div class="empty"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg><p>Nenhum modelo encontrado.</p></div>`;
     return;
   }
 
   grid.innerHTML = list.map(c => {
-    const imgUrl = googleDriveDirectUrl(c.foto);
-    const madClass = c.madeira === 'Pinus' ? 'tag-pinus' : c.madeira === 'Madeira de Lei' ? 'tag-lei' : 'tag-madeira';
-    const madLabel = c.madeira || '';
+    const imgs = Array.isArray(c.fotos)&&c.fotos.length ? c.fotos : (c.foto ? [c.foto] : []);
+    const imgUrl = imgs[0]||'';
+    const madClass = c.madeira==='Pinus' ? 'tag-pinus' : c.madeira==='Madeira de Lei' ? 'tag-lei' : 'tag-madeira';
     return `<div class="card" onclick="openDetail('${c.id}')">
       ${imgUrl
-        ? `<img class="card-img" src="${esc(imgUrl)}" alt="${esc(c.nome)}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-           <div class="card-img-placeholder" style="display:none"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg></div>`
-        : `<div class="card-img-placeholder"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg></div>`
-      }
+        ? `<img class="card-img" src="${esc(imgUrl)}" alt="${esc(c.nome)}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">${ph}`
+        : ph}
       <div class="card-body">
         <div class="card-tags">
-          <span class="tag tag-tipo">${esc(c.tipo)}</span>
-          ${madLabel ? `<span class="tag ${madClass}">${esc(madLabel)}</span>` : ''}
+          <span class="tag tag-tipo">${esc(c.tipo||'')}</span>
+          ${c.madeira?`<span class="tag ${madClass}">${esc(c.madeira)}</span>`:''}
         </div>
         <div class="card-name">${esc(c.nome)}</div>
-        ${c.descricao ? `<div class="card-desc">${esc(c.descricao)}</div>` : ''}
+        ${c.descricao?`<div class="card-desc">${esc(c.descricao)}</div>`:''}
         <div class="card-specs">
           <div class="spec"><div class="spec-val">${c.area||'—'}</div><div class="spec-lbl">m²</div></div>
           <div class="spec"><div class="spec-val">${c.quartos||'—'}</div><div class="spec-lbl">Quartos</div></div>
           <div class="spec"><div class="spec-val">${c.banheiros||'—'}</div><div class="spec-lbl">Banheiros</div></div>
         </div>
-        ${c.preco ? `<div class="card-price"><span class="price-lbl">A partir de</span><span class="price-val">${brl(c.preco)}</span></div>` : ''}
+        ${c.preco?`<div class="card-price"><span class="price-lbl">A partir de</span><span class="price-val">${brl(c.preco)}</span></div>`:''}
       </div>
       <div class="card-footer">
         <button class="btn-detail" onclick="event.stopPropagation();openDetail('${c.id}')">Ver Detalhes</button>
-        ${_isAdmin ? `<button class="btn-outline" style="flex:1;font-size:12px;" onclick="event.stopPropagation();openEditCasa('${c.id}')">✏️ Editar</button>` : `<button class="btn-orcamento" onclick="event.stopPropagation();solicitarOrcamentoId('${c.id}')">📋 Orçamento</button>`}
+        ${_isAdmin
+          ? `<button class="btn-outline" style="flex:1;font-size:12px;" onclick="event.stopPropagation();openEditCasa('${c.id}')">✏️ Editar</button>`
+          : `<button class="btn-orcamento" onclick="event.stopPropagation();solicitarOrcamentoId('${c.id}')">📋 Orçamento</button>`}
       </div>
     </div>`;
   }).join('');
@@ -457,39 +593,38 @@ function renderCatalogo() {
 
 // ── DETAIL ──────────────────────────────────────────────────────
 function openDetail(id) {
-  const c = casas.find(x => x.id === id);
+  const c = casas.find(x => x.id===id);
   if (!c) return;
   _detailCasa = c;
 
-  const imgUrl = googleDriveDirectUrl(c.foto);
+  const imgs = Array.isArray(c.fotos)&&c.fotos.length ? c.fotos : (c.foto ? [c.foto] : []);
   const imgWrap = document.getElementById('detailImgWrap');
-  imgWrap.innerHTML = imgUrl
-    ? `<img class="modal-detail-img" src="${esc(imgUrl)}" alt="${esc(c.nome)}" onerror="this.style.display='none'">`
-    : '';
+  imgWrap.innerHTML = imgs.length ? `
+    <div class="modal-gallery">
+      <img class="modal-detail-img" id="detailMainImg" src="${esc(imgs[0])}" alt="${esc(c.nome)}" onerror="this.style.display='none'">
+      ${imgs.length>1 ? `<div class="gallery-thumbs">${imgs.map((u,i)=>`<img class="gallery-thumb ${i===0?'active':''}" src="${esc(u)}" onclick="switchDetailImg(this,'${esc(u)}')" onerror="this.style.display='none'">`).join('')}</div>` : ''}
+    </div>` : '';
 
-  const madClass = c.madeira === 'Pinus' ? 'tag-pinus' : c.madeira === 'Madeira de Lei' ? 'tag-lei' : 'tag-madeira';
+  const madClass = c.madeira==='Pinus' ? 'tag-pinus' : c.madeira==='Madeira de Lei' ? 'tag-lei' : 'tag-madeira';
   document.getElementById('detailTags').innerHTML =
-    `<span class="tag tag-tipo">${esc(c.tipo)}</span>` +
+    `<span class="tag tag-tipo">${esc(c.tipo||'')}</span>` +
     (c.madeira ? `<span class="tag ${madClass}">${esc(c.madeira)}</span>` : '');
-
   document.getElementById('detailName').textContent = c.nome;
   document.getElementById('detailSpecs').innerHTML = `
     <div class="modal-spec"><div class="modal-spec-val">${c.area||'—'}</div><div class="modal-spec-lbl">m²</div></div>
     <div class="modal-spec"><div class="modal-spec-val">${c.quartos||'—'}</div><div class="modal-spec-lbl">Quartos</div></div>
     <div class="modal-spec"><div class="modal-spec-val">${c.banheiros||'—'}</div><div class="modal-spec-lbl">Banheiros</div></div>
-    <div class="modal-spec"><div class="modal-spec-val" style="font-size:14px">${c.madeira||'—'}</div><div class="modal-spec-lbl">Madeira</div></div>
-  `;
-  document.getElementById('detailDesc').textContent = c.descricao || 'Sem descrição.';
+    <div class="modal-spec"><div class="modal-spec-val" style="font-size:14px">${c.madeira||'—'}</div><div class="modal-spec-lbl">Madeira</div></div>`;
+  document.getElementById('detailDesc').textContent = c.descricao||'Sem descrição.';
 
   const notesWrap = document.getElementById('detailNotesWrap');
   if (c.notas) { document.getElementById('detailNotes').textContent = c.notas; notesWrap.style.display=''; }
   else notesWrap.style.display='none';
 
-  // Links
   const linksWrap = document.getElementById('detailLinksWrap');
   const links = [];
-  if (c.planta) links.push(`<a class="link-btn" href="${esc(c.planta)}" target="_blank">🗺️ Planta Baixa</a>`);
-  if (c.pdf)    links.push(`<a class="link-btn" href="${esc(c.pdf)}" target="_blank">📄 PDF da Planta</a>`);
+  if (c.planta)    links.push(`<a class="link-btn" href="${esc(c.planta)}" target="_blank">📐 Planta Baixa</a>`);
+  if (c.portfolio) links.push(`<a class="link-btn" href="${esc(c.portfolio)}" target="_blank">🗂️ Ver Portfólio</a>`);
   if (links.length) { document.getElementById('detailLinks').innerHTML = links.join(''); linksWrap.style.display=''; }
   else linksWrap.style.display='none';
 
@@ -497,17 +632,14 @@ function openDetail(id) {
   document.getElementById('detailOverlay').classList.add('open');
 }
 
-function closeDetail() {
-  document.getElementById('detailOverlay').classList.remove('open');
+function switchDetailImg(el, url) {
+  document.getElementById('detailMainImg').src = url;
+  document.querySelectorAll('.gallery-thumb').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
 }
-
-function solicitarOrcamento() {
-  const link = 'https://leandrorocha95.github.io/alliance-orcamento';
-  window.open(link, '_blank');
-}
-function solicitarOrcamentoId(id) {
-  window.open('https://leandrorocha95.github.io/alliance-orcamento', '_blank');
-}
+function closeDetail() { document.getElementById('detailOverlay').classList.remove('open'); }
+function solicitarOrcamento() { window.open('https://leandrorocha95.github.io/alliance-orcamento','_blank'); }
+function solicitarOrcamentoId(id) { window.open('https://leandrorocha95.github.io/alliance-orcamento','_blank'); }
 
 // ── ADMIN AUTH ──────────────────────────────────────────────────
 function toggleAdmin() {
@@ -515,126 +647,173 @@ function toggleAdmin() {
   document.getElementById('adminLoginOverlay').classList.add('open');
   setTimeout(() => document.getElementById('adminPwInp').focus(), 100);
 }
-
 function closeAdminLogin() {
   document.getElementById('adminLoginOverlay').classList.remove('open');
-  document.getElementById('adminPwInp').value = '';
-  document.getElementById('adminPwErr').textContent = '';
+  document.getElementById('adminPwInp').value='';
+  document.getElementById('adminPwErr').textContent='';
 }
-
 function checkAdminPw() {
-  if (document.getElementById('adminPwInp').value === ADMIN_PASS) {
-    _isAdmin = true;
-    closeAdminLogin();
+  if (document.getElementById('adminPwInp').value===ADMIN_PASS) {
+    _isAdmin=true; closeAdminLogin();
     document.getElementById('adminBar').classList.add('show');
-    document.getElementById('btnAdminToggle').textContent = '✓ Admin';
-    document.getElementById('btnAdminToggle').style.color = 'var(--accent)';
-    renderCatalogo();
-    toast('Modo admin ativado!');
+    document.getElementById('btnAdminToggle').textContent='✓ Admin';
+    document.getElementById('btnAdminToggle').style.color='var(--accent)';
+    renderCatalogo(); toast('Modo admin ativado!');
   } else {
-    document.getElementById('adminPwErr').textContent = 'Senha incorreta.';
-    document.getElementById('adminPwInp').value = '';
+    document.getElementById('adminPwErr').textContent='Senha incorreta.';
+    document.getElementById('adminPwInp').value='';
   }
 }
-
 function logoutAdmin() {
-  _isAdmin = false;
+  _isAdmin=false;
   document.getElementById('adminBar').classList.remove('show');
-  document.getElementById('btnAdminToggle').textContent = '🔐 Admin';
-  document.getElementById('btnAdminToggle').style.color = '';
-  renderCatalogo();
-  toast('Admin desativado');
+  document.getElementById('btnAdminToggle').textContent='🔐 Admin';
+  document.getElementById('btnAdminToggle').style.color='';
+  renderCatalogo(); toast('Admin desativado');
+}
+
+// ── UPLOAD ──────────────────────────────────────────────────────
+function onFilesChange(e) {
+  const files = Array.from(e.target.files);
+  if (_existingPhotos.length+_uploadFiles.length+files.length > 3) {
+    toast('Máximo de 3 fotos. Remova uma antes de adicionar.','err'); e.target.value=''; return;
+  }
+  _uploadFiles.push(...files); e.target.value=''; renderUploadPreview();
+}
+
+function renderUploadPreview() {
+  const total = _existingPhotos.length+_uploadFiles.length;
+  document.getElementById('uploadTxt').textContent = total>=3 ? 'Limite atingido (3/3)' : `Clique para adicionar (${total}/3)`;
+  let html='';
+  _existingPhotos.forEach((url,i) => {
+    html+=`<div class="upload-thumb"><img src="${esc(url)}"><span class="upload-thumb-badge badge-saved">Salva</span><button class="upload-thumb-rm" onclick="removeExistingPhoto(${i})">×</button></div>`;
+  });
+  _uploadFiles.forEach((f,i) => {
+    html+=`<div class="upload-thumb"><img src="${URL.createObjectURL(f)}"><span class="upload-thumb-badge badge-new">Nova</span><button class="upload-thumb-rm" onclick="removeNewFile(${i})">×</button></div>`;
+  });
+  document.getElementById('uploadPreview').innerHTML=html;
+}
+function removeExistingPhoto(i) { _existingPhotos.splice(i,1); renderUploadPreview(); }
+function removeNewFile(i) { _uploadFiles.splice(i,1); renderUploadPreview(); }
+
+function onPlantaChange(e) { _plantaFile=e.target.files[0]||null; e.target.value=''; renderPlantaPreview(); }
+function renderPlantaPreview() {
+  const txt=document.getElementById('uploadPlantaTxt');
+  const prev=document.getElementById('plantaPreview');
+  if (_plantaFile) {
+    txt.textContent='📐 '+_plantaFile.name;
+    prev.innerHTML=`<div style="display:flex;align-items:center;gap:8px;margin-top:4px;">
+      <img src="${URL.createObjectURL(_plantaFile)}" style="width:64px;height:52px;object-fit:cover;border-radius:6px;border:1px solid var(--border);">
+      <button onclick="_plantaFile=null;renderPlantaPreview()" style="background:none;border:none;color:#e74c3c;cursor:pointer;font-size:12px;">✕ Remover</button>
+    </div>`;
+  } else if (_existingPlanta) {
+    txt.textContent='📐 Planta salva (clique para substituir)';
+    prev.innerHTML=`<div style="display:flex;align-items:center;gap:8px;margin-top:4px;">
+      <img src="${esc(_existingPlanta)}" style="width:64px;height:52px;object-fit:cover;border-radius:6px;border:1px solid var(--border);">
+      <button onclick="_existingPlanta='';renderPlantaPreview()" style="background:none;border:none;color:#e74c3c;cursor:pointer;font-size:12px;">✕ Remover</button>
+    </div>`;
+  } else {
+    txt.textContent='📐 Clique para selecionar a planta baixa';
+    prev.innerHTML='';
+  }
 }
 
 // ── CASA FORM ───────────────────────────────────────────────────
 function openNewCasa() {
-  _editId = null;
-  document.getElementById('casaFormTitle').textContent = 'Nova Casa';
-  document.getElementById('fDelBtn').style.display = 'none';
-  ['fNome','fArea','fQuartos','fBanheiros','fPreco','fDesc','fNotes','fFoto','fPlanta','fPdf'].forEach(id => {
-    document.getElementById(id).value = '';
-  });
-  document.getElementById('fTipo').value = '2 Quartos';
-  document.getElementById('fMadeira').value = 'Madeira de Lei';
+  _editId=null; _uploadFiles=[]; _existingPhotos=[]; _plantaFile=null; _existingPlanta='';
+  document.getElementById('casaFormTitle').textContent='Nova Casa';
+  document.getElementById('fDelBtn').style.display='none';
+  ['fNome','fArea','fQuartos','fBanheiros','fPreco','fDesc','fNotes','fPortfolio'].forEach(id => document.getElementById(id).value='');
+  renderSelect('fTipo','tipo',_opts.tipo[0]);
+  renderSelect('fMadeira','madeira',_opts.madeira[0]);
+  renderUploadPreview(); renderPlantaPreview();
   document.getElementById('casaFormOverlay').classList.add('open');
   setTimeout(() => document.getElementById('fNome').focus(), 50);
 }
 
 function openEditCasa(id) {
-  const c = casas.find(x => x.id === id);
-  if (!c) return;
-  _editId = id;
-  document.getElementById('casaFormTitle').textContent = 'Editar Casa';
-  document.getElementById('fDelBtn').style.display = '';
-  document.getElementById('fNome').value     = c.nome      || '';
-  document.getElementById('fTipo').value     = c.tipo      || '2 Quartos';
-  document.getElementById('fMadeira').value  = c.madeira   || 'Madeira de Lei';
-  document.getElementById('fArea').value     = c.area      || '';
-  document.getElementById('fQuartos').value  = c.quartos   || '';
-  document.getElementById('fBanheiros').value= c.banheiros || '';
-  document.getElementById('fPreco').value    = c.preco     || '';
-  document.getElementById('fDesc').value     = c.descricao || '';
-  document.getElementById('fNotes').value    = c.notas     || '';
-  document.getElementById('fFoto').value     = c.foto      || '';
-  document.getElementById('fPlanta').value   = c.planta    || '';
-  document.getElementById('fPdf').value      = c.pdf       || '';
+  const c=casas.find(x=>x.id===id); if(!c) return;
+  _editId=id; _uploadFiles=[];
+  _existingPhotos=Array.isArray(c.fotos)?[...c.fotos]:(c.foto?[c.foto]:[]);
+  _plantaFile=null; _existingPlanta=c.planta||'';
+  document.getElementById('casaFormTitle').textContent='Editar Casa';
+  document.getElementById('fDelBtn').style.display='';
+  document.getElementById('fNome').value      = c.nome||'';
+  document.getElementById('fArea').value      = c.area||'';
+  document.getElementById('fQuartos').value   = c.quartos||'';
+  document.getElementById('fBanheiros').value = c.banheiros||'';
+  document.getElementById('fPreco').value     = c.preco||'';
+  document.getElementById('fDesc').value      = c.descricao||'';
+  document.getElementById('fNotes').value     = c.notas||'';
+  document.getElementById('fPortfolio').value = c.portfolio||'';
+  renderSelect('fTipo','tipo',c.tipo);
+  renderSelect('fMadeira','madeira',c.madeira);
+  renderUploadPreview(); renderPlantaPreview();
   document.getElementById('casaFormOverlay').classList.add('open');
   setTimeout(() => document.getElementById('fNome').focus(), 50);
 }
 
-function closeCasaForm() {
-  document.getElementById('casaFormOverlay').classList.remove('open');
-}
+function closeCasaForm() { document.getElementById('casaFormOverlay').classList.remove('open'); }
 
 async function saveCasa() {
-  const nome = document.getElementById('fNome').value.trim();
-  if (!nome) { toast('Digite o nome do modelo', 'err'); return; }
-  const casa = {
-    id:        _editId || uid(),
+  const nome=document.getElementById('fNome').value.trim();
+  if (!nome) { toast('Digite o nome do modelo','err'); return; }
+  toast('Salvando...','');
+
+  // Upload fotos novas
+  let uploadedUrls=[];
+  for (const file of _uploadFiles) {
+    try { uploadedUrls.push(await uploadToStorage(file,'fotos/'+storagePath(file))); }
+    catch(e) { toast('Erro no upload da foto: '+e.message,'err'); return; }
+  }
+  const fotos=[..._existingPhotos,...uploadedUrls];
+
+  // Upload planta baixa
+  let plantaUrl=_existingPlanta;
+  if (_plantaFile) {
+    try { plantaUrl=await uploadToStorage(_plantaFile,'plantas/'+storagePath(_plantaFile)); }
+    catch(e) { toast('Erro no upload da planta: '+e.message,'err'); return; }
+  }
+
+  const casa={
+    id:         _editId||uid(),
     nome,
-    tipo:      document.getElementById('fTipo').value,
-    madeira:   document.getElementById('fMadeira').value,
-    area:      parseFloat(document.getElementById('fArea').value) || 0,
-    quartos:   parseInt(document.getElementById('fQuartos').value) || 0,
-    banheiros: parseInt(document.getElementById('fBanheiros').value) || 0,
-    preco:     parseFloat(document.getElementById('fPreco').value) || 0,
-    descricao: document.getElementById('fDesc').value.trim(),
-    notas:     document.getElementById('fNotes').value.trim(),
-    foto:      document.getElementById('fFoto').value.trim(),
-    planta:    document.getElementById('fPlanta').value.trim(),
-    pdf:       document.getElementById('fPdf').value.trim(),
-    created_at: _editId ? (casas.find(c=>c.id===_editId)?.created_at || new Date().toISOString()) : new Date().toISOString()
+    tipo:       document.getElementById('fTipo').value,
+    madeira:    document.getElementById('fMadeira').value,
+    area:       parseFloat(document.getElementById('fArea').value)||0,
+    quartos:    parseInt(document.getElementById('fQuartos').value)||0,
+    banheiros:  parseInt(document.getElementById('fBanheiros').value)||0,
+    preco:      parseFloat(document.getElementById('fPreco').value)||0,
+    descricao:  document.getElementById('fDesc').value.trim(),
+    notas:      document.getElementById('fNotes').value.trim(),
+    portfolio:  document.getElementById('fPortfolio').value.trim(),
+    fotos,
+    foto:       fotos[0]||'',
+    planta:     plantaUrl,
+    created_at: _editId?(casas.find(c=>c.id===_editId)?.created_at||new Date().toISOString()):new Date().toISOString()
   };
+
   try {
     await saveCasaToCloud(casa);
-    if (_editId) { const idx = casas.findIndex(c=>c.id===_editId); if(idx>=0) casas[idx]=casa; }
+    if (_editId) { const idx=casas.findIndex(c=>c.id===_editId); if(idx>=0) casas[idx]=casa; }
     else casas.unshift(casa);
-    closeCasaForm();
-    renderCatalogo();
-    toast(_editId ? '✓ Casa atualizada!' : '✓ Casa adicionada!');
-  } catch(e) {
-    toast('Erro ao salvar: ' + e.message, 'err');
-  }
+    closeCasaForm(); renderCatalogo();
+    toast(_editId?'✓ Casa atualizada!':'✓ Casa adicionada!');
+  } catch(e) { toast('Erro ao salvar: '+e.message,'err'); }
 }
 
 async function delCasa() {
-  if (!_editId || !confirm('Excluir este modelo?')) return;
+  if (!_editId||!confirm('Excluir este modelo?')) return;
   try {
     await deleteCasaFromCloud(_editId);
-    casas = casas.filter(c => c.id !== _editId);
-    closeCasaForm();
-    renderCatalogo();
-    toast('Casa excluída');
-  } catch(e) {
-    toast('Erro ao excluir: ' + e.message, 'err');
-  }
+    casas=casas.filter(c=>c.id!==_editId);
+    closeCasaForm(); renderCatalogo(); toast('Casa excluída');
+  } catch(e) { toast('Erro ao excluir: '+e.message,'err'); }
 }
 
 // ── INIT ────────────────────────────────────────────────────────
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') {
-    document.querySelectorAll('.overlay.open').forEach(o => o.classList.remove('open'));
-  }
+  if (e.key==='Escape') document.querySelectorAll('.overlay.open').forEach(o=>o.classList.remove('open'));
 });
 loadCasas();
 </script>
