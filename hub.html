@@ -585,16 +585,19 @@ function loadModule(module) {
   // Sempre (re)carrega o iframe com a URL correta
   var iframe = document.getElementById('iframe-' + module);
   if (iframe) {
-    if (!iframe.src || iframe.src === 'about:blank' || iframe.src === window.location.href) {
-      iframe.src = MODULES[module];
+    var url = MODULES[module];
+    // Passa sessão como parâmetro na URL para garantir disponibilidade imediata
+    if (_session && _session.user && module !== 'banco') {
+      var sep = url.indexOf('?') !== -1 ? '&' : '?';
+      url += sep + '_sid=' + encodeURIComponent(btoa(JSON.stringify(_session)));
     }
-    // Passa sessão via postMessage quando iframe carregar
+    if (!iframe.src || iframe.src === 'about:blank' || iframe.src === window.location.href) {
+      iframe.src = url;
+    }
+    // Também envia via postMessage quando carregar
     iframe.onload = function() {
       if (_session) {
-        iframe.contentWindow.postMessage({
-          type: 'ALLIANCE_SESSION',
-          session: _session
-        }, '*');
+        iframe.contentWindow.postMessage({ type: 'ALLIANCE_SESSION', session: _session }, '*');
       }
     };
   }
