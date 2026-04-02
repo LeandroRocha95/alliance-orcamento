@@ -1294,7 +1294,7 @@ function sbFetch(method, url, body) {
 }
 
 // ── LOGIN ────────────────────────────────────────────────────────
-// ── AUTH — recebido do hub via localStorage ou postMessage ────────
+// ── AUTH — recebido do hub via localStorage, URL param ou postMessage ─
 window.addEventListener('message', function(e) {
   if (e.data && e.data.type === 'ALLIANCE_SESSION') {
     var s = e.data.session;
@@ -1302,13 +1302,10 @@ window.addEventListener('message', function(e) {
     _isAdmin     = s.isAdmin || false;
     localStorage.setItem('alliance_session', JSON.stringify(s));
     if (_currentUser) document.getElementById('userEmail').textContent = _currentUser.email || '';
-    _historyCache = null; // limpa cache para forçar nova busca com token correto
+    _historyCache = null;
     loadConfig(function() { renderOrcamento(); renderPaymentRows(); updateQuoteCodeDisplay(); });
-    // Se histórico estiver visível, recarregar com token correto
     var histPage = document.getElementById('page-historico');
-    if (histPage && histPage.classList.contains('active')) {
-      renderHistory();
-    }
+    if (histPage && histPage.classList.contains('active')) renderHistory();
   }
 });
 
@@ -1318,6 +1315,21 @@ function doLogout() {
 }
 
 function restoreSession() {
+  // 1. Tentar ler da URL (?_sid=...)
+  try {
+    var params = new URLSearchParams(window.location.search);
+    var sid = params.get('_sid');
+    if (sid) {
+      var s = JSON.parse(atob(sid));
+      _currentUser = s.user    || null;
+      _isAdmin     = s.isAdmin || false;
+      localStorage.setItem('alliance_session', JSON.stringify(s));
+      if (_currentUser) document.getElementById('userEmail').textContent = _currentUser.email || '';
+      loadConfig(function() { renderOrcamento(); renderPaymentRows(); updateQuoteCodeDisplay(); });
+      return;
+    }
+  } catch(e) {}
+  // 2. Tentar ler do localStorage
   try {
     var saved = localStorage.getItem('alliance_session');
     if (saved) {
@@ -1329,8 +1341,7 @@ function restoreSession() {
       return;
     }
   } catch(e) {}
-  // Sem sessão no localStorage — aguarda postMessage do hub (não tenta carregar ainda)
-  // Inicia só o render básico sem dados do servidor
+  // 3. Sem sessão — aguarda postMessage
   renderOrcamento();
   renderPaymentRows();
   updateQuoteCodeDisplay();
