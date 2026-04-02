@@ -1307,6 +1307,29 @@ window.addEventListener('message', function(e) {
     var histPage = document.getElementById('page-historico');
     if (histPage && histPage.classList.contains('active')) renderHistory();
   }
+
+  if (e.data && e.data.type === 'PREENCHER_TEMPLATE') {
+    var t = e.data.template;
+    if (!t) return;
+    // Novo orçamento limpo
+    _currentQuoteId = null;
+    state = {};
+    updateQuoteCodeDisplay();
+    // Preencher itens do template
+    Object.keys(t.items || {}).forEach(function(itemId) {
+      state[itemId] = t.items[itemId];
+    });
+    // Nome do modelo como observação
+    if (t.modelo_nome) {
+      var obsEl = document.getElementById('quoteObs');
+      if (obsEl) obsEl.value = 'Modelo: ' + t.modelo_nome;
+    }
+    // Ir para aba orçamento
+    switchTab('orcamento');
+    renderOrcamento();
+    renderPaymentRows();
+    showToast('✓ Template do modelo ' + (t.modelo_nome || '') + ' carregado!');
+  }
 });
 
 function doLogout() {
