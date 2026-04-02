@@ -655,7 +655,7 @@ textarea.field-inp{resize:vertical;min-height:76px;white-space:pre-wrap;}
       <div class="field-group">
         <label class="field-label">Planta Baixa <span style="font-weight:400;color:var(--muted);text-transform:none;letter-spacing:0;">(imagem · Supabase Storage)</span></label>
         <div class="upload-area" onclick="document.getElementById('fPlantaFile').click()" style="padding:14px 18px;">
-          <div class="upload-txt" id="uploadPlantaTxt" style="font-size:13px;">📐 Clique para selecionar a planta baixa</div>
+          <div class="upload-txt" id="uploadPlantaTxt" style="font-size:13px;">📐 Clique para adicionar planta baixa (máx. 2)</div>
           <input type="file" id="fPlantaFile" accept="image/*" style="display:none" onchange="onPlantaChange(event)">
         </div>
         <div id="plantaPreview"></div>
@@ -812,8 +812,8 @@ let _detailCasa  = null;
 // Upload
 let _uploadFiles    = [];
 let _existingPhotos = [];
-let _plantaFile     = null;
-let _existingPlanta = '';
+let _plantaFiles    = [];   // novos uploads (máx 2)
+let _existingPlantas = [];  // URLs já salvas
 
 // Tags input
 let _formTags = [];
@@ -1522,10 +1522,16 @@ function renderCatalogo() {
           : `<div class="card-img-ph"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg></div>`}
         ${selo ? `<div class="card-selo ${selo.cls}">${selo.icon} ${selo.label}</div>` : ''}
       </div>
-      ${c.planta ? `<div class="card-planta" onclick="event.stopPropagation();openDetail('${c.id}')">
-        <div class="card-planta-header">📐 Planta Baixa</div>
-        <img src="${esc(c.planta)}" alt="Planta Baixa" onerror="this.parentElement.style.display='none'">
-      </div>` : ''}
+      ${(() => {
+        const plantas = Array.isArray(c.plantas) && c.plantas.length ? c.plantas : (c.planta ? [c.planta] : []);
+        if (!plantas.length) return '';
+        return `<div class="card-planta" onclick="event.stopPropagation();openDetail('${c.id}')">
+          <div class="card-planta-header">📐 Planta Baixa</div>
+          <div style="display:flex;gap:0;">
+            ${plantas.map(u => `<img src="${esc(u)}" alt="Planta Baixa" style="flex:1;min-width:0;max-height:160px;object-fit:contain;background:var(--surface3);" onerror="this.style.display='none'">`).join('')}
+          </div>
+        </div>`;
+      })()}
       <div class="card-body">
         ${c.codigo ? `<div class="card-code">${esc(c.codigo)}</div>` : ''}
         <div class="card-tags-row">
@@ -1625,8 +1631,23 @@ function openDetail(id) {
 
   // Planta baixa como imagem
   const plantaSecWrap = document.getElementById('detailPlantaWrap');
-  if (c.planta) {
-    document.getElementById('detailPlantaImg').src = c.planta;
+  const plantas = Array.isArray(c.plantas) && c.plantas.length ? c.plantas : (c.planta ? [c.planta] : []);
+  if (plantas.length) {
+    document.getElementById('detailPlantaImg').style.display = plantas.length === 1 ? '' : 'none';
+    if (plantas.length === 1) document.getElementById('detailPlantaImg').src = plantas[0];
+    // Múltiplas plantas — mostrar lado a lado
+    let plantasExtra = document.getElementById('detailPlantasExtra');
+    if (!plantasExtra) {
+      plantasExtra = document.createElement('div');
+      plantasExtra.id = 'detailPlantasExtra';
+      document.getElementById('detailPlantaImg').parentNode.appendChild(plantasExtra);
+    }
+    if (plantas.length > 1) {
+      plantasExtra.style.display = '';
+      plantasExtra.innerHTML = `<div style="display:flex;gap:8px;">${plantas.map(u => `<img src="${esc(u)}" style="flex:1;min-width:0;border-radius:10px;border:1px solid var(--border);cursor:zoom-in;object-fit:contain;" onclick="window.open('${esc(u)}','_blank')" onerror="this.style.display='none'">`).join('')}</div>`;
+    } else {
+      if (plantasExtra) plantasExtra.style.display = 'none';
+    }
     plantaSecWrap.style.display = '';
   } else {
     plantaSecWrap.style.display = 'none';
@@ -1727,20 +1748,29 @@ function renderUploadPreview() {
 function removeExistingPhoto(i){ _existingPhotos.splice(i,1); renderUploadPreview(); }
 function removeNewFile(i)      { _uploadFiles.splice(i,1);    renderUploadPreview(); }
 
-function onPlantaChange(e) { _plantaFile=e.target.files[0]||null; e.target.value=''; renderPlantaPreview(); }
+function onPlantaChange(e) {
+  const file = e.target.files[0]; e.target.value='';
+  if (!file) return;
+  const total = _existingPlantas.length + _plantaFiles.length;
+  if (total >= 2) { toast('Máximo de 2 plantas baixas','err'); return; }
+  _plantaFiles.push(file);
+  renderPlantaPreview();
+}
+
 function renderPlantaPreview() {
-  const txt=document.getElementById('uploadPlantaTxt');
-  const prev=document.getElementById('plantaPreview');
-  if (_plantaFile) {
-    txt.textContent='📐 '+_plantaFile.name;
-    prev.innerHTML=`<div style="display:flex;align-items:center;gap:8px;margin-top:6px;"><img src="${URL.createObjectURL(_plantaFile)}" style="width:64px;height:52px;object-fit:cover;border-radius:6px;border:1px solid var(--border);"><button onclick="_plantaFile=null;renderPlantaPreview()" style="background:none;border:none;color:#e74c3c;cursor:pointer;font-size:12px;">✕ Remover</button></div>`;
-  } else if (_existingPlanta) {
-    txt.textContent='📐 Planta salva (clique para substituir)';
-    prev.innerHTML=`<div style="display:flex;align-items:center;gap:8px;margin-top:6px;"><img src="${esc(_existingPlanta)}" style="width:64px;height:52px;object-fit:cover;border-radius:6px;border:1px solid var(--border);"><button onclick="_existingPlanta='';renderPlantaPreview()" style="background:none;border:none;color:#e74c3c;cursor:pointer;font-size:12px;">✕ Remover</button></div>`;
-  } else {
-    txt.textContent='📐 Clique para selecionar a planta baixa';
-    prev.innerHTML='';
-  }
+  const txt  = document.getElementById('uploadPlantaTxt');
+  const prev = document.getElementById('plantaPreview');
+  const total = _existingPlantas.length + _plantaFiles.length;
+  txt.textContent = total >= 2 ? '📐 Limite atingido (2/2)' : `📐 Clique para adicionar planta baixa (${total}/2)`;
+  let html = '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">';
+  _existingPlantas.forEach((url,i) => {
+    html += `<div style="position:relative;"><img src="${esc(url)}" style="width:80px;height:64px;object-fit:cover;border-radius:6px;border:1px solid var(--border);"><button onclick="_existingPlantas.splice(${i},1);renderPlantaPreview()" style="position:absolute;top:2px;right:2px;background:rgba(0,0,0,.7);border:none;color:#fff;width:16px;height:16px;border-radius:50%;cursor:pointer;font-size:10px;display:flex;align-items:center;justify-content:center;">×</button><div style="font-size:9px;text-align:center;color:var(--muted);margin-top:2px;">Salva</div></div>`;
+  });
+  _plantaFiles.forEach((f,i) => {
+    html += `<div style="position:relative;"><img src="${URL.createObjectURL(f)}" style="width:80px;height:64px;object-fit:cover;border-radius:6px;border:1px solid var(--border);"><button onclick="_plantaFiles.splice(${i},1);renderPlantaPreview()" style="position:absolute;top:2px;right:2px;background:rgba(0,0,0,.7);border:none;color:#fff;width:16px;height:16px;border-radius:50%;cursor:pointer;font-size:10px;display:flex;align-items:center;justify-content:center;">×</button><div style="font-size:9px;text-align:center;color:var(--muted);margin-top:2px;">Nova</div></div>`;
+  });
+  html += '</div>';
+  prev.innerHTML = total > 0 ? html : '';
 }
 
 // ── CASA FORM ───────────────────────────────────────────────────
@@ -1753,7 +1783,7 @@ function clearForm() {
   document.getElementById('areaTotalCalc').textContent='';
   _formTags=[]; renderFormTags();
   document.getElementById('tagsDatalist').innerHTML = getAllTags().map(t=>`<option value="#${esc(t)}">`).join('');
-  _uploadFiles=[]; _existingPhotos=[]; _plantaFile=null; _existingPlanta='';
+  _uploadFiles=[]; _existingPhotos=[]; _plantaFiles=[]; _existingPlantas=[];
   renderUploadPreview(); renderPlantaPreview();
 }
 
@@ -1795,7 +1825,8 @@ function openEditCasa(id) {
   const dl = document.getElementById('tagsDatalist');
   dl.innerHTML = getAllTags().filter(t=>!_formTags.includes(t)).map(t=>`<option value="#${esc(t)}">`).join('');
   _existingPhotos = Array.isArray(c.fotos)?[...c.fotos]:(c.foto?[c.foto]:[]);
-  _existingPlanta = c.planta||'';
+  _existingPlantas = Array.isArray(c.plantas) ? [...c.plantas] : (c.planta ? [c.planta] : []);
+  _plantaFiles = [];
   renderUploadPreview(); renderPlantaPreview(); calcAreaTotal();
   document.getElementById('casaFormOverlay').classList.add('open');
   setTimeout(()=>document.getElementById('fNome').focus(),50);
@@ -1815,9 +1846,9 @@ async function saveCasa() {
   }
   const fotos=[..._existingPhotos,...uploadedUrls];
 
-  let plantaUrl=_existingPlanta;
-  if (_plantaFile) {
-    try { plantaUrl=await uploadToStorage(_plantaFile,'plantas/'+storagePath(_plantaFile)); }
+  let plantaUrls = [..._existingPlantas];
+  for (const file of _plantaFiles) {
+    try { plantaUrls.push(await uploadToStorage(file,'plantas/'+storagePath(file))); }
     catch(e) { toast('Erro no upload da planta: '+e.message,'err'); return; }
   }
 
@@ -1851,7 +1882,8 @@ async function saveCasa() {
     tags:        _formTags,
     fotos,
     foto:        fotos[0]||'',
-    planta:      plantaUrl,
+    plantas:     plantaUrls,
+    planta:      plantaUrls[0]||'',
     created_at:  _editId?(casas.find(c=>c.id===_editId)?.created_at||new Date().toISOString()):new Date().toISOString()
   };
 
