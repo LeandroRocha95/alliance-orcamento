@@ -696,6 +696,30 @@ function installApp() {
   });
 }
 
+// Mensagens dos módulos (iframes)
+window.addEventListener('message', function(e) {
+  if (!e.data) return;
+  if (e.data.type === 'ABRIR_ORCAMENTO') {
+    var template = e.data.template;
+    navigate('orcamento');
+    var iframe = document.getElementById('iframe-orcamento');
+    function sendTemplate() {
+      if (iframe && iframe.contentWindow) {
+        iframe.contentWindow.postMessage({ type: 'PREENCHER_TEMPLATE', template: template }, '*');
+      }
+    }
+    if (iframe && iframe.src && iframe.src !== 'about:blank') {
+      setTimeout(sendTemplate, 500);
+    } else {
+      var orig = iframe.onload;
+      iframe.onload = function() {
+        if (orig) orig();
+        setTimeout(sendTemplate, 300);
+      };
+    }
+  }
+});
+
 // INIT
 initHub();
 </script>
