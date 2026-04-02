@@ -273,6 +273,23 @@ textarea.field-inp{resize:vertical;min-height:76px;white-space:pre-wrap;}
 /* Btn orçamento no header (modo interno) */
 .btn-orcamento-header{background:linear-gradient(135deg,var(--accent2),var(--accent));border:none;color:#fff;border-radius:8px;padding:8px 16px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;transition:opacity .15s;white-space:nowrap;}
 .btn-orcamento-header:hover{opacity:.88;}
+/* Redes sociais no header */
+.header-socials{display:flex;gap:6px;align-items:center;margin-left:0;}
+.btn-social{display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:8px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;transition:all .15s;text-decoration:none;flex-shrink:0;}
+.btn-social:hover{border-color:var(--accent);color:var(--accent);}
+/* Btn compartilhar no card */
+.btn-share-card{background:rgba(52,152,219,.12);border:1px solid rgba(52,152,219,.3);color:var(--blue);border-radius:8px;padding:8px 10px;cursor:pointer;font-size:15px;transition:all .15s;flex-shrink:0;}
+.btn-share-card:hover{background:rgba(52,152,219,.22);}
+/* Modal redes sociais admin */
+.social-admin-item{display:flex;align-items:center;gap:10px;background:var(--surface2);border-radius:8px;padding:9px 12px;margin-bottom:6px;}
+.social-admin-icon{font-size:18px;width:24px;text-align:center;flex-shrink:0;}
+.social-admin-info{flex:1;min-width:0;overflow:hidden;}
+.social-admin-nome{font-size:13px;font-weight:600;}
+.social-admin-url{font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+/* Botões de ordenação */
+.sort-btn{background:var(--surface2);border:1px solid var(--border);color:var(--muted);border-radius:16px;padding:4px 11px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;transition:all .15s;white-space:nowrap;}
+.sort-btn:hover{border-color:var(--accent);color:var(--accent);}
+.sort-btn.active{background:rgba(245,166,35,.12);border-color:var(--accent);color:var(--accent);}
 
 /* ── SENHA ADMIN ── */
 .admin-login{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:32px;max-width:360px;text-align:center;}
@@ -307,7 +324,7 @@ textarea.field-inp{resize:vertical;min-height:76px;white-space:pre-wrap;}
 <header class="header">
   <img class="logo-img" src="https://leandrorocha95.github.io/alliance-orcamento/logo_alliance.jpg" alt="Alliance">
   <div class="header-title">Catálogo de Modelos</div>
-  <div class="header-sub">Alliance Casas Pré Fabricadas</div>
+  <div id="headerSocials" class="header-socials"></div>
   <div style="display:flex;gap:8px;align-items:center;margin-left:auto;">
     <span id="headerOrcamentoBtn" style="display:none;">
       <button class="btn-orcamento-header" onclick="window.open('https://leandrorocha95.github.io/alliance-orcamento','_blank')">📋 Novo Orçamento</button>
@@ -321,6 +338,7 @@ textarea.field-inp{resize:vertical;min-height:76px;white-space:pre-wrap;}
   <span class="admin-bar-txt">✓ Modo Admin ativo</span>
   <button class="btn-primary" onclick="openNewCasa()">+ Nova Casa</button>
   <button class="btn-outline" style="font-size:12px;padding:6px 12px;" onclick="openLojasAdmin()">📱 Lojas / WhatsApp</button>
+  <button class="btn-outline" style="font-size:12px;padding:6px 12px;" onclick="openSociaisAdmin()">🔗 Redes Sociais</button>
   <button class="btn-outline" style="font-size:12px;padding:6px 12px;" onclick="logoutAdmin()">Sair</button>
 </div>
 
@@ -411,6 +429,14 @@ textarea.field-inp{resize:vertical;min-height:76px;white-space:pre-wrap;}
 
 <!-- CHIPS DE FILTROS ATIVOS -->
 <div class="fbar-chips" id="fbarChips"></div>
+<div style="display:flex;align-items:center;gap:8px;padding:6px 28px 0;flex-wrap:wrap;">
+  <span style="font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);font-weight:700;">Ordenar:</span>
+  <button class="sort-btn active" data-sort="created_at" onclick="setSort('created_at')">Recentes<span class="sort-arrow"> ↓</span></button>
+  <button class="sort-btn" data-sort="nome" onclick="setSort('nome')">Nome<span class="sort-arrow"></span></button>
+  <button class="sort-btn" data-sort="area" onclick="setSort('area')">Metragem<span class="sort-arrow"></span></button>
+  <button class="sort-btn" data-sort="preco" onclick="setSort('preco')">Preço<span class="sort-arrow"></span></button>
+  <button class="sort-btn" data-sort="quartos" onclick="setSort('quartos')">Quartos<span class="sort-arrow"></span></button>
+</div>
 <div class="results-count" id="resultsCount"></div>
 
 <!-- GRID -->
@@ -465,7 +491,7 @@ textarea.field-inp{resize:vertical;min-height:76px;white-space:pre-wrap;}
         <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.122.554 4.118 1.52 5.854L0 24l6.335-1.498A11.94 11.94 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.808 9.808 0 01-5.034-1.387l-.361-.214-3.741.884.939-3.658-.235-.374A9.808 9.808 0 012.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/></svg>
         Solicitar via WhatsApp
       </button>
-      ${_isInternal ? `<button class="btn-primary" onclick="solicitarOrcamento()">📋 Abrir Orçamento</button>` : ''}
+      <button id="detailOrcamentoBtn" class="btn-primary" onclick="solicitarOrcamento()" style="display:none;">📋 Abrir Orçamento</button>
     </div>
   </div>
 </div>
@@ -681,7 +707,45 @@ textarea.field-inp{resize:vertical;min-height:76px;white-space:pre-wrap;}
   </div>
 </div>
 
-<!-- ══ MODAL GERENCIAR LOJAS (ADMIN) ══ -->
+<!-- ══ MODAL REDES SOCIAIS (ADMIN) ══ -->
+<div class="overlay" id="sociaisAdminOverlay" onclick="if(event.target===this)closeSociaisAdmin()">
+  <div class="modal-admin" style="max-width:480px;">
+    <div class="modal-head">
+      <div class="modal-head-title">Redes Sociais</div>
+      <button class="modal-x" onclick="closeSociaisAdmin()">×</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:12px;color:var(--muted);margin-bottom:14px;">Ícones exibidos no cabeçalho do catálogo para todos os visitantes.</p>
+      <div id="sociaisAdminList" style="margin-bottom:16px;"></div>
+      <div class="section-divider">Nova Rede Social</div>
+      <div class="field-row" style="margin-bottom:10px;">
+        <div class="field-group">
+          <label class="field-label">Nome</label>
+          <input class="field-inp" id="socialNovoNome" placeholder="Ex: Instagram Alliance">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Tipo</label>
+          <select class="field-inp" id="socialNovoTipo">
+            <option value="instagram">Instagram</option>
+            <option value="youtube">YouTube</option>
+            <option value="facebook">Facebook</option>
+            <option value="tiktok">TikTok</option>
+            <option value="whatsapp">WhatsApp</option>
+            <option value="site">Site</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">URL / Link</label>
+        <input class="field-inp" id="socialNovoUrl" placeholder="https://instagram.com/alliancecasas">
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-outline" onclick="closeSociaisAdmin()">Fechar</button>
+      <button class="btn-primary" onclick="addSocial()">+ Adicionar</button>
+    </div>
+  </div>
+</div>
 <div class="overlay" id="lojasAdminOverlay" onclick="if(event.target===this)closeLojasAdmin()">
   <div class="modal-admin" style="max-width:480px;">
     <div class="modal-head">
@@ -724,6 +788,7 @@ const CATALOG_TABLE  = 'casas_catalogo';
 const STORAGE_BUCKET = 'catalogo-fotos';
 const CATALOG_URL    = 'https://leandrorocha95.github.io/alliance-orcamento/catalogo.html';
 const LOJAS_TABLE    = 'alliance_lojas';
+const SOCIAIS_TABLE  = 'alliance_sociais';
 
 // ── MODE: internal vs client ────────────────────────────────────
 const _isInternal = new URLSearchParams(location.search).get('mode') === 'internal';
@@ -731,7 +796,10 @@ const _isInternal = new URLSearchParams(location.search).get('mode') === 'intern
 // ── STATE ───────────────────────────────────────────────────────
 let casas        = [];
 let lojas        = [];
-let _wappCasa    = null; // casa selecionada para abrir modal de lojas
+let sociais      = [];
+let _sortMode    = 'created_at';
+let _sortDir     = 'desc';
+let _wappCasa    = null;
 let _isAdmin     = false;
 let _editId      = null;
 let _activeFilter= 'todos';
@@ -796,9 +864,11 @@ async function loadCasas() {
     toast('Modo offline — usando dados locais', 'err');
   }
   await loadLojas();
+  await loadSociais();
   loadOptsFromStorage();
   renderFilters();
   renderCatalogo();
+  renderHeaderSocials();
   // Mostrar btn orçamento no header se modo interno
   if (_isInternal) {
     const btn = document.getElementById('headerOrcamentoBtn');
@@ -904,6 +974,134 @@ async function removeLoja(id) {
   localStorage.setItem('alliance_lojas', JSON.stringify(lojas));
   renderLojasAdminList();
   toast('Loja removida');
+}
+
+// ── REDES SOCIAIS ─────────────────────────────────────────────────
+const SOCIAL_ICONS = {
+  instagram: `<svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>`,
+  youtube:   `<svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M23.495 6.205a3.007 3.007 0 00-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 00.527 6.205a31.247 31.247 0 00-.522 5.805 31.247 31.247 0 00.522 5.783 3.007 3.007 0 002.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 002.088-2.088 31.247 31.247 0 00.5-5.783 31.247 31.247 0 00-.5-5.805zM9.609 15.601V8.408l6.264 3.602z"/></svg>`,
+  facebook:  `<svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>`,
+  tiktok:    `<svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>`,
+  site:      `<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>`,
+  whatsapp:  `<svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.122.554 4.118 1.52 5.854L0 24l6.335-1.498A11.94 11.94 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.808 9.808 0 01-5.034-1.387l-.361-.214-3.741.884.939-3.658-.235-.374A9.808 9.808 0 012.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/></svg>`,
+};
+
+async function loadSociais() {
+  try {
+    const r = await sbFetch('GET', `${SB_URL}/rest/v1/${SOCIAIS_TABLE}?order=ordem.asc`);
+    if (r.ok) { sociais = await r.json(); if (!Array.isArray(sociais)) sociais = []; }
+  } catch(e) {
+    sociais = JSON.parse(localStorage.getItem('alliance_sociais') || '[]');
+  }
+}
+
+function renderHeaderSocials() {
+  const el = document.getElementById('headerSocials');
+  if (!el || !sociais.length) return;
+  el.innerHTML = sociais.filter(s => s.ativo !== false).map(s => {
+    const icon = SOCIAL_ICONS[s.tipo] || SOCIAL_ICONS.site;
+    return `<a class="btn-social" href="${esc(s.url)}" target="_blank" title="${esc(s.nome)}">${icon}</a>`;
+  }).join('');
+}
+
+function openSociaisAdmin() {
+  renderSociaisAdminList();
+  document.getElementById('sociaisAdminOverlay').classList.add('open');
+}
+function closeSociaisAdmin() {
+  document.getElementById('sociaisAdminOverlay').classList.remove('open');
+}
+
+function renderSociaisAdminList() {
+  const el = document.getElementById('sociaisAdminList');
+  if (!sociais.length) { el.innerHTML = `<p style="font-size:12px;color:var(--muted);">Nenhuma rede cadastrada ainda.</p>`; return; }
+  el.innerHTML = sociais.map(s => `
+    <div class="social-admin-item">
+      <div class="social-admin-icon">${SOCIAL_ICONS[s.tipo] || SOCIAL_ICONS.site}</div>
+      <div class="social-admin-info">
+        <div class="social-admin-nome">${esc(s.nome)}</div>
+        <div class="social-admin-url">${esc(s.url)}</div>
+      </div>
+      <button class="opt-item-rm" onclick="removeSocial('${esc(s.id)}')">×</button>
+    </div>`).join('');
+}
+
+async function addSocial() {
+  const nome = document.getElementById('socialNovoNome').value.trim();
+  const tipo = document.getElementById('socialNovoTipo').value;
+  const url  = document.getElementById('socialNovoUrl').value.trim();
+  if (!nome || !url) { toast('Nome e URL são obrigatórios','err'); return; }
+  const nova = { id: 'social_'+Date.now(), nome, tipo, url, ativo: true, ordem: sociais.length };
+  sociais.push(nova);
+  try { await sbFetch('POST', `${SB_URL}/rest/v1/${SOCIAIS_TABLE}?on_conflict=id`, nova); } catch(e) {}
+  localStorage.setItem('alliance_sociais', JSON.stringify(sociais));
+  document.getElementById('socialNovoNome').value = '';
+  document.getElementById('socialNovoUrl').value = '';
+  renderSociaisAdminList();
+  renderHeaderSocials();
+  toast('Rede social adicionada!');
+}
+
+async function removeSocial(id) {
+  if (!confirm('Remover esta rede social?')) return;
+  sociais = sociais.filter(s => s.id !== id);
+  try { await sbFetch('DELETE', `${SB_URL}/rest/v1/${SOCIAIS_TABLE}?id=eq.${id}`); } catch(e) {}
+  localStorage.setItem('alliance_sociais', JSON.stringify(sociais));
+  renderSociaisAdminList();
+  renderHeaderSocials();
+  toast('Removido');
+}
+
+// ── COMPARTILHAR LINK ─────────────────────────────────────────────
+function compartilharLink(casaId) {
+  const c = casas.find(x => x.id === casaId);
+  const url = `${CATALOG_URL}?modelo=${casaId}`;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(url).then(() => toast(`Link copiado: ${c ? c.nome : ''}`));
+  } else {
+    prompt('Copie o link:', url);
+  }
+}
+
+// ── ORDENAÇÃO ─────────────────────────────────────────────────────
+function setSort(mode) {
+  if (_sortMode === mode) {
+    _sortDir = _sortDir === 'asc' ? 'desc' : 'asc';
+  } else {
+    _sortMode = mode;
+    _sortDir = mode === 'nome' ? 'asc' : 'desc';
+  }
+  renderSortBtns();
+  renderCatalogo();
+}
+
+function renderSortBtns() {
+  document.querySelectorAll('.sort-btn').forEach(b => {
+    const active = b.dataset.sort === _sortMode;
+    b.classList.toggle('active', active);
+    const arrow = b.querySelector('.sort-arrow');
+    if (arrow) arrow.textContent = active ? (_sortDir === 'asc' ? ' ↑' : ' ↓') : '';
+  });
+}
+
+function sortCasas(list) {
+  return [...list].sort((a, b) => {
+    let va, vb;
+    if (_sortMode === 'area') {
+      va = (parseFloat(a.area_interna)||0)+(parseFloat(a.area_ext)||0)||parseFloat(a.area)||0;
+      vb = (parseFloat(b.area_interna)||0)+(parseFloat(b.area_ext)||0)||parseFloat(b.area)||0;
+    } else if (_sortMode === 'nome') {
+      va = (a.nome||'').toLowerCase(); vb = (b.nome||'').toLowerCase();
+      return _sortDir === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
+    } else if (_sortMode === 'preco') {
+      va = a.preco||0; vb = b.preco||0;
+    } else if (_sortMode === 'quartos') {
+      va = a.quartos||0; vb = b.quartos||0;
+    } else {
+      va = new Date(a.created_at||0); vb = new Date(b.created_at||0);
+    }
+    return _sortDir === 'asc' ? va - vb : vb - va;
+  });
 }
 
 async function saveCasaToCloud(casa) {
@@ -1272,7 +1470,8 @@ function renderCatalogo() {
     return;
   }
 
-  grid.innerHTML = list.map(c => {
+  const sorted = sortCasas(list);
+  grid.innerHTML = sorted.map(c => {
     const imgs = Array.isArray(c.fotos)&&c.fotos.length ? c.fotos : (c.foto?[c.foto]:[]);
     const imgUrl = imgs[0]||'';
     const areaTotal = (parseFloat(c.area_interna)||0) + (parseFloat(c.area_ext)||0) || parseFloat(c.area)||0;
@@ -1326,6 +1525,9 @@ function renderCatalogo() {
           : _isInternal
             ? `<button class="btn-orcamento" onclick="event.stopPropagation();solicitarOrcamentoId('${c.id}')">📋 Orçamento</button>`
             : ''}
+        <button class="btn-share-card" onclick="event.stopPropagation();compartilharLink('${c.id}')" title="Copiar link do modelo">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        </button>
         <button class="btn-wapp-card" onclick="event.stopPropagation();openLojasModal('${c.id}')" title="Solicitar orçamento via WhatsApp">
           <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.122.554 4.118 1.52 5.854L0 24l6.335-1.498A11.94 11.94 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.808 9.808 0 01-5.034-1.387l-.361-.214-3.741.884.939-3.658-.235-.374A9.808 9.808 0 012.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/></svg>
         </button>
@@ -1409,14 +1611,19 @@ function openDetail(id) {
     plantaSecWrap.style.display = 'none';
   }
 
-  // Links (só portfólio agora)
+  // Links (só portfólio — visível apenas no modo interno)
   const linksWrap = document.getElementById('detailLinksWrap');
   const links = [];
-  if (c.portfolio) links.push(`<a class="link-btn" href="${esc(c.portfolio)}" target="_blank">🗂️ Ver Portfólio</a>`);
+  if (c.portfolio && _isInternal) links.push(`<a class="link-btn" href="${esc(c.portfolio)}" target="_blank">🗂️ Ver Portfólio</a>`);
   if (links.length) { document.getElementById('detailLinks').innerHTML=links.join(''); linksWrap.style.display=''; }
   else linksWrap.style.display='none';
 
   document.getElementById('detailPrice').textContent = c.preco ? brl(c.preco) : 'Consulte';
+
+  // Botão orçamento — só modo interno
+  const orcBtn = document.getElementById('detailOrcamentoBtn');
+  if (orcBtn) orcBtn.style.display = _isInternal ? '' : 'none';
+
   document.getElementById('detailOverlay').classList.add('open');
 }
 
