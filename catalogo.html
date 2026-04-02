@@ -328,9 +328,6 @@ textarea.field-inp{resize:vertical;min-height:76px;white-space:pre-wrap;}
   <div class="header-title">Catálogo de Modelos</div>
   <div id="headerSocials" class="header-socials"></div>
   <div style="display:flex;gap:8px;align-items:center;margin-left:auto;">
-    <span id="headerOrcamentoBtn" style="display:none;">
-      <button class="btn-orcamento-header" onclick="window.open('https://alliance-orcamento.pages.dev','_blank')">📋 Novo Orçamento</button>
-    </span>
     <button class="btn-admin" id="btnAdminToggle" onclick="toggleAdmin()">🔐 Admin</button>
   </div>
 </header>
@@ -1657,8 +1654,28 @@ function switchDetailImg(el, url) {
   el.classList.add('active');
 }
 function closeDetail() { document.getElementById('detailOverlay').classList.remove('open'); }
-function solicitarOrcamento()     { window.open('https://alliance-orcamento.pages.dev','_blank'); }
-function solicitarOrcamentoId(id) { window.open('https://alliance-orcamento.pages.dev','_blank'); }
+function solicitarOrcamento() {
+  if (_detailCasa) solicitarOrcamentoId(_detailCasa.id);
+}
+
+function solicitarOrcamentoId(id) {
+  var c = casas.find(function(x){ return x.id === id; });
+  if (!c) return;
+  var areaInterna = parseFloat(c.area_interna) || parseFloat(c.area) || 0;
+  var areaExt     = parseFloat(c.area_ext) || 0;
+  var banheiros   = parseInt(c.banheiros) || 0;
+  var lavabos     = parseInt(c.lavabos) || 0;
+  var template = {
+    modelo_nome: c.nome,
+    modelo_id:   c.id,
+    items: {}
+  };
+  if (areaInterna) template.items['fechada'] = areaInterna;
+  if (areaExt)     template.items['aberta']  = areaExt;
+  if (banheiros)   template.items['banheiro'] = banheiros + lavabos;
+  // Envia para o hub (parent)
+  window.parent.postMessage({ type: 'ABRIR_ORCAMENTO', template: template }, '*');
+}
 
 // ── ADMIN AUTH ──────────────────────────────────────────────────
 function toggleAdmin() {
