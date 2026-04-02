@@ -1294,7 +1294,18 @@ function sbFetch(method, url, body) {
 }
 
 // ── LOGIN ────────────────────────────────────────────────────────
-// ── AUTH — recebido do hub via localStorage ──────────────────────
+// ── AUTH — recebido do hub via localStorage ou postMessage ────────
+window.addEventListener('message', function(e) {
+  if (e.data && e.data.type === 'ALLIANCE_SESSION') {
+    var s = e.data.session;
+    _currentUser = s.user  || null;
+    _isAdmin     = s.isAdmin || false;
+    localStorage.setItem('alliance_session', JSON.stringify(s));
+    if (_currentUser) document.getElementById('userEmail').textContent = _currentUser.email || '';
+    loadConfig(function() { renderOrcamento(); renderPaymentRows(); updateQuoteCodeDisplay(); });
+  }
+});
+
 function doLogout() {
   localStorage.removeItem('alliance_session');
   window.top.location.href = 'hub.html';
