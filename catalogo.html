@@ -256,6 +256,24 @@ textarea.field-inp{resize:vertical;min-height:76px;white-space:pre-wrap;}
 .badge-saved{background:rgba(46,204,113,.85);}
 .badge-new{background:rgba(245,166,35,.85);}
 
+/* ── MODAL LOJAS WHATSAPP ── */
+.modal-lojas{background:var(--surface);border:1px solid var(--border);border-radius:18px;width:100%;max-width:400px;margin:auto;padding:28px 24px;}
+.modal-lojas-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1.5px;margin-bottom:4px;}
+.modal-lojas-sub{font-size:13px;color:var(--muted);margin-bottom:20px;}
+.loja-item{display:flex;align-items:center;justify-content:space-between;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:13px 16px;margin-bottom:8px;cursor:pointer;transition:all .15s;}
+.loja-item:hover{border-color:var(--wapp);background:rgba(37,211,102,.07);}
+.loja-nome{font-size:14px;font-weight:600;}
+.loja-cidade{font-size:12px;color:var(--muted);margin-top:2px;}
+.loja-wapp-icon{color:var(--wapp);font-size:20px;flex-shrink:0;}
+/* Gerenciar lojas no admin */
+.lojas-admin-item{display:flex;align-items:center;justify-content:space-between;background:var(--surface2);border-radius:8px;padding:9px 12px;font-size:13px;margin-bottom:6px;}
+.lojas-admin-info{flex:1;min-width:0;}
+.lojas-admin-nome{font-weight:600;font-size:13px;}
+.lojas-admin-num{font-size:11px;color:var(--muted);margin-top:1px;}
+/* Btn orçamento no header (modo interno) */
+.btn-orcamento-header{background:linear-gradient(135deg,var(--accent2),var(--accent));border:none;color:#fff;border-radius:8px;padding:8px 16px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;transition:opacity .15s;white-space:nowrap;}
+.btn-orcamento-header:hover{opacity:.88;}
+
 /* ── SENHA ADMIN ── */
 .admin-login{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:32px;max-width:360px;text-align:center;}
 .admin-login-title{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;margin-bottom:8px;}
@@ -290,13 +308,19 @@ textarea.field-inp{resize:vertical;min-height:76px;white-space:pre-wrap;}
   <img class="logo-img" src="https://leandrorocha95.github.io/alliance-orcamento/logo_alliance.jpg" alt="Alliance">
   <div class="header-title">Catálogo de Modelos</div>
   <div class="header-sub">Alliance Casas Pré Fabricadas</div>
-  <button class="btn-admin" id="btnAdminToggle" onclick="toggleAdmin()">🔐 Admin</button>
+  <div style="display:flex;gap:8px;align-items:center;margin-left:auto;">
+    <span id="headerOrcamentoBtn" style="display:none;">
+      <button class="btn-orcamento-header" onclick="window.open('https://leandrorocha95.github.io/alliance-orcamento','_blank')">📋 Novo Orçamento</button>
+    </span>
+    <button class="btn-admin" id="btnAdminToggle" onclick="toggleAdmin()">🔐 Admin</button>
+  </div>
 </header>
 
 <!-- ADMIN BAR -->
 <div class="admin-bar" id="adminBar">
   <span class="admin-bar-txt">✓ Modo Admin ativo</span>
   <button class="btn-primary" onclick="openNewCasa()">+ Nova Casa</button>
+  <button class="btn-outline" style="font-size:12px;padding:6px 12px;" onclick="openLojasAdmin()">📱 Lojas / WhatsApp</button>
   <button class="btn-outline" style="font-size:12px;padding:6px 12px;" onclick="logoutAdmin()">Sair</button>
 </div>
 
@@ -437,11 +461,11 @@ textarea.field-inp{resize:vertical;min-height:76px;white-space:pre-wrap;}
         <div class="modal-price-lbl">Preço base a partir de</div>
         <div class="modal-price-val" id="detailPrice"></div>
       </div>
-      <button class="btn-outline" id="detailWappBtn" onclick="shareWapp(null)" style="display:flex;align-items:center;gap:6px;color:var(--wapp);border-color:rgba(37,211,102,.4);">
+      <button class="btn-outline" id="detailWappBtn" onclick="openLojasModal(null)" style="display:flex;align-items:center;gap:6px;color:var(--wapp);border-color:rgba(37,211,102,.4);">
         <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.122.554 4.118 1.52 5.854L0 24l6.335-1.498A11.94 11.94 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.808 9.808 0 01-5.034-1.387l-.361-.214-3.741.884.939-3.658-.235-.374A9.808 9.808 0 012.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/></svg>
-        Compartilhar
+        Solicitar via WhatsApp
       </button>
-      <button class="btn-primary" onclick="solicitarOrcamento()">📋 Solicitar Orçamento</button>
+      ${_isInternal ? `<button class="btn-primary" onclick="solicitarOrcamento()">📋 Abrir Orçamento</button>` : ''}
     </div>
   </div>
 </div>
@@ -642,6 +666,55 @@ textarea.field-inp{resize:vertical;min-height:76px;white-space:pre-wrap;}
 
 <div class="toast" id="toast"></div>
 
+<!-- ══ MODAL LOJAS WHATSAPP ══ -->
+<div class="overlay" id="lojasOverlay" onclick="if(event.target===this)closeLojasModal()">
+  <div class="modal-lojas">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
+      <div>
+        <div class="modal-lojas-title">Escolha uma loja</div>
+        <div class="modal-lojas-sub" id="lojasModeloNome"></div>
+      </div>
+      <button class="modal-x" onclick="closeLojasModal()">×</button>
+    </div>
+    <div id="lojasList"></div>
+    <div id="lojasEmpty" style="display:none;font-size:13px;color:var(--muted);text-align:center;padding:20px 0;">Nenhuma loja cadastrada.<br>Configure no painel admin.</div>
+  </div>
+</div>
+
+<!-- ══ MODAL GERENCIAR LOJAS (ADMIN) ══ -->
+<div class="overlay" id="lojasAdminOverlay" onclick="if(event.target===this)closeLojasAdmin()">
+  <div class="modal-admin" style="max-width:480px;">
+    <div class="modal-head">
+      <div class="modal-head-title">Lojas / WhatsApp</div>
+      <button class="modal-x" onclick="closeLojasAdmin()">×</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:12px;color:var(--muted);margin-bottom:14px;">Configure as lojas que aparecem para o cliente ao clicar em "WhatsApp" no catálogo.</p>
+      <div id="lojasAdminList" style="margin-bottom:16px;"></div>
+      <div class="section-divider">Nova Loja</div>
+      <div class="field-row" style="margin-bottom:10px;">
+        <div class="field-group">
+          <label class="field-label">Nome da loja</label>
+          <input class="field-inp" id="lojaNovoNome" placeholder="Ex: Alliance Joinville">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Cidade / Região</label>
+          <input class="field-inp" id="lojaNovoCidade" placeholder="Ex: Joinville, SC">
+        </div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Número WhatsApp (só números, com DDD)</label>
+        <input class="field-inp" id="lojaNovoNum" placeholder="Ex: 5547999990000" maxlength="20">
+        <div class="field-hint">Formato: 55 + DDD + número. Ex: 5547999990000</div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-outline" onclick="closeLojasAdmin()">Fechar</button>
+      <button class="btn-primary" onclick="addLoja()">+ Adicionar Loja</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // ── CONFIG ──────────────────────────────────────────────────────
 const SB_URL         = 'https://gzzclbxnohokttujvaqa.supabase.co';
@@ -650,9 +723,15 @@ const ADMIN_PASS     = '1234';
 const CATALOG_TABLE  = 'casas_catalogo';
 const STORAGE_BUCKET = 'catalogo-fotos';
 const CATALOG_URL    = 'https://leandrorocha95.github.io/alliance-orcamento/catalogo.html';
+const LOJAS_TABLE    = 'alliance_lojas';
+
+// ── MODE: internal vs client ────────────────────────────────────
+const _isInternal = new URLSearchParams(location.search).get('mode') === 'internal';
 
 // ── STATE ───────────────────────────────────────────────────────
 let casas        = [];
+let lojas        = [];
+let _wappCasa    = null; // casa selecionada para abrir modal de lojas
 let _isAdmin     = false;
 let _editId      = null;
 let _activeFilter= 'todos';
@@ -716,9 +795,115 @@ async function loadCasas() {
     casas = JSON.parse(localStorage.getItem('alliance_casas') || '[]');
     toast('Modo offline — usando dados locais', 'err');
   }
+  await loadLojas();
   loadOptsFromStorage();
   renderFilters();
   renderCatalogo();
+  // Mostrar btn orçamento no header se modo interno
+  if (_isInternal) {
+    const btn = document.getElementById('headerOrcamentoBtn');
+    if (btn) btn.style.display = '';
+  }
+}
+
+async function loadLojas() {
+  try {
+    const r = await sbFetch('GET', `${SB_URL}/rest/v1/${LOJAS_TABLE}?order=nome.asc`);
+    if (r.ok) { lojas = await r.json(); if (!Array.isArray(lojas)) lojas = []; }
+  } catch(e) {
+    lojas = JSON.parse(localStorage.getItem('alliance_lojas') || '[]');
+  }
+}
+
+// ── MODAL LOJAS WHATSAPP ──────────────────────────────────────────
+function openLojasModal(casaId) {
+  const c = casaId ? casas.find(x => x.id === casaId) : _detailCasa;
+  if (!c) return;
+  _wappCasa = c;
+  document.getElementById('lojasModeloNome').textContent = `Interesse no modelo: ${c.nome}`;
+  const list = document.getElementById('lojasList');
+  const empty = document.getElementById('lojasEmpty');
+  if (!lojas.length) {
+    list.innerHTML = '';
+    empty.style.display = '';
+  } else {
+    empty.style.display = 'none';
+    list.innerHTML = lojas.filter(l => l.ativo !== false).map(l => `
+      <div class="loja-item" onclick="abrirWappLoja('${esc(l.id)}')">
+        <div>
+          <div class="loja-nome">${esc(l.nome)}</div>
+          ${l.cidade ? `<div class="loja-cidade">${esc(l.cidade)}</div>` : ''}
+        </div>
+        <div class="loja-wapp-icon">
+          <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.122.554 4.118 1.52 5.854L0 24l6.335-1.498A11.94 11.94 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.808 9.808 0 01-5.034-1.387l-.361-.214-3.741.884.939-3.658-.235-.374A9.808 9.808 0 012.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/></svg>
+        </div>
+      </div>`).join('');
+  }
+  document.getElementById('lojasOverlay').classList.add('open');
+}
+
+function closeLojasModal() {
+  document.getElementById('lojasOverlay').classList.remove('open');
+  _wappCasa = null;
+}
+
+function abrirWappLoja(lojaId) {
+  const loja = lojas.find(l => l.id === lojaId);
+  if (!loja || !_wappCasa) return;
+  const areaTotal = (parseFloat(_wappCasa.area_interna)||0) + (parseFloat(_wappCasa.area_ext)||0) || parseFloat(_wappCasa.area)||0;
+  const areaStr = areaTotal ? ` (${areaTotal}m²)` : '';
+  const msg = `Olá! Tenho interesse no modelo *${_wappCasa.nome}*${areaStr}. Podem me enviar um orçamento?`;
+  window.open(`https://wa.me/${loja.numero}?text=${encodeURIComponent(msg)}`, '_blank');
+  closeLojasModal();
+}
+
+// ── ADMIN LOJAS ───────────────────────────────────────────────────
+function openLojasAdmin() {
+  renderLojasAdminList();
+  document.getElementById('lojasAdminOverlay').classList.add('open');
+}
+function closeLojasAdmin() {
+  document.getElementById('lojasAdminOverlay').classList.remove('open');
+}
+
+function renderLojasAdminList() {
+  const el = document.getElementById('lojasAdminList');
+  if (!lojas.length) { el.innerHTML = `<p style="font-size:12px;color:var(--muted);">Nenhuma loja cadastrada ainda.</p>`; return; }
+  el.innerHTML = lojas.map((l,i) => `
+    <div class="lojas-admin-item">
+      <div class="lojas-admin-info">
+        <div class="lojas-admin-nome">${esc(l.nome)}${l.cidade?` — <span style="font-weight:400;color:var(--muted)">${esc(l.cidade)}</span>`:''}</div>
+        <div class="lojas-admin-num">📱 ${esc(l.numero)}</div>
+      </div>
+      <button class="opt-item-rm" onclick="removeLoja('${esc(l.id)}')">×</button>
+    </div>`).join('');
+}
+
+async function addLoja() {
+  const nome   = document.getElementById('lojaNovoNome').value.trim();
+  const cidade = document.getElementById('lojaNovoCidade').value.trim();
+  const numero = document.getElementById('lojaNovoNum').value.trim().replace(/\D/g,'');
+  if (!nome || !numero) { toast('Nome e número são obrigatórios','err'); return; }
+  const nova = { id: 'loja_'+Date.now(), nome, cidade, numero, ativo: true };
+  lojas.push(nova);
+  try {
+    await sbFetch('POST', `${SB_URL}/rest/v1/${LOJAS_TABLE}?on_conflict=id`, nova);
+  } catch(e) {}
+  localStorage.setItem('alliance_lojas', JSON.stringify(lojas));
+  document.getElementById('lojaNovoNome').value = '';
+  document.getElementById('lojaNovoCidade').value = '';
+  document.getElementById('lojaNovoNum').value = '';
+  renderLojasAdminList();
+  toast('Loja adicionada!');
+}
+
+async function removeLoja(id) {
+  if (!confirm('Remover esta loja?')) return;
+  lojas = lojas.filter(l => l.id !== id);
+  try { await sbFetch('DELETE', `${SB_URL}/rest/v1/${LOJAS_TABLE}?id=eq.${id}`); } catch(e) {}
+  localStorage.setItem('alliance_lojas', JSON.stringify(lojas));
+  renderLojasAdminList();
+  toast('Loja removida');
 }
 
 async function saveCasaToCloud(casa) {
@@ -1138,8 +1323,10 @@ function renderCatalogo() {
         <button class="btn-detail" onclick="event.stopPropagation();openDetail('${c.id}')">Ver Detalhes</button>
         ${_isAdmin
           ? `<button class="btn-outline" style="flex:1;font-size:11px;" onclick="event.stopPropagation();openEditCasa('${c.id}')">✏️ Editar</button>`
-          : `<button class="btn-orcamento" onclick="event.stopPropagation();solicitarOrcamentoId('${c.id}')">📋 Orçamento</button>`}
-        <button class="btn-wapp-card" onclick="event.stopPropagation();shareWapp('${c.id}')" title="Compartilhar no WhatsApp">
+          : _isInternal
+            ? `<button class="btn-orcamento" onclick="event.stopPropagation();solicitarOrcamentoId('${c.id}')">📋 Orçamento</button>`
+            : ''}
+        <button class="btn-wapp-card" onclick="event.stopPropagation();openLojasModal('${c.id}')" title="Solicitar orçamento via WhatsApp">
           <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.122.554 4.118 1.52 5.854L0 24l6.335-1.498A11.94 11.94 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.808 9.808 0 01-5.034-1.387l-.361-.214-3.741.884.939-3.658-.235-.374A9.808 9.808 0 012.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/></svg>
         </button>
       </div>
