@@ -7,18 +7,19 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg:       #0c0e14;
-  --surface:  #13161f;
-  --surface2: #1a1e2b;
-  --surface3: #222638;
-  --border:   #2d3348;
-  --accent:   #f5a623;
-  --accent2:  #e8541a;
-  --green:    #2ecc71;
-  --blue:     #3498db;
-  --text:     #e8eaf0;
-  --muted:    #7a7f9a;
-  --r:        14px;
+  --bg:      #0c0e14;
+  --surface: #13161f;
+  --surface2:#1a1e2b;
+  --surface3:#222638;
+  --border:  #2d3348;
+  --accent:  #f5a623;
+  --accent2: #e8541a;
+  --green:   #2ecc71;
+  --blue:    #3498db;
+  --wapp:    #25D366;
+  --text:    #e8eaf0;
+  --muted:   #7a7f9a;
+  --r:       14px;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;
@@ -26,65 +27,80 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
     radial-gradient(ellipse at 10% 0%,rgba(245,166,35,.08) 0%,transparent 50%),
     radial-gradient(ellipse at 90% 100%,rgba(232,84,26,.06) 0%,transparent 50%);}
 
-/* HEADER */
+/* ── HEADER ── */
 .header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 28px;display:flex;align-items:center;gap:16px;height:64px;position:sticky;top:0;z-index:100;}
 .logo-img{height:36px;background:#fff;border-radius:8px;padding:4px 10px;}
-.header-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:3px;color:var(--text);}
+.header-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:3px;}
 .header-sub{font-size:12px;color:var(--muted);margin-left:auto;}
 .btn-admin{background:none;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:7px 14px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;transition:all .15s;}
 .btn-admin:hover{border-color:var(--accent);color:var(--accent);}
 .btn-primary{background:linear-gradient(135deg,var(--accent2),var(--accent));border:none;color:#fff;border-radius:8px;padding:8px 18px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;transition:opacity .15s;}
 .btn-primary:hover{opacity:.88;}
 
-/* FILTERS */
-.filters-bar{padding:24px 28px 0;display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
-.filter-btn{background:var(--surface2);border:1px solid var(--border);color:var(--muted);border-radius:20px;padding:7px 16px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;transition:all .15s;white-space:nowrap;}
+/* ── ADMIN BAR ── */
+.admin-bar{background:rgba(245,166,35,.08);border-bottom:1px solid rgba(245,166,35,.2);padding:10px 28px;display:none;align-items:center;gap:12px;}
+.admin-bar.show{display:flex;}
+.admin-bar-txt{font-size:12px;color:var(--accent);font-weight:600;}
+
+/* ── FILTERS ── */
+.filters-bar{padding:20px 28px 0;display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+.filter-btn{background:var(--surface2);border:1px solid var(--border);color:var(--muted);border-radius:20px;padding:6px 14px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;transition:all .15s;white-space:nowrap;}
 .filter-btn:hover,.filter-btn.active{background:rgba(245,166,35,.15);border-color:var(--accent);color:var(--accent);}
+.filter-tag{background:rgba(52,152,219,.12);border:1px solid rgba(52,152,219,.3);color:var(--blue);}
+.filter-tag:hover,.filter-tag.active{background:rgba(52,152,219,.25);border-color:var(--blue);color:var(--blue);}
 .search-wrap{margin-left:auto;position:relative;}
-.search-wrap svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--muted);}
-.search-input{background:var(--surface2);border:1px solid var(--border);border-radius:20px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;padding:8px 14px 8px 36px;outline:none;width:220px;transition:border-color .15s;}
+.search-wrap svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:14px;height:14px;color:var(--muted);}
+.search-input{background:var(--surface2);border:1px solid var(--border);border-radius:20px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;padding:7px 14px 7px 34px;outline:none;width:220px;transition:border-color .15s;}
 .search-input:focus{border-color:var(--accent);}
 
-/* GRID */
-.grid{padding:24px 28px 48px;display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px;}
+/* ── GRID ── */
+.grid{padding:20px 28px 48px;display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px;}
 .empty{grid-column:1/-1;text-align:center;padding:80px 20px;color:var(--muted);}
 .empty svg{width:48px;height:48px;margin:0 auto 16px;display:block;opacity:.3;}
-.empty p{font-size:15px;}
 
-/* CARD */
-.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;transition:transform .18s,border-color .18s,box-shadow .18s;cursor:pointer;}
+/* ── CARD ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;transition:transform .18s,border-color .18s,box-shadow .18s;cursor:pointer;display:flex;flex-direction:column;}
 .card:hover{transform:translateY(-4px);border-color:var(--accent);box-shadow:0 16px 48px rgba(245,166,35,.1);}
-.card-img{width:100%;height:200px;object-fit:cover;background:var(--surface2);display:block;}
-.card-img-placeholder{width:100%;height:200px;background:var(--surface2);display:flex;align-items:center;justify-content:center;color:var(--muted);}
-.card-img-placeholder svg{width:40px;height:40px;opacity:.3;}
-.card-body{padding:18px;}
-.card-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
+.card-img{width:100%;height:200px;object-fit:cover;background:var(--surface2);display:block;flex-shrink:0;}
+.card-img-ph{width:100%;height:200px;background:var(--surface2);display:flex;align-items:center;justify-content:center;color:var(--muted);flex-shrink:0;}
+.card-img-ph svg{width:40px;height:40px;opacity:.3;}
+.card-body{padding:16px 18px;flex:1;}
+.card-header-row{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:8px;}
+.card-code{font-size:10px;font-weight:700;letter-spacing:.5px;color:var(--muted);margin-bottom:4px;}
+.card-name{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1.5px;line-height:1.1;}
+.card-tags-row{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px;}
 .tag{font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:3px 8px;border-radius:20px;}
+.tag-tipo{background:var(--surface3);color:var(--muted);}
 .tag-madeira{background:rgba(139,90,43,.2);color:#c4824a;}
 .tag-pinus{background:rgba(46,204,113,.15);color:#2ecc71;}
 .tag-lei{background:rgba(245,166,35,.15);color:var(--accent);}
-.tag-tipo{background:var(--surface3);color:var(--muted);}
-.card-name{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1.5px;color:var(--text);margin-bottom:6px;line-height:1.1;}
-.card-desc{font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:14px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
-.card-specs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;}
-.spec{background:var(--surface2);border-radius:8px;padding:8px 10px;text-align:center;}
-.spec-val{font-size:15px;font-weight:700;color:var(--text);line-height:1;}
-.spec-lbl{font-size:10px;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:.5px;}
-.card-price{display:flex;align-items:center;justify-content:space-between;}
+.tag-custom{background:rgba(52,152,219,.12);color:var(--blue);text-transform:none;letter-spacing:0;font-weight:600;}
+.card-desc{font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:12px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.card-specs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px;}
+.spec{background:var(--surface2);border-radius:8px;padding:7px 8px;text-align:center;}
+.spec-val{font-size:14px;font-weight:700;line-height:1;}
+.spec-lbl{font-size:9px;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:.5px;}
+.card-terreno{font-size:11px;color:var(--muted);margin-bottom:10px;}
+.card-terreno span{color:var(--text);font-weight:600;}
+.card-price{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
 .price-lbl{font-size:11px;color:var(--muted);}
-.price-val{font-size:20px;font-weight:700;color:var(--accent);}
-.card-footer{padding:12px 18px;border-top:1px solid var(--border);display:flex;gap:8px;}
-.btn-detail{flex:1;background:none;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:9px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;transition:all .15s;}
+.price-val{font-size:19px;font-weight:700;color:var(--accent);}
+.card-footer{padding:10px 18px;border-top:1px solid var(--border);display:flex;gap:7px;}
+.btn-detail{flex:1;background:none;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;transition:all .15s;}
 .btn-detail:hover{border-color:var(--accent);color:var(--accent);}
-.btn-orcamento{flex:1;background:linear-gradient(135deg,var(--accent2),var(--accent));border:none;color:#fff;border-radius:8px;padding:9px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;transition:opacity .15s;}
+.btn-orcamento{flex:1;background:linear-gradient(135deg,var(--accent2),var(--accent));border:none;color:#fff;border-radius:8px;padding:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;transition:opacity .15s;}
 .btn-orcamento:hover{opacity:.88;}
+.btn-wapp-card{background:rgba(37,211,102,.12);border:1px solid rgba(37,211,102,.3);color:var(--wapp);border-radius:8px;padding:8px 10px;cursor:pointer;font-size:15px;transition:all .15s;flex-shrink:0;}
+.btn-wapp-card:hover{background:rgba(37,211,102,.22);}
 
-/* MODAL DETALHE */
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;display:none;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto;backdrop-filter:blur(4px);}
+/* ── OVERLAY / MODAIS ── */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:200;display:none;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto;backdrop-filter:blur(4px);}
 .overlay.open{display:flex;}
-.modal-detail{background:var(--surface);border:1px solid var(--border);border-radius:18px;width:100%;max-width:780px;margin:auto;overflow:hidden;}
+
+/* ── MODAL DETALHE ── */
+.modal-detail{background:var(--surface);border:1px solid var(--border);border-radius:18px;width:100%;max-width:800px;margin:auto;overflow:hidden;}
 .modal-gallery{position:relative;}
-.modal-detail-img{width:100%;height:320px;object-fit:cover;background:var(--surface2);display:block;}
+.modal-detail-img{width:100%;height:340px;object-fit:cover;background:var(--surface2);display:block;}
 .gallery-thumbs{display:flex;gap:6px;padding:10px 14px;background:var(--surface2);overflow-x:auto;}
 .gallery-thumb{width:64px;height:52px;object-fit:cover;border-radius:6px;cursor:pointer;border:2px solid transparent;flex-shrink:0;transition:border-color .15s;}
 .gallery-thumb.active{border-color:var(--accent);}
@@ -92,52 +108,67 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .modal-detail-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;}
 .modal-x{background:none;border:1px solid var(--border);color:var(--muted);width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;}
 .modal-x:hover{border-color:#e74c3c;color:#e74c3c;}
-.modal-specs{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:20px 0;}
+.modal-code{font-size:11px;color:var(--muted);font-weight:700;letter-spacing:.5px;margin-bottom:4px;}
+.modal-specs{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0;}
 .modal-spec{background:var(--surface2);border-radius:10px;padding:14px;text-align:center;}
-.modal-spec-val{font-size:22px;font-weight:700;color:var(--text);}
-.modal-spec-lbl{font-size:11px;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:.5px;}
-.modal-section{margin-top:20px;}
-.modal-section-title{font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:700;margin-bottom:10px;}
+.modal-spec-val{font-size:20px;font-weight:700;}
+.modal-spec-lbl{font-size:10px;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:.5px;}
+.modal-section{margin-top:18px;}
+.modal-section-title{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:700;margin-bottom:8px;}
 .modal-desc{font-size:14px;color:var(--text);line-height:1.7;}
 .modal-notes{background:var(--surface2);border-radius:10px;padding:14px;font-size:13px;color:var(--muted);line-height:1.6;}
-.modal-links{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;}
-.link-btn{display:flex;align-items:center;gap:6px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 16px;color:var(--text);text-decoration:none;font-size:13px;font-weight:500;transition:all .15s;}
+.modal-links{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
+.link-btn{display:flex;align-items:center;gap:6px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px 14px;color:var(--text);text-decoration:none;font-size:13px;font-weight:500;transition:all .15s;}
 .link-btn:hover{border-color:var(--accent);color:var(--accent);}
-.modal-footer{padding:20px 28px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end;}
-.modal-price-area{display:flex;align-items:center;gap:20px;}
-.modal-price-lbl{font-size:12px;color:var(--muted);}
-.modal-price-val{font-size:28px;font-weight:700;color:var(--accent);}
+.link-btn.wapp{background:rgba(37,211,102,.1);border-color:rgba(37,211,102,.35);color:var(--wapp);}
+.link-btn.wapp:hover{background:rgba(37,211,102,.2);}
+.modal-footer{padding:18px 28px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end;align-items:center;}
+.modal-price-lbl{font-size:11px;color:var(--muted);}
+.modal-price-val{font-size:26px;font-weight:700;color:var(--accent);}
+.modal-tags-row{display:flex;gap:5px;flex-wrap:wrap;margin-top:10px;}
 
-/* MODAL ADMIN */
-.modal-admin{background:var(--surface);border:1px solid var(--border);border-radius:18px;width:100%;max-width:600px;margin:auto;max-height:90vh;overflow-y:auto;}
-.modal-head{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+/* ── MODAL ADMIN FORM ── */
+.modal-admin{background:var(--surface);border:1px solid var(--border);border-radius:18px;width:100%;max-width:620px;margin:auto;max-height:92vh;overflow-y:auto;}
+.modal-head{padding:18px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--surface);z-index:10;}
 .modal-head-title{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1.5px;}
-.modal-body{padding:24px;}
-.field-group{margin-bottom:16px;}
-.field-label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:700;margin-bottom:6px;}
-.field-inp{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;padding:11px 14px;outline:none;transition:border-color .15s;}
+.modal-body{padding:22px 24px;}
+.field-group{margin-bottom:14px;}
+.field-label{display:block;font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:700;margin-bottom:5px;}
+.field-inp{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;padding:10px 13px;outline:none;transition:border-color .15s;}
 .field-inp:focus{border-color:var(--accent);}
-.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-.field-row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.field-row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+.field-row4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;}
 select.field-inp{cursor:pointer;}
-textarea.field-inp{resize:vertical;min-height:80px;}
-.modal-foot{padding:16px 24px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end;}
-.btn-outline{background:none;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:10px 20px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;transition:all .15s;}
+textarea.field-inp{resize:vertical;min-height:76px;}
+.field-hint{font-size:10px;color:var(--muted);margin-top:3px;}
+.field-calc{font-size:11px;color:var(--accent);margin-top:4px;font-weight:600;}
+.modal-foot{padding:14px 24px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;position:sticky;bottom:0;background:var(--surface);}
+.btn-outline{background:none;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:9px 18px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;transition:all .15s;}
 .btn-outline:hover{border-color:var(--text);color:var(--text);}
-.btn-danger{background:rgba(231,76,60,.15);border:1px solid rgba(231,76,60,.3);color:#e74c3c;border-radius:8px;padding:10px 20px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;transition:all .15s;}
+.btn-danger{background:rgba(231,76,60,.15);border:1px solid rgba(231,76,60,.3);color:#e74c3c;border-radius:8px;padding:9px 18px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;transition:all .15s;}
 .btn-danger:hover{background:rgba(231,76,60,.25);}
+.section-divider{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:2px;color:var(--accent);margin:18px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--border);}
 
-/* SELECT + EDIT BTN */
+/* ── SELECT + ⋮ ── */
 .select-wrap{display:flex;gap:6px;align-items:center;}
 .select-wrap select{flex:1;}
-.btn-edit-opts{background:none;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:10px 13px;cursor:pointer;font-size:17px;line-height:1;transition:all .15s;flex-shrink:0;}
+.btn-edit-opts{background:none;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:9px 12px;cursor:pointer;font-size:16px;line-height:1;transition:all .15s;flex-shrink:0;}
 .btn-edit-opts:hover{border-color:var(--accent);color:var(--accent);}
 
-/* MINI MODAL OPTIONS */
+/* ── TAGS INPUT ── */
+.tags-input-wrap{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:8px 10px;display:flex;flex-wrap:wrap;gap:5px;cursor:text;transition:border-color .15s;}
+.tags-input-wrap:focus-within{border-color:var(--accent);}
+.tag-chip{display:flex;align-items:center;gap:4px;background:rgba(52,152,219,.15);border:1px solid rgba(52,152,219,.3);border-radius:20px;padding:3px 8px;font-size:11px;color:var(--blue);font-weight:600;}
+.tag-chip-rm{background:none;border:none;color:var(--blue);cursor:pointer;font-size:13px;line-height:1;padding:0;opacity:.7;}
+.tag-chip-rm:hover{opacity:1;}
+.tags-input{background:none;border:none;outline:none;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;min-width:120px;flex:1;}
+
+/* ── OPTS MODAL ── */
 .opts-modal{background:var(--surface);border:1px solid var(--border);border-radius:14px;width:100%;max-width:340px;margin:auto;padding:22px;}
 .opts-title{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1.5px;margin-bottom:14px;color:var(--accent);}
-.opts-list{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;max-height:210px;overflow-y:auto;}
-.opt-item{display:flex;align-items:center;justify-content:space-between;background:var(--surface2);border-radius:8px;padding:9px 12px;font-size:13px;}
+.opts-list{display:flex;flex-direction:column;gap:5px;margin-bottom:14px;max-height:200px;overflow-y:auto;}
+.opt-item{display:flex;align-items:center;justify-content:space-between;background:var(--surface2);border-radius:8px;padding:8px 12px;font-size:13px;}
 .opt-item-rm{background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;padding:0 2px;line-height:1;transition:color .15s;}
 .opt-item-rm:hover{color:#e74c3c;}
 .opts-add{display:flex;gap:8px;}
@@ -145,39 +176,36 @@ textarea.field-inp{resize:vertical;min-height:80px;}
 .opts-add-inp:focus{border-color:var(--accent);}
 .opts-add-btn{background:linear-gradient(135deg,var(--accent2),var(--accent));border:none;color:#fff;border-radius:8px;padding:9px 14px;cursor:pointer;font-size:13px;font-weight:700;white-space:nowrap;}
 
-/* UPLOAD */
-.upload-area{border:2px dashed var(--border);border-radius:10px;padding:20px;text-align:center;cursor:pointer;transition:all .15s;background:var(--bg);}
+/* ── UPLOAD ── */
+.upload-area{border:2px dashed var(--border);border-radius:10px;padding:18px;text-align:center;cursor:pointer;transition:all .15s;background:var(--bg);}
 .upload-area:hover{border-color:var(--accent);background:rgba(245,166,35,.04);}
-.upload-icon{font-size:24px;margin-bottom:4px;}
 .upload-txt{font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px;}
-.upload-sub{font-size:11px;color:var(--muted);}
-.upload-preview{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
-.upload-thumb{position:relative;width:80px;height:68px;border-radius:8px;overflow:hidden;border:1px solid var(--border);}
+.upload-sub{font-size:10px;color:var(--muted);}
+.upload-preview{display:flex;gap:8px;flex-wrap:wrap;margin-top:9px;}
+.upload-thumb{position:relative;width:78px;height:66px;border-radius:8px;overflow:hidden;border:1px solid var(--border);}
 .upload-thumb img{width:100%;height:100%;object-fit:cover;}
-.upload-thumb-rm{position:absolute;top:2px;right:2px;background:rgba(0,0,0,.75);border:none;color:#fff;width:18px;height:18px;border-radius:50%;cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;}
-.upload-thumb-badge{position:absolute;bottom:2px;left:2px;border-radius:4px;font-size:9px;color:#fff;padding:1px 5px;font-weight:700;}
+.upload-thumb-rm{position:absolute;top:2px;right:2px;background:rgba(0,0,0,.75);border:none;color:#fff;width:17px;height:17px;border-radius:50%;cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;}
+.upload-thumb-badge{position:absolute;bottom:2px;left:2px;border-radius:4px;font-size:9px;color:#fff;padding:1px 4px;font-weight:700;}
 .badge-saved{background:rgba(46,204,113,.85);}
 .badge-new{background:rgba(245,166,35,.85);}
 
-/* ADMIN BAR */
-.admin-bar{background:rgba(245,166,35,.08);border-bottom:1px solid rgba(245,166,35,.2);padding:10px 28px;display:none;align-items:center;gap:12px;}
-.admin-bar.show{display:flex;}
-.admin-bar-txt{font-size:12px;color:var(--accent);font-weight:600;}
+/* ── SENHA ADMIN ── */
+.admin-login{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:32px;max-width:360px;text-align:center;}
+.admin-login-title{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;margin-bottom:8px;}
+.admin-login-sub{font-size:13px;color:var(--muted);margin-bottom:20px;}
+
+/* ── TOAST ── */
 .toast{position:fixed;bottom:24px;right:24px;background:var(--surface3);border:1px solid var(--border);border-radius:10px;padding:12px 18px;font-size:13px;color:var(--text);z-index:999;transform:translateY(80px);opacity:0;transition:all .3s;pointer-events:none;}
 .toast.show{transform:translateY(0);opacity:1;}
 .toast.ok{border-color:var(--green);color:var(--green);}
 .toast.err{border-color:#e74c3c;color:#e74c3c;}
 
-/* ADMIN password */
-.admin-login{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:32px;max-width:360px;text-align:center;}
-.admin-login-title{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;margin-bottom:8px;}
-.admin-login-sub{font-size:13px;color:var(--muted);margin-bottom:20px;}
-
 @media(max-width:600px){
   .modal-specs{grid-template-columns:repeat(2,1fr);}
-  .field-row,.field-row3{grid-template-columns:1fr;}
-  .grid{padding:16px;}
-  .filters-bar{padding:16px;}
+  .field-row,.field-row3,.field-row4{grid-template-columns:1fr;}
+  .grid{padding:14px;}
+  .filters-bar{padding:14px;}
+  .modal-detail-img{height:220px;}
 }
 </style>
 </head>
@@ -195,33 +223,38 @@ textarea.field-inp{resize:vertical;min-height:80px;}
 <div class="admin-bar" id="adminBar">
   <span class="admin-bar-txt">✓ Modo Admin ativo</span>
   <button class="btn-primary" onclick="openNewCasa()">+ Nova Casa</button>
-  <button class="btn-outline" style="font-size:12px;padding:6px 14px;" onclick="logoutAdmin()">Sair</button>
+  <button class="btn-outline" style="font-size:12px;padding:6px 12px;" onclick="logoutAdmin()">Sair</button>
 </div>
 
 <!-- FILTERS (gerado via JS) -->
 <div class="filters-bar" id="filtersBar">
   <div class="search-wrap">
     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/></svg>
-    <input class="search-input" id="searchInp" placeholder="Buscar modelo..." oninput="renderCatalogo()">
+    <input class="search-input" id="searchInp" placeholder="Buscar modelo ou #tag..." oninput="renderCatalogo()">
   </div>
 </div>
 
 <!-- GRID -->
 <div class="grid" id="casasGrid"></div>
 
-<!-- MODAL DETALHE -->
+<!-- ══ MODAL DETALHE ══ -->
 <div class="overlay" id="detailOverlay" onclick="if(event.target===this)closeDetail()">
   <div class="modal-detail">
     <div id="detailImgWrap"></div>
     <div class="modal-detail-body">
       <div class="modal-detail-header">
-        <div>
-          <div id="detailTags" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;"></div>
-          <div id="detailName" style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:1.5px;"></div>
+        <div style="flex:1;min-width:0;">
+          <div class="modal-code" id="detailCode"></div>
+          <div id="detailTagsRow" style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;"></div>
+          <div id="detailName" style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:1.5px;line-height:1.1;"></div>
         </div>
         <button class="modal-x" onclick="closeDetail()">×</button>
       </div>
       <div class="modal-specs" id="detailSpecs"></div>
+      <div class="modal-section" id="detailTerrenoWrap" style="display:none">
+        <div class="modal-section-title">Terreno Mínimo</div>
+        <div id="detailTerreno" style="font-size:14px;color:var(--text);font-weight:600;"></div>
+      </div>
       <div class="modal-section">
         <div class="modal-section-title">Descrição</div>
         <div class="modal-desc" id="detailDesc"></div>
@@ -230,24 +263,30 @@ textarea.field-inp{resize:vertical;min-height:80px;}
         <div class="modal-section-title">Informações Adicionais</div>
         <div class="modal-notes" id="detailNotes"></div>
       </div>
+      <div class="modal-section" id="detailCustomTagsWrap" style="display:none">
+        <div class="modal-section-title">Características</div>
+        <div class="modal-tags-row" id="detailCustomTags"></div>
+      </div>
       <div class="modal-section" id="detailLinksWrap" style="display:none">
         <div class="modal-section-title">Arquivos e Portfólio</div>
         <div class="modal-links" id="detailLinks"></div>
       </div>
     </div>
     <div class="modal-footer">
-      <div class="modal-price-area">
-        <div>
-          <div class="modal-price-lbl">Preço base a partir de</div>
-          <div class="modal-price-val" id="detailPrice"></div>
-        </div>
+      <div style="margin-right:auto;">
+        <div class="modal-price-lbl">Preço base a partir de</div>
+        <div class="modal-price-val" id="detailPrice"></div>
       </div>
+      <button class="btn-outline" id="detailWappBtn" onclick="shareWapp(null)" style="display:flex;align-items:center;gap:6px;color:var(--wapp);border-color:rgba(37,211,102,.4);">
+        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.122.554 4.118 1.52 5.854L0 24l6.335-1.498A11.94 11.94 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.808 9.808 0 01-5.034-1.387l-.361-.214-3.741.884.939-3.658-.235-.374A9.808 9.808 0 012.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/></svg>
+        Compartilhar
+      </button>
       <button class="btn-primary" onclick="solicitarOrcamento()">📋 Solicitar Orçamento</button>
     </div>
   </div>
 </div>
 
-<!-- MODAL SENHA ADMIN -->
+<!-- ══ MODAL SENHA ADMIN ══ -->
 <div class="overlay" id="adminLoginOverlay" onclick="if(event.target===this)closeAdminLogin()">
   <div class="admin-login">
     <div style="font-size:32px;margin-bottom:12px;">🔐</div>
@@ -259,7 +298,7 @@ textarea.field-inp{resize:vertical;min-height:80px;}
   </div>
 </div>
 
-<!-- MODAL NOVA/EDITAR CASA -->
+<!-- ══ MODAL NOVA/EDITAR CASA ══ -->
 <div class="overlay" id="casaFormOverlay" onclick="if(event.target===this)closeCasaForm()">
   <div class="modal-admin">
     <div class="modal-head">
@@ -268,9 +307,17 @@ textarea.field-inp{resize:vertical;min-height:80px;}
     </div>
     <div class="modal-body">
 
-      <div class="field-group">
-        <label class="field-label">Nome do Modelo</label>
-        <input class="field-inp" id="fNome" placeholder="Ex: Casa 42m² — 2 Quartos Madeira de Lei">
+      <!-- Identificação -->
+      <div class="section-divider">Identificação</div>
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label">Código da Casa</label>
+          <input class="field-inp" id="fCodigo" placeholder="Ex: CASA-001, MOD-42M2">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Nome do Modelo</label>
+          <input class="field-inp" id="fNome" placeholder="Ex: Casa 42m² — 2 Quartos">
+        </div>
       </div>
 
       <div class="field-row">
@@ -290,11 +337,29 @@ textarea.field-inp{resize:vertical;min-height:80px;}
         </div>
       </div>
 
-      <div class="field-row3">
+      <!-- Áreas -->
+      <div class="section-divider">Áreas</div>
+      <div class="field-row">
         <div class="field-group">
-          <label class="field-label">Área (m²)</label>
-          <input class="field-inp" id="fArea" type="number" min="1" placeholder="42">
+          <label class="field-label">Área Interna (m²)</label>
+          <input class="field-inp" id="fAreaInterna" type="number" min="0" placeholder="36" oninput="calcAreaTotal()">
         </div>
+        <div class="field-group">
+          <label class="field-label">Varanda / Garagem (m²)</label>
+          <input class="field-inp" id="fAreaExt" type="number" min="0" placeholder="6" oninput="calcAreaTotal()">
+        </div>
+      </div>
+      <div class="field-calc" id="areaTotalCalc"></div>
+
+      <div class="field-group">
+        <label class="field-label">Dimensão Mínima do Terreno</label>
+        <input class="field-inp" id="fTerreno" placeholder="Ex: 10x20, 12x25">
+        <div class="field-hint">Deixe em branco se não se aplica.</div>
+      </div>
+
+      <!-- Cômodos -->
+      <div class="section-divider">Cômodos</div>
+      <div class="field-row4">
         <div class="field-group">
           <label class="field-label">Quartos</label>
           <input class="field-inp" id="fQuartos" type="number" min="0" placeholder="2">
@@ -303,50 +368,67 @@ textarea.field-inp{resize:vertical;min-height:80px;}
           <label class="field-label">Banheiros</label>
           <input class="field-inp" id="fBanheiros" type="number" min="0" placeholder="1">
         </div>
+        <div class="field-group">
+          <label class="field-label">Lavabos</label>
+          <input class="field-inp" id="fLavabos" type="number" min="0" placeholder="0">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Vagas</label>
+          <input class="field-inp" id="fVagas" type="number" min="0" placeholder="1">
+        </div>
       </div>
 
+      <!-- Preço e Descrição -->
+      <div class="section-divider">Comercial</div>
       <div class="field-group">
         <label class="field-label">Preço Base (R$)</label>
         <input class="field-inp" id="fPreco" type="number" min="0" placeholder="135000">
       </div>
-
       <div class="field-group">
         <label class="field-label">Descrição</label>
         <textarea class="field-inp" id="fDesc" placeholder="Descreva os diferenciais deste modelo..."></textarea>
       </div>
-
       <div class="field-group">
         <label class="field-label">Informações Adicionais</label>
-        <textarea class="field-inp" id="fNotes" placeholder="Observações, prazo de entrega, opções de personalização..."></textarea>
+        <textarea class="field-inp" id="fNotes" placeholder="Prazo de entrega, opções de personalização..."></textarea>
       </div>
 
-      <!-- FOTOS -->
+      <!-- TAGs -->
+      <div class="section-divider">Tags</div>
       <div class="field-group">
-        <label class="field-label">Fotos da Casa <span style="font-weight:400;color:var(--muted);text-transform:none;letter-spacing:0;">(máx. 3 · salvas no Supabase)</span></label>
+        <label class="field-label">Tags do Modelo</label>
+        <div class="tags-input-wrap" id="tagsWrap" onclick="document.getElementById('tagsInp').focus()">
+          <input class="tags-input" id="tagsInp" placeholder="#moderna  #comvaranda  #altopadrao" onkeydown="onTagKey(event)">
+        </div>
+        <div class="field-hint">Digite e pressione Enter ou vírgula para adicionar. Comece com # (opcional).</div>
+      </div>
+
+      <!-- Fotos -->
+      <div class="section-divider">Imagens</div>
+      <div class="field-group">
+        <label class="field-label">Fotos da Casa <span style="font-weight:400;color:var(--muted);text-transform:none;letter-spacing:0;">(máx. 3 · Supabase Storage)</span></label>
         <div class="upload-area" id="uploadArea" onclick="document.getElementById('fImgFiles').click()">
-          <div class="upload-icon">📷</div>
-          <div class="upload-txt" id="uploadTxt">Clique para selecionar imagens</div>
+          <div class="upload-txt" id="uploadTxt">📷 Clique para selecionar imagens</div>
           <div class="upload-sub">JPG, PNG ou WEBP · máx. 5 MB cada</div>
           <input type="file" id="fImgFiles" accept="image/*" multiple style="display:none" onchange="onFilesChange(event)">
         </div>
         <div class="upload-preview" id="uploadPreview"></div>
       </div>
 
-      <!-- PLANTA BAIXA -->
       <div class="field-group">
-        <label class="field-label">Planta Baixa <span style="font-weight:400;color:var(--muted);text-transform:none;letter-spacing:0;">(imagem · salva no Supabase)</span></label>
-        <div class="upload-area" id="uploadPlantaArea" onclick="document.getElementById('fPlantaFile').click()" style="padding:14px 20px;">
-          <div style="font-size:13px;font-weight:600;color:var(--text);" id="uploadPlantaTxt">📐 Clique para selecionar a planta baixa</div>
+        <label class="field-label">Planta Baixa <span style="font-weight:400;color:var(--muted);text-transform:none;letter-spacing:0;">(imagem · Supabase Storage)</span></label>
+        <div class="upload-area" onclick="document.getElementById('fPlantaFile').click()" style="padding:14px 18px;">
+          <div class="upload-txt" id="uploadPlantaTxt" style="font-size:13px;">📐 Clique para selecionar a planta baixa</div>
           <input type="file" id="fPlantaFile" accept="image/*" style="display:none" onchange="onPlantaChange(event)">
         </div>
-        <div id="plantaPreview" style="margin-top:8px;"></div>
+        <div id="plantaPreview"></div>
       </div>
 
-      <!-- PORTFÓLIO -->
+      <!-- Portfólio -->
       <div class="field-group">
         <label class="field-label">🔗 Link do Portfólio / Google Drive</label>
         <input class="field-inp" id="fPortfolio" placeholder="https://drive.google.com/drive/folders/...">
-        <div style="font-size:11px;color:var(--muted);margin-top:4px;">Pasta com fotos extras, plantas e PDFs do modelo.</div>
+        <div class="field-hint">Pasta com fotos extras, plantas e PDFs.</div>
       </div>
 
     </div>
@@ -358,7 +440,7 @@ textarea.field-inp{resize:vertical;min-height:80px;}
   </div>
 </div>
 
-<!-- MODAL OPÇÕES DO SELECT -->
+<!-- ══ MODAL OPÇÕES SELECT ══ -->
 <div class="overlay" id="optsOverlay" onclick="if(event.target===this)closeOptsModal()">
   <div class="opts-modal">
     <div class="opts-title" id="optsTitle">Opções</div>
@@ -370,22 +452,23 @@ textarea.field-inp{resize:vertical;min-height:80px;}
   </div>
 </div>
 
-<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
 <script>
 // ── CONFIG ──────────────────────────────────────────────────────
-const SB_URL   = 'https://gzzclbxnohokttujvaqa.supabase.co';
-const SB_KEY   = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd6emNsYnhub2hva3R0dWp2YXFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4Njc0NDUsImV4cCI6MjA4OTQ0MzQ0NX0.6XPR0m90k6qd66rLeatapLQ8jZYMn-V1lB9h2YT34hc';
+const SB_URL         = 'https://gzzclbxnohokttujvaqa.supabase.co';
+const SB_KEY         = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd6emNsYnhub2hva3R0dWp2YXFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4Njc0NDUsImV4cCI6MjA4OTQ0MzQ0NX0.6XPR0m90k6qd66rLeatapLQ8jZYMn-V1lB9h2YT34hc';
 const ADMIN_PASS     = '1234';
 const CATALOG_TABLE  = 'casas_catalogo';
 const STORAGE_BUCKET = 'catalogo-fotos';
+const CATALOG_URL    = 'https://leandrorocha95.github.io/alliance-orcamento/catalogo.html';
 
 // ── STATE ───────────────────────────────────────────────────────
-let casas = [];
+let casas        = [];
 let _isAdmin     = false;
 let _editId      = null;
 let _activeFilter= 'todos';
+let _activeTag   = '';
 let _detailCasa  = null;
 
 // Upload
@@ -394,7 +477,10 @@ let _existingPhotos = [];
 let _plantaFile     = null;
 let _existingPlanta = '';
 
-// Options (Tipo / Madeira)
+// Tags input
+let _formTags = [];
+
+// Options
 let _optsKey = '';
 let _opts = {
   tipo:    ['1 Quarto','2 Quartos','3 Quartos','Sobrado','Geminado','Chalé'],
@@ -455,9 +541,10 @@ async function deleteCasaFromCloud(id) {
 }
 
 // ── HELPERS ─────────────────────────────────────────────────────
-function uid() { return 'casa_' + Date.now() + '_' + Math.random().toString(36).slice(2,6); }
+function uid()  { return 'casa_' + Date.now() + '_' + Math.random().toString(36).slice(2,6); }
 function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function brl(v) { return 'R$ ' + Number(v).toLocaleString('pt-BR',{minimumFractionDigits:0,maximumFractionDigits:0}); }
+function normalizeTag(t) { return t.trim().replace(/^#+/,'').replace(/\s+/g,'').toLowerCase(); }
 
 function toast(msg, type) {
   const t = document.getElementById('toast');
@@ -467,17 +554,25 @@ function toast(msg, type) {
   toast._t = setTimeout(() => t.className = 'toast', 3200);
 }
 
+// ── WHATSAPP ─────────────────────────────────────────────────────
+function shareWapp(id) {
+  const c = id ? casas.find(x => x.id === id) : _detailCasa;
+  if (!c) return;
+  const link = CATALOG_URL;
+  const msg  = `Olá! Estou interessado neste modelo de casa: *${c.nome}* - ${link}`;
+  window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
+}
+
 // ── OPTIONS ─────────────────────────────────────────────────────
 function loadOptsFromStorage() {
   try { const s = localStorage.getItem('alliance_opts'); if (s) Object.assign(_opts, JSON.parse(s)); } catch(e){}
 }
 function saveOpts() { localStorage.setItem('alliance_opts', JSON.stringify(_opts)); }
 
-function renderSelect(id, key, currentVal) {
+function renderSelect(id, key, val) {
   const sel = document.getElementById(id);
-  const prev = sel.value || currentVal;
   sel.innerHTML = _opts[key].map(o =>
-    `<option value="${esc(o)}" ${o===prev?'selected':''}>${esc(o)}</option>`
+    `<option value="${esc(o)}" ${o===(val||_opts[key][0])?'selected':''}>${esc(o)}</option>`
   ).join('');
 }
 
@@ -489,54 +584,97 @@ function openOptsModal(key) {
   document.getElementById('optsOverlay').classList.add('open');
   setTimeout(() => document.getElementById('optsNewInp').focus(), 80);
 }
-
 function closeOptsModal() {
   document.getElementById('optsOverlay').classList.remove('open');
-  renderSelect('fTipo',    'tipo',    document.getElementById('fTipo').value);
-  renderSelect('fMadeira', 'madeira', document.getElementById('fMadeira').value);
+  renderSelect('fTipo','tipo',document.getElementById('fTipo').value);
+  renderSelect('fMadeira','madeira',document.getElementById('fMadeira').value);
   renderFilters();
 }
-
 function renderOptsList() {
-  document.getElementById('optsList').innerHTML = _opts[_optsKey].map((o,i) => `
-    <div class="opt-item">
-      <span>${esc(o)}</span>
-      <button class="opt-item-rm" onclick="removeOpt(${i})">×</button>
-    </div>`).join('');
+  document.getElementById('optsList').innerHTML = _opts[_optsKey].map((o,i) =>
+    `<div class="opt-item"><span>${esc(o)}</span><button class="opt-item-rm" onclick="removeOpt(${i})">×</button></div>`
+  ).join('');
 }
-
 function addOpt() {
   const val = document.getElementById('optsNewInp').value.trim();
   if (!val) return;
   if (_opts[_optsKey].includes(val)) { toast('Opção já existe','err'); return; }
-  _opts[_optsKey].push(val);
-  saveOpts();
-  renderOptsList();
+  _opts[_optsKey].push(val); saveOpts(); renderOptsList();
   document.getElementById('optsNewInp').value = '';
 }
+function removeOpt(i) { _opts[_optsKey].splice(i,1); saveOpts(); renderOptsList(); }
 
-function removeOpt(i) {
-  _opts[_optsKey].splice(i,1);
-  saveOpts();
-  renderOptsList();
+// ── TAGS INPUT ───────────────────────────────────────────────────
+function onTagKey(e) {
+  if (e.key === 'Enter' || e.key === ',' || e.key === ' ') {
+    e.preventDefault();
+    const raw = document.getElementById('tagsInp').value;
+    const tag = normalizeTag(raw);
+    if (tag && !_formTags.includes(tag)) { _formTags.push(tag); renderFormTags(); }
+    document.getElementById('tagsInp').value = '';
+  }
+}
+
+function renderFormTags() {
+  const wrap = document.getElementById('tagsWrap');
+  const inp  = document.getElementById('tagsInp');
+  wrap.querySelectorAll('.tag-chip').forEach(el => el.remove());
+  _formTags.forEach((t, i) => {
+    const chip = document.createElement('div');
+    chip.className = 'tag-chip';
+    chip.innerHTML = `#${esc(t)}<button class="tag-chip-rm" onclick="removeFormTag(${i})">×</button>`;
+    wrap.insertBefore(chip, inp);
+  });
+}
+
+function removeFormTag(i) { _formTags.splice(i,1); renderFormTags(); }
+
+// ── AREA CALC ────────────────────────────────────────────────────
+function calcAreaTotal() {
+  const i = parseFloat(document.getElementById('fAreaInterna').value) || 0;
+  const e = parseFloat(document.getElementById('fAreaExt').value)     || 0;
+  const total = i + e;
+  document.getElementById('areaTotalCalc').textContent = total > 0 ? `Área Total: ${total} m²` : '';
 }
 
 // ── FILTERS ─────────────────────────────────────────────────────
+function getAllTags() {
+  const set = new Set();
+  casas.forEach(c => (Array.isArray(c.tags) ? c.tags : []).forEach(t => set.add(t)));
+  return [...set];
+}
+
 function renderFilters() {
   const bar = document.getElementById('filtersBar');
   const searchWrap = bar.querySelector('.search-wrap');
   bar.querySelectorAll('.filter-btn').forEach(b => b.remove());
+
+  // Tipo filters
   ['todos', ..._opts.tipo].forEach(v => {
     const b = document.createElement('button');
-    b.className = 'filter-btn' + (v===_activeFilter?' active':'');
+    b.className = 'filter-btn' + (v===_activeFilter&&!_activeTag?' active':'');
     b.textContent = v==='todos' ? 'Todos' : v;
-    b.onclick = () => setFilter(v, b);
+    b.onclick = () => { _activeFilter=v; _activeTag=''; setFilterBtn(b); renderCatalogo(); };
+    bar.insertBefore(b, searchWrap);
+  });
+
+  // Tag filters
+  getAllTags().forEach(t => {
+    const b = document.createElement('button');
+    b.className = 'filter-btn filter-tag' + (t===_activeTag?' active':'');
+    b.textContent = '#' + t;
+    b.onclick = () => { _activeTag = _activeTag===t?'':t; _activeFilter='todos'; setFilterBtn(b); renderCatalogo(); };
     bar.insertBefore(b, searchWrap);
   });
 }
 
+function setFilterBtn(el) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+
 function setFilter(val, el) {
-  _activeFilter = val;
+  _activeFilter = val; _activeTag = '';
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
   if (el) el.classList.add('active');
   renderCatalogo();
@@ -544,15 +682,19 @@ function setFilter(val, el) {
 
 // ── RENDER ──────────────────────────────────────────────────────
 function renderCatalogo() {
-  const q = (document.getElementById('searchInp').value||'').toLowerCase();
+  const q = (document.getElementById('searchInp').value||'').toLowerCase().replace(/^#/,'');
   const list = casas.filter(c => {
+    if (_activeTag && !(Array.isArray(c.tags)&&c.tags.includes(_activeTag))) return false;
     if (_activeFilter!=='todos' && c.tipo!==_activeFilter) return false;
-    if (q && !c.nome.toLowerCase().includes(q) && !(c.descricao||'').toLowerCase().includes(q)) return false;
+    if (q) {
+      const hay = [c.nome,c.codigo,c.descricao,...(c.tags||[])].join(' ').toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
     return true;
   });
 
   const grid = document.getElementById('casasGrid');
-  const ph = `<div class="card-img-placeholder"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg></div>`;
+  const ph = `<div class="card-img-ph"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg></div>`;
 
   if (!list.length) {
     grid.innerHTML = `<div class="empty"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg><p>Nenhum modelo encontrado.</p></div>`;
@@ -560,32 +702,43 @@ function renderCatalogo() {
   }
 
   grid.innerHTML = list.map(c => {
-    const imgs = Array.isArray(c.fotos)&&c.fotos.length ? c.fotos : (c.foto ? [c.foto] : []);
+    const imgs = Array.isArray(c.fotos)&&c.fotos.length ? c.fotos : (c.foto?[c.foto]:[]);
     const imgUrl = imgs[0]||'';
+    const areaTotal = (parseFloat(c.area_interna)||0) + (parseFloat(c.area_ext)||0) || parseFloat(c.area)||0;
     const madClass = c.madeira==='Pinus' ? 'tag-pinus' : c.madeira==='Madeira de Lei' ? 'tag-lei' : 'tag-madeira';
+    const tags = Array.isArray(c.tags) ? c.tags : [];
+
+    // Specs — só mostra se preenchido
+    const specs = [];
+    if (areaTotal)   specs.push(`<div class="spec"><div class="spec-val">${areaTotal}</div><div class="spec-lbl">m²</div></div>`);
+    if (c.quartos)   specs.push(`<div class="spec"><div class="spec-val">${c.quartos}</div><div class="spec-lbl">Quartos</div></div>`);
+    if (c.banheiros) specs.push(`<div class="spec"><div class="spec-val">${c.banheiros}</div><div class="spec-lbl">Banheiros</div></div>`);
+    if (c.lavabos)   specs.push(`<div class="spec"><div class="spec-val">${c.lavabos}</div><div class="spec-lbl">Lavabos</div></div>`);
+    if (c.vagas)     specs.push(`<div class="spec"><div class="spec-val">${c.vagas}</div><div class="spec-lbl">Vagas</div></div>`);
+
     return `<div class="card" onclick="openDetail('${c.id}')">
-      ${imgUrl
-        ? `<img class="card-img" src="${esc(imgUrl)}" alt="${esc(c.nome)}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">${ph}`
-        : ph}
+      ${imgUrl ? `<img class="card-img" src="${esc(imgUrl)}" alt="${esc(c.nome)}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">${ph}` : ph}
       <div class="card-body">
-        <div class="card-tags">
-          <span class="tag tag-tipo">${esc(c.tipo||'')}</span>
-          ${c.madeira?`<span class="tag ${madClass}">${esc(c.madeira)}</span>`:''}
+        ${c.codigo ? `<div class="card-code">${esc(c.codigo)}</div>` : ''}
+        <div class="card-tags-row">
+          ${c.tipo ? `<span class="tag tag-tipo">${esc(c.tipo)}</span>` : ''}
+          ${c.madeira ? `<span class="tag ${madClass}">${esc(c.madeira)}</span>` : ''}
+          ${tags.slice(0,2).map(t=>`<span class="tag tag-custom">#${esc(t)}</span>`).join('')}
         </div>
         <div class="card-name">${esc(c.nome)}</div>
-        ${c.descricao?`<div class="card-desc">${esc(c.descricao)}</div>`:''}
-        <div class="card-specs">
-          <div class="spec"><div class="spec-val">${c.area||'—'}</div><div class="spec-lbl">m²</div></div>
-          <div class="spec"><div class="spec-val">${c.quartos||'—'}</div><div class="spec-lbl">Quartos</div></div>
-          <div class="spec"><div class="spec-val">${c.banheiros||'—'}</div><div class="spec-lbl">Banheiros</div></div>
-        </div>
-        ${c.preco?`<div class="card-price"><span class="price-lbl">A partir de</span><span class="price-val">${brl(c.preco)}</span></div>`:''}
+        ${c.descricao ? `<div class="card-desc">${esc(c.descricao)}</div>` : ''}
+        ${specs.length ? `<div class="card-specs">${specs.slice(0,3).join('')}</div>` : ''}
+        ${c.terreno ? `<div class="card-terreno">🏡 Terreno mín.: <span>${esc(c.terreno)}</span></div>` : ''}
+        ${c.preco ? `<div class="card-price"><span class="price-lbl">A partir de</span><span class="price-val">${brl(c.preco)}</span></div>` : ''}
       </div>
       <div class="card-footer">
         <button class="btn-detail" onclick="event.stopPropagation();openDetail('${c.id}')">Ver Detalhes</button>
         ${_isAdmin
-          ? `<button class="btn-outline" style="flex:1;font-size:12px;" onclick="event.stopPropagation();openEditCasa('${c.id}')">✏️ Editar</button>`
+          ? `<button class="btn-outline" style="flex:1;font-size:11px;" onclick="event.stopPropagation();openEditCasa('${c.id}')">✏️ Editar</button>`
           : `<button class="btn-orcamento" onclick="event.stopPropagation();solicitarOrcamentoId('${c.id}')">📋 Orçamento</button>`}
+        <button class="btn-wapp-card" onclick="event.stopPropagation();shareWapp('${c.id}')" title="Compartilhar no WhatsApp">
+          <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.122.554 4.118 1.52 5.854L0 24l6.335-1.498A11.94 11.94 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.808 9.808 0 01-5.034-1.387l-.361-.214-3.741.884.939-3.658-.235-.374A9.808 9.808 0 012.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/></svg>
+        </button>
       </div>
     </div>`;
   }).join('');
@@ -593,39 +746,75 @@ function renderCatalogo() {
 
 // ── DETAIL ──────────────────────────────────────────────────────
 function openDetail(id) {
-  const c = casas.find(x => x.id===id);
-  if (!c) return;
+  const c = casas.find(x => x.id===id); if (!c) return;
   _detailCasa = c;
 
-  const imgs = Array.isArray(c.fotos)&&c.fotos.length ? c.fotos : (c.foto ? [c.foto] : []);
+  const imgs = Array.isArray(c.fotos)&&c.fotos.length ? c.fotos : (c.foto?[c.foto]:[]);
   const imgWrap = document.getElementById('detailImgWrap');
   imgWrap.innerHTML = imgs.length ? `
     <div class="modal-gallery">
       <img class="modal-detail-img" id="detailMainImg" src="${esc(imgs[0])}" alt="${esc(c.nome)}" onerror="this.style.display='none'">
-      ${imgs.length>1 ? `<div class="gallery-thumbs">${imgs.map((u,i)=>`<img class="gallery-thumb ${i===0?'active':''}" src="${esc(u)}" onclick="switchDetailImg(this,'${esc(u)}')" onerror="this.style.display='none'">`).join('')}</div>` : ''}
+      ${imgs.length>1?`<div class="gallery-thumbs">${imgs.map((u,i)=>`<img class="gallery-thumb ${i===0?'active':''}" src="${esc(u)}" onclick="switchDetailImg(this,'${esc(u)}')" onerror="this.style.display='none'">`).join('')}</div>`:''}
     </div>` : '';
 
-  const madClass = c.madeira==='Pinus' ? 'tag-pinus' : c.madeira==='Madeira de Lei' ? 'tag-lei' : 'tag-madeira';
-  document.getElementById('detailTags').innerHTML =
-    `<span class="tag tag-tipo">${esc(c.tipo||'')}</span>` +
-    (c.madeira ? `<span class="tag ${madClass}">${esc(c.madeira)}</span>` : '');
+  // Código
+  const codeEl = document.getElementById('detailCode');
+  codeEl.textContent = c.codigo ? c.codigo : '';
+  codeEl.style.display = c.codigo ? '' : 'none';
+
+  // Tags row (tipo + madeira + custom)
+  const madClass = c.madeira==='Pinus'?'tag-pinus':c.madeira==='Madeira de Lei'?'tag-lei':'tag-madeira';
+  const customTags = Array.isArray(c.tags)?c.tags:[];
+  document.getElementById('detailTagsRow').innerHTML =
+    (c.tipo?`<span class="tag tag-tipo">${esc(c.tipo)}</span>`:'') +
+    (c.madeira?`<span class="tag ${madClass}">${esc(c.madeira)}</span>`:'');
+
   document.getElementById('detailName').textContent = c.nome;
-  document.getElementById('detailSpecs').innerHTML = `
-    <div class="modal-spec"><div class="modal-spec-val">${c.area||'—'}</div><div class="modal-spec-lbl">m²</div></div>
-    <div class="modal-spec"><div class="modal-spec-val">${c.quartos||'—'}</div><div class="modal-spec-lbl">Quartos</div></div>
-    <div class="modal-spec"><div class="modal-spec-val">${c.banheiros||'—'}</div><div class="modal-spec-lbl">Banheiros</div></div>
-    <div class="modal-spec"><div class="modal-spec-val" style="font-size:14px">${c.madeira||'—'}</div><div class="modal-spec-lbl">Madeira</div></div>`;
+
+  // Specs — só se preenchidos
+  const areaInterna = parseFloat(c.area_interna)||0;
+  const areaExt     = parseFloat(c.area_ext)||0;
+  const areaTotal   = areaInterna+areaExt || parseFloat(c.area)||0;
+  const specs = [];
+  if (areaTotal)   specs.push({val:areaTotal,lbl:'m² Total'});
+  if (areaInterna) specs.push({val:areaInterna,lbl:'m² Interno'});
+  if (areaExt)     specs.push({val:areaExt,lbl:'m² Varanda/Gar.'});
+  if (c.quartos)   specs.push({val:c.quartos,lbl:'Quartos'});
+  if (c.banheiros) specs.push({val:c.banheiros,lbl:'Banheiros'});
+  if (c.lavabos)   specs.push({val:c.lavabos,lbl:'Lavabos'});
+  if (c.vagas)     specs.push({val:c.vagas,lbl:'Vagas'});
+  if (c.madeira)   specs.push({val:c.madeira,lbl:'Madeira',small:true});
+
+  const modalSpecs = document.getElementById('detailSpecs');
+  modalSpecs.style.gridTemplateColumns = `repeat(${Math.min(specs.length,4)},1fr)`;
+  modalSpecs.innerHTML = specs.map(s =>
+    `<div class="modal-spec"><div class="modal-spec-val" ${s.small?'style="font-size:13px"':''}>${esc(String(s.val))}</div><div class="modal-spec-lbl">${esc(s.lbl)}</div></div>`
+  ).join('');
+
+  // Terreno
+  const terrenoWrap = document.getElementById('detailTerrenoWrap');
+  if (c.terreno) { document.getElementById('detailTerreno').textContent = c.terreno; terrenoWrap.style.display=''; }
+  else terrenoWrap.style.display='none';
+
   document.getElementById('detailDesc').textContent = c.descricao||'Sem descrição.';
 
   const notesWrap = document.getElementById('detailNotesWrap');
   if (c.notas) { document.getElementById('detailNotes').textContent = c.notas; notesWrap.style.display=''; }
   else notesWrap.style.display='none';
 
+  // Custom tags
+  const ctWrap = document.getElementById('detailCustomTagsWrap');
+  if (customTags.length) {
+    document.getElementById('detailCustomTags').innerHTML = customTags.map(t=>`<span class="tag tag-custom">#${esc(t)}</span>`).join('');
+    ctWrap.style.display='';
+  } else ctWrap.style.display='none';
+
+  // Links
   const linksWrap = document.getElementById('detailLinksWrap');
   const links = [];
   if (c.planta)    links.push(`<a class="link-btn" href="${esc(c.planta)}" target="_blank">📐 Planta Baixa</a>`);
   if (c.portfolio) links.push(`<a class="link-btn" href="${esc(c.portfolio)}" target="_blank">🗂️ Ver Portfólio</a>`);
-  if (links.length) { document.getElementById('detailLinks').innerHTML = links.join(''); linksWrap.style.display=''; }
+  if (links.length) { document.getElementById('detailLinks').innerHTML=links.join(''); linksWrap.style.display=''; }
   else linksWrap.style.display='none';
 
   document.getElementById('detailPrice').textContent = c.preco ? brl(c.preco) : 'Consulte';
@@ -634,18 +823,18 @@ function openDetail(id) {
 
 function switchDetailImg(el, url) {
   document.getElementById('detailMainImg').src = url;
-  document.querySelectorAll('.gallery-thumb').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.gallery-thumb').forEach(t=>t.classList.remove('active'));
   el.classList.add('active');
 }
 function closeDetail() { document.getElementById('detailOverlay').classList.remove('open'); }
-function solicitarOrcamento() { window.open('https://leandrorocha95.github.io/alliance-orcamento','_blank'); }
+function solicitarOrcamento()     { window.open('https://leandrorocha95.github.io/alliance-orcamento','_blank'); }
 function solicitarOrcamentoId(id) { window.open('https://leandrorocha95.github.io/alliance-orcamento','_blank'); }
 
 // ── ADMIN AUTH ──────────────────────────────────────────────────
 function toggleAdmin() {
   if (_isAdmin) { logoutAdmin(); return; }
   document.getElementById('adminLoginOverlay').classList.add('open');
-  setTimeout(() => document.getElementById('adminPwInp').focus(), 100);
+  setTimeout(()=>document.getElementById('adminPwInp').focus(),100);
 }
 function closeAdminLogin() {
   document.getElementById('adminLoginOverlay').classList.remove('open');
@@ -675,26 +864,21 @@ function logoutAdmin() {
 // ── UPLOAD ──────────────────────────────────────────────────────
 function onFilesChange(e) {
   const files = Array.from(e.target.files);
-  if (_existingPhotos.length+_uploadFiles.length+files.length > 3) {
-    toast('Máximo de 3 fotos. Remova uma antes de adicionar.','err'); e.target.value=''; return;
+  if (_existingPhotos.length+_uploadFiles.length+files.length>3) {
+    toast('Máximo de 3 fotos.','err'); e.target.value=''; return;
   }
   _uploadFiles.push(...files); e.target.value=''; renderUploadPreview();
 }
-
 function renderUploadPreview() {
-  const total = _existingPhotos.length+_uploadFiles.length;
-  document.getElementById('uploadTxt').textContent = total>=3 ? 'Limite atingido (3/3)' : `Clique para adicionar (${total}/3)`;
+  const total=_existingPhotos.length+_uploadFiles.length;
+  document.getElementById('uploadTxt').textContent = total>=3 ? '📷 Limite atingido (3/3)' : `📷 Clique para adicionar (${total}/3)`;
   let html='';
-  _existingPhotos.forEach((url,i) => {
-    html+=`<div class="upload-thumb"><img src="${esc(url)}"><span class="upload-thumb-badge badge-saved">Salva</span><button class="upload-thumb-rm" onclick="removeExistingPhoto(${i})">×</button></div>`;
-  });
-  _uploadFiles.forEach((f,i) => {
-    html+=`<div class="upload-thumb"><img src="${URL.createObjectURL(f)}"><span class="upload-thumb-badge badge-new">Nova</span><button class="upload-thumb-rm" onclick="removeNewFile(${i})">×</button></div>`;
-  });
+  _existingPhotos.forEach((url,i)=>{ html+=`<div class="upload-thumb"><img src="${esc(url)}"><span class="upload-thumb-badge badge-saved">Salva</span><button class="upload-thumb-rm" onclick="removeExistingPhoto(${i})">×</button></div>`; });
+  _uploadFiles.forEach((f,i)=>{ html+=`<div class="upload-thumb"><img src="${URL.createObjectURL(f)}"><span class="upload-thumb-badge badge-new">Nova</span><button class="upload-thumb-rm" onclick="removeNewFile(${i})">×</button></div>`; });
   document.getElementById('uploadPreview').innerHTML=html;
 }
-function removeExistingPhoto(i) { _existingPhotos.splice(i,1); renderUploadPreview(); }
-function removeNewFile(i) { _uploadFiles.splice(i,1); renderUploadPreview(); }
+function removeExistingPhoto(i){ _existingPhotos.splice(i,1); renderUploadPreview(); }
+function removeNewFile(i)      { _uploadFiles.splice(i,1);    renderUploadPreview(); }
 
 function onPlantaChange(e) { _plantaFile=e.target.files[0]||null; e.target.value=''; renderPlantaPreview(); }
 function renderPlantaPreview() {
@@ -702,16 +886,10 @@ function renderPlantaPreview() {
   const prev=document.getElementById('plantaPreview');
   if (_plantaFile) {
     txt.textContent='📐 '+_plantaFile.name;
-    prev.innerHTML=`<div style="display:flex;align-items:center;gap:8px;margin-top:4px;">
-      <img src="${URL.createObjectURL(_plantaFile)}" style="width:64px;height:52px;object-fit:cover;border-radius:6px;border:1px solid var(--border);">
-      <button onclick="_plantaFile=null;renderPlantaPreview()" style="background:none;border:none;color:#e74c3c;cursor:pointer;font-size:12px;">✕ Remover</button>
-    </div>`;
+    prev.innerHTML=`<div style="display:flex;align-items:center;gap:8px;margin-top:6px;"><img src="${URL.createObjectURL(_plantaFile)}" style="width:64px;height:52px;object-fit:cover;border-radius:6px;border:1px solid var(--border);"><button onclick="_plantaFile=null;renderPlantaPreview()" style="background:none;border:none;color:#e74c3c;cursor:pointer;font-size:12px;">✕ Remover</button></div>`;
   } else if (_existingPlanta) {
     txt.textContent='📐 Planta salva (clique para substituir)';
-    prev.innerHTML=`<div style="display:flex;align-items:center;gap:8px;margin-top:4px;">
-      <img src="${esc(_existingPlanta)}" style="width:64px;height:52px;object-fit:cover;border-radius:6px;border:1px solid var(--border);">
-      <button onclick="_existingPlanta='';renderPlantaPreview()" style="background:none;border:none;color:#e74c3c;cursor:pointer;font-size:12px;">✕ Remover</button>
-    </div>`;
+    prev.innerHTML=`<div style="display:flex;align-items:center;gap:8px;margin-top:6px;"><img src="${esc(_existingPlanta)}" style="width:64px;height:52px;object-fit:cover;border-radius:6px;border:1px solid var(--border);"><button onclick="_existingPlanta='';renderPlantaPreview()" style="background:none;border:none;color:#e74c3c;cursor:pointer;font-size:12px;">✕ Remover</button></div>`;
   } else {
     txt.textContent='📐 Clique para selecionar a planta baixa';
     prev.innerHTML='';
@@ -719,38 +897,51 @@ function renderPlantaPreview() {
 }
 
 // ── CASA FORM ───────────────────────────────────────────────────
+function clearForm() {
+  ['fCodigo','fNome','fAreaInterna','fAreaExt','fTerreno','fQuartos','fBanheiros','fLavabos','fVagas','fPreco','fDesc','fNotes','fPortfolio']
+    .forEach(id => document.getElementById(id).value='');
+  document.getElementById('areaTotalCalc').textContent='';
+  _formTags=[]; renderFormTags();
+  _uploadFiles=[]; _existingPhotos=[]; _plantaFile=null; _existingPlanta='';
+  renderUploadPreview(); renderPlantaPreview();
+}
+
 function openNewCasa() {
-  _editId=null; _uploadFiles=[]; _existingPhotos=[]; _plantaFile=null; _existingPlanta='';
+  _editId=null; clearForm();
   document.getElementById('casaFormTitle').textContent='Nova Casa';
   document.getElementById('fDelBtn').style.display='none';
-  ['fNome','fArea','fQuartos','fBanheiros','fPreco','fDesc','fNotes','fPortfolio'].forEach(id => document.getElementById(id).value='');
   renderSelect('fTipo','tipo',_opts.tipo[0]);
   renderSelect('fMadeira','madeira',_opts.madeira[0]);
-  renderUploadPreview(); renderPlantaPreview();
   document.getElementById('casaFormOverlay').classList.add('open');
-  setTimeout(() => document.getElementById('fNome').focus(), 50);
+  setTimeout(()=>document.getElementById('fNome').focus(),50);
 }
 
 function openEditCasa(id) {
   const c=casas.find(x=>x.id===id); if(!c) return;
-  _editId=id; _uploadFiles=[];
-  _existingPhotos=Array.isArray(c.fotos)?[...c.fotos]:(c.foto?[c.foto]:[]);
-  _plantaFile=null; _existingPlanta=c.planta||'';
+  _editId=id; clearForm();
   document.getElementById('casaFormTitle').textContent='Editar Casa';
   document.getElementById('fDelBtn').style.display='';
-  document.getElementById('fNome').value      = c.nome||'';
-  document.getElementById('fArea').value      = c.area||'';
-  document.getElementById('fQuartos').value   = c.quartos||'';
-  document.getElementById('fBanheiros').value = c.banheiros||'';
-  document.getElementById('fPreco').value     = c.preco||'';
-  document.getElementById('fDesc').value      = c.descricao||'';
-  document.getElementById('fNotes').value     = c.notas||'';
-  document.getElementById('fPortfolio').value = c.portfolio||'';
+  document.getElementById('fCodigo').value     = c.codigo      ||'';
+  document.getElementById('fNome').value       = c.nome        ||'';
+  document.getElementById('fAreaInterna').value= c.area_interna||c.area||'';
+  document.getElementById('fAreaExt').value    = c.area_ext    ||'';
+  document.getElementById('fTerreno').value    = c.terreno     ||'';
+  document.getElementById('fQuartos').value    = c.quartos     ||'';
+  document.getElementById('fBanheiros').value  = c.banheiros   ||'';
+  document.getElementById('fLavabos').value    = c.lavabos     ||'';
+  document.getElementById('fVagas').value      = c.vagas       ||'';
+  document.getElementById('fPreco').value      = c.preco       ||'';
+  document.getElementById('fDesc').value       = c.descricao   ||'';
+  document.getElementById('fNotes').value      = c.notas       ||'';
+  document.getElementById('fPortfolio').value  = c.portfolio   ||'';
   renderSelect('fTipo','tipo',c.tipo);
   renderSelect('fMadeira','madeira',c.madeira);
-  renderUploadPreview(); renderPlantaPreview();
+  _formTags = Array.isArray(c.tags)?[...c.tags]:[]; renderFormTags();
+  _existingPhotos = Array.isArray(c.fotos)?[...c.fotos]:(c.foto?[c.foto]:[]);
+  _existingPlanta = c.planta||'';
+  renderUploadPreview(); renderPlantaPreview(); calcAreaTotal();
   document.getElementById('casaFormOverlay').classList.add('open');
-  setTimeout(() => document.getElementById('fNome').focus(), 50);
+  setTimeout(()=>document.getElementById('fNome').focus(),50);
 }
 
 function closeCasaForm() { document.getElementById('casaFormOverlay').classList.remove('open'); }
@@ -760,44 +951,56 @@ async function saveCasa() {
   if (!nome) { toast('Digite o nome do modelo','err'); return; }
   toast('Salvando...','');
 
-  // Upload fotos novas
   let uploadedUrls=[];
   for (const file of _uploadFiles) {
     try { uploadedUrls.push(await uploadToStorage(file,'fotos/'+storagePath(file))); }
-    catch(e) { toast('Erro no upload da foto: '+e.message,'err'); return; }
+    catch(e) { toast('Erro no upload: '+e.message,'err'); return; }
   }
   const fotos=[..._existingPhotos,...uploadedUrls];
 
-  // Upload planta baixa
   let plantaUrl=_existingPlanta;
   if (_plantaFile) {
     try { plantaUrl=await uploadToStorage(_plantaFile,'plantas/'+storagePath(_plantaFile)); }
     catch(e) { toast('Erro no upload da planta: '+e.message,'err'); return; }
   }
 
-  const casa={
-    id:         _editId||uid(),
+  // Flush tag being typed
+  const rawTag = document.getElementById('tagsInp').value.trim();
+  if (rawTag) { const t=normalizeTag(rawTag); if(t&&!_formTags.includes(t)) _formTags.push(t); }
+
+  const areaInterna = parseFloat(document.getElementById('fAreaInterna').value)||0;
+  const areaExt     = parseFloat(document.getElementById('fAreaExt').value)||0;
+
+  const casa = {
+    id:          _editId||uid(),
+    codigo:      document.getElementById('fCodigo').value.trim(),
     nome,
-    tipo:       document.getElementById('fTipo').value,
-    madeira:    document.getElementById('fMadeira').value,
-    area:       parseFloat(document.getElementById('fArea').value)||0,
-    quartos:    parseInt(document.getElementById('fQuartos').value)||0,
-    banheiros:  parseInt(document.getElementById('fBanheiros').value)||0,
-    preco:      parseFloat(document.getElementById('fPreco').value)||0,
-    descricao:  document.getElementById('fDesc').value.trim(),
-    notas:      document.getElementById('fNotes').value.trim(),
-    portfolio:  document.getElementById('fPortfolio').value.trim(),
+    tipo:        document.getElementById('fTipo').value,
+    madeira:     document.getElementById('fMadeira').value,
+    area_interna:areaInterna,
+    area_ext:    areaExt,
+    area:        areaInterna+areaExt,
+    terreno:     document.getElementById('fTerreno').value.trim(),
+    quartos:     parseInt(document.getElementById('fQuartos').value)||0,
+    banheiros:   parseInt(document.getElementById('fBanheiros').value)||0,
+    lavabos:     parseInt(document.getElementById('fLavabos').value)||0,
+    vagas:       parseInt(document.getElementById('fVagas').value)||0,
+    preco:       parseFloat(document.getElementById('fPreco').value)||0,
+    descricao:   document.getElementById('fDesc').value.trim(),
+    notas:       document.getElementById('fNotes').value.trim(),
+    portfolio:   document.getElementById('fPortfolio').value.trim(),
+    tags:        _formTags,
     fotos,
-    foto:       fotos[0]||'',
-    planta:     plantaUrl,
-    created_at: _editId?(casas.find(c=>c.id===_editId)?.created_at||new Date().toISOString()):new Date().toISOString()
+    foto:        fotos[0]||'',
+    planta:      plantaUrl,
+    created_at:  _editId?(casas.find(c=>c.id===_editId)?.created_at||new Date().toISOString()):new Date().toISOString()
   };
 
   try {
     await saveCasaToCloud(casa);
     if (_editId) { const idx=casas.findIndex(c=>c.id===_editId); if(idx>=0) casas[idx]=casa; }
     else casas.unshift(casa);
-    closeCasaForm(); renderCatalogo();
+    closeCasaForm(); renderFilters(); renderCatalogo();
     toast(_editId?'✓ Casa atualizada!':'✓ Casa adicionada!');
   } catch(e) { toast('Erro ao salvar: '+e.message,'err'); }
 }
@@ -807,7 +1010,7 @@ async function delCasa() {
   try {
     await deleteCasaFromCloud(_editId);
     casas=casas.filter(c=>c.id!==_editId);
-    closeCasaForm(); renderCatalogo(); toast('Casa excluída');
+    closeCasaForm(); renderFilters(); renderCatalogo(); toast('Casa excluída');
   } catch(e) { toast('Erro ao excluir: '+e.message,'err'); }
 }
 
