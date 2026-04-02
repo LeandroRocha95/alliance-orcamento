@@ -90,6 +90,40 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .card-planta-header{display:flex;align-items:center;gap:6px;padding:6px 12px;border-bottom:1px solid var(--border);font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);}
 .card-planta img{width:100%;max-height:160px;object-fit:contain;display:block;background:var(--surface3);cursor:zoom-in;transition:opacity .15s;}
 .card-planta img:hover{opacity:.85;}
+
+/* ── VIEW TOGGLE ── */
+.btn-view{display:flex;align-items:center;justify-content:center;background:var(--surface2);border:1px solid var(--border);color:var(--muted);border-radius:8px;width:32px;height:32px;cursor:pointer;transition:all .15s;flex-shrink:0;}
+.btn-view:hover,.btn-view.active{border-color:var(--accent);color:var(--accent);background:rgba(245,166,35,.08);}
+.view-toggle-group{display:flex;gap:4px;margin-left:8px;}
+
+/* Compact grid */
+.grid.compact{grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;}
+.grid.compact .card-img{height:130px;}
+.grid.compact .card-img-ph{height:130px;}
+.grid.compact .card-planta{display:none;}
+.grid.compact .card-body{padding:10px 12px;}
+.grid.compact .card-name{font-size:15px;}
+.grid.compact .card-desc{display:none;}
+.grid.compact .card-specs{grid-template-columns:repeat(3,1fr);gap:4px;margin-bottom:8px;}
+.grid.compact .spec{padding:5px 6px;}
+.grid.compact .spec-val{font-size:13px;}
+.grid.compact .card-terreno{display:none;}
+.grid.compact .card-footer{padding:8px 12px;}
+
+/* List view */
+.grid.list{grid-template-columns:1fr;gap:8px;}
+.grid.list .card{flex-direction:row;align-items:stretch;}
+.grid.list .card-img-wrap{width:180px;flex-shrink:0;}
+.grid.list .card-img{width:180px;height:100%;min-height:120px;}
+.grid.list .card-img-ph{width:180px;height:120px;}
+.grid.list .card-planta{display:none;}
+.grid.list .card-body{padding:12px 16px;display:flex;flex-direction:column;justify-content:center;}
+.grid.list .card-name{font-size:17px;margin-bottom:4px;}
+.grid.list .card-desc{-webkit-line-clamp:1;margin-bottom:8px;}
+.grid.list .card-specs{margin-bottom:8px;}
+.grid.list .card-footer{border-top:none;border-left:1px solid var(--border);padding:12px;flex-direction:column;justify-content:center;width:160px;flex-shrink:0;gap:6px;}
+.grid.list .card-price{margin-bottom:4px;flex-direction:column;align-items:flex-start;gap:2px;}
+.grid.list .price-val{font-size:16px;}
 .card-body{padding:16px 18px;flex:1;}
 .card-header-row{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:8px;}
 .card-code{font-size:10px;font-weight:700;letter-spacing:.5px;color:var(--muted);margin-bottom:4px;}
@@ -274,6 +308,17 @@ textarea.field-inp{resize:vertical;min-height:76px;white-space:pre-wrap;}
   <div class="search-wrap" style="margin-left:auto;">
     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/></svg>
     <input class="search-input" id="searchInp" placeholder="Buscar... ex: casa 2 quartos, varanda" oninput="renderCatalogo()" style="width:280px;">
+  </div>
+  <div class="view-toggle-group">
+    <button class="btn-view active" id="btnViewGrid" onclick="setView('grid')" title="Grade">
+      <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M1 2.5A1.5 1.5 0 012.5 1h3A1.5 1.5 0 017 2.5v3A1.5 1.5 0 015.5 7h-3A1.5 1.5 0 011 5.5v-3zm8 0A1.5 1.5 0 0110.5 1h3A1.5 1.5 0 0115 2.5v3A1.5 1.5 0 0113.5 7h-3A1.5 1.5 0 019 5.5v-3zm-8 8A1.5 1.5 0 012.5 9h3A1.5 1.5 0 017 10.5v3A1.5 1.5 0 015.5 15h-3A1.5 1.5 0 011 13.5v-3zm8 0A1.5 1.5 0 0110.5 9h3A1.5 1.5 0 0115 10.5v3A1.5 1.5 0 0113.5 15h-3A1.5 1.5 0 019 13.5v-3z"/></svg>
+    </button>
+    <button class="btn-view" id="btnViewCompact" onclick="setView('compact')" title="Compacto">
+      <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M1 2h2v2H1V2zm4 0h10v2H5V2zM1 7h2v2H1V7zm4 0h10v2H5V7zM1 12h2v2H1v-2zm4 0h10v2H5v-2z"/></svg>
+    </button>
+    <button class="btn-view" id="btnViewList" onclick="setView('list')" title="Lista">
+      <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M2.5 12a.5.5 0 01.5-.5h10a.5.5 0 010 1H3a.5.5 0 01-.5-.5zm0-4a.5.5 0 01.5-.5h10a.5.5 0 010 1H3a.5.5 0 01-.5-.5zm0-4a.5.5 0 01.5-.5h10a.5.5 0 010 1H3a.5.5 0 01-.5-.5z"/></svg>
+    </button>
   </div>
 </div>
 
@@ -608,6 +653,7 @@ let _activeTag   = '';
 let _activeModelo= '';
 let _advFilters  = { preco:'', quartos:'', area:'', vagas:'', terreno:'' };
 let _advOpen     = false;
+let _viewMode    = 'grid'; // 'grid' | 'compact' | 'list'
 let _detailCasa  = null;
 
 // Upload
@@ -1060,7 +1106,9 @@ function renderCatalogo() {
 
     return `<div class="card" onclick="openDetail('${c.id}')">
       <div class="card-img-wrap">
-        ${imgUrl ? `<img class="card-img" src="${esc(imgUrl)}" alt="${esc(c.nome)}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">${ph}` : ph}
+        ${imgUrl
+          ? `<img class="card-img" src="${esc(imgUrl)}" alt="${esc(c.nome)}" onerror="this.outerHTML='${ph.replace(/'/g,"\\'")}'">`
+          : ph}
         ${selo ? `<div class="card-selo ${selo.cls}">${selo.icon} ${selo.label}</div>` : ''}
       </div>
       ${c.planta ? `<div class="card-planta" onclick="event.stopPropagation();openDetail('${c.id}')">
@@ -1399,6 +1447,17 @@ function updateSeloPreview() {
   } else {
     prev.innerHTML = `<span style="font-size:12px;color:var(--muted);">Nenhum selo</span>`;
   }
+}
+
+// ── VIEW MODE ────────────────────────────────────────────────────
+function setView(mode) {
+  _viewMode = mode;
+  const grid = document.getElementById('casasGrid');
+  grid.className = 'grid' + (mode !== 'grid' ? ' ' + mode : '');
+  ['grid','compact','list'].forEach(m => {
+    const btn = document.getElementById('btnView' + m.charAt(0).toUpperCase() + m.slice(1));
+    if (btn) btn.classList.toggle('active', m === mode);
+  });
 }
 
 // ── INIT ────────────────────────────────────────────────────────
