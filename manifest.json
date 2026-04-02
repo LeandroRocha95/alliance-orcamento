@@ -1,25 +1,53 @@
 {
-  "name": "Alliance Orçamentos",
-  "short_name": "Alliance",
-  "description": "Sistema de orçamentos Alliance Casas Pré Fabricadas",
-  "start_url": "/alliance-orcamento/hub.html",
-  "scope": "/alliance-orcamento/",
-  "display": "standalone",
-  "background_color": "#0f1117",
-  "theme_color": "#f5a623",
-  "orientation": "any",
-  "icons": [
-    {
-      "src": "https://leandrorocha95.github.io/alliance-orcamento/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "https://leandrorocha95.github.io/alliance-orcamento/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
-    }
-  ]
+    "name": "Alliance Orçamentos",
+    "short_name": "Alliance",
+    "description": "Sistema de orçamentos Alliance Casas Pré Fabricadas",
+    "id": "/hub.html",
+    "start_url": "/hub.html",
+    "scope": "/",
+    "display": "standalone",
+    "background_color": "#0f1117",
+    "theme_color": "#f5a623",
+    "orientation": "any",
+    "screenshots": [
+      {
+        "src": "https://alliance-orcamento.pages.dev/icon-512.png",
+        "sizes": "512x512",
+        "type": "image/png",
+        "form_factor": "wide",
+        "label": "Alliance Painel"
+      },
+      {
+        "src": "https://alliance-orcamento.pages.dev/icon-512.png",
+        "sizes": "512x512",
+        "type": "image/png",
+        "label": "Alliance Painel"
+      }
+    ],
+    "icons": [
+        {
+            "src": "https://alliance-orcamento.pages.dev/icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "https://alliance-orcamento.pages.dev/icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "https://alliance-orcamento.pages.dev/icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "maskable"
+        },
+        {
+            "src": "https://alliance-orcamento.pages.dev/icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ]
 }
