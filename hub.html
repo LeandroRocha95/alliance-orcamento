@@ -318,6 +318,11 @@ body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif
       <span class="nav-label">Campanhas</span>
     </div>
 
+    <div class="nav-item" data-module="portfolio" data-tip="Portfólio" onclick="navigate('portfolio')">
+      <span class="nav-icon">🖼</span>
+      <span class="nav-label">Portfólio</span>
+    </div>
+
     <div class="nav-item" data-module="custos" data-tip="Gestão de Custos" onclick="navigate('custos')">
       <span class="nav-icon">💰</span>
       <span class="nav-label">Gestão de Custos</span>
@@ -383,6 +388,12 @@ body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif
         <div class="home-card-desc">Crie e gerencie faixas e banners promocionais que aparecem no site da Alliance.</div>
         <div class="home-card-btn">Abrir →</div>
       </div>
+      <div class="home-card" onclick="navigate('portfolio')">
+        <div class="home-card-icon">🖼</div>
+        <div class="home-card-title">Portfólio</div>
+        <div class="home-card-desc">Gerencie fotos e vídeos de obras entregues. Upload direto para o Supabase Storage.</div>
+        <div class="home-card-btn">Abrir →</div>
+      </div>
       <div class="home-card" onclick="navigate('banco')">
         <div class="home-card-icon">🗄️</div>
         <div class="home-card-title">Banco de Dados</div>
@@ -410,6 +421,10 @@ body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif
 
   <div class="iframe-container" id="module-campanhas">
     <iframe class="module-iframe" id="iframe-campanhas" src="" title="Campanhas"></iframe>
+  </div>
+
+  <div class="iframe-container" id="module-portfolio">
+    <iframe class="module-iframe" id="iframe-portfolio" src="" title="Portfólio"></iframe>
   </div>
 
 </main>
@@ -476,9 +491,10 @@ var MODULES = {
   custos:     'https://alliance-orcamento.pages.dev/alliance-custos.html',
   crm:        'https://alliance-orcamento.pages.dev/crm.html',
   campanhas:  'https://alliance-orcamento.pages.dev/campanhas-admin.html',
+  portfolio:  'https://alliance-orcamento.pages.dev/portfolio-admin.html',
   banco:      'https://supabase.com/dashboard/project/gzzclbxnohokttujvaqa',
 };
-var LOCKED   = ['custos', 'banco', 'crm', 'campanhas'];
+var LOCKED   = ['custos', 'banco', 'crm', 'campanhas', 'portfolio'];
 var EXTERNAL = ['banco'];
 var _unlocked = {};
 var _current  = 'home';
@@ -602,7 +618,7 @@ function doLogout() {
   _session = null;
   localStorage.removeItem('alliance_session');
   // Limpar iframes
-  ['orcamento','catalogo','custos','crm','campanhas'].forEach(function(m) {
+  ['orcamento','catalogo','custos','crm','campanhas','portfolio'].forEach(function(m) {
     var iframe = document.getElementById('iframe-' + m);
     if (iframe) iframe.src = '';
   });
@@ -679,7 +695,7 @@ function loadModule(module) {
 
 // LOCK
 function showLock(module) {
-  var titles = { custos:'Gestão de Custos', banco:'Banco de Dados', crm:'CRM de Leads', campanhas:'Campanhas' };
+  var titles = { custos:'Gestão de Custos', banco:'Banco de Dados', crm:'CRM de Leads', campanhas:'Campanhas', portfolio:'Portfólio' };
   document.getElementById('lockTitle').textContent = titles[module] || 'Área Restrita';
   document.getElementById('lockInput').value = '';
   document.getElementById('lockErr').textContent = '';
