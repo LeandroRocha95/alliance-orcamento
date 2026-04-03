@@ -961,6 +961,8 @@ function loadModule(module) {
     localStorage.setItem(NOTIF_KEY + '_ultimo', new Date().toISOString());
     marcarTodasLidas();
   }
+
+  var el = document.getElementById('module-' + module);
   if (el) el.classList.add('active');
 
   // Sempre (re)carrega o iframe com a URL correta
