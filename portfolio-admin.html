@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alliance — Portfólio</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0c0e14;--surface:#13161f;--surface2:#1a1e2b;--surface3:#222638;
+  --border:#2d3348;--accent:#308EEE;--accent2:#1A65B8;
+  --green:#2ecc71;--yellow:#f5a623;--red:#e74c3c;
+  --text:#e8eaf0;--muted:#7a7f9a;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;}
+
+/* ── HEADER ── */
+.header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 28px;display:flex;align-items:center;gap:14px;height:58px;position:sticky;top:0;z-index:50;}
+.header-logo{height:30px;background:#fff;border-radius:8px;padding:4px 10px;}
+.header-title{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:3px;}
+.header-badge{background:rgba(48,142,238,.15);border:1px solid rgba(48,142,238,.3);color:var(--accent);font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:3px 10px;border-radius:20px;}
+.header-right{margin-left:auto;display:flex;gap:10px;}
+.btn-hub{background:none;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:6px 14px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;transition:all .15s;text-decoration:none;display:flex;align-items:center;gap:6px;}
+.btn-hub:hover{border-color:var(--accent);color:var(--accent);}
+
+/* ── MAIN ── */
+.main{max-width:1200px;margin:0 auto;padding:32px 28px;}
+.page-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:12px;}
+.page-title{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;}
+.btn-primary{background:linear-gradient(135deg,var(--accent2),var(--accent));border:none;color:#fff;border-radius:8px;padding:10px 20px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;display:flex;align-items:center;gap:7px;transition:opacity .15s;}
+.btn-primary:hover{opacity:.88;}
+
+/* ── FILTROS ── */
+.filtros{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;}
+.filtro{background:var(--surface2);border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:6px;cursor:pointer;font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;transition:all .15s;}
+.filtro.ativo{border-color:var(--accent);color:var(--accent);background:rgba(48,142,238,.1);}
+
+/* ── GRID ── */
+.portfolio-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+  gap:14px;
+}
+.portfolio-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:10px;overflow:hidden;transition:border-color .15s;
+  position:relative;
+}
+.portfolio-card:hover{border-color:rgba(48,142,238,.4);}
+.portfolio-card.inativo{opacity:.5;}
+.card-thumb{
+  width:100%;height:160px;object-fit:cover;display:block;
+  background:var(--surface3);
+}
+.card-thumb-video{
+  width:100%;height:160px;background:var(--surface3);
+  display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+}
+.card-thumb-video video{
+  width:100%;height:100%;object-fit:cover;position:absolute;inset:0;
+}
+.card-thumb-video .play-icon{
+  position:relative;z-index:2;
+  width:42px;height:42px;background:rgba(255,255,255,.2);
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  backdrop-filter:blur(4px);
+}
+.card-thumb-video .play-icon svg{width:18px;height:18px;fill:#fff;margin-left:2px;}
+.card-tipo-badge{
+  position:absolute;top:10px;left:10px;
+  font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+  padding:3px 8px;border-radius:10px;
+}
+.badge-foto{background:rgba(48,142,238,.8);color:#fff;}
+.badge-video{background:rgba(231,76,60,.8);color:#fff;}
+.card-body{padding:12px 14px;}
+.card-nome{font-size:13px;font-weight:600;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.card-meta{font-size:11px;color:var(--muted);margin-bottom:10px;line-height:1.5;}
+.card-tags{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px;}
+.card-tag{font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:2px 7px;border-radius:8px;background:var(--surface3);color:var(--muted);}
+.card-actions{display:flex;gap:6px;}
+.btn-sm{padding:5px 10px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;border:1px solid var(--border);background:none;color:var(--muted);transition:all .15s;}
+.btn-sm:hover{border-color:var(--accent);color:var(--accent);}
+.btn-sm.danger:hover{border-color:var(--red);color:var(--red);}
+
+/* ── EMPTY ── */
+.empty{text-align:center;padding:80px 20px;color:var(--muted);}
+.empty-icon{font-size:52px;margin-bottom:16px;}
+
+/* ── OVERLAY FORM ── */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);z-index:200;display:none;align-items:flex-start;justify-content:center;padding:24px;overflow-y:auto;}
+.overlay.open{display:flex;}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;width:100%;max-width:660px;margin:auto;}
+.modal-head{padding:20px 24px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.modal-title{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;}
+.modal-close{background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer;}
+.modal-close:hover{color:var(--red);}
+.modal-body{padding:22px 24px;}
+.modal-foot{padding:14px 24px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end;}
+
+/* Form */
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.form-group{margin-bottom:16px;}
+.form-label{display:block;font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+.form-hint{font-size:11px;color:var(--muted);margin-top:4px;line-height:1.4;}
+.form-inp,.form-sel,.form-textarea{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;padding:10px 12px;outline:none;transition:border-color .15s;}
+.form-inp:focus,.form-sel:focus,.form-textarea:focus{border-color:var(--accent);}
+.form-sel option{background:var(--bg);}
+.section-divider{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);border-bottom:1px solid var(--border);padding-bottom:8px;margin:20px 0 16px;}
+/* Toggle */
+.toggle-wrap{display:flex;align-items:center;gap:12px;}
+.toggle{position:relative;width:44px;height:24px;flex-shrink:0;}
+.toggle input{opacity:0;width:0;height:0;}
+.toggle-slider{position:absolute;inset:0;background:var(--surface3);border-radius:24px;cursor:pointer;transition:background .2s;}
+.toggle-slider::before{content:'';position:absolute;width:18px;height:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:transform .2s;}
+.toggle input:checked + .toggle-slider{background:var(--green);}
+.toggle input:checked + .toggle-slider::before{transform:translateX(20px);}
+
+/* Upload area */
+.upload-area{
+  border:2px dashed var(--border);border-radius:10px;
+  padding:28px;text-align:center;cursor:pointer;
+  transition:all .2s;position:relative;
+}
+.upload-area:hover,.upload-area.drag{border-color:var(--accent);background:rgba(48,142,238,.05);}
+.upload-area input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.upload-icon{font-size:32px;margin-bottom:8px;}
+.upload-title{font-size:13px;font-weight:600;margin-bottom:4px;}
+.upload-hint{font-size:11px;color:var(--muted);}
+/* Progress */
+.upload-progress{display:none;margin-top:12px;}
+.progress-bar-wrap{background:var(--surface3);border-radius:4px;height:6px;overflow:hidden;}
+.progress-bar{height:100%;background:var(--accent);border-radius:4px;transition:width .2s;width:0%;}
+.progress-label{font-size:11px;color:var(--muted);margin-top:6px;}
+/* Preview */
+.upload-preview{margin-top:12px;display:none;}
+.upload-preview img,.upload-preview video{max-width:100%;max-height:180px;border-radius:6px;object-fit:cover;}
+.upload-preview .preview-url{font-size:11px;color:var(--accent);word-break:break-all;margin-top:6px;}
+
+/* Confirm */
+.confirm-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:300;display:none;align-items:center;justify-content:center;}
+.confirm-overlay.open{display:flex;}
+.confirm-box{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:28px;max-width:340px;width:100%;text-align:center;}
+.confirm-box h4{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;margin-bottom:8px;}
+.confirm-box p{font-size:13px;color:var(--muted);margin-bottom:20px;}
+.confirm-actions{display:flex;gap:10px;}
+.btn-outline{background:none;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:8px 16px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;transition:all .15s;}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent);}
+
+/* Toast */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--surface3);border:1px solid var(--border);border-radius:10px;padding:12px 18px;font-size:13px;z-index:999;transform:translateY(80px);opacity:0;transition:all .3s;pointer-events:none;}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.ok{border-color:var(--green);color:var(--green);}
+.toast.err{border-color:var(--red);color:var(--red);}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <img class="header-logo" src="https://leandrorocha95.github.io/alliance-orcamento/logo_alliance.jpg" alt="Alliance">
+  <div class="header-title">Portfólio</div>
+  <div class="header-badge">Admin</div>
+  <div class="header-right">
+    <a href="hub.html" class="btn-hub">← Hub</a>
+    <a href="alliance-landing.html#galeria" target="_blank" class="btn-hub">🌐 Ver no Site</a>
+  </div>
+</header>
+
+<div class="main">
+  <div class="page-header">
+    <div class="page-title">🖼 Portfólio Alliance</div>
+    <button class="btn-primary" onclick="openForm()">+ Novo Item</button>
+  </div>
+
+  <div class="filtros">
+    <button class="filtro ativo" onclick="setFiltro('todos',this)">Todos</button>
+    <button class="filtro" onclick="setFiltro('foto',this)">📷 Fotos</button>
+    <button class="filtro" onclick="setFiltro('video',this)">🎬 Vídeos</button>
+    <button class="filtro" onclick="setFiltro('fachada',this)">Fachadas</button>
+    <button class="filtro" onclick="setFiltro('interior',this)">Interiores</button>
+    <button class="filtro" onclick="setFiltro('campo',this)">Casa de Campo</button>
+    <button class="filtro" onclick="setFiltro('alto-padrao',this)">Alto Padrão</button>
+    <button class="filtro" onclick="setFiltro('entregue',this)">Entregues</button>
+  </div>
+
+  <div class="portfolio-grid" id="portfolioGrid"></div>
+</div>
+
+<!-- MODAL FORM -->
+<div class="overlay" id="formOverlay" onclick="if(event.target===this)closeForm()">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="formTitle">Novo Item</div>
+      <button class="modal-close" onclick="closeForm()">×</button>
+    </div>
+    <div class="modal-body">
+
+      <div class="section-divider">Tipo de mídia</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Tipo *</label>
+          <select class="form-sel" id="fTipo" onchange="onTipoChange()">
+            <option value="foto">📷 Foto</option>
+            <option value="video">🎬 Vídeo</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Status</label>
+          <div class="toggle-wrap" style="margin-top:8px;">
+            <label class="toggle">
+              <input type="checkbox" id="fAtivo" checked>
+              <span class="toggle-slider"></span>
+            </label>
+            <span style="font-size:13px;color:var(--muted);">Visível no site</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Upload de arquivo -->
+      <div class="form-group" id="fUploadGrupo">
+        <label class="form-label">Arquivo *</label>
+        <div class="upload-area" id="uploadArea"
+             ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">
+          <input type="file" id="fArquivo" accept="image/*,video/*" onchange="onFileChange(event)">
+          <div class="upload-icon" id="uploadIcon">📁</div>
+          <div class="upload-title" id="uploadTitle">Clique ou arraste o arquivo aqui</div>
+          <div class="upload-hint" id="uploadHint">Fotos: JPG, PNG, WebP até 10MB · Vídeos: MP4, MOV até 200MB</div>
+        </div>
+        <div class="upload-progress" id="uploadProgress">
+          <div class="progress-bar-wrap"><div class="progress-bar" id="progressBar"></div></div>
+          <div class="progress-label" id="progressLabel">Enviando...</div>
+        </div>
+        <div class="upload-preview" id="uploadPreview"></div>
+        <input type="hidden" id="fUrlMedia">
+      </div>
+
+      <div class="section-divider">Informações do projeto</div>
+      <div class="form-group">
+        <label class="form-label">Nome do projeto *</label>
+        <input class="form-inp" id="fNome" placeholder="Ex: Casa Familiar — Joinville">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Cidade / Região</label>
+          <input class="form-inp" id="fCidade" placeholder="Ex: Joinville — SC">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Metragem</label>
+          <input class="form-inp" id="fArea" placeholder="Ex: 85m²">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Categorias</label>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;" id="catCheckboxes">
+          <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;"><input type="checkbox" value="fachada"> Fachada</label>
+          <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;"><input type="checkbox" value="interior"> Interior</label>
+          <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;"><input type="checkbox" value="campo"> Casa de Campo</label>
+          <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;"><input type="checkbox" value="alto-padrao"> Alto Padrão</label>
+          <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;"><input type="checkbox" value="entregue"> Entregue</label>
+          <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;"><input type="checkbox" value="andamento"> Em Andamento</label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Tamanho no grid</label>
+        <select class="form-sel" id="fSize">
+          <option value="normal">Normal (1 coluna)</option>
+          <option value="largo">Largo (2 colunas)</option>
+          <option value="grande">Grande (2×2)</option>
+        </select>
+        <div class="form-hint">Itens grandes e largos aparecem com destaque no portfólio</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Ordem de exibição</label>
+        <input class="form-inp" type="number" id="fOrdem" value="1" min="1">
+        <div class="form-hint">Menor número = aparece primeiro</div>
+      </div>
+
+    </div>
+    <div class="modal-foot">
+      <button class="btn-outline" onclick="closeForm()">Cancelar</button>
+      <button class="btn-primary" id="btnSalvar" onclick="salvarItem()">💾 Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM DELETE -->
+<div class="confirm-overlay" id="confirmOverlay" onclick="if(event.target===this)closeConfirm()">
+  <div class="confirm-box">
+    <h4>Excluir Item</h4>
+    <p>O arquivo também será removido do Storage. Ação irreversível.</p>
+    <div class="confirm-actions">
+      <button class="btn-outline" onclick="closeConfirm()" style="flex:1;text-align:center;">Cancelar</button>
+      <button class="btn-primary" onclick="doDelete()" style="flex:1;justify-content:center;background:var(--red);">Excluir</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SB_URL   = 'https://gzzclbxnohokttujvaqa.supabase.co';
+const SB_KEY   = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd6emNsYnhub2hva3R0dWp2YXFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4Njc0NDUsImV4cCI6MjA4OTQ0MzQ0NX0.6XPR0m90k6qd66rLeatapLQ8jZYMn-V1lB9h2YT34hc';
+const TABLE    = 'portfolio_items';
+const BUCKET   = 'portfolio-media';
+
+let items    = [];
+let _editId  = null;
+let _delId   = null;
+let _filtro  = 'todos';
+let _arquivo = null; // File selecionado
+
+// ── INIT ──────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', init);
+
+async function init() {
+  await load();
+  render();
+}
+
+// ── SUPABASE ──────────────────────────────────────────────────
+function sb(method, url, body, extra) {
+  return fetch(url, {
+    method,
+    headers: {
+      'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY,
+      'Content-Type': 'application/json',
+      ...(method === 'POST' ? { 'Prefer': 'return=representation' } : {}),
+      ...(method === 'PATCH' ? { 'Prefer': 'return=minimal' } : {}),
+      ...extra
+    },
+    body: body ? JSON.stringify(body) : undefined
+  });
+}
+
+async function load() {
+  try {
+    const r = await sb('GET', `${SB_URL}/rest/v1/${TABLE}?order=ordem.asc,created_at.desc`);
+    if (r.ok) { items = await r.json(); if (!Array.isArray(items)) items = []; }
+    else { items = []; }
+  } catch(e) { items = []; toast('Sem conexão com Supabase', 'err'); }
+}
+
+// ── RENDER ────────────────────────────────────────────────────
+function setFiltro(cat, btn) {
+  document.querySelectorAll('.filtro').forEach(b => b.classList.remove('ativo'));
+  btn.classList.add('ativo');
+  _filtro = cat;
+  render();
+}
+
+function render() {
+  const grid = document.getElementById('portfolioGrid');
+  const visíveis = items.filter(it => {
+    if (_filtro === 'todos') return true;
+    if (_filtro === 'foto' || _filtro === 'video') return it.tipo === _filtro;
+    return (it.categorias || []).includes(_filtro);
+  });
+
+  if (!visíveis.length) {
+    grid.innerHTML = `<div class="empty"><div class="empty-icon">${_filtro==='video'?'🎬':'🖼'}</div><p>Nenhum item encontrado.</p></div>`;
+    return;
+  }
+
+  grid.innerHTML = visíveis.map(it => {
+    const isVideo = it.tipo === 'video';
+    const cats = (it.categorias || []).map(c => `<span class="card-tag">${c}</span>`).join('');
+    const thumb = isVideo
+      ? `<div class="card-thumb-video">
+           ${it.url_media ? `<video src="${it.url_media}" muted preload="metadata"></video>` : ''}
+           <div class="play-icon"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+         </div>`
+      : `<img class="card-thumb" src="${it.url_media}" alt="${esc(it.nome)}" loading="lazy">`;
+    return `<div class="portfolio-card ${it.ativo===false?'inativo':''}">
+      ${thumb}
+      <span class="card-tipo-badge badge-${it.tipo}">${isVideo?'▶ Vídeo':'📷 Foto'}</span>
+      <div class="card-body">
+        <div class="card-nome">${esc(it.nome||'—')}</div>
+        <div class="card-meta">${[it.cidade,it.area].filter(Boolean).join(' · ')||'—'}</div>
+        ${cats ? `<div class="card-tags">${cats}</div>` : ''}
+        <div class="card-actions">
+          <button class="btn-sm" onclick="openForm('${it.id}')">✏️ Editar</button>
+          ${it.ativo!==false
+            ? `<button class="btn-sm" onclick="toggleAtivo('${it.id}',false)">⏸</button>`
+            : `<button class="btn-sm" style="color:var(--green)" onclick="toggleAtivo('${it.id}',true)">▶</button>`}
+          <button class="btn-sm danger" onclick="confirmDelete('${it.id}')">🗑</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// ── FORM ──────────────────────────────────────────────────────
+function openForm(id) {
+  _editId = id || null;
+  _arquivo = null;
+  clearForm();
+  if (id) {
+    const it = items.find(x => String(x.id) === String(id));
+    if (it) fillForm(it);
+    document.getElementById('formTitle').textContent = 'Editar Item';
+  } else {
+    document.getElementById('formTitle').textContent = 'Novo Item';
+  }
+  onTipoChange();
+  document.getElementById('formOverlay').classList.add('open');
+}
+
+function closeForm() {
+  document.getElementById('formOverlay').classList.remove('open');
+  _editId = null; _arquivo = null;
+}
+
+function clearForm() {
+  ['fNome','fCidade','fArea','fUrlMedia'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('fTipo').value  = 'foto';
+  document.getElementById('fSize').value  = 'normal';
+  document.getElementById('fOrdem').value = '1';
+  document.getElementById('fAtivo').checked = true;
+  document.querySelectorAll('#catCheckboxes input').forEach(cb => cb.checked = false);
+  document.getElementById('uploadPreview').style.display = 'none';
+  document.getElementById('uploadPreview').innerHTML = '';
+  document.getElementById('uploadProgress').style.display = 'none';
+  document.getElementById('progressBar').style.width = '0%';
+  resetUploadArea();
+}
+
+function fillForm(it) {
+  document.getElementById('fTipo').value   = it.tipo   || 'foto';
+  document.getElementById('fNome').value   = it.nome   || '';
+  document.getElementById('fCidade').value = it.cidade || '';
+  document.getElementById('fArea').value   = it.area   || '';
+  document.getElementById('fSize').value   = it.size   || 'normal';
+  document.getElementById('fOrdem').value  = it.ordem  || 1;
+  document.getElementById('fAtivo').checked = it.ativo !== false;
+  document.getElementById('fUrlMedia').value = it.url_media || '';
+  // Categorias
+  document.querySelectorAll('#catCheckboxes input').forEach(cb => {
+    cb.checked = (it.categorias || []).includes(cb.value);
+  });
+  // Preview da mídia atual
+  if (it.url_media) showPreview(it.url_media, it.tipo);
+}
+
+function onTipoChange() {
+  const tipo = document.getElementById('fTipo').value;
+  document.getElementById('uploadHint').textContent = tipo === 'video'
+    ? 'Vídeos MP4 ou MOV até 200MB'
+    : 'Fotos JPG, PNG, WebP até 10MB';
+  document.getElementById('uploadIcon').textContent = tipo === 'video' ? '🎬' : '📷';
+  document.getElementById('fArquivo').accept = tipo === 'video' ? 'video/*' : 'image/*';
+}
+
+function resetUploadArea() {
+  document.getElementById('uploadIcon').textContent = '📁';
+  document.getElementById('uploadTitle').textContent = 'Clique ou arraste o arquivo aqui';
+}
+
+// ── DRAG & DROP ───────────────────────────────────────────────
+function onDragOver(e) { e.preventDefault(); document.getElementById('uploadArea').classList.add('drag'); }
+function onDragLeave()  { document.getElementById('uploadArea').classList.remove('drag'); }
+function onDrop(e) {
+  e.preventDefault();
+  document.getElementById('uploadArea').classList.remove('drag');
+  const file = e.dataTransfer.files[0];
+  if (file) processFile(file);
+}
+function onFileChange(e) {
+  const file = e.target.files[0];
+  if (file) processFile(file);
+}
+
+function processFile(file) {
+  _arquivo = file;
+  document.getElementById('uploadTitle').textContent = file.name;
+  document.getElementById('uploadIcon').textContent = file.type.startsWith('video') ? '🎬' : '📷';
+  // Auto-detect tipo
+  if (file.type.startsWith('video')) document.getElementById('fTipo').value = 'video';
+  else document.getElementById('fTipo').value = 'foto';
+  onTipoChange();
+  // Preview local
+  const url = URL.createObjectURL(file);
+  showPreview(url, file.type.startsWith('video') ? 'video' : 'foto');
+}
+
+function showPreview(url, tipo) {
+  const wrap = document.getElementById('uploadPreview');
+  if (tipo === 'video') {
+    wrap.innerHTML = `<video src="${url}" controls muted style="max-width:100%;max-height:160px;border-radius:6px;"></video><div class="preview-url">${url.startsWith('blob:') ? 'arquivo local' : url}</div>`;
+  } else {
+    wrap.innerHTML = `<img src="${url}" style="max-width:100%;max-height:160px;border-radius:6px;object-fit:cover;"><div class="preview-url">${url.startsWith('blob:') ? 'arquivo local' : url}</div>`;
+  }
+  wrap.style.display = 'block';
+}
+
+// ── UPLOAD PARA SUPABASE STORAGE ──────────────────────────────
+async function uploadArquivo(file) {
+  const ext  = file.name.split('.').pop().toLowerCase();
+  const nome = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+  const path = `${document.getElementById('fTipo').value}s/${nome}`;
+
+  const progressBar   = document.getElementById('progressBar');
+  const progressLabel = document.getElementById('progressLabel');
+  const progressWrap  = document.getElementById('uploadProgress');
+  progressWrap.style.display = 'block';
+  progressBar.style.width    = '0%';
+  progressLabel.textContent  = 'Enviando...';
+
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', `${SB_URL}/storage/v1/object/${BUCKET}/${path}`);
+    xhr.setRequestHeader('apikey', SB_KEY);
+    xhr.setRequestHeader('Authorization', 'Bearer ' + SB_KEY);
+    xhr.setRequestHeader('Content-Type', file.type || 'application/octet-stream');
+    xhr.setRequestHeader('x-upsert', 'true');
+
+    xhr.upload.onprogress = e => {
+      if (e.lengthComputable) {
+        const pct = Math.round(e.loaded / e.total * 100);
+        progressBar.style.width  = pct + '%';
+        progressLabel.textContent = `Enviando... ${pct}%`;
+      }
+    };
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        const publicUrl = `${SB_URL}/storage/v1/object/public/${BUCKET}/${path}`;
+        progressLabel.textContent = '✓ Upload concluído!';
+        progressBar.style.background = 'var(--green)';
+        resolve(publicUrl);
+      } else {
+        progressLabel.textContent = 'Erro no upload: ' + xhr.status;
+        progressBar.style.background = 'var(--red)';
+        reject(new Error('Upload falhou: ' + xhr.status + ' ' + xhr.responseText));
+      }
+    };
+    xhr.onerror = () => reject(new Error('Erro de rede no upload'));
+    xhr.send(file);
+  });
+}
+
+// ── SALVAR ────────────────────────────────────────────────────
+async function salvarItem() {
+  const nome = document.getElementById('fNome').value.trim();
+  if (!nome) { toast('Digite o nome do projeto', 'err'); return; }
+
+  const btnSalvar = document.getElementById('btnSalvar');
+  btnSalvar.disabled = true;
+  btnSalvar.textContent = 'Salvando...';
+
+  try {
+    let urlMedia = document.getElementById('fUrlMedia').value;
+
+    // Upload se houver arquivo novo selecionado
+    if (_arquivo) {
+      toast('⬆ Enviando arquivo...', 'ok');
+      urlMedia = await uploadArquivo(_arquivo);
+      document.getElementById('fUrlMedia').value = urlMedia;
+      showPreview(urlMedia, document.getElementById('fTipo').value);
+    }
+
+    if (!urlMedia) { toast('Selecione um arquivo', 'err'); return; }
+
+    const cats = Array.from(document.querySelectorAll('#catCheckboxes input:checked'))
+                      .map(cb => cb.value);
+    const obj = {
+      tipo:       document.getElementById('fTipo').value,
+      nome,
+      cidade:     document.getElementById('fCidade').value.trim(),
+      area:       document.getElementById('fArea').value.trim(),
+      size:       document.getElementById('fSize').value,
+      ordem:      parseInt(document.getElementById('fOrdem').value) || 1,
+      ativo:      document.getElementById('fAtivo').checked,
+      url_media:  urlMedia,
+      categorias: cats,
+    };
+
+    if (_editId) {
+      const r = await sb('PATCH', `${SB_URL}/rest/v1/${TABLE}?id=eq.${_editId}`, obj);
+      if (!r.ok) throw new Error('PATCH ' + r.status + ' ' + await r.text());
+      const idx = items.findIndex(x => String(x.id) === String(_editId));
+      if (idx >= 0) Object.assign(items[idx], obj);
+      toast('✓ Item atualizado!');
+    } else {
+      const r = await sb('POST', `${SB_URL}/rest/v1/${TABLE}`, obj);
+      if (!r.ok) throw new Error('POST ' + r.status + ' ' + await r.text());
+      const saved = await r.json();
+      items.unshift(Array.isArray(saved) ? saved[0] : { ...obj, id: Date.now() });
+      toast('✓ Item criado!');
+    }
+
+    closeForm();
+    render();
+  } catch(e) {
+    console.error(e);
+    toast('Erro: ' + e.message.slice(0, 80), 'err');
+  } finally {
+    btnSalvar.disabled = false;
+    btnSalvar.textContent = '💾 Salvar';
+  }
+}
+
+// ── TOGGLE ATIVO ──────────────────────────────────────────────
+async function toggleAtivo(id, val) {
+  try {
+    const r = await sb('PATCH', `${SB_URL}/rest/v1/${TABLE}?id=eq.${id}`, { ativo: val });
+    if (!r.ok) { toast('Erro ' + r.status, 'err'); return; }
+    const it = items.find(x => String(x.id) === String(id));
+    if (it) it.ativo = val;
+    render();
+    toast(val ? '▶ Visível no site' : '⏸ Oculto do site');
+  } catch(e) { toast('Erro: ' + e.message, 'err'); }
+}
+
+// ── DELETE ────────────────────────────────────────────────────
+function confirmDelete(id) {
+  _delId = id;
+  document.getElementById('confirmOverlay').classList.add('open');
+}
+function closeConfirm() {
+  document.getElementById('confirmOverlay').classList.remove('open');
+  _delId = null;
+}
+
+async function doDelete() {
+  if (!_delId) return;
+  try {
+    // Busca URL para remover do storage também
+    const it = items.find(x => String(x.id) === String(_delId));
+    const r = await sb('DELETE', `${SB_URL}/rest/v1/${TABLE}?id=eq.${_delId}`);
+    if (!r.ok) throw new Error('DELETE ' + r.status);
+    // Remove do storage se URL é do nosso bucket
+    if (it && it.url_media && it.url_media.includes(BUCKET)) {
+      const path = it.url_media.split(`/public/${BUCKET}/`)[1];
+      if (path) {
+        await fetch(`${SB_URL}/storage/v1/object/${BUCKET}/${path}`, {
+          method: 'DELETE',
+          headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY }
+        });
+      }
+    }
+    items = items.filter(x => String(x.id) !== String(_delId));
+    closeConfirm(); render(); toast('Item excluído');
+  } catch(e) { toast('Erro: ' + e.message, 'err'); }
+  _delId = null;
+}
+
+// ── TOAST ─────────────────────────────────────────────────────
+function toast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast show ' + (type||'ok');
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => t.className = 'toast', 3000);
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closeForm(); closeConfirm(); }
+});
+</script>
+</body>
+</html>
