@@ -578,6 +578,7 @@ section{padding:120px 60px;}
 .portfolio-item{
   position:relative;overflow:hidden;cursor:pointer;
   background:#0A2040;
+  height:240px; /* altura uniforme por padrão */
 }
 .portfolio-item.oculto{display:none;}
 .portfolio-item img,
@@ -589,16 +590,16 @@ section{padding:120px 60px;}
 }
 .portfolio-item:hover img,
 .portfolio-item:hover .portfolio-thumb{
-  transform:scale(1.05);filter:brightness(1);
-}
-/* Tamanhos variados */
-.portfolio-item[data-size="grande"]{grid-column:span 2;grid-row:span 2;}
-.portfolio-item[data-size="largo"]{grid-column:span 2;}
-.portfolio-item[data-size="normal"]{grid-column:span 1;}
-/* Altura automática por ratio */
-.portfolio-item[data-size="grande"]{height:360px;}
-.portfolio-item[data-size="largo"]{height:210px;}
-.portfolio-item[data-size="normal"]{height:210px;}
+  transform:scale(1.05);filter:brightness(1);}
+/* Tamanhos variados — só aplicam quando há itens suficientes */
+.portfolio-item[data-size="grande"]{grid-column:span 2;grid-row:span 2;height:486px;}
+.portfolio-item[data-size="largo"]{grid-column:span 2;height:240px;}
+.portfolio-item[data-size="normal"]{grid-column:span 1;height:240px;}
+/* Imagem quebrada — não mostrar bloco preto vazio */
+.portfolio-item img[src=""],
+.portfolio-item img:not([src]){display:none;}
+.portfolio-item:has(img[src=""]) .portfolio-overlay,
+.portfolio-item:has(img:not([src])) .portfolio-overlay{opacity:1;}
 
 /* Overlay info */
 .portfolio-overlay{
@@ -2330,6 +2331,9 @@ function renderPortfolioGrid() {
   var grid = document.getElementById('portfolioGrid');
   if (!grid || !_pfItems.length) return;
 
+  // Limpa itens estáticos do HTML antes de injetar os do Supabase
+  grid.innerHTML = '';
+
   var sizeMap = { grande:'grande', largo:'largo', normal:'normal' };
 
   function escHtml(s){ var d=document.createElement('div'); d.textContent=String(s||''); return d.innerHTML; }
@@ -2346,7 +2350,8 @@ function renderPortfolioGrid() {
 
     var mediaHtml = isVideo
       ? `<video class="portfolio-thumb" src="${capa}" muted playsinline preload="metadata" loading="lazy"></video>`
-      : `<img src="${capa}" alt="${escHtml(it.nome)}" loading="lazy">`;
+      : `<img src="${capa}" alt="${escHtml(it.nome)}" loading="lazy"
+             onerror="this.style.display='none';this.parentElement.style.background='#0d1f38';">`;
 
     var playHtml = isVideo
       ? `<div class="portfolio-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>`
