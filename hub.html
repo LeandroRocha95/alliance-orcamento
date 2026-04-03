@@ -940,7 +940,11 @@ function loadModule(module) {
     return;
   }
 
-  var el = document.getElementById('module-' + module);
+  if (module === 'crm') {
+    // Ao abrir o CRM, registra o momento e marca todos como lidos
+    localStorage.setItem(NOTIF_KEY + '_ultimo', new Date().toISOString());
+    marcarTodasLidas();
+  }
   if (el) el.classList.add('active');
 
   // Sempre (re)carrega o iframe com a URL correta
@@ -1227,9 +1231,9 @@ function iniciarNotificacoes() {
 }
 
 function checarNovosLeads() {
-  // Busca leads dos últimos 7 dias para não sobrecarregar
+  // Busca todos os leads dos últimos 7 dias (IDs ativos no banco)
   var desde = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
-  var url = SUPABASE_URL + '/rest/v1/crm_leads?created_at=gte.' + desde + '&order=created_at.desc&limit=20';
+  var url = SUPABASE_URL + '/rest/v1/crm_leads?created_at=gte.' + desde + '&order=created_at.desc&limit=50&select=id,nome,cidade,interesse,created_at';
   fetch(url, {
     headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
   })
@@ -1237,35 +1241,52 @@ function checarNovosLeads() {
   .then(function(leads) {
     if (!Array.isArray(leads)) return;
 
-    var vistos = getVistos();
-    var novos  = leads.filter(function(l) { return !vistos[String(l.id)]; });
+    // IDs que existem AGORA no banco
+    var idsAtivos = {};
+    leads.forEach(function(l) { idsAtivos[String(l.id)] = true; });
 
-    novos.forEach(function(lead) {
+    // Remove da lista local notificações de leads que foram excluídos
+    _notifList = _notifList.filter(function(n) {
+      if (n.tipo !== 'lead') return true;
+      var leadId = String(n.leadId || n.id.replace('lead_', ''));
+      return idsAtivos[leadId];
+    });
+
+    // Timestamp do último visto salvo
+    var ultimoVisto = localStorage.getItem(NOTIF_KEY + '_ultimo') || '1970-01-01T00:00:00Z';
+
+    // Adiciona notificações para leads mais recentes que o último visto
+    leads.forEach(function(lead) {
+      var notifId = 'lead_' + lead.id;
+      var existe  = _notifList.find(function(n) { return n.id === notifId; });
+      if (existe) return;
+
+      // Só cria notificação se o lead é mais recente que o último acesso ao CRM
+      var isNovo = new Date(lead.created_at) > new Date(ultimoVisto);
       var notif = {
-        id:       'lead_' + lead.id,
-        tipo:     'lead',
-        titulo:   'Novo lead: ' + (lead.nome || 'Sem nome'),
-        msg:      [lead.cidade, lead.interesse].filter(Boolean).join(' · ') || 'Sem detalhes',
-        ts:       lead.created_at || new Date().toISOString(),
-        lida:     false,
-        leadId:   lead.id
+        id:      notifId,
+        tipo:    'lead',
+        titulo:  'Novo lead: ' + (lead.nome || 'Sem nome'),
+        msg:     [lead.cidade, lead.interesse].filter(Boolean).join(' · ') || 'Sem detalhes',
+        ts:      lead.created_at || new Date().toISOString(),
+        lida:    !isNovo, // se já era existente antes, marca como lida
+        leadId:  lead.id
       };
-      // Adiciona só se ainda não está na lista
-      var existe = _notifList.find(function(n) { return n.id === notif.id; });
-      if (!existe) {
-        _notifList.unshift(notif);
-        // Toast só para leads realmente novos (últimos 5 min desde o último check)
-        if (_notifLastTs && new Date(lead.created_at) > new Date(_notifLastTs)) {
-          mostrarToast(notif);
-        }
+      _notifList.push(notif);
+
+      // Toast só para leads realmente novos chegando agora
+      if (_notifLastTs && new Date(lead.created_at) > new Date(_notifLastTs)) {
+        mostrarToast(notif);
       }
     });
 
-    // Atualiza timestamp
+    // Reordena por data desc
+    _notifList.sort(function(a, b) { return new Date(b.ts) - new Date(a.ts); });
+
+    // Atualiza timestamp do último lead visto
     if (leads.length) _notifLastTs = leads[0].created_at;
     else if (!_notifLastTs) _notifLastTs = new Date().toISOString();
 
-    // Limita a 50 notificações
     _notifList = _notifList.slice(0, 50);
     salvarNotifs();
     renderNotifList();
