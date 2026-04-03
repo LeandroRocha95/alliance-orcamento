@@ -161,18 +161,92 @@ body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif
   display: none;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   padding: 40px 24px;
   overflow-y: auto;
   height: 100%;
   background-image:
-    radial-gradient(ellipse at 15% 0%, rgba(245,166,35,0.08) 0%, transparent 55%),
-    radial-gradient(ellipse at 85% 100%, rgba(232,84,26,0.06) 0%, transparent 55%);
+    radial-gradient(ellipse at 15% 0%, rgba(48,142,238,0.07) 0%, transparent 55%),
+    radial-gradient(ellipse at 85% 100%, rgba(26,101,184,0.05) 0%, transparent 55%);
 }
 .home-screen.active { display: flex; }
 .home-logo { height: 60px; background: #fff; border-radius: 12px; padding: 7px 16px; margin-bottom: 14px; }
 .home-title { font-family: 'Bebas Neue', sans-serif; font-size: 30px; letter-spacing: 4px; margin-bottom: 4px; }
-.home-sub { font-size: 12px; color: var(--muted); margin-bottom: 36px; letter-spacing: 0.5px; }
+.home-sub { font-size: 12px; color: var(--muted); margin-bottom: 28px; letter-spacing: 0.5px; }
+
+/* ── DASHBOARD KPIs ── */
+.dash-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  width: 100%;
+  max-width: 740px;
+  margin-bottom: 28px;
+}
+.dash-kpi {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 18px;
+  cursor: pointer;
+  transition: border-color .15s, transform .15s;
+  position: relative;
+  overflow: hidden;
+}
+.dash-kpi::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  border-radius: 12px 12px 0 0;
+}
+.dash-kpi:hover { border-color: var(--accent); transform: translateY(-2px); }
+.dash-kpi.kpi-leads::before   { background: var(--red); }
+.dash-kpi.kpi-orc::before     { background: var(--accent); }
+.dash-kpi.kpi-modelos::before { background: var(--green); }
+.dash-kpi.kpi-port::before    { background: #a855f7; }
+.dash-kpi-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.dash-kpi-value {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 36px;
+  letter-spacing: 2px;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.dash-kpi.kpi-leads   .dash-kpi-value { color: var(--red); }
+.dash-kpi.kpi-orc     .dash-kpi-value { color: var(--accent); }
+.dash-kpi.kpi-modelos .dash-kpi-value { color: var(--green); }
+.dash-kpi.kpi-port    .dash-kpi-value { color: #a855f7; }
+.dash-kpi-sub {
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.4;
+}
+.dash-kpi-loading {
+  display: inline-block;
+  width: 28px; height: 4px;
+  background: var(--surface3);
+  border-radius: 4px;
+  animation: shimmer 1.2s ease-in-out infinite;
+}
+@keyframes shimmer {
+  0%,100% { opacity: .4; }
+  50%      { opacity: 1; }
+}
+.dash-updated {
+  font-size: 10px;
+  color: var(--muted);
+  margin-bottom: 20px;
+  opacity: .7;
+}
+
 .home-cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -191,7 +265,7 @@ body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif
   flex-direction: column;
   gap: 8px;
 }
-.home-card:hover { transform: translateY(-3px); border-color: var(--accent); box-shadow: 0 10px 36px rgba(245,166,35,0.08); }
+.home-card:hover { transform: translateY(-3px); border-color: var(--accent); box-shadow: 0 10px 36px rgba(48,142,238,0.1); }
 .home-card-icon { font-size: 28px; }
 .home-card-title { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 1.5px; }
 .home-card-desc { font-size: 12px; color: var(--muted); line-height: 1.6; }
@@ -520,6 +594,31 @@ body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif
     <img class="home-logo" src="https://leandrorocha95.github.io/alliance-orcamento/logo_alliance.jpg" alt="Alliance">
     <div class="home-title">Painel Alliance</div>
     <div class="home-sub">Casas Pré Fabricadas &nbsp;·&nbsp; CNPJ: 26.520.516/0001-50</div>
+
+    <!-- DASHBOARD -->
+    <div class="dash-kpis">
+      <div class="dash-kpi kpi-leads" onclick="navigate('crm')" title="Ver CRM de Leads">
+        <div class="dash-kpi-label">Leads hoje</div>
+        <div class="dash-kpi-value" id="kpiLeadsHoje"><span class="dash-kpi-loading"></span></div>
+        <div class="dash-kpi-sub" id="kpiLeadsSub">carregando...</div>
+      </div>
+      <div class="dash-kpi kpi-orc" onclick="navigate('orcamento')" title="Ver Orçamentos">
+        <div class="dash-kpi-label">Orçamentos</div>
+        <div class="dash-kpi-value" id="kpiOrcTotal"><span class="dash-kpi-loading"></span></div>
+        <div class="dash-kpi-sub" id="kpiOrcSub">carregando...</div>
+      </div>
+      <div class="dash-kpi kpi-modelos" onclick="navigate('catalogo')" title="Ver Catálogo">
+        <div class="dash-kpi-label">No site</div>
+        <div class="dash-kpi-value" id="kpiModelos"><span class="dash-kpi-loading"></span></div>
+        <div class="dash-kpi-sub" id="kpiModelosSub">carregando...</div>
+      </div>
+      <div class="dash-kpi kpi-port" onclick="navigate('portfolio')" title="Ver Portfólio">
+        <div class="dash-kpi-label">Portfólio</div>
+        <div class="dash-kpi-value" id="kpiPortfolio"><span class="dash-kpi-loading"></span></div>
+        <div class="dash-kpi-sub" id="kpiPortfolioSub">carregando...</div>
+      </div>
+    </div>
+    <div class="dash-updated" id="dashUpdated"></div>
     <div class="home-cards">
       <div class="home-card" onclick="navigate('orcamento')">
         <div class="home-card-icon">📋</div>
@@ -738,9 +837,9 @@ function showHub() {
   if (_session && _session.user) {
     document.getElementById('hubUserEmail').textContent = _session.user.email;
   }
-  // Inicia sistema de notificações após login
   if (_notifTimer) clearInterval(_notifTimer);
   iniciarNotificacoes();
+  carregarDashboard();
 }
 
 function doLogin() {
@@ -837,6 +936,7 @@ function loadModule(module) {
       item.classList.toggle('active', item.dataset.module === 'home');
     });
     _current = 'home';
+    carregarDashboard(); // Atualiza números ao voltar para home
     return;
   }
 
@@ -981,6 +1081,127 @@ window.addEventListener('message', function(e) {
   }
 });
 
+
+// ── DASHBOARD ─────────────────────────────────────────────────
+function carregarDashboard() {
+  var hoje = new Date();
+  hoje.setHours(0,0,0,0);
+  var hojeIso = hoje.toISOString();
+
+  function sbGet(path) {
+    return fetch(SUPABASE_URL + '/rest/v1/' + path, {
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Prefer': 'count=exact' }
+    });
+  }
+
+  // 1. Leads hoje
+  sbGet('crm_leads?created_at=gte.' + hojeIso + '&select=id')
+    .then(function(r) {
+      var total = parseInt(r.headers.get('content-range')?.split('/')[1] || '0');
+      return r.json().then(function(data) {
+        var n = Array.isArray(data) ? data.length : total || 0;
+        document.getElementById('kpiLeadsHoje').textContent = n;
+        // Total da semana como sub
+        var semana = new Date(Date.now() - 7*24*60*60*1000).toISOString();
+        return sbGet('crm_leads?created_at=gte.' + semana + '&select=id');
+      });
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      var n7 = Array.isArray(data) ? data.length : 0;
+      document.getElementById('kpiLeadsSub').textContent = n7 + ' nos últimos 7 dias';
+    })
+    .catch(function() {
+      document.getElementById('kpiLeadsHoje').textContent = '—';
+      document.getElementById('kpiLeadsSub').textContent  = 'sem acesso';
+    });
+
+  // 2. Orçamentos (tabela orcamentos ou leads — tenta orcamentos primeiro)
+  sbGet('orcamentos?select=id')
+    .then(function(r) {
+      if (!r.ok) throw new Error('sem tabela');
+      return r.json();
+    })
+    .then(function(data) {
+      var n = Array.isArray(data) ? data.length : 0;
+      document.getElementById('kpiOrcTotal').textContent = n;
+      // Abertos hoje
+      return sbGet('orcamentos?created_at=gte.' + hojeIso + '&select=id');
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      var hoje = Array.isArray(data) ? data.length : 0;
+      document.getElementById('kpiOrcSub').textContent = hoje > 0
+        ? hoje + ' criado' + (hoje > 1 ? 's' : '') + ' hoje'
+        : 'nenhum hoje';
+    })
+    .catch(function() {
+      // Fallback: conta leads como proxy de orçamentos
+      sbGet('crm_leads?select=id')
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          var n = Array.isArray(data) ? data.length : 0;
+          document.getElementById('kpiOrcTotal').textContent = n;
+          document.getElementById('kpiOrcSub').textContent = 'total de leads';
+        })
+        .catch(function() {
+          document.getElementById('kpiOrcTotal').textContent = '—';
+          document.getElementById('kpiOrcSub').textContent  = '';
+        });
+    });
+
+  // 3. Modelos no site (visivel_site=true)
+  sbGet('casas_catalogo?visivel_site=eq.true&status=eq.publicado&select=id')
+    .then(function(r) {
+      if (!r.ok) throw new Error('col ausente');
+      return r.json();
+    })
+    .then(function(data) {
+      var n = Array.isArray(data) ? data.length : 0;
+      document.getElementById('kpiModelos').textContent = n;
+      return sbGet('casas_catalogo?select=id');
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      var total = Array.isArray(data) ? data.length : 0;
+      document.getElementById('kpiModelosSub').textContent = 'de ' + total + ' no catálogo';
+    })
+    .catch(function() {
+      // Coluna ainda não existe — mostra total de modelos
+      sbGet('casas_catalogo?select=id')
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          var n = Array.isArray(data) ? data.length : 0;
+          document.getElementById('kpiModelos').textContent = n;
+          document.getElementById('kpiModelosSub').textContent = 'total no catálogo';
+        })
+        .catch(function() {
+          document.getElementById('kpiModelos').textContent = '—';
+          document.getElementById('kpiModelosSub').textContent = '';
+        });
+    });
+
+  // 4. Portfólio (itens ativos)
+  sbGet('portfolio_items?ativo=eq.true&select=id,tipo')
+    .then(function(r) { return r.ok ? r.json() : []; })
+    .then(function(data) {
+      var items = Array.isArray(data) ? data : [];
+      var fotos  = items.filter(function(i) { return i.tipo !== 'video'; }).length;
+      var videos = items.filter(function(i) { return i.tipo === 'video'; }).length;
+      document.getElementById('kpiPortfolio').textContent = items.length;
+      document.getElementById('kpiPortfolioSub').textContent =
+        fotos + ' foto' + (fotos !== 1 ? 's' : '') + ' · ' + videos + ' vídeo' + (videos !== 1 ? 's' : '');
+    })
+    .catch(function() {
+      document.getElementById('kpiPortfolio').textContent = '—';
+      document.getElementById('kpiPortfolioSub').textContent = '';
+    });
+
+  // Horário de atualização
+  var now = new Date();
+  document.getElementById('dashUpdated').textContent =
+    'Atualizado às ' + now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
+}
 
 // ── SISTEMA DE NOTIFICAÇÕES ───────────────────────────────────
 var _notifList    = [];          // todas as notificações em memória
