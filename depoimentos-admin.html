@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alliance — Depoimentos</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0c0e14;--surface:#13161f;--surface2:#1a1e2b;--surface3:#222638;
+  --border:#2d3348;--accent:#308EEE;--accent2:#1A65B8;
+  --green:#2ecc71;--yellow:#f5a623;--red:#e74c3c;
+  --text:#e8eaf0;--muted:#7a7f9a;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;}
+
+.header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 28px;display:flex;align-items:center;gap:14px;height:58px;position:sticky;top:0;z-index:50;}
+.header-logo{height:30px;background:#fff;border-radius:8px;padding:4px 10px;}
+.header-title{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:3px;}
+.header-badge{background:rgba(48,142,238,.15);border:1px solid rgba(48,142,238,.3);color:var(--accent);font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:3px 10px;border-radius:20px;}
+.header-right{margin-left:auto;display:flex;gap:10px;}
+.btn-hub{background:none;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:6px 14px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;transition:all .15s;text-decoration:none;display:flex;align-items:center;gap:6px;}
+.btn-hub:hover{border-color:var(--accent);color:var(--accent);}
+
+.main{max-width:1100px;margin:0 auto;padding:32px 28px;}
+.page-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;flex-wrap:wrap;gap:12px;}
+.page-title{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;}
+.btn-primary{background:linear-gradient(135deg,var(--accent2),var(--accent));border:none;color:#fff;border-radius:8px;padding:10px 20px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;display:flex;align-items:center;gap:7px;transition:opacity .15s;}
+.btn-primary:hover{opacity:.88;}
+
+/* Cards */
+.deps-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;}
+.dep-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:border-color .15s;position:relative;}
+.dep-card:hover{border-color:rgba(48,142,238,.35);}
+.dep-card.inativo{opacity:.5;}
+
+/* Audio badge */
+.dep-tipo-badge{position:absolute;top:12px;right:12px;font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:3px 9px;border-radius:10px;}
+.badge-texto{background:rgba(48,142,238,.15);color:var(--accent);}
+.badge-audio{background:rgba(46,204,113,.15);color:var(--green);}
+.badge-ambos{background:rgba(245,166,35,.15);color:var(--yellow);}
+
+.dep-card-preview{padding:20px 20px 0;}
+.dep-preview-text{font-size:13px;font-style:italic;color:rgba(255,255,255,.7);line-height:1.6;margin-bottom:12px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+.dep-audio-preview{background:var(--surface3);border-radius:8px;padding:10px;margin-bottom:12px;}
+.dep-audio-preview audio{width:100%;height:32px;}
+.dep-stars{display:flex;gap:2px;margin-bottom:8px;}
+.dep-star{color:var(--yellow);font-size:13px;}
+.dep-star.vazio{color:var(--border);}
+
+.dep-card-body{padding:0 20px 16px;}
+.dep-author-row{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.dep-avatar-mini{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--accent2),var(--accent));display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0;}
+.dep-nome{font-size:13px;font-weight:600;}
+.dep-cidade{font-size:11px;color:var(--muted);}
+.dep-card-actions{display:flex;gap:6px;flex-wrap:wrap;}
+.btn-sm{padding:5px 12px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;border:1px solid var(--border);background:none;color:var(--muted);transition:all .15s;}
+.btn-sm:hover{border-color:var(--accent);color:var(--accent);}
+.btn-sm.danger:hover{border-color:var(--red);color:var(--red);}
+.btn-sm.success{border-color:var(--green);color:var(--green);}
+
+.empty{text-align:center;padding:80px 20px;color:var(--muted);}
+.empty-icon{font-size:52px;margin-bottom:16px;}
+
+/* Modal */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);z-index:200;display:none;align-items:flex-start;justify-content:center;padding:24px;overflow-y:auto;}
+.overlay.open{display:flex;}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;width:100%;max-width:620px;margin:auto;}
+.modal-head{padding:20px 24px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.modal-title{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;}
+.modal-close{background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer;}
+.modal-close:hover{color:var(--red);}
+.modal-body{padding:22px 24px;}
+.modal-foot{padding:14px 24px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end;}
+.section-divider{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);border-bottom:1px solid var(--border);padding-bottom:8px;margin:20px 0 16px;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.form-group{margin-bottom:16px;}
+.form-label{display:block;font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+.form-hint{font-size:11px;color:var(--muted);margin-top:4px;line-height:1.4;}
+.form-inp,.form-sel,.form-textarea{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;padding:10px 12px;outline:none;transition:border-color .15s;}
+.form-inp:focus,.form-sel:focus,.form-textarea:focus{border-color:var(--accent);}
+.form-textarea{resize:vertical;min-height:80px;}
+.form-sel option{background:var(--bg);}
+/* Stars selector */
+.stars-sel{display:flex;gap:6px;}
+.star-btn{background:none;border:none;cursor:pointer;font-size:22px;color:var(--border);transition:color .1s;padding:2px;}
+.star-btn.on{color:var(--yellow);}
+/* Toggle */
+.toggle-wrap{display:flex;align-items:center;gap:12px;}
+.toggle{position:relative;width:44px;height:24px;flex-shrink:0;}
+.toggle input{opacity:0;width:0;height:0;}
+.toggle-slider{position:absolute;inset:0;background:var(--surface3);border-radius:24px;cursor:pointer;transition:background .2s;}
+.toggle-slider::before{content:'';position:absolute;width:18px;height:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:transform .2s;}
+.toggle input:checked + .toggle-slider{background:var(--green);}
+.toggle input:checked + .toggle-slider::before{transform:translateX(20px);}
+/* Upload audio */
+.audio-upload{border:2px dashed var(--border);border-radius:10px;padding:20px;text-align:center;cursor:pointer;transition:all .2s;position:relative;}
+.audio-upload:hover,.audio-upload.drag{border-color:var(--green);background:rgba(46,204,113,.05);}
+.audio-upload input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.audio-upload-icon{font-size:28px;margin-bottom:6px;}
+.audio-upload-title{font-size:13px;font-weight:600;}
+.audio-upload-hint{font-size:11px;color:var(--muted);margin-top:4px;}
+.audio-preview-wrap{margin-top:12px;display:none;}
+.audio-preview-wrap audio{width:100%;border-radius:6px;}
+.progress-wrap{display:none;margin-top:10px;}
+.progress-bar-outer{background:var(--surface3);border-radius:4px;height:6px;overflow:hidden;}
+.progress-bar-inner{height:100%;background:var(--green);border-radius:4px;transition:width .2s;width:0%;}
+.progress-label{font-size:11px;color:var(--muted);margin-top:5px;}
+/* Confirm */
+.confirm-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:300;display:none;align-items:center;justify-content:center;}
+.confirm-overlay.open{display:flex;}
+.confirm-box{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:28px;max-width:340px;width:100%;text-align:center;}
+.confirm-box h4{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;margin-bottom:8px;}
+.confirm-box p{font-size:13px;color:var(--muted);margin-bottom:20px;}
+.confirm-actions{display:flex;gap:10px;}
+.btn-outline{background:none;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:8px 16px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;transition:all .15s;}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent);}
+/* Toast */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--surface3);border:1px solid var(--border);border-radius:10px;padding:12px 18px;font-size:13px;z-index:999;transform:translateY(80px);opacity:0;transition:all .3s;pointer-events:none;}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.ok{border-color:var(--green);color:var(--green);}
+.toast.err{border-color:var(--red);color:var(--red);}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <img class="header-logo" src="https://leandrorocha95.github.io/alliance-orcamento/logo_alliance.jpg" alt="Alliance">
+  <div class="header-title">Depoimentos</div>
+  <div class="header-badge">Admin</div>
+  <div class="header-right">
+    <a href="hub.html" class="btn-hub">← Hub</a>
+    <a href="alliance-landing.html#depoimentos" target="_blank" class="btn-hub">🌐 Ver no Site</a>
+  </div>
+</header>
+
+<div class="main">
+  <div class="page-header">
+    <div class="page-title">💬 Depoimentos</div>
+    <button class="btn-primary" onclick="openForm()">+ Novo Depoimento</button>
+  </div>
+  <div class="deps-grid" id="depsGrid"></div>
+</div>
+
+<!-- MODAL FORM -->
+<div class="overlay" id="formOverlay" onclick="if(event.target===this)closeForm()">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="formTitle">Novo Depoimento</div>
+      <button class="modal-close" onclick="closeForm()">×</button>
+    </div>
+    <div class="modal-body">
+
+      <div class="section-divider">Cliente</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Nome *</label>
+          <input class="form-inp" id="fNome" placeholder="Ex: Maria das Neves">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Cidade</label>
+          <input class="form-inp" id="fCidade" placeholder="Ex: Joinville — SC">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Avaliação</label>
+        <div class="stars-sel" id="starsSel">
+          <button type="button" class="star-btn on" data-val="1" onclick="setStars(1)">★</button>
+          <button type="button" class="star-btn on" data-val="2" onclick="setStars(2)">★</button>
+          <button type="button" class="star-btn on" data-val="3" onclick="setStars(3)">★</button>
+          <button type="button" class="star-btn on" data-val="4" onclick="setStars(4)">★</button>
+          <button type="button" class="star-btn on" data-val="5" onclick="setStars(5)">★</button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Status</label>
+        <div class="toggle-wrap">
+          <label class="toggle"><input type="checkbox" id="fAtivo" checked><span class="toggle-slider"></span></label>
+          <span style="font-size:13px;color:var(--muted);">Visível no site</span>
+        </div>
+      </div>
+
+      <div class="section-divider">Conteúdo</div>
+
+      <div class="form-group">
+        <label class="form-label">Texto do depoimento</label>
+        <textarea class="form-textarea" id="fTexto" placeholder='"Fiquei muito feliz com o resultado! Empresa séria e comprometida."'></textarea>
+        <div class="form-hint">Deixe vazio se for usar apenas áudio</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Áudio do cliente</label>
+        <div class="audio-upload" id="audioUploadArea"
+             ondragover="onAudioDrag(event)" ondragleave="onAudioLeave()" ondrop="onAudioDrop(event)">
+          <input type="file" id="fAudio" accept="audio/*" onchange="onAudioChange(event)">
+          <div class="audio-upload-icon">🎙️</div>
+          <div class="audio-upload-title" id="audioUploadTitle">Clique ou arraste o áudio aqui</div>
+          <div class="audio-upload-hint">MP3, M4A, OGG, WAV — até 20MB</div>
+        </div>
+        <div class="progress-wrap" id="audioProgress">
+          <div class="progress-bar-outer"><div class="progress-bar-inner" id="audioProgressBar"></div></div>
+          <div class="progress-label" id="audioProgressLabel">Enviando...</div>
+        </div>
+        <div class="audio-preview-wrap" id="audioPreview">
+          <audio controls id="audioPreviewEl"></audio>
+          <div style="font-size:11px;color:var(--muted);margin-top:4px;" id="audioPreviewUrl"></div>
+          <button onclick="removerAudio()" style="margin-top:6px;background:none;border:1px solid var(--red);color:var(--red);border-radius:6px;padding:3px 10px;font-size:11px;cursor:pointer;">× Remover áudio</button>
+        </div>
+        <input type="hidden" id="fUrlAudio">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Ordem de exibição</label>
+        <input class="form-inp" type="number" id="fOrdem" value="1" min="1">
+        <div class="form-hint">Menor número = aparece primeiro</div>
+      </div>
+
+    </div>
+    <div class="modal-foot">
+      <button class="btn-outline" onclick="closeForm()">Cancelar</button>
+      <button class="btn-primary" id="btnSalvar" onclick="salvar()">💾 Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM -->
+<div class="confirm-overlay" id="confirmOverlay" onclick="if(event.target===this)closeConfirm()">
+  <div class="confirm-box">
+    <h4>Excluir Depoimento</h4>
+    <p>Esta ação não pode ser desfeita. O áudio também será removido do Storage.</p>
+    <div class="confirm-actions">
+      <button class="btn-outline" onclick="closeConfirm()" style="flex:1;text-align:center;">Cancelar</button>
+      <button class="btn-primary" onclick="doDelete()" style="flex:1;justify-content:center;background:var(--red);">Excluir</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SB_URL  = 'https://gzzclbxnohokttujvaqa.supabase.co';
+const SB_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd6emNsYnhub2hva3R0dWp2YXFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4Njc0NDUsImV4cCI6MjA4OTQ0MzQ0NX0.6XPR0m90k6qd66rLeatapLQ8jZYMn-V1lB9h2YT34hc';
+const TABLE   = 'depoimentos';
+const BUCKET  = 'depoimentos-audio';
+
+let deps    = [];
+let _editId = null;
+let _delId  = null;
+let _stars  = 5;
+let _audioFile = null;
+
+document.addEventListener('DOMContentLoaded', init);
+
+// ── INIT ──────────────────────────────────────────────────────
+async function init() { await load(); render(); }
+
+function sb(method, url, body) {
+  const prefer = method === 'POST' ? 'return=representation' : method === 'PATCH' ? 'return=minimal' : '';
+  return fetch(url, {
+    method,
+    headers: {
+      'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY,
+      'Content-Type': 'application/json',
+      ...(prefer ? { 'Prefer': prefer } : {})
+    },
+    body: body ? JSON.stringify(body) : undefined
+  });
+}
+
+async function load() {
+  try {
+    const r = await sb('GET', `${SB_URL}/rest/v1/${TABLE}?order=ordem.asc,created_at.desc`);
+    if (r.ok) { deps = await r.json(); if (!Array.isArray(deps)) deps = []; }
+  } catch(e) { deps = []; }
+}
+
+// ── RENDER ────────────────────────────────────────────────────
+function render() {
+  const grid = document.getElementById('depsGrid');
+  if (!deps.length) {
+    grid.innerHTML = `<div class="empty"><div class="empty-icon">💬</div><p>Nenhum depoimento cadastrado.</p></div>`;
+    return;
+  }
+  grid.innerHTML = deps.map(d => {
+    const stars = Array.from({length:5},(_,i)=>`<span class="dep-star${i<(d.estrelas||5)?'':' vazio'}">★</span>`).join('');
+    const tipo  = d.url_audio && d.texto ? 'ambos' : d.url_audio ? 'audio' : 'texto';
+    const tipoLabel = {'texto':'Texto','audio':'🎙 Áudio','ambos':'Texto + Áudio'}[tipo];
+    const tipoClass = {'texto':'badge-texto','audio':'badge-audio','ambos':'badge-ambos'}[tipo];
+    const inicial = (d.nome||'?')[0].toUpperCase();
+    return `<div class="dep-card ${d.ativo===false?'inativo':''}">
+      <span class="dep-tipo-badge ${tipoClass}">${tipoLabel}</span>
+      <div class="dep-card-preview">
+        <div class="dep-stars">${stars}</div>
+        ${d.texto ? `<p class="dep-preview-text">${esc(d.texto)}</p>` : ''}
+        ${d.url_audio ? `<div class="dep-audio-preview"><audio src="${d.url_audio}" controls preload="none" style="width:100%;height:32px;"></audio></div>` : ''}
+      </div>
+      <div class="dep-card-body">
+        <div class="dep-author-row">
+          <div class="dep-avatar-mini">${inicial}</div>
+          <div>
+            <div class="dep-nome">${esc(d.nome||'—')}</div>
+            ${d.cidade ? `<div class="dep-cidade">${esc(d.cidade)}</div>` : ''}
+          </div>
+        </div>
+        <div class="dep-card-actions">
+          <button class="btn-sm" onclick="openForm('${d.id}')">✏️ Editar</button>
+          ${d.ativo!==false
+            ? `<button class="btn-sm" onclick="toggleAtivo('${d.id}',false)">⏸</button>`
+            : `<button class="btn-sm success" onclick="toggleAtivo('${d.id}',true)">▶</button>`}
+          <button class="btn-sm danger" onclick="_delId='${d.id}';document.getElementById('confirmOverlay').classList.add('open')">🗑</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// ── FORM ──────────────────────────────────────────────────────
+function openForm(id) {
+  _editId = id || null; _audioFile = null;
+  clearForm();
+  if (id) {
+    const d = deps.find(x => String(x.id) === String(id));
+    if (d) fillForm(d);
+    document.getElementById('formTitle').textContent = 'Editar Depoimento';
+  } else {
+    document.getElementById('formTitle').textContent = 'Novo Depoimento';
+  }
+  document.getElementById('formOverlay').classList.add('open');
+}
+
+function closeForm() {
+  document.getElementById('formOverlay').classList.remove('open');
+  _editId = null; _audioFile = null;
+}
+
+function clearForm() {
+  ['fNome','fCidade','fTexto','fUrlAudio'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('fOrdem').value = String(deps.length + 1);
+  document.getElementById('fAtivo').checked = true;
+  setStars(5);
+  document.getElementById('audioPreview').style.display = 'none';
+  document.getElementById('audioProgress').style.display = 'none';
+  document.getElementById('audioUploadTitle').textContent = 'Clique ou arraste o áudio aqui';
+}
+
+function fillForm(d) {
+  document.getElementById('fNome').value   = d.nome   || '';
+  document.getElementById('fCidade').value = d.cidade || '';
+  document.getElementById('fTexto').value  = d.texto  || '';
+  document.getElementById('fOrdem').value  = d.ordem  || 1;
+  document.getElementById('fAtivo').checked = d.ativo !== false;
+  setStars(d.estrelas || 5);
+  if (d.url_audio) showAudioPreview(d.url_audio);
+  document.getElementById('fUrlAudio').value = d.url_audio || '';
+}
+
+// Stars
+function setStars(n) {
+  _stars = n;
+  document.querySelectorAll('.star-btn').forEach(b => {
+    b.classList.toggle('on', parseInt(b.dataset.val) <= n);
+  });
+}
+
+// ── AUDIO UPLOAD ──────────────────────────────────────────────
+function onAudioDrag(e) { e.preventDefault(); document.getElementById('audioUploadArea').classList.add('drag'); }
+function onAudioLeave() { document.getElementById('audioUploadArea').classList.remove('drag'); }
+function onAudioDrop(e) {
+  e.preventDefault();
+  document.getElementById('audioUploadArea').classList.remove('drag');
+  const file = e.dataTransfer.files[0];
+  if (file) processAudio(file);
+}
+function onAudioChange(e) {
+  const file = e.target.files[0];
+  if (file) processAudio(file);
+  e.target.value = '';
+}
+
+function processAudio(file) {
+  _audioFile = file;
+  document.getElementById('audioUploadTitle').textContent = file.name;
+  const url = URL.createObjectURL(file);
+  showAudioPreview(url, true);
+}
+
+function showAudioPreview(url, isLocal) {
+  const wrap = document.getElementById('audioPreview');
+  document.getElementById('audioPreviewEl').src = url;
+  document.getElementById('audioPreviewUrl').textContent = isLocal ? 'arquivo local — será enviado ao salvar' : url.split('/').pop();
+  wrap.style.display = 'block';
+}
+
+function removerAudio() {
+  _audioFile = null;
+  document.getElementById('fUrlAudio').value = '';
+  document.getElementById('audioPreview').style.display = 'none';
+  document.getElementById('audioPreviewEl').src = '';
+  document.getElementById('audioUploadTitle').textContent = 'Clique ou arraste o áudio aqui';
+}
+
+async function uploadAudio(file) {
+  const ext  = file.name.split('.').pop().toLowerCase();
+  const nome = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+  const path = `audios/${nome}`;
+
+  const progressWrap = document.getElementById('audioProgress');
+  const bar          = document.getElementById('audioProgressBar');
+  const label        = document.getElementById('audioProgressLabel');
+  progressWrap.style.display = 'block';
+  bar.style.width = '0%';
+  bar.style.background = 'var(--green)';
+  label.textContent = 'Enviando áudio...';
+
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', `${SB_URL}/storage/v1/object/${BUCKET}/${path}`);
+    xhr.setRequestHeader('apikey', SB_KEY);
+    xhr.setRequestHeader('Authorization', 'Bearer ' + SB_KEY);
+    xhr.setRequestHeader('Content-Type', file.type || 'audio/mpeg');
+    xhr.setRequestHeader('x-upsert', 'true');
+    xhr.upload.onprogress = e => {
+      if (e.lengthComputable) { const p = Math.round(e.loaded/e.total*100); bar.style.width=p+'%'; label.textContent=`Enviando... ${p}%`; }
+    };
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        bar.style.width = '100%';
+        label.textContent = '✓ Áudio enviado!';
+        resolve(`${SB_URL}/storage/v1/object/public/${BUCKET}/${path}`);
+      } else {
+        let msg = xhr.responseText;
+        try { msg = JSON.parse(msg).message || msg; } catch(e){}
+        bar.style.background = 'var(--red)';
+        label.textContent = 'Erro: ' + msg.slice(0,60);
+        reject(new Error(msg));
+      }
+    };
+    xhr.onerror = () => reject(new Error('Erro de rede'));
+    xhr.send(file);
+  });
+}
+
+// ── SALVAR ────────────────────────────────────────────────────
+async function salvar() {
+  const nome = document.getElementById('fNome').value.trim();
+  if (!nome) { toast('Digite o nome do cliente', 'err'); return; }
+
+  const texto = document.getElementById('fTexto').value.trim();
+  let urlAudio = document.getElementById('fUrlAudio').value;
+
+  if (!texto && !urlAudio && !_audioFile) {
+    toast('Adicione um texto ou áudio', 'err'); return;
+  }
+
+  const btn = document.getElementById('btnSalvar');
+  btn.disabled = true; btn.textContent = 'Salvando...';
+
+  try {
+    if (_audioFile) {
+      toast('⬆ Enviando áudio...', 'ok');
+      urlAudio = await uploadAudio(_audioFile);
+      document.getElementById('fUrlAudio').value = urlAudio;
+      showAudioPreview(urlAudio, false);
+    }
+
+    const obj = {
+      nome,
+      cidade:    document.getElementById('fCidade').value.trim(),
+      texto:     texto || null,
+      url_audio: urlAudio || null,
+      estrelas:  _stars,
+      ordem:     parseInt(document.getElementById('fOrdem').value) || 1,
+      ativo:     document.getElementById('fAtivo').checked,
+    };
+
+    if (_editId) {
+      const r = await sb('PATCH', `${SB_URL}/rest/v1/${TABLE}?id=eq.${_editId}`, obj);
+      if (!r.ok) throw new Error('PATCH ' + r.status + ' ' + await r.text());
+      const idx = deps.findIndex(x => String(x.id) === String(_editId));
+      if (idx >= 0) Object.assign(deps[idx], obj);
+      toast('✓ Depoimento atualizado!');
+    } else {
+      const r = await sb('POST', `${SB_URL}/rest/v1/${TABLE}`, obj);
+      if (!r.ok) throw new Error('POST ' + r.status + ' ' + await r.text());
+      const saved = await r.json();
+      deps.unshift(Array.isArray(saved) ? saved[0] : { ...obj, id: Date.now() });
+      toast('✓ Depoimento criado!');
+    }
+    closeForm(); render();
+  } catch(e) {
+    console.error(e);
+    toast('Erro: ' + e.message.slice(0,80), 'err');
+  } finally {
+    btn.disabled = false; btn.textContent = '💾 Salvar';
+  }
+}
+
+// ── TOGGLE / DELETE ───────────────────────────────────────────
+async function toggleAtivo(id, val) {
+  try {
+    const r = await sb('PATCH', `${SB_URL}/rest/v1/${TABLE}?id=eq.${id}`, { ativo: val });
+    if (!r.ok) { toast('Erro ' + r.status, 'err'); return; }
+    const d = deps.find(x => String(x.id) === String(id));
+    if (d) d.ativo = val;
+    render();
+    toast(val ? '▶ Visível' : '⏸ Oculto');
+  } catch(e) { toast('Erro: ' + e.message, 'err'); }
+}
+
+function closeConfirm() { document.getElementById('confirmOverlay').classList.remove('open'); _delId = null; }
+
+async function doDelete() {
+  if (!_delId) return;
+  try {
+    const d = deps.find(x => String(x.id) === String(_delId));
+    const r = await sb('DELETE', `${SB_URL}/rest/v1/${TABLE}?id=eq.${_delId}`);
+    if (!r.ok) throw new Error('DELETE ' + r.status);
+    // Remove áudio do Storage se existir
+    if (d && d.url_audio && d.url_audio.includes(BUCKET)) {
+      const path = d.url_audio.split(`/public/${BUCKET}/`)[1];
+      if (path) await fetch(`${SB_URL}/storage/v1/object/${BUCKET}/${path}`, {
+        method: 'DELETE', headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY }
+      });
+    }
+    deps = deps.filter(x => String(x.id) !== String(_delId));
+    closeConfirm(); render(); toast('Excluído');
+  } catch(e) { toast('Erro: ' + e.message, 'err'); }
+  _delId = null;
+}
+
+// ── TOAST ─────────────────────────────────────────────────────
+function toast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast show ' + (type||'ok');
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => t.className = 'toast', 3000);
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closeForm(); closeConfirm(); }
+});
+</script>
+</body>
+</html>
