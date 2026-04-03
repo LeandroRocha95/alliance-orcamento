@@ -1931,6 +1931,13 @@ var observer = new IntersectionObserver(function(entries){
 }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
 reveals.forEach(function(el){ observer.observe(el); });
 
+// Re-scan após load completo (garante elementos que já estavam visíveis)
+window.addEventListener('load', function() {
+  document.querySelectorAll('.reveal:not(.visible)').forEach(function(el) {
+    observer.observe(el);
+  });
+});
+
 // ── LEAD FORM ──
 var SB_URL = 'https://gzzclbxnohokttujvaqa.supabase.co';
 var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd6emNsYnhub2hva3R0dWp2YXFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4Njc0NDUsImV4cCI6MjA4OTQ0MzQ0NX0.6XPR0m90k6qd66rLeatapLQ8jZYMn-V1lB9h2YT34hc';
@@ -2728,20 +2735,28 @@ function loadDiferenciais() {
   })
   .then(function(r){ return r.ok ? r.json() : null; })
   .then(function(data){
-    if (!Array.isArray(data) || !data.length) return;
+    // Só substitui o grid se vier dados reais do banco
+    if (!Array.isArray(data) || data.length === 0) return;
     var grid = document.getElementById('diffGrid');
     if (!grid) return;
     var delays = ['', ' reveal-delay-1', ' reveal-delay-2', ' reveal-delay-3'];
     grid.innerHTML = data.map(function(d, i) {
       var num = String(i + 1).padStart(2, '0');
+      var titulo = d.titulo || '';
+      var texto  = d.texto  || '';
+      var icone  = d.icone  || '⭐';
       return '<div class="diff-item reveal' + (delays[i] || '') + '">'
         + '<div class="diff-num">' + num + '</div>'
-        + '<div class="diff-icon">' + (d.icone || '⭐') + '</div>'
-        + '<h3 class="diff-title">' + escHtml(d.titulo || '') + '</h3>'
-        + '<p class="diff-text">'  + escHtml(d.texto  || '') + '</p>'
+        + '<div class="diff-icon">' + icone + '</div>'
+        + '<h3 class="diff-title">' + titulo + '</h3>'
+        + '<p class="diff-text">'  + texto  + '</p>'
         + '</div>';
     }).join('');
-    function escHtml(s){ var d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+    // Re-observa os novos elementos para animação reveal
+    grid.querySelectorAll('.reveal').forEach(function(el) {
+      el.classList.remove('visible');
+      observer.observe(el);
+    });
   })
   .catch(function(){});
 }
