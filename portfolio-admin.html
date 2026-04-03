@@ -135,9 +135,38 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .progress-bar{height:100%;background:var(--accent);border-radius:4px;transition:width .2s;width:0%;}
 .progress-label{font-size:11px;color:var(--muted);margin-top:6px;}
 /* Preview */
-.upload-preview{margin-top:12px;display:none;}
-.upload-preview img,.upload-preview video{max-width:100%;max-height:180px;border-radius:6px;object-fit:cover;}
-.upload-preview .preview-url{font-size:11px;color:var(--accent);word-break:break-all;margin-top:6px;}
+.upload-preview{margin-top:14px;}
+.preview-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px;margin-top:8px;}
+.preview-cell{position:relative;aspect-ratio:1;border-radius:6px;overflow:hidden;background:var(--surface3);}
+.preview-cell img,.preview-cell video{width:100%;height:100%;object-fit:cover;display:block;}
+.preview-cell-remove{
+  position:absolute;top:4px;right:4px;
+  width:20px;height:20px;border-radius:50%;
+  background:rgba(231,76,60,.85);border:none;color:#fff;
+  font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  line-height:1;transition:background .15s;
+}
+.preview-cell-remove:hover{background:var(--red);}
+.preview-cell-main{
+  position:absolute;bottom:0;left:0;right:0;
+  background:rgba(48,142,238,.75);font-size:9px;font-weight:700;
+  text-align:center;color:#fff;padding:2px;
+  letter-spacing:.5px;text-transform:uppercase;
+}
+.preview-cell .play-overlay{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  background:rgba(0,0,0,.3);pointer-events:none;
+}
+.preview-cell .play-overlay svg{width:22px;height:22px;fill:rgba(255,255,255,.9);}
+.preview-add-btn{
+  aspect-ratio:1;border-radius:6px;
+  border:2px dashed var(--border);background:none;
+  color:var(--muted);font-size:22px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .15s;
+}
+.preview-add-btn:hover{border-color:var(--accent);color:var(--accent);}
+.preview-count{font-size:11px;color:var(--muted);margin-top:6px;}
 
 /* Confirm */
 .confirm-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:300;display:none;align-items:center;justify-content:center;}
@@ -223,16 +252,16 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
         <label class="form-label">Arquivo *</label>
         <div class="upload-area" id="uploadArea"
              ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">
-          <input type="file" id="fArquivo" accept="image/*,video/*" onchange="onFileChange(event)">
+          <input type="file" id="fArquivo" accept="image/*,video/*" multiple onchange="onFileChange(event)">
           <div class="upload-icon" id="uploadIcon">📁</div>
-          <div class="upload-title" id="uploadTitle">Clique ou arraste o arquivo aqui</div>
-          <div class="upload-hint" id="uploadHint">Fotos: JPG, PNG, WebP até 10MB · Vídeos: MP4, MOV até 200MB</div>
+          <div class="upload-title" id="uploadTitle">Clique ou arraste arquivos aqui</div>
+          <div class="upload-hint" id="uploadHint">Selecione 1 ou mais arquivos · Primeira imagem = capa do carrossel</div>
         </div>
         <div class="upload-progress" id="uploadProgress">
           <div class="progress-bar-wrap"><div class="progress-bar" id="progressBar"></div></div>
           <div class="progress-label" id="progressLabel">Enviando...</div>
         </div>
-        <div class="upload-preview" id="uploadPreview"></div>
+        <div class="upload-preview" id="uploadPreview"><div class="preview-grid" id="previewGrid"></div><div class="preview-count" id="previewCount"></div></div>
         <input type="hidden" id="fUrlMedia">
       </div>
 
@@ -250,6 +279,34 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
           <label class="form-label">Metragem</label>
           <input class="form-inp" id="fArea" placeholder="Ex: 85m²">
         </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Tipo de construção</label>
+          <select class="form-sel" id="fMaterial">
+            <option value="">— Selecionar —</option>
+            <option value="Madeira de Lei">Madeira de Lei</option>
+            <option value="Pinus Tratado">Pinus Tratado</option>
+            <option value="Pinus Autoclave">Pinus Autoclave</option>
+            <option value="Alvenaria">Alvenaria</option>
+            <option value="Misto">Misto (madeira + alvenaria)</option>
+            <option value="Modular">Modular</option>
+          </select>
+        </div>
+        <div class="form-group" style="display:flex;flex-direction:column;justify-content:flex-end;">
+          <label class="form-label">Personalizado</label>
+          <input class="form-inp" id="fMaterialCustom" placeholder="Ou digite um tipo específico..."
+                 oninput="if(this.value) document.getElementById('fMaterial').value=''">
+          <div class="form-hint">Deixe vazio para usar o selecionado acima</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Descrição breve</label>
+        <textarea class="form-textarea" id="fDescricao" rows="2"
+          placeholder="Ex: Casa térrea com varanda coberta, acabamento premium em madeira de lei e cobertura em telha colonial."></textarea>
+        <div class="form-hint">Aparece no lightbox ao abrir o projeto. Máx. ~150 caracteres.</div>
       </div>
 
       <div class="form-group">
@@ -308,11 +365,12 @@ const SB_KEY   = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsI
 const TABLE    = 'portfolio_items';
 const BUCKET   = 'portfolio-media';
 
-let items    = [];
-let _editId  = null;
-let _delId   = null;
-let _filtro  = 'todos';
-let _arquivo = null; // File selecionado
+let items     = [];
+let _editId   = null;
+let _delId    = null;
+let _filtro   = 'todos';
+let _arquivos = [];   // Files selecionados (novos)
+let _urlsAtuais = []; // URLs já salvas (edição)
 
 // ── INIT ──────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', init);
@@ -418,24 +476,39 @@ function closeForm() {
 }
 
 function clearForm() {
-  ['fNome','fCidade','fArea','fUrlMedia'].forEach(id => document.getElementById(id).value = '');
+  ['fNome','fCidade','fArea','fUrlMedia','fDescricao','fMaterialCustom'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('fMaterial').value = '';
   document.getElementById('fTipo').value  = 'foto';
   document.getElementById('fSize').value  = 'normal';
   document.getElementById('fOrdem').value = '1';
   document.getElementById('fAtivo').checked = true;
   document.querySelectorAll('#catCheckboxes input').forEach(cb => cb.checked = false);
-  document.getElementById('uploadPreview').style.display = 'none';
-  document.getElementById('uploadPreview').innerHTML = '';
+  _arquivos   = [];
+  _urlsAtuais = [];
   document.getElementById('uploadProgress').style.display = 'none';
   document.getElementById('progressBar').style.width = '0%';
+  document.getElementById('progressBar').style.background = 'var(--accent)';
+  document.getElementById('fUrlMedia').value = '';
+  renderPreviewGrid();
   resetUploadArea();
 }
 
 function fillForm(it) {
   document.getElementById('fTipo').value   = it.tipo   || 'foto';
   document.getElementById('fNome').value   = it.nome   || '';
-  document.getElementById('fCidade').value = it.cidade || '';
-  document.getElementById('fArea').value   = it.area   || '';
+  document.getElementById('fCidade').value      = it.cidade    || '';
+  document.getElementById('fArea').value        = it.area      || '';
+  document.getElementById('fDescricao').value   = it.descricao || '';
+  // material: tenta selecionar na lista, senão coloca no campo custom
+  const matOpts = ['Madeira de Lei','Pinus Tratado','Pinus Autoclave','Alvenaria','Misto','Modular'];
+  const mat = it.material || '';
+  if (matOpts.includes(mat)) {
+    document.getElementById('fMaterial').value       = mat;
+    document.getElementById('fMaterialCustom').value = '';
+  } else {
+    document.getElementById('fMaterial').value       = '';
+    document.getElementById('fMaterialCustom').value = mat;
+  }
   document.getElementById('fSize').value   = it.size   || 'normal';
   document.getElementById('fOrdem').value  = it.ordem  || 1;
   document.getElementById('fAtivo').checked = it.ativo !== false;
@@ -444,17 +517,22 @@ function fillForm(it) {
   document.querySelectorAll('#catCheckboxes input').forEach(cb => {
     cb.checked = (it.categorias || []).includes(cb.value);
   });
-  // Preview da mídia atual
-  if (it.url_media) showPreview(it.url_media, it.tipo);
+  // Carregar mídias existentes
+  const urls = Array.isArray(it.url_media) ? it.url_media
+             : (it.url_media ? [it.url_media] : []);
+  _urlsAtuais = urls;
+  _arquivos   = [];
+  renderPreviewGrid();
 }
 
 function onTipoChange() {
   const tipo = document.getElementById('fTipo').value;
-  document.getElementById('uploadHint').textContent = tipo === 'video'
-    ? 'Vídeos MP4 ou MOV até 200MB'
-    : 'Fotos JPG, PNG, WebP até 10MB';
+  document.getElementById('uploadHint').textContent =
+    tipo === 'video'
+      ? 'Vídeos MP4 ou MOV até 200MB · Múltiplos vídeos viram carrossel'
+      : 'Fotos JPG, PNG, WebP até 10MB · Múltiplas fotos viram carrossel';
   document.getElementById('uploadIcon').textContent = tipo === 'video' ? '🎬' : '📷';
-  document.getElementById('fArquivo').accept = tipo === 'video' ? 'video/*' : 'image/*';
+  document.getElementById('fArquivo').accept = tipo === 'video' ? 'video/*' : 'image/*,video/*';
 }
 
 function resetUploadArea() {
@@ -468,49 +546,92 @@ function onDragLeave()  { document.getElementById('uploadArea').classList.remove
 function onDrop(e) {
   e.preventDefault();
   document.getElementById('uploadArea').classList.remove('drag');
-  const file = e.dataTransfer.files[0];
-  if (file) processFile(file);
+  addFiles(Array.from(e.dataTransfer.files));
 }
 function onFileChange(e) {
-  const file = e.target.files[0];
-  if (file) processFile(file);
+  addFiles(Array.from(e.target.files));
+  e.target.value = ''; // permite re-selecionar mesmo arquivo
 }
 
-function processFile(file) {
-  _arquivo = file;
-  document.getElementById('uploadTitle').textContent = file.name;
-  document.getElementById('uploadIcon').textContent = file.type.startsWith('video') ? '🎬' : '📷';
-  // Auto-detect tipo
-  if (file.type.startsWith('video')) document.getElementById('fTipo').value = 'video';
+function addFiles(files) {
+  if (!files.length) return;
+  // Auto-detect tipo pelo primeiro arquivo
+  if (files[0].type.startsWith('video')) document.getElementById('fTipo').value = 'video';
   else document.getElementById('fTipo').value = 'foto';
   onTipoChange();
-  // Preview local
-  const url = URL.createObjectURL(file);
-  showPreview(url, file.type.startsWith('video') ? 'video' : 'foto');
+  _arquivos = _arquivos.concat(files);
+  renderPreviewGrid();
 }
 
-function showPreview(url, tipo) {
-  const wrap = document.getElementById('uploadPreview');
-  if (tipo === 'video') {
-    wrap.innerHTML = `<video src="${url}" controls muted style="max-width:100%;max-height:160px;border-radius:6px;"></video><div class="preview-url">${url.startsWith('blob:') ? 'arquivo local' : url}</div>`;
+function removeFile(idx, isExistente) {
+  if (isExistente) {
+    _urlsAtuais.splice(idx, 1);
   } else {
-    wrap.innerHTML = `<img src="${url}" style="max-width:100%;max-height:160px;border-radius:6px;object-fit:cover;"><div class="preview-url">${url.startsWith('blob:') ? 'arquivo local' : url}</div>`;
+    _arquivos.splice(idx, 1);
   }
-  wrap.style.display = 'block';
+  renderPreviewGrid();
+}
+
+function renderPreviewGrid() {
+  const grid  = document.getElementById('previewGrid');
+  const count = document.getElementById('previewCount');
+  const total = _urlsAtuais.length + _arquivos.length;
+
+  let html = '';
+
+  // URLs já salvas (edição)
+  _urlsAtuais.forEach((url, i) => {
+    const isVid = url.match(/\.(mp4|mov|webm|avi)$/i);
+    html += `<div class="preview-cell">
+      ${isVid
+        ? `<video src="${url}" muted preload="metadata"></video><div class="play-overlay"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>`
+        : `<img src="${url}" loading="lazy">`}
+      ${i === 0 ? '<div class="preview-cell-main">Capa</div>' : ''}
+      <button class="preview-cell-remove" onclick="removeFile(${i},true)" title="Remover">×</button>
+    </div>`;
+  });
+
+  // Novos arquivos (blob)
+  _arquivos.forEach((file, i) => {
+    const blobUrl = URL.createObjectURL(file);
+    const isVid   = file.type.startsWith('video');
+    const capaMark = (_urlsAtuais.length === 0 && i === 0) ? '<div class="preview-cell-main">Capa</div>' : '';
+    html += `<div class="preview-cell">
+      ${isVid
+        ? `<video src="${blobUrl}" muted preload="metadata"></video><div class="play-overlay"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>`
+        : `<img src="${blobUrl}">`}
+      ${capaMark}
+      <button class="preview-cell-remove" onclick="removeFile(${i},false)" title="Remover">×</button>
+    </div>`;
+  });
+
+  // Botão de adicionar mais
+  html += `<button class="preview-add-btn" title="Adicionar mais" onclick="document.getElementById('fArquivo').click()">+</button>`;
+
+  grid.innerHTML = html;
+  count.textContent = total > 0 ? `${total} arquivo${total>1?'s':''} · ${total > 1 ? 'Será criado um carrossel' : 'Item único'}` : '';
+
+  // Atualiza título da upload area
+  document.getElementById('uploadTitle').textContent =
+    total > 0 ? `${total} arquivo${total>1?'s':''} selecionado${total>1?'s':''}` : 'Clique ou arraste arquivos aqui';
+  document.getElementById('uploadIcon').textContent =
+    total > 0 ? (total > 1 ? '🎞' : '📷') : '📁';
 }
 
 // ── UPLOAD PARA SUPABASE STORAGE ──────────────────────────────
-async function uploadArquivo(file) {
+async function uploadArquivo(file, idxAtual, total) {
   const ext  = file.name.split('.').pop().toLowerCase();
   const nome = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-  const path = `${document.getElementById('fTipo').value}s/${nome}`;
+  const tipo = file.type.startsWith('video') ? 'videos' : 'fotos';
+  const path = `${tipo}/${nome}`;
 
   const progressBar   = document.getElementById('progressBar');
   const progressLabel = document.getElementById('progressLabel');
   const progressWrap  = document.getElementById('uploadProgress');
   progressWrap.style.display = 'block';
-  progressBar.style.width    = '0%';
-  progressLabel.textContent  = 'Enviando...';
+  progressBar.style.background = 'var(--accent)';
+  progressBar.style.width      = '0%';
+  progressLabel.textContent    = `Enviando ${idxAtual+1} de ${total}...`;
 
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
@@ -523,15 +644,21 @@ async function uploadArquivo(file) {
     xhr.upload.onprogress = e => {
       if (e.lengthComputable) {
         const pct = Math.round(e.loaded / e.total * 100);
-        progressBar.style.width  = pct + '%';
-        progressLabel.textContent = `Enviando... ${pct}%`;
+        // Progresso combinado: base do arquivo anterior + progresso atual
+        const base = Math.round(idxAtual / total * 100);
+        const contrib = Math.round(pct / total);
+        progressBar.style.width   = Math.min(base + contrib, 99) + '%';
+        progressLabel.textContent = `Enviando ${idxAtual+1} de ${total}... ${pct}%`;
       }
     };
     xhr.onload = () => {
       if (xhr.status >= 200 && xhr.status < 300) {
         const publicUrl = `${SB_URL}/storage/v1/object/public/${BUCKET}/${path}`;
-        progressLabel.textContent = '✓ Upload concluído!';
-        progressBar.style.background = 'var(--green)';
+        if (idxAtual + 1 === total) {
+          progressBar.style.width = '100%';
+          progressLabel.textContent = '✓ Todos os uploads concluídos!';
+          progressBar.style.background = 'var(--green)';
+        }
         resolve(publicUrl);
       } else {
         let detail = xhr.responseText;
@@ -556,17 +683,21 @@ async function salvarItem() {
   btnSalvar.textContent = 'Salvando...';
 
   try {
-    let urlMedia = document.getElementById('fUrlMedia').value;
+    // Monta lista final de URLs: existentes + novos uploads
+    let urlsFinal = [..._urlsAtuais];
 
-    // Upload se houver arquivo novo selecionado
-    if (_arquivo) {
-      toast('⬆ Enviando arquivo...', 'ok');
-      urlMedia = await uploadArquivo(_arquivo);
-      document.getElementById('fUrlMedia').value = urlMedia;
-      showPreview(urlMedia, document.getElementById('fTipo').value);
+    if (_arquivos.length > 0) {
+      toast(`⬆ Enviando ${_arquivos.length} arquivo(s)...`, 'ok');
+      for (let i = 0; i < _arquivos.length; i++) {
+        const url = await uploadArquivo(_arquivos[i], i, _arquivos.length);
+        urlsFinal.push(url);
+      }
     }
 
-    if (!urlMedia) { toast('Selecione um arquivo', 'err'); return; }
+    if (!urlsFinal.length) { toast('Selecione pelo menos um arquivo', 'err'); return; }
+
+    // url_media: string se 1 arquivo, array se múltiplos
+    const urlMedia = urlsFinal.length === 1 ? urlsFinal[0] : urlsFinal;
 
     const cats = Array.from(document.querySelectorAll('#catCheckboxes input:checked'))
                       .map(cb => cb.value);
@@ -580,6 +711,9 @@ async function salvarItem() {
       ativo:      document.getElementById('fAtivo').checked,
       url_media:  urlMedia,
       categorias: cats,
+      material:   (document.getElementById('fMaterialCustom').value.trim()
+                   || document.getElementById('fMaterial').value) || '',
+      descricao:  document.getElementById('fDescricao').value.trim(),
     };
 
     if (_editId) {
