@@ -46,28 +46,47 @@
   .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
 
   /* DASHBOARD */
-  .dash-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr)); gap: 14px; margin-bottom: 24px; }
-  .dash-kpi { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px 16px; }
-  .dash-kpi-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); font-weight: 700; margin-bottom: 8px; }
-  .dash-kpi-val { font-size: 28px; font-weight: 700; color: var(--accent); line-height: 1; }
+  .dash-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); gap: 12px; margin-bottom: 20px; }
+  .dash-kpi { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; position: relative; overflow: hidden; }
+  .dash-kpi::before { content:''; position:absolute; inset:0; background: linear-gradient(135deg, rgba(245,166,35,.06) 0%, transparent 60%); pointer-events:none; }
+  .dash-kpi-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); font-weight: 700; margin-bottom: 8px; }
+  .dash-kpi-val { font-size: 26px; font-weight: 700; color: var(--accent); line-height: 1; }
   .dash-kpi-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
-  .dash-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
-  .dash-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px; }
-  .dash-card-title { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); font-weight: 700; margin-bottom: 14px; }
-  .dash-bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
-  .dash-bar-label { font-size: 12px; color: var(--text); width: 110px; flex-shrink: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .dash-bar-track { flex: 1; background: var(--surface2); border-radius: 4px; height: 8px; overflow: hidden; }
-  .dash-bar-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--accent2), var(--accent)); transition: width .5s ease; }
-  .dash-bar-val { font-size: 11px; color: var(--muted); width: 60px; text-align: right; flex-shrink: 0; }
-  .dash-period { display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap; }
-  .dash-period-btn { background: var(--surface2); border: 1px solid var(--border); color: var(--muted); border-radius: 20px; padding: 5px 12px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all .15s; }
+  .dash-kpi-icon { position:absolute; top:12px; right:14px; font-size:20px; opacity:.25; }
+  .dash-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  .dash-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  .dash-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
+  .dash-card-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); font-weight: 700; margin-bottom: 12px; display:flex; justify-content:space-between; align-items:center; }
+  .dash-bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; }
+  .dash-bar-label { font-size: 12px; color: var(--text); width: 100px; flex-shrink: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .dash-bar-track { flex: 1; background: var(--surface2); border-radius: 4px; height: 7px; overflow: hidden; }
+  .dash-bar-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--accent2), var(--accent)); transition: width .6s ease; }
+  .dash-bar-fill.green { background: linear-gradient(90deg,#1a8a4a,#2ecc71); }
+  .dash-bar-fill.red   { background: linear-gradient(90deg,#a93226,#e74c3c); }
+  .dash-bar-fill.blue  { background: linear-gradient(90deg,#1a5276,#3498db); }
+  .dash-bar-val { font-size: 11px; color: var(--muted); width: 70px; text-align: right; flex-shrink: 0; }
+  .dash-period { display: flex; gap: 5px; flex-wrap: wrap; }
+  .dash-period-btn { background: var(--surface2); border: 1px solid var(--border); color: var(--muted); border-radius: 20px; padding: 5px 12px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all .15s; font-family: 'DM Sans', sans-serif; }
   .dash-period-btn.active { background: rgba(245,166,35,.15); border-color: var(--accent); color: var(--accent); }
-  .dash-list-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .dash-list-item { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
   .dash-list-item:last-child { border-bottom: none; }
-  .dash-empty { text-align: center; color: var(--muted); font-size: 13px; padding: 32px 0; }
-  .dash-sparkline { display: flex; align-items: flex-end; gap: 4px; height: 48px; margin-top: 8px; }
-  .dash-spark-bar { flex: 1; background: rgba(245,166,35,.3); border-radius: 3px 3px 0 0; transition: height .4s ease; min-width: 8px; }
+  .dash-empty { text-align: center; color: var(--muted); font-size: 13px; padding: 28px 0; }
+  .dash-sparkline { display: flex; align-items: flex-end; gap: 3px; height: 56px; margin-top: 8px; }
+  .dash-spark-bar { flex: 1; background: rgba(245,166,35,.25); border-radius: 3px 3px 0 0; transition: height .4s ease; min-width: 6px; cursor: pointer; }
+  .dash-spark-bar:hover { background: rgba(245,166,35,.5); }
   .dash-spark-bar.today { background: var(--accent); }
+  .dash-monthly { display: flex; align-items: flex-end; gap: 4px; height: 80px; margin-top: 8px; }
+  .dash-month-bar { flex: 1; background: rgba(52,152,219,.25); border-radius: 3px 3px 0 0; transition: height .5s ease; min-width: 8px; cursor: pointer; position: relative; }
+  .dash-month-bar:hover { background: rgba(52,152,219,.55); }
+  .dash-month-labels { display:flex; justify-content:space-between; font-size:9px; color:var(--muted); margin-top:4px; }
+  .dash-status-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+  .dash-funnel { display:flex; flex-direction:column; gap:6px; }
+  .dash-funnel-row { display:flex; align-items:center; gap:10px; }
+  .dash-funnel-label { font-size:12px; color:var(--text); width:90px; flex-shrink:0; }
+  .dash-funnel-bar { height:28px; border-radius:6px; display:flex; align-items:center; padding:0 10px; font-size:12px; font-weight:700; color:#fff; transition: width .6s ease; min-width:40px; }
+  .dash-export-btn { background:none; border:1px solid var(--border); color:var(--muted); border-radius:6px; padding:3px 9px; font-size:10px; font-weight:700; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all .15s; text-transform:uppercase; letter-spacing:.5px; }
+  .dash-export-btn:hover { border-color:var(--accent); color:var(--accent); }
+  @media(max-width:600px){ .dash-row,.dash-row-3 { grid-template-columns:1fr; } }
 
   /* MODELOS */
   .modelo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px,1fr)); gap: 14px; }
@@ -597,43 +616,67 @@
 <!-- ══════════ DASHBOARD ══════════ -->
 <div class="container page" id="page-dashboard">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
-    <div class="section-title" style="margin:0;">Dashboard</div>
-    <div class="dash-period">
-      <button class="dash-period-btn active" id="dpBtn7" onclick="setDashPeriod(7,this)">7 dias</button>
-      <button class="dash-period-btn" id="dpBtn30" onclick="setDashPeriod(30,this)">30 dias</button>
-      <button class="dash-period-btn" id="dpBtn90" onclick="setDashPeriod(90,this)">90 dias</button>
-      <button class="dash-period-btn" id="dpBtnAll" onclick="setDashPeriod(0,this)">Todos</button>
+    <div class="section-title" style="margin:0;">📊 Dashboard</div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+      <div class="dash-period">
+        <button class="dash-period-btn active" id="dpBtn7"   onclick="setDashPeriod(7,this)">7 dias</button>
+        <button class="dash-period-btn"        id="dpBtn30"  onclick="setDashPeriod(30,this)">30 dias</button>
+        <button class="dash-period-btn"        id="dpBtn90"  onclick="setDashPeriod(90,this)">90 dias</button>
+        <button class="dash-period-btn"        id="dpBtnAll" onclick="setDashPeriod(0,this)">Todos</button>
+      </div>
+      <button class="dash-export-btn" onclick="exportDashCSV()">⬇ CSV</button>
     </div>
   </div>
 
   <!-- KPIs -->
   <div class="dash-kpis" id="dashKpis"></div>
 
-  <!-- Charts row -->
-  <div class="dash-row" id="dashRow1">
+  <!-- Funil de status -->
+  <div class="dash-card" style="margin-bottom:14px;">
+    <div class="dash-card-title">Funil de Negociação</div>
+    <div id="dashFunil"></div>
+  </div>
+
+  <!-- Vendedor + Evolução mensal -->
+  <div class="dash-row" style="margin-bottom:14px;">
     <div class="dash-card">
-      <div class="dash-card-title">Por Vendedor</div>
+      <div class="dash-card-title">
+        Por Vendedor
+        <span id="dashVendedorTotal" style="font-size:11px;color:var(--accent);font-weight:600;"></span>
+      </div>
       <div id="dashVendedor"></div>
     </div>
     <div class="dash-card">
-      <div class="dash-card-title">Por Status</div>
-      <div id="dashStatus"></div>
+      <div class="dash-card-title">Evolução Mensal (orçamentos)</div>
+      <div id="dashMensal"></div>
     </div>
   </div>
 
-  <div class="dash-row" id="dashRow2">
+  <!-- Atividade diária + Madeira -->
+  <div class="dash-row" style="margin-bottom:14px;">
+    <div class="dash-card">
+      <div class="dash-card-title">Atividade — Últimos 14 dias</div>
+      <div id="dashSparkline"></div>
+    </div>
     <div class="dash-card">
       <div class="dash-card-title">Por Tipo de Madeira</div>
       <div id="dashMadeira"></div>
     </div>
-    <div class="dash-card">
-      <div class="dash-card-title">Orçamentos por Dia</div>
-      <div id="dashSparkline"></div>
-    </div>
   </div>
 
+  <!-- Tabela detalhada por vendedor (só admin) -->
+  <div class="dash-card" id="dashVendedorTableWrap" style="margin-bottom:14px;display:none;">
+    <div class="dash-card-title">Desempenho por Vendedor
+      <button class="dash-export-btn" onclick="exportVendedorCSV()">⬇ CSV</button>
+    </div>
+    <div id="dashVendedorTable"></div>
+  </div>
+
+  <!-- Maiores orçamentos -->
   <div class="dash-card" style="margin-bottom:16px;">
-    <div class="dash-card-title">Maiores Orçamentos</div>
+    <div class="dash-card-title">Maiores Orçamentos do Período
+      <button class="dash-export-btn" onclick="exportTopCSV()">⬇ CSV</button>
+    </div>
     <div id="dashTop"></div>
   </div>
 </div>
@@ -2628,24 +2671,23 @@ function escHtml(s) {
 // ═══════════════════════════════════════════════════
 var _dashPeriod = 7;
 var _dashCache  = null;
+var _dashDataFiltered = [];
 
 function setDashPeriod(days, btn) {
   _dashPeriod = days;
   document.querySelectorAll('.dash-period-btn').forEach(function(b){ b.classList.remove('active'); });
   if (btn) btn.classList.add('active');
+  _dashCache = null; // force rebuild with new period
   renderDashboard();
 }
 
 function renderDashboard() {
   if (!_currentUser) return;
-  if (_dashCache) { _buildDash(_dashCache); return; }
-  // Reuse history cache if available
-  if (_historyCache) { _dashCache = _historyCache; _buildDash(_dashCache); return; }
+  if (_historyCache) { _buildDash(_historyCache); return; }
   var url = _isAdmin ? TABLE_URL + '?order=id.desc' : TABLE_URL + '?order=id.desc&user_id=eq.' + _currentUser.id;
   sbFetch('GET', url)
     .then(function(r){ return r.json(); })
     .then(function(data){
-      _dashCache = data;
       _historyCache = data;
       _buildDash(data);
     })
@@ -2660,7 +2702,6 @@ function _filterByPeriod(data) {
   cutoff.setDate(cutoff.getDate() - _dashPeriod);
   return (data||[]).filter(function(e) {
     if (!e.saved_at) return true;
-    // saved_at format: "dd/mm/yyyy, hh:mm:ss"
     var parts = e.saved_at.split(/[\/,\s:]+/);
     if (parts.length >= 3) {
       var d = new Date(parts[2], parts[1]-1, parts[0]);
@@ -2677,58 +2718,139 @@ function _parseMoney(s) {
 
 function _buildDash(allData) {
   var data = _filterByPeriod(allData);
-  var total = data.length;
-  var totalVal = data.reduce(function(acc,e){ return acc + _parseMoney(e.total); }, 0);
+  _dashDataFiltered = data;
+  var total     = data.length;
+  var totalVal  = data.reduce(function(acc,e){ return acc + _parseMoney(e.total); }, 0);
   var aprovados = data.filter(function(e){ return e.status === 'aprovado'; }).length;
-  var taxaAp = total ? Math.round(aprovados/total*100) : 0;
-  var ticketMed = total ? totalVal / total : 0;
+  var perdidos  = data.filter(function(e){ return e.status === 'perdido'; }).length;
+  var negoc     = data.filter(function(e){ return e.status === 'negociacao' || !e.status; }).length;
+  var taxaAp    = total ? Math.round(aprovados/total*100) : 0;
+  var ticketMed = aprovados ? (data.filter(function(e){ return e.status==='aprovado'; })
+                    .reduce(function(a,e){ return a+_parseMoney(e.total);},0) / aprovados) : 0;
+  var volAprov  = data.filter(function(e){ return e.status==='aprovado'; })
+                    .reduce(function(a,e){ return a+_parseMoney(e.total);},0);
 
-  // KPIs
+  // ── KPIs ──────────────────────────────────────────────────────
   document.getElementById('dashKpis').innerHTML =
-    _kpi('Total de Orçamentos', total, '') +
-    _kpi('Volume Total', 'R$ ' + _fmt(totalVal), '') +
-    _kpi('Taxa de Aprovação', taxaAp + '%', aprovados + ' aprovados') +
-    _kpi('Ticket Médio', 'R$ ' + _fmt(ticketMed), 'por orçamento') +
-    (_isAdmin ? _kpi('Vendedores Ativos', _countUniq(data,'vendor'), 'no período') : '');
+    _kpi('Total de Orçamentos', total,                '',                         '📋') +
+    _kpi('Volume Total',        'R$ '+_fmt(totalVal), '',                          '💰') +
+    _kpi('Volume Aprovado',     'R$ '+_fmt(volAprov), taxaAp+'% de aprovação',    '✅') +
+    _kpi('Ticket Médio Aprov.', 'R$ '+_fmt(ticketMed),'por orçamento aprovado',   '🎯') +
+    (_isAdmin ? _kpi('Vendedores Ativos', _countUniq(data,'vendor'), 'no período', '👥') : '') +
+    _kpi('Em Negociação',       negoc, '',                                         '💬');
 
-  // Por Vendedor
-  var byVendor = _groupSum(data, 'vendor', 'total');
-  _renderBars('dashVendedor', byVendor, 'orçamentos');
+  // ── FUNIL ─────────────────────────────────────────────────────
+  var funilEl = document.getElementById('dashFunil');
+  if (funilEl && total > 0) {
+    var items = [
+      { label: '💬 Negociação', val: negoc,    pct: Math.round(negoc/total*100),    color: '#3498db' },
+      { label: '✅ Aprovado',   val: aprovados, pct: Math.round(aprovados/total*100), color: '#2ecc71' },
+      { label: '❌ Perdido',    val: perdidos,  pct: Math.round(perdidos/total*100),  color: '#e74c3c' },
+    ];
+    funilEl.innerHTML = '<div class="dash-funnel">' +
+      items.map(function(it){
+        return '<div class="dash-funnel-row">' +
+          '<span class="dash-funnel-label">' + it.label + '</span>' +
+          '<div class="dash-funnel-bar" style="width:' + Math.max(it.pct, 8) + '%;background:' + it.color + ';opacity:.85;">' +
+            it.val + ' (' + it.pct + '%)' +
+          '</div>' +
+        '</div>';
+      }).join('') +
+    '</div>';
+  } else if (funilEl) {
+    funilEl.innerHTML = '<div class="dash-empty">Sem dados</div>';
+  }
 
-  // Por Status
-  var statusLabel = { negociacao:'💬 Negociação', aprovado:'✅ Aprovado', perdido:'❌ Perdido' };
-  var byStatus = _groupCount(data, 'status');
-  var byStatusLabeled = byStatus.map(function(item){
-    return { label: statusLabel[item.label] || item.label || '—', val: item.val };
-  });
-  _renderBars('dashStatus', byStatusLabeled, '');
+  // ── POR VENDEDOR ───────────────────────────────────────────────
+  var byVendor = _groupSumFull(data, 'vendor', 'total');
+  _renderBars('dashVendedor', byVendor.map(function(v){
+    return { label: v.label, val: v.count, extra: 'R$ '+_fmt(v.sum) };
+  }), 'orç.');
+  var vtEl = document.getElementById('dashVendedorTotal');
+  if (vtEl) vtEl.textContent = byVendor.length + ' vendedor' + (byVendor.length !== 1 ? 'es' : '');
 
-  // Por Madeira
+  // ── TABELA DETALHADA POR VENDEDOR (admin) ──────────────────────
+  var vTableWrap = document.getElementById('dashVendedorTableWrap');
+  if (vTableWrap) {
+    if (_isAdmin && byVendor.length > 0) {
+      vTableWrap.style.display = '';
+      var rows = byVendor.map(function(v){
+        var taxV = v.count ? Math.round(v.aprov/v.count*100) : 0;
+        return '<tr>' +
+          '<td style="padding:8px 10px;font-weight:600;">' + escHtml(v.label) + '</td>' +
+          '<td style="padding:8px 10px;text-align:center;">' + v.count + '</td>' +
+          '<td style="padding:8px 10px;text-align:center;color:#2ecc71;">' + v.aprov + '</td>' +
+          '<td style="padding:8px 10px;text-align:center;color:#e74c3c;">' + v.perd + '</td>' +
+          '<td style="padding:8px 10px;text-align:center;">' + taxV + '%</td>' +
+          '<td style="padding:8px 10px;text-align:right;color:var(--accent);font-weight:700;">R$ ' + _fmt(v.sum) + '</td>' +
+          '<td style="padding:8px 10px;text-align:right;color:var(--muted);">R$ ' + _fmt(v.count ? v.sum/v.count : 0) + '</td>' +
+        '</tr>';
+      }).join('');
+      document.getElementById('dashVendedorTable').innerHTML =
+        '<table style="width:100%;border-collapse:collapse;font-size:12px;">' +
+          '<thead><tr style="border-bottom:1px solid var(--border);">' +
+            '<th style="padding:6px 10px;text-align:left;color:var(--muted);font-size:10px;text-transform:uppercase;">Vendedor</th>' +
+            '<th style="padding:6px 10px;text-align:center;color:var(--muted);font-size:10px;text-transform:uppercase;">Total</th>' +
+            '<th style="padding:6px 10px;text-align:center;color:#2ecc71;font-size:10px;text-transform:uppercase;">Aprov.</th>' +
+            '<th style="padding:6px 10px;text-align:center;color:#e74c3c;font-size:10px;text-transform:uppercase;">Perdido</th>' +
+            '<th style="padding:6px 10px;text-align:center;color:var(--muted);font-size:10px;text-transform:uppercase;">Taxa</th>' +
+            '<th style="padding:6px 10px;text-align:right;color:var(--muted);font-size:10px;text-transform:uppercase;">Volume</th>' +
+            '<th style="padding:6px 10px;text-align:right;color:var(--muted);font-size:10px;text-transform:uppercase;">Ticket</th>' +
+          '</tr></thead>' +
+          '<tbody>' + rows + '</tbody>' +
+        '</table>';
+    } else {
+      vTableWrap.style.display = 'none';
+    }
+  }
+
+  // ── EVOLUÇÃO MENSAL ────────────────────────────────────────────
+  _renderMensal('dashMensal', allData); // usa todos os dados, não filtrado por período
+
+  // ── ATIVIDADE DIÁRIA ───────────────────────────────────────────
+  _renderSparkline('dashSparkline', data);
+
+  // ── POR MADEIRA ────────────────────────────────────────────────
   var byMadeira = _groupCount(data, 'tipo_madeira');
   _renderBars('dashMadeira', byMadeira, '');
 
-  // Sparkline (por dia, últimos 14 dias)
-  _renderSparkline('dashSparkline', data);
-
-  // Top orçamentos
-  var sorted = data.slice().sort(function(a,b){ return _parseMoney(b.total) - _parseMoney(a.total); }).slice(0,8);
+  // ── MAIORES ORÇAMENTOS ─────────────────────────────────────────
+  var sorted = data.slice().sort(function(a,b){ return _parseMoney(b.total) - _parseMoney(a.total); }).slice(0,10);
+  var topEl = document.getElementById('dashTop');
   if (!sorted.length) {
-    document.getElementById('dashTop').innerHTML = '<div class="dash-empty">Nenhum dado</div>';
+    topEl.innerHTML = '<div class="dash-empty">Nenhum dado no período</div>';
   } else {
-    document.getElementById('dashTop').innerHTML = sorted.map(function(e){
-      return '<div class="dash-list-item">' +
-        '<div><span style="font-weight:600;">' + escHtml(e.client||'—') + '</span>' +
-        (_isAdmin && e.vendor ? ' <span style="font-size:11px;color:var(--muted);">· ' + escHtml(e.vendor) + '</span>' : '') +
-        (e.date ? ' <span style="font-size:11px;color:var(--muted);">· ' + escHtml(e.date) + '</span>' : '') +
-        '</div>' +
-        '<span style="font-weight:700;color:var(--accent);">' + escHtml(e.total||'—') + '</span>' +
-        '</div>';
-    }).join('');
+    topEl.innerHTML =
+      '<table style="width:100%;border-collapse:collapse;font-size:12px;">' +
+        '<thead><tr style="border-bottom:1px solid var(--border);">' +
+          '<th style="padding:6px 10px;text-align:left;color:var(--muted);font-size:10px;text-transform:uppercase;">#</th>' +
+          '<th style="padding:6px 10px;text-align:left;color:var(--muted);font-size:10px;text-transform:uppercase;">Cliente</th>' +
+          (_isAdmin ? '<th style="padding:6px 10px;text-align:left;color:var(--muted);font-size:10px;text-transform:uppercase;">Vendedor</th>' : '') +
+          '<th style="padding:6px 10px;text-align:left;color:var(--muted);font-size:10px;text-transform:uppercase;">Data</th>' +
+          '<th style="padding:6px 10px;text-align:left;color:var(--muted);font-size:10px;text-transform:uppercase;">Status</th>' +
+          '<th style="padding:6px 10px;text-align:right;color:var(--muted);font-size:10px;text-transform:uppercase;">Valor</th>' +
+        '</tr></thead><tbody>' +
+      sorted.map(function(e, idx){
+        var stColor = { aprovado:'#2ecc71', perdido:'#e74c3c', negociacao:'#3498db' };
+        var stLabel = { aprovado:'Aprovado', perdido:'Perdido', negociacao:'Negociação' };
+        var st = e.status || 'negociacao';
+        return '<tr style="border-bottom:1px solid var(--border);">' +
+          '<td style="padding:7px 10px;color:var(--muted);">' + (idx+1) + '</td>' +
+          '<td style="padding:7px 10px;font-weight:600;">' + escHtml(e.client||'—') + '</td>' +
+          (_isAdmin ? '<td style="padding:7px 10px;color:var(--muted);">' + escHtml(e.vendor||'—') + '</td>' : '') +
+          '<td style="padding:7px 10px;color:var(--muted);">' + escHtml(e.date||'—') + '</td>' +
+          '<td style="padding:7px 10px;"><span style="font-size:10px;font-weight:700;color:' + (stColor[st]||'#7a7f9a') + ';">' + (stLabel[st]||st) + '</span></td>' +
+          '<td style="padding:7px 10px;text-align:right;font-weight:700;color:var(--accent);">' + escHtml(e.total||'—') + '</td>' +
+        '</tr>';
+      }).join('') +
+      '</tbody></table>';
   }
 }
 
-function _kpi(label, val, sub) {
+// ── HELPERS ──────────────────────────────────────────────────────
+function _kpi(label, val, sub, icon) {
   return '<div class="dash-kpi">' +
+    (icon ? '<div class="dash-kpi-icon">' + icon + '</div>' : '') +
     '<div class="dash-kpi-label">' + label + '</div>' +
     '<div class="dash-kpi-val">' + val + '</div>' +
     (sub ? '<div class="dash-kpi-sub">' + sub + '</div>' : '') +
@@ -2752,16 +2874,18 @@ function _groupCount(data, field) {
     .map(function(k){ return {label:k, val:map[k]}; });
 }
 
-function _groupSum(data, groupField, sumField) {
-  var countMap = {}, valMap = {};
+function _groupSumFull(data, groupField, sumField) {
+  var countMap = {}, valMap = {}, aprovMap = {}, perdMap = {};
   data.forEach(function(e){
     var k = e[groupField]||'—';
-    countMap[k] = (countMap[k]||0)+1;
-    valMap[k] = (valMap[k]||0) + _parseMoney(e[sumField]);
+    countMap[k] = (countMap[k]||0) + 1;
+    valMap[k]   = (valMap[k]||0)   + _parseMoney(e[sumField]);
+    if (e.status === 'aprovado') aprovMap[k] = (aprovMap[k]||0) + 1;
+    if (e.status === 'perdido')  perdMap[k]  = (perdMap[k]||0)  + 1;
   });
   return Object.keys(countMap).sort(function(a,b){ return countMap[b]-countMap[a]; })
-    .slice(0,8)
-    .map(function(k){ return {label:k, val:countMap[k], extra:'R$ '+_fmt(valMap[k])}; });
+    .slice(0,10)
+    .map(function(k){ return { label:k, count:countMap[k], sum:valMap[k], aprov:aprovMap[k]||0, perd:perdMap[k]||0 }; });
 }
 
 function _renderBars(elId, items, unit) {
@@ -2769,14 +2893,55 @@ function _renderBars(elId, items, unit) {
   if (!el) return;
   if (!items.length) { el.innerHTML = '<div class="dash-empty">Sem dados</div>'; return; }
   var max = Math.max.apply(null, items.map(function(i){ return i.val; }));
-  el.innerHTML = items.map(function(item){
+  el.innerHTML = items.map(function(item, idx){
     var pct = max ? Math.round(item.val/max*100) : 0;
+    var colors = ['', 'green', 'red', 'blue', '', 'green'];
+    var cls = item.colorClass || '';
     return '<div class="dash-bar-row">' +
       '<div class="dash-bar-label" title="' + escHtml(item.label) + '">' + escHtml(item.label) + '</div>' +
-      '<div class="dash-bar-track"><div class="dash-bar-fill" style="width:' + pct + '%"></div></div>' +
+      '<div class="dash-bar-track"><div class="dash-bar-fill ' + cls + '" style="width:' + pct + '%"></div></div>' +
       '<div class="dash-bar-val">' + item.val + (unit?' '+unit:'') + (item.extra?' · '+item.extra:'') + '</div>' +
     '</div>';
   }).join('');
+}
+
+function _renderMensal(elId, data) {
+  var el = document.getElementById(elId);
+  if (!el) return;
+  // Last 6 months
+  var months = {};
+  var today = new Date();
+  var monthLabels = [];
+  for (var i = 5; i >= 0; i--) {
+    var d = new Date(today.getFullYear(), today.getMonth() - i, 1);
+    var key = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
+    var label = d.toLocaleDateString('pt-BR', { month:'short' }).replace('.','');
+    months[key] = 0;
+    monthLabels.push({ key: key, label: label });
+  }
+  (data||[]).forEach(function(e){
+    if (!e.saved_at) return;
+    var parts = e.saved_at.split(/[\/,\s:]+/);
+    if (parts.length >= 3) {
+      var key = parts[2] + '-' + String(parts[1]).padStart(2,'0');
+      if (key in months) months[key]++;
+    }
+  });
+  var vals = monthLabels.map(function(m){ return months[m.key]; });
+  var maxV = Math.max.apply(null, vals) || 1;
+  el.innerHTML =
+    '<div class="dash-monthly">' +
+    monthLabels.map(function(m, i){
+      var h = Math.max(4, Math.round(vals[i]/maxV*80));
+      var isCurrent = m.key === (today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0'));
+      return '<div class="dash-month-bar' + (isCurrent ? ' today' : '') + '" ' +
+        'style="height:' + h + 'px;' + (isCurrent ? 'background:rgba(245,166,35,.55);' : '') + '" ' +
+        'title="' + m.label + ': ' + vals[i] + ' orçamento(s)"></div>';
+    }).join('') +
+    '</div>' +
+    '<div class="dash-month-labels">' +
+      monthLabels.map(function(m){ return '<span>' + m.label + '</span>'; }).join('') +
+    '</div>';
 }
 
 function _renderSparkline(elId, data) {
@@ -2803,14 +2968,61 @@ function _renderSparkline(elId, data) {
   var labels = Object.keys(buckets);
   el.innerHTML = '<div class="dash-sparkline">' +
     labels.map(function(k, i){
-      var h = Math.max(4, Math.round(vals[i]/maxV*48));
+      var h = Math.max(4, Math.round(vals[i]/maxV*56));
       var isToday = k === todayKey;
       return '<div class="dash-spark-bar' + (isToday?' today':'') + '" style="height:'+h+'px" title="'+k+': '+vals[i]+' orçamento(s)"></div>';
     }).join('') +
   '</div>' +
-  '<div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-top:4px;">' +
+  '<div style="display:flex;justify-content:space-between;font-size:9px;color:var(--muted);margin-top:4px;">' +
     '<span>' + labels[0] + '</span><span>Hoje</span>' +
   '</div>';
+}
+
+// ── EXPORT CSV ───────────────────────────────────────────────────
+function _downloadCSV(rows, filename) {
+  var bom = '\uFEFF';
+  var csv = bom + rows.map(function(r){ return r.map(function(c){ return '"'+String(c||'').replace(/"/g,'""')+'"'; }).join(';'); }).join('\n');
+  var a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = filename;
+  a.click();
+}
+
+function exportDashCSV() {
+  var data = _dashDataFiltered;
+  if (!data || !data.length) { showToast('Sem dados para exportar','error'); return; }
+  var header = ['Cliente','Vendedor','Cidade','Data','Validade','Status','Tipo Madeira','Total','Salvo em'];
+  var rows = [header].concat(data.map(function(e){
+    return [e.client,e.vendor,e.city,e.date,e.validity,e.status,e.tipo_madeira,e.total,e.saved_at];
+  }));
+  _downloadCSV(rows, 'orcamentos_' + new Date().toLocaleDateString('pt-BR').replace(/\//g,'-') + '.csv');
+  showToast('✓ CSV exportado!');
+}
+
+function exportVendedorCSV() {
+  var data = _dashDataFiltered;
+  if (!data || !data.length) { showToast('Sem dados','error'); return; }
+  var byV = _groupSumFull(data, 'vendor', 'total');
+  var header = ['Vendedor','Total Orçamentos','Aprovados','Perdidos','Taxa Aprovação','Volume Total','Ticket Médio'];
+  var rows = [header].concat(byV.map(function(v){
+    var taxa = v.count ? Math.round(v.aprov/v.count*100)+'%' : '0%';
+    var ticket = v.count ? Math.round(v.sum/v.count) : 0;
+    return [v.label, v.count, v.aprov, v.perd, taxa, v.sum, ticket];
+  }));
+  _downloadCSV(rows, 'vendedores_' + new Date().toLocaleDateString('pt-BR').replace(/\//g,'-') + '.csv');
+  showToast('✓ CSV exportado!');
+}
+
+function exportTopCSV() {
+  var data = _dashDataFiltered;
+  if (!data || !data.length) { showToast('Sem dados','error'); return; }
+  var sorted = data.slice().sort(function(a,b){ return _parseMoney(b.total)-_parseMoney(a.total); });
+  var header = ['#','Cliente','Vendedor','Data','Status','Total'];
+  var rows = [header].concat(sorted.map(function(e,i){
+    return [i+1, e.client, e.vendor, e.date, e.status, e.total];
+  }));
+  _downloadCSV(rows, 'ranking_orcamentos_' + new Date().toLocaleDateString('pt-BR').replace(/\//g,'-') + '.csv');
+  showToast('✓ CSV exportado!');
 }
 
 
