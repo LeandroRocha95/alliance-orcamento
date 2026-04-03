@@ -2343,10 +2343,21 @@ function renderPortfolioGrid() {
     var cats    = (it.categorias || []).join(' ');
     var size    = sizeMap[it.size] || 'normal';
 
-    // url_media pode ser string ou array — usa sempre o primeiro como capa
-    var urls   = Array.isArray(it.url_media) ? it.url_media : (it.url_media ? [it.url_media] : []);
-    var capa   = urls[0] || '';
-    var multi  = urls.length > 1;
+    // url_media pode chegar como: array nativo, string JSON de array, ou string simples
+    var rawMedia = it.url_media;
+    var urls;
+    if (Array.isArray(rawMedia)) {
+      urls = rawMedia;
+    } else if (typeof rawMedia === 'string' && rawMedia.trim().startsWith('[')) {
+      try { urls = JSON.parse(rawMedia); } catch(e) { urls = [rawMedia]; }
+    } else if (rawMedia) {
+      urls = [rawMedia];
+    } else {
+      urls = [];
+    }
+    urls = urls.filter(function(u){ return u && typeof u === 'string' && u.trim(); });
+    var capa  = urls[0] || '';
+    var multi = urls.length > 1;
 
     var mediaHtml = isVideo
       ? `<video class="portfolio-thumb" src="${capa}" muted playsinline preload="metadata" loading="lazy"></video>`
@@ -2362,8 +2373,8 @@ function renderPortfolioGrid() {
       ? `<div style="position:absolute;top:10px;right:10px;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);color:#fff;font-size:10px;font-weight:700;padding:3px 8px;border-radius:10px;letter-spacing:.5px;">⊞ ${urls.length}</div>`
       : '';
 
-    // Serializa URLs como JSON escaped para data-attr
-    var urlsJson = escHtml(JSON.stringify(urls));
+    // Serializa URLs para data-attr usando encodeURIComponent para evitar conflito com aspas HTML
+    var urlsJson = encodeURIComponent(JSON.stringify(urls));
 
     return `<div class="portfolio-item"
         data-tipo="${it.tipo}"
@@ -2445,7 +2456,12 @@ function renderLightbox(idx) {
 
   // Carrossel interno: pega data-urls se disponível
   try {
-    _lbInnerUrls = JSON.parse(el.dataset.urls || '[]');
+    var rawUrls = el.dataset.urls || '%5B%5D';
+    // Suporta tanto encodeURIComponent quanto JSON puro
+    var decoded = rawUrls.startsWith('%') ? decodeURIComponent(rawUrls) : rawUrls;
+    _lbInnerUrls = JSON.parse(decoded);
+    if (!Array.isArray(_lbInnerUrls)) _lbInnerUrls = [];
+    _lbInnerUrls = _lbInnerUrls.filter(function(u){ return u && u.trim(); });
   } catch(e) { _lbInnerUrls = []; }
   if (!_lbInnerUrls.length) {
     var fallback = tipo === 'video' ? (el.dataset.video || el.dataset.thumb) : (el.dataset.src || el.dataset.thumb || (el.querySelector('img') ? el.querySelector('img').src : ''));
