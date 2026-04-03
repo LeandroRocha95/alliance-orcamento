@@ -51,7 +51,17 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 
 .dep-card-body{padding:0 20px 16px;}
 .dep-author-row{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
-.dep-avatar-mini{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--accent2),var(--accent));display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0;}
+.dep-avatar-mini{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--accent2),var(--accent));display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0;overflow:hidden;}
+.dep-avatar-mini img{width:100%;height:100%;object-fit:cover;}
+/* Foto upload inline */
+.foto-upload-wrap{display:flex;align-items:center;gap:16px;}
+.foto-preview-circle{width:72px;height:72px;border-radius:50%;background:var(--surface3);border:2px dashed var(--border);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;overflow:hidden;transition:border-color .2s;cursor:pointer;position:relative;}
+.foto-preview-circle:hover{border-color:var(--accent);}
+.foto-preview-circle img{width:100%;height:100%;object-fit:cover;}
+.foto-preview-circle input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.foto-upload-info{font-size:12px;color:var(--muted);line-height:1.6;}
+.foto-upload-info strong{color:var(--text);display:block;margin-bottom:2px;}
+.foto-remover{background:none;border:none;color:var(--red);font-size:11px;cursor:pointer;padding:0;margin-top:4px;display:none;}
 .dep-nome{font-size:13px;font-weight:600;}
 .dep-cidade{font-size:11px;color:var(--muted);}
 .dep-card-actions{display:flex;gap:6px;flex-wrap:wrap;}
@@ -165,6 +175,26 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
       </div>
 
       <div class="form-group">
+        <label class="form-label">Foto do cliente</label>
+        <div class="foto-upload-wrap">
+          <div class="foto-preview-circle" id="fotoCircle" title="Clique para selecionar foto">
+            <input type="file" id="fFoto" accept="image/*" onchange="onFotoChange(event)">
+            <span id="fotoPlaceholder">👤</span>
+          </div>
+          <div class="foto-upload-info">
+            <strong id="fotoNomeArq">Nenhuma foto selecionada</strong>
+            JPG, PNG, WebP · Recomendado: foto quadrada
+            <button class="foto-remover" id="fotoRemover" onclick="removerFoto()">× Remover foto</button>
+          </div>
+        </div>
+        <div class="progress-wrap" id="fotoProgress" style="margin-top:8px;">
+          <div class="progress-bar-outer"><div class="progress-bar-inner" id="fotoProgressBar" style="background:var(--accent);"></div></div>
+          <div class="progress-label" id="fotoProgressLabel">Enviando foto...</div>
+        </div>
+        <input type="hidden" id="fUrlFoto">
+      </div>
+
+      <div class="form-group">
         <label class="form-label">Avaliação</label>
         <div class="stars-sel" id="starsSel">
           <button type="button" class="star-btn on" data-val="1" onclick="setStars(1)">★</button>
@@ -251,6 +281,7 @@ let _editId = null;
 let _delId  = null;
 let _stars  = 5;
 let _audioFile = null;
+let _fotoFile  = null;
 
 document.addEventListener('DOMContentLoaded', init);
 
@@ -290,6 +321,9 @@ function render() {
     const tipoLabel = {'texto':'Texto','audio':'🎙 Áudio','ambos':'Texto + Áudio'}[tipo];
     const tipoClass = {'texto':'badge-texto','audio':'badge-audio','ambos':'badge-ambos'}[tipo];
     const inicial = (d.nome||'?')[0].toUpperCase();
+    const avatarHtml = d.url_foto
+      ? `<img src="${d.url_foto}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt="${esc(d.nome)}">`
+      : inicial;
     return `<div class="dep-card ${d.ativo===false?'inativo':''}">
       <span class="dep-tipo-badge ${tipoClass}">${tipoLabel}</span>
       <div class="dep-card-preview">
@@ -299,7 +333,7 @@ function render() {
       </div>
       <div class="dep-card-body">
         <div class="dep-author-row">
-          <div class="dep-avatar-mini">${inicial}</div>
+          <div class="dep-avatar-mini">${avatarHtml}</div>
           <div>
             <div class="dep-nome">${esc(d.nome||'—')}</div>
             ${d.cidade ? `<div class="dep-cidade">${esc(d.cidade)}</div>` : ''}
@@ -339,7 +373,13 @@ function closeForm() {
 }
 
 function clearForm() {
-  ['fNome','fCidade','fTexto','fUrlAudio'].forEach(id => document.getElementById(id).value = '');
+  ['fNome','fCidade','fTexto','fUrlAudio','fUrlFoto'].forEach(id => document.getElementById(id).value = '');
+  _fotoFile = null;
+  document.getElementById('fotoPlaceholder').style.display = '';
+  document.getElementById('fotoCircle').querySelectorAll('img').forEach(el => el.remove());
+  document.getElementById('fotoNomeArq').textContent = 'Nenhuma foto selecionada';
+  document.getElementById('fotoRemover').style.display = 'none';
+  document.getElementById('fotoProgress').style.display = 'none';
   document.getElementById('fOrdem').value = String(deps.length + 1);
   document.getElementById('fAtivo').checked = true;
   setStars(5);
@@ -356,6 +396,8 @@ function fillForm(d) {
   document.getElementById('fAtivo').checked = d.ativo !== false;
   setStars(d.estrelas || 5);
   if (d.url_audio) showAudioPreview(d.url_audio);
+  document.getElementById('fUrlFoto').value = d.url_foto || '';
+  if (d.url_foto) showFotoPreview(d.url_foto);
   document.getElementById('fUrlAudio').value = d.url_audio || '';
 }
 
@@ -364,6 +406,69 @@ function setStars(n) {
   _stars = n;
   document.querySelectorAll('.star-btn').forEach(b => {
     b.classList.toggle('on', parseInt(b.dataset.val) <= n);
+  });
+}
+
+// ── FOTO UPLOAD ────────────────────────────────────────────────
+function onFotoChange(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  _fotoFile = file;
+  const url = URL.createObjectURL(file);
+  showFotoPreview(url);
+  document.getElementById('fotoNomeArq').textContent = file.name;
+  e.target.value = '';
+}
+
+function showFotoPreview(url) {
+  const circle = document.getElementById('fotoCircle');
+  circle.querySelectorAll('img').forEach(el => el.remove());
+  const img = document.createElement('img');
+  img.src = url;
+  circle.appendChild(img);
+  document.getElementById('fotoPlaceholder').style.display = 'none';
+  document.getElementById('fotoRemover').style.display = '';
+}
+
+function removerFoto() {
+  _fotoFile = null;
+  document.getElementById('fUrlFoto').value = '';
+  document.getElementById('fotoCircle').querySelectorAll('img').forEach(el => el.remove());
+  document.getElementById('fotoPlaceholder').style.display = '';
+  document.getElementById('fotoNomeArq').textContent = 'Nenhuma foto selecionada';
+  document.getElementById('fotoRemover').style.display = 'none';
+}
+
+async function uploadFoto(file) {
+  const ext  = file.name.split('.').pop().toLowerCase();
+  const nome = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+  const path = `fotos/${nome}`;
+  const bar   = document.getElementById('fotoProgressBar');
+  const label = document.getElementById('fotoProgressLabel');
+  const wrap  = document.getElementById('fotoProgress');
+  wrap.style.display = 'block'; bar.style.width = '0%';
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', `${SB_URL}/storage/v1/object/${BUCKET}/${path}`);
+    xhr.setRequestHeader('apikey', SB_KEY);
+    xhr.setRequestHeader('Authorization', 'Bearer ' + SB_KEY);
+    xhr.setRequestHeader('Content-Type', file.type || 'image/jpeg');
+    xhr.setRequestHeader('x-upsert', 'true');
+    xhr.upload.onprogress = e => {
+      if (e.lengthComputable) { const p=Math.round(e.loaded/e.total*100); bar.style.width=p+'%'; label.textContent=`Foto... ${p}%`; }
+    };
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        bar.style.width = '100%'; label.textContent = '✓ Foto enviada!';
+        resolve(`${SB_URL}/storage/v1/object/public/${BUCKET}/${path}`);
+      } else {
+        let msg = xhr.responseText; try { msg = JSON.parse(msg).message || msg; } catch(e){}
+        bar.style.background = 'var(--red)'; label.textContent = 'Erro: ' + msg.slice(0,60);
+        reject(new Error(msg));
+      }
+    };
+    xhr.onerror = () => reject(new Error('Erro de rede'));
+    xhr.send(file);
   });
 }
 
@@ -461,6 +566,12 @@ async function salvar() {
   btn.disabled = true; btn.textContent = 'Salvando...';
 
   try {
+    let urlFoto = document.getElementById('fUrlFoto').value;
+    if (_fotoFile) {
+      toast('⬆ Enviando foto...', 'ok');
+      urlFoto = await uploadFoto(_fotoFile);
+      document.getElementById('fUrlFoto').value = urlFoto;
+    }
     if (_audioFile) {
       toast('⬆ Enviando áudio...', 'ok');
       urlAudio = await uploadAudio(_audioFile);
@@ -473,6 +584,7 @@ async function salvar() {
       cidade:    document.getElementById('fCidade').value.trim(),
       texto:     texto || null,
       url_audio: urlAudio || null,
+      url_foto:  urlFoto  || null,
       estrelas:  _stars,
       ordem:     parseInt(document.getElementById('fOrdem').value) || 1,
       ativo:     document.getElementById('fAtivo').checked,
