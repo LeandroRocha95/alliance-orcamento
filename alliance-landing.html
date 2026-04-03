@@ -694,6 +694,11 @@ section{padding:120px 60px;}
   line-height:1.2;
 }
 .lightbox-meta{font-size:12px;color:rgba(255,255,255,.5);margin-top:4px;}
+.lightbox-desc{
+  font-size:13px;color:rgba(255,255,255,.65);
+  margin-top:8px;line-height:1.6;
+  max-width:560px;
+}
 .lightbox-close{
   position:absolute;top:-44px;right:0;
   background:none;border:none;color:rgba(255,255,255,.5);
@@ -1615,6 +1620,7 @@ footer{
       <div>
         <div class="lightbox-nome" id="lightboxNome"></div>
         <div class="lightbox-meta" id="lightboxMeta"></div>
+        <div class="lightbox-desc" id="lightboxDesc" style="display:none;"></div>
       </div>
     </div>
   </div>
@@ -2325,18 +2331,33 @@ function renderPortfolioGrid() {
 
   var sizeMap = { grande:'grande', largo:'largo', normal:'normal' };
 
-  grid.innerHTML = _pfItems.map(function(it, idx) {
+  function escHtml(s){ var d=document.createElement('div'); d.textContent=String(s||''); return d.innerHTML; }
+
+  grid.innerHTML = _pfItems.map(function(it) {
     var isVideo = it.tipo === 'video';
     var cats    = (it.categorias || []).join(' ');
     var size    = sizeMap[it.size] || 'normal';
 
+    // url_media pode ser string ou array — usa sempre o primeiro como capa
+    var urls   = Array.isArray(it.url_media) ? it.url_media : (it.url_media ? [it.url_media] : []);
+    var capa   = urls[0] || '';
+    var multi  = urls.length > 1;
+
     var mediaHtml = isVideo
-      ? `<video class="portfolio-thumb" src="${it.url_media}" muted playsinline preload="metadata" loading="lazy"></video>`
-      : `<img src="${it.url_media}" alt="${escHtml(it.nome)}" loading="lazy">`;
+      ? `<video class="portfolio-thumb" src="${capa}" muted playsinline preload="metadata" loading="lazy"></video>`
+      : `<img src="${capa}" alt="${escHtml(it.nome)}" loading="lazy">`;
 
     var playHtml = isVideo
       ? `<div class="portfolio-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>`
       : '';
+
+    // Badge de carrossel
+    var multiBadge = (multi && !isVideo)
+      ? `<div style="position:absolute;top:10px;right:10px;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);color:#fff;font-size:10px;font-weight:700;padding:3px 8px;border-radius:10px;letter-spacing:.5px;">⊞ ${urls.length}</div>`
+      : '';
+
+    // Serializa URLs como JSON escaped para data-attr
+    var urlsJson = escHtml(JSON.stringify(urls));
 
     return `<div class="portfolio-item"
         data-tipo="${it.tipo}"
@@ -2345,14 +2366,18 @@ function renderPortfolioGrid() {
         data-nome="${escHtml(it.nome||'')}"
         data-cidade="${escHtml(it.cidade||'')}"
         data-area="${escHtml(it.area||'')}"
-        data-src="${isVideo ? '' : it.url_media}"
-        data-video="${isVideo ? it.url_media : ''}"
-        data-thumb="${it.url_media}"
+        data-urls="${urlsJson}"
+        data-src="${isVideo ? '' : capa}"
+        data-video="${isVideo ? capa : ''}"
+        data-thumb="${capa}"
+        data-material="${escHtml(it.material||'')}"
+        data-descricao="${escHtml(it.descricao||'')}"
         onclick="abrirLightbox(this)">
       ${mediaHtml}
       ${playHtml}
+      ${multiBadge}
       <div class="portfolio-overlay">
-        <span class="portfolio-overlay-tag">${isVideo ? '▶ Vídeo' : '📷 Foto'}${cats ? ' · ' + (it.categorias||[])[0] : ''}</span>
+        <span class="portfolio-overlay-tag">${isVideo ? '▶ Vídeo' : (multi ? '⊞ '+urls.length+' fotos' : '📷 Foto')}${cats ? ' · ' + (it.categorias||[])[0] : ''}</span>
         <div class="portfolio-overlay-nome">${escHtml(it.nome||'')}</div>
         <div class="portfolio-overlay-meta">
           ${it.cidade ? '<span>' + escHtml(it.cidade) + '</span>' : ''}
@@ -2361,10 +2386,6 @@ function renderPortfolioGrid() {
       </div>
     </div>`;
   }).join('');
-
-  function escHtml(s){
-    var d = document.createElement('div'); d.textContent = String(s||''); return d.innerHTML;
-  }
 }
 
 function filtrarPortfolio(cat, btn) {
@@ -2405,33 +2426,81 @@ function lightboxNav(dir) {
   renderLightbox(_lbIdx);
 }
 
+var _lbInnerUrls = []; // URLs do carrossel interno (múltiplas fotos de 1 item)
+var _lbInnerIdx  = 0;
+
 function renderLightbox(idx) {
-  var el    = _lbItems[idx];
-  var tipo  = el.dataset.tipo;
-  var nome  = el.dataset.nome   || '';
+  var el     = _lbItems[idx];
+  var tipo   = el.dataset.tipo;
+  var nome   = el.dataset.nome   || '';
   var cidade = el.dataset.cidade || '';
   var area   = el.dataset.area   || '';
   var mediaEl = document.getElementById('lightboxMedia');
 
-  if (tipo === 'video') {
-    var src = el.dataset.video || el.dataset.thumb;
-    // YouTube/Vimeo → iframe, arquivo local → <video>
-    if (src.includes('youtube.com') || src.includes('youtu.be') || src.includes('vimeo.com')) {
-      var embedUrl = src + (src.includes('?') ? '&' : '?') + 'autoplay=1&rel=0';
-      mediaEl.innerHTML = '<iframe class="lightbox-media-video" src="' + embedUrl + '" allow="autoplay; fullscreen" allowfullscreen></iframe>';
+  // Carrossel interno: pega data-urls se disponível
+  try {
+    _lbInnerUrls = JSON.parse(el.dataset.urls || '[]');
+  } catch(e) { _lbInnerUrls = []; }
+  if (!_lbInnerUrls.length) {
+    var fallback = tipo === 'video' ? (el.dataset.video || el.dataset.thumb) : (el.dataset.src || el.dataset.thumb || (el.querySelector('img') ? el.querySelector('img').src : ''));
+    _lbInnerUrls = fallback ? [fallback] : [];
+  }
+  _lbInnerIdx = 0;
+
+  function renderMedia(urlIdx) {
+    var src = _lbInnerUrls[urlIdx] || '';
+    var isVid = tipo === 'video';
+    var innerNav = _lbInnerUrls.length > 1
+      ? `<div style="display:flex;align-items:center;justify-content:center;gap:12px;margin-top:10px;">
+           <button onclick="lbInnerNav(-1)" style="background:rgba(255,255,255,.12);border:none;color:#fff;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:16px;">‹</button>
+           <span style="font-size:12px;color:rgba(255,255,255,.5);">${urlIdx+1} / ${_lbInnerUrls.length}</span>
+           <button onclick="lbInnerNav(1)" style="background:rgba(255,255,255,.12);border:none;color:#fff;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:16px;">›</button>
+         </div>`
+      : '';
+    if (isVid) {
+      if (src.includes('youtube.com') || src.includes('youtu.be') || src.includes('vimeo.com')) {
+        var embedUrl = src + (src.includes('?') ? '&' : '?') + 'autoplay=1&rel=0';
+        mediaEl.innerHTML = `<iframe class="lightbox-media-video" src="${embedUrl}" allow="autoplay; fullscreen" allowfullscreen></iframe>${innerNav}`;
+      } else {
+        mediaEl.innerHTML = `<video class="lightbox-media-video" src="${src}" controls autoplay style="width:min(900px,90vw);aspect-ratio:16/9;"></video>${innerNav}`;
+      }
     } else {
-      mediaEl.innerHTML = '<video class="lightbox-media-video" src="' + src + '" controls autoplay style="width:min(900px,90vw);aspect-ratio:16/9;"></video>';
+      mediaEl.innerHTML = `<img class="lightbox-media" src="${src}" alt="${nome}">${innerNav}`;
     }
-  } else {
-    var src = el.dataset.src || el.querySelector('img').src;
-    mediaEl.innerHTML = '<img class="lightbox-media" src="' + src + '" alt="' + nome + '">';
   }
 
+  renderMedia(0);
   document.getElementById('lightboxNome').textContent = nome;
-  document.getElementById('lightboxMeta').textContent = [cidade, area].filter(Boolean).join(' · ');
-
+  var material  = el.dataset.material  || '';
+  var descricao = el.dataset.descricao || '';
+  var metaParts = [cidade, area].filter(Boolean);
+  if (material) metaParts.push(material);
+  document.getElementById('lightboxMeta').textContent = metaParts.join(' · ');
+  // Descrição
+  var descEl = document.getElementById('lightboxDesc');
+  if (descEl) { descEl.textContent = descricao; descEl.style.display = descricao ? '' : 'none'; }
   var navEls = document.querySelectorAll('.lightbox-nav');
   navEls.forEach(function(n){ n.style.display = _lbItems.length > 1 ? '' : 'none'; });
+}
+
+function lbInnerNav(dir) {
+  _lbInnerIdx = (_lbInnerIdx + dir + _lbInnerUrls.length) % _lbInnerUrls.length;
+  var el    = _lbItems[_lbIdx];
+  var tipo  = el.dataset.tipo;
+  var nome  = el.dataset.nome || '';
+  var src   = _lbInnerUrls[_lbInnerIdx];
+  var mediaEl = document.getElementById('lightboxMedia');
+  var isVid = tipo === 'video';
+  var innerNav = `<div style="display:flex;align-items:center;justify-content:center;gap:12px;margin-top:10px;">
+    <button onclick="lbInnerNav(-1)" style="background:rgba(255,255,255,.12);border:none;color:#fff;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:16px;">‹</button>
+    <span style="font-size:12px;color:rgba(255,255,255,.5);">${_lbInnerIdx+1} / ${_lbInnerUrls.length}</span>
+    <button onclick="lbInnerNav(1)" style="background:rgba(255,255,255,.12);border:none;color:#fff;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:16px;">›</button>
+  </div>`;
+  if (isVid) {
+    mediaEl.innerHTML = `<video class="lightbox-media-video" src="${src}" controls autoplay style="width:min(900px,90vw);aspect-ratio:16/9;"></video>${innerNav}`;
+  } else {
+    mediaEl.innerHTML = `<img class="lightbox-media" src="${src}" alt="${nome}">${innerNav}`;
+  }
 }
 
 // Teclado: setas e ESC
