@@ -428,8 +428,17 @@ function render() {
   grid.innerHTML = visíveis.map(it => {
     const isVideo = it.tipo === 'video';
     const cats = (it.categorias || []).map(c => `<span class="card-tag">${c}</span>`).join('');
-    // url_media pode ser string ou array — usa sempre a capa (primeiro item)
-    const urls  = Array.isArray(it.url_media) ? it.url_media : (it.url_media ? [it.url_media] : []);
+    // url_media pode ser array nativo, string JSON de array, ou string simples
+    let urls;
+    const rawMedia = it.url_media;
+    if (Array.isArray(rawMedia)) {
+      urls = rawMedia;
+    } else if (typeof rawMedia === 'string' && rawMedia.trim().startsWith('[')) {
+      try { urls = JSON.parse(rawMedia); } catch(e) { urls = [rawMedia]; }
+    } else if (rawMedia) {
+      urls = [rawMedia];
+    } else { urls = []; }
+    urls = urls.filter(u => u && typeof u === 'string' && u.trim());
     const capa  = urls[0] || '';
     const multi = urls.length > 1;
     const thumb = isVideo
@@ -525,9 +534,17 @@ function fillForm(it) {
   document.querySelectorAll('#catCheckboxes input').forEach(cb => {
     cb.checked = (it.categorias || []).includes(cb.value);
   });
-  // Carregar mídias existentes
-  const urls = Array.isArray(it.url_media) ? it.url_media
-             : (it.url_media ? [it.url_media] : []);
+  // Carregar mídias existentes — url_media pode ser string JSON ou array
+  let existUrls;
+  const rawM = it.url_media;
+  if (Array.isArray(rawM)) {
+    existUrls = rawM;
+  } else if (typeof rawM === 'string' && rawM.trim().startsWith('[')) {
+    try { existUrls = JSON.parse(rawM); } catch(e) { existUrls = [rawM]; }
+  } else if (rawM) {
+    existUrls = [rawM];
+  } else { existUrls = []; }
+  const urls = existUrls.filter(u => u && typeof u === 'string' && u.trim());
   _urlsAtuais = urls;
   _arquivos   = [];
   renderPreviewGrid();
