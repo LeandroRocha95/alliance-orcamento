@@ -15,22 +15,6 @@
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;}
 
-/* ── LOCK ── */
-.lock-screen{
-  position:fixed;inset:0;background:var(--bg);
-  display:flex;align-items:center;justify-content:center;z-index:999;
-  background-image:radial-gradient(ellipse at 30% 30%,rgba(48,142,238,.1) 0%,transparent 60%);
-}
-.lock-box{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:40px 36px;width:100%;max-width:360px;text-align:center;}
-.lock-logo{height:44px;background:#fff;border-radius:10px;padding:5px 14px;margin-bottom:24px;}
-.lock-title{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;color:var(--accent);margin-bottom:6px;}
-.lock-sub{font-size:13px;color:var(--muted);margin-bottom:22px;}
-.lock-inp{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:22px;padding:12px;text-align:center;letter-spacing:6px;outline:none;margin-bottom:8px;transition:border-color .15s;}
-.lock-inp:focus{border-color:var(--accent);}
-.lock-err{font-size:12px;color:var(--red);min-height:16px;margin-bottom:10px;}
-.lock-btn{width:100%;padding:13px;border-radius:10px;background:linear-gradient(135deg,var(--accent2),var(--accent));border:none;color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:opacity .2s;}
-.lock-btn:hover{opacity:.88;}
-
 /* ── HEADER ── */
 .header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 28px;display:flex;align-items:center;gap:14px;height:58px;position:sticky;top:0;z-index:50;}
 .header-logo{height:30px;background:#fff;border-radius:8px;padding:4px 10px;}
@@ -141,21 +125,8 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 </head>
 <body>
 
-<!-- LOCK -->
-<div class="lock-screen" id="lockScreen">
-  <div class="lock-box">
-    <img class="lock-logo" src="https://leandrorocha95.github.io/alliance-orcamento/logo_alliance.jpg" alt="Alliance">
-    <div class="lock-title">Campanhas</div>
-    <div class="lock-sub">Área restrita — painel admin</div>
-    <input class="lock-inp" type="password" id="lockInp" placeholder="••••" maxlength="20"
-           onkeydown="if(event.key==='Enter')checkLock()">
-    <div class="lock-err" id="lockErr"></div>
-    <button class="lock-btn" onclick="checkLock()">Acessar</button>
-  </div>
-</div>
-
 <!-- APP -->
-<div id="app" style="display:none;">
+<div id="app">
   <header class="header">
     <img class="header-logo" src="https://leandrorocha95.github.io/alliance-orcamento/logo_alliance.jpg" alt="Alliance">
     <div class="header-title">Campanhas</div>
@@ -198,8 +169,10 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
           <select class="form-sel" id="fTipo" onchange="onTipoChange()">
             <option value="faixa">📢 Faixa Superior</option>
             <option value="banner">🖼 Banner de Destaque</option>
+            <option value="imagem">🌄 Somente Imagem</option>
+            <option value="flutuante">📌 Botão Flutuante</option>
           </select>
-          <div class="form-hint">Faixa: linha horizontal no topo · Banner: seção visual entre o hero e o sobre</div>
+          <div class="form-hint">Faixa: topo · Banner: seção visual · Imagem: banner full sem texto · Flutuante: botão sobre o WhatsApp</div>
         </div>
         <div class="form-group">
           <label class="form-label">Prioridade</label>
@@ -220,6 +193,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
       </div>
 
       <div class="section-divider">Conteúdo</div>
+      <div id="fConteudoGrupo">
 
       <div class="form-group" id="fEyebrowGroup" style="display:none;">
         <label class="form-label">Eyebrow (banner)</label>
@@ -227,7 +201,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
       </div>
 
       <div class="form-group">
-        <label class="form-label">Título *</label>
+        <label class="form-label">Título <span id="tituloObrigatorio" style="color:var(--red)">*</span></label>
         <input class="form-inp" id="fTitulo" placeholder="Ex: Condição especial para casas de madeira em SC" oninput="updatePreview()">
       </div>
 
@@ -246,6 +220,8 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
           <input class="form-inp" id="fBtnLink" placeholder="Ex: #contato ou https://...">
         </div>
       </div>
+
+      </div><!-- /fConteudoGrupo -->
 
       <div class="section-divider">Visual</div>
 
@@ -269,7 +245,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
       <div class="form-group" id="fImagemGroup" style="display:none;">
         <label class="form-label">URL da imagem de fundo (banner)</label>
         <input class="form-inp" id="fImagem" placeholder="https://... (URL pública da imagem)" oninput="updatePreview()">
-        <div class="form-hint">Recomendado: 1440×500px. Deixe vazio para usar cor de fundo.</div>
+        <div class="form-hint" id="fImagemHint">Recomendado: 1440×500px. Deixe vazio para usar cor de fundo.</div>
       </div>
 
       <div class="section-divider">Período</div>
@@ -321,19 +297,6 @@ let campanhas = [];
 let _editId   = null;
 let _deleteId = null;
 
-// ── LOCK ──────────────────────────────────────────────────────
-function checkLock() {
-  if (document.getElementById('lockInp').value === PASS) {
-    document.getElementById('lockScreen').style.display = 'none';
-    document.getElementById('app').style.display = 'block';
-    init();
-  } else {
-    document.getElementById('lockErr').textContent = 'Senha incorreta.';
-    document.getElementById('lockInp').value = '';
-  }
-}
-document.getElementById('lockInp').addEventListener('keydown', e => { if(e.key==='Enter') checkLock(); });
-
 // ── INIT ──────────────────────────────────────────────────────
 async function init() { await load(); render(); }
 
@@ -378,26 +341,39 @@ function render() {
     const status = getStatus(c, hoje);
     const isFaixa = c.tipo === 'faixa';
     const previewStyle = `background:${c.cor_fundo||'#308EEE'};color:${c.cor_texto||'#fff'};`;
-    const previewHtml = isFaixa
-      ? `<div class="campanha-card-preview" style="${previewStyle}">
+    const isFlutuante = c.tipo === 'flutuante';
+    const isImagem    = c.tipo === 'imagem';
+    let previewHtml;
+    if (isFaixa) {
+      previewHtml = `<div class="campanha-card-preview" style="${previewStyle}">
            <span style="font-weight:700;">${esc(c.titulo||'')}</span>
            ${c.subtitulo ? `<span style="opacity:.8;"> · ${esc(c.subtitulo)}</span>` : ''}
-         </div>`
-      : `<div class="campanha-card-preview banner-preview" style="${c.imagem_desktop ? `background-image:url(${c.imagem_desktop});background-size:cover;background-position:center;` : previewStyle}">
-           <div style="position:absolute;inset:0;background:rgba(0,0,0,.4);"></div>
+         </div>`;
+    } else if (isFlutuante) {
+      previewHtml = `<div class="campanha-card-preview" style="background:var(--surface3);gap:10px;">
+           <div style="width:36px;height:36px;border-radius:50%;background:${c.cor_fundo||'#308EEE'};display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;">
+             ${c.imagem_desktop ? `<img src="${c.imagem_desktop}" style="width:100%;height:100%;object-fit:cover;">` : `<span style="font-size:18px;">📣</span>`}
+           </div>
+           <span style="font-size:13px;font-weight:600;">${esc(c.titulo||'Botão flutuante')}</span>
+         </div>`;
+    } else {
+      previewHtml = `<div class="campanha-card-preview banner-preview" style="${c.imagem_desktop ? `background-image:url(${c.imagem_desktop});background-size:cover;background-position:center;` : previewStyle}">
+           <div style="position:absolute;inset:0;background:${isImagem ? 'rgba(0,0,0,0)' : 'rgba(0,0,0,.4)'};"></div>
            <div style="position:relative;z-index:1;color:#fff;text-align:center;">
-             <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;opacity:.7;margin-bottom:4px;">${esc(c.eyebrow||'')}</div>
-             <div style="font-size:16px;font-weight:600;">${esc(c.titulo||'')}</div>
+             ${!isImagem ? `<div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;opacity:.7;margin-bottom:4px;">${esc(c.eyebrow||'')}</div>
+             <div style="font-size:16px;font-weight:600;">${esc(c.titulo||'')}</div>` : ''}
            </div>
          </div>`;
+    }
     const statusTag = {
       ativa:    '<span class="tag tag-ativa">● Ativa</span>',
       inativa:  '<span class="tag tag-inativa">● Inativa</span>',
       agendada: '<span class="tag tag-agendada">◷ Agendada</span>',
       expirada: '<span class="tag tag-inativa">✕ Expirada</span>',
     }[status];
-    const tipoTag = isFaixa
-      ? '<span class="tag tag-faixa">Faixa</span>'
+    const tipoTag = isFaixa ? '<span class="tag tag-faixa">Faixa</span>'
+      : isFlutuante ? '<span class="tag" style="background:rgba(245,166,35,.15);color:#f5a623;">Flutuante</span>'
+      : isImagem    ? '<span class="tag" style="background:rgba(46,204,113,.15);color:#2ecc71;">Imagem</span>'
       : '<span class="tag tag-banner">Banner</span>';
     const datas = c.data_inicio || c.data_fim
       ? `📅 ${c.data_inicio||'—'} → ${c.data_fim||'—'}`
@@ -483,9 +459,24 @@ function fillForm(c) {
 }
 
 function onTipoChange() {
-  const isBanner = document.getElementById('fTipo').value === 'banner';
-  document.getElementById('fImagemGroup').style.display  = isBanner ? '' : 'none';
-  document.getElementById('fEyebrowGroup').style.display = isBanner ? '' : 'none';
+  const tipo = document.getElementById('fTipo').value;
+  const isBanner   = tipo === 'banner';
+  const isImagem   = tipo === 'imagem';
+  const isFlutuante= tipo === 'flutuante';
+  const hideText   = isImagem || isFlutuante;
+
+  document.getElementById('fImagemGroup').style.display   = (isBanner || isImagem || isFlutuante) ? '' : 'none';
+  document.getElementById('fEyebrowGroup').style.display  = isBanner ? '' : 'none';
+  document.getElementById('fConteudoGrupo').style.display = hideText ? 'none' : '';
+  document.getElementById('tituloObrigatorio').style.display = hideText ? 'none' : '';
+
+  // hint da imagem
+  const imgHint = document.getElementById('fImagemHint');
+  if (imgHint) {
+    if (isFlutuante) imgHint.textContent = 'Ícone/imagem do botão flutuante (recomendado: 48×48px)';
+    else if (isImagem) imgHint.textContent = 'Imagem do banner (recomendado: 1440×500px). Obrigatório neste modo.';
+    else imgHint.textContent = 'Recomendado: 1440×500px. Deixe vazio para usar cor de fundo.';
+  }
   updatePreview();
 }
 
@@ -507,6 +498,27 @@ function updatePreview() {
         ${sub ? `<span style="opacity:.8;"> · ${sub}</span>` : ''}
         ${btnTx ? `<span style="background:rgba(255,255,255,.25);border:1px solid rgba(255,255,255,.5);padding:4px 12px;font-size:11px;font-weight:700;letter-spacing:1px;cursor:default;">${btnTx}</span>` : ''}
         <span style="opacity:.5;font-size:16px;cursor:default;">×</span>
+      </div>`;
+  } else if (tipo === 'imagem') {
+    const bgStyle = img ? `background-image:url(${img});background-size:cover;background-position:center;` : `background:${corFg};`;
+    wrap.innerHTML = `
+      <div class="preview-banner" style="${bgStyle};min-height:140px;">
+        <div class="preview-banner-bg" style="${bgStyle}"></div>
+        ${img ? '' : '<div class="preview-banner-overlay"></div>'}
+        <div class="preview-banner-content" style="color:${corTx};">
+          ${img ? '' : '<div style="font-size:12px;opacity:.5;">Somente imagem — adicione a URL acima</div>'}
+        </div>
+      </div>`;
+  } else if (tipo === 'flutuante') {
+    wrap.innerHTML = `
+      <div style="display:flex;align-items:center;gap:14px;padding:12px;background:var(--surface3);border-radius:10px;font-size:13px;">
+        <div style="width:52px;height:52px;border-radius:50%;background:${corFg};display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;">
+          ${img ? `<img src="${img}" style="width:100%;height:100%;object-fit:cover;">` : `<span style="font-size:22px;">📣</span>`}
+        </div>
+        <div>
+          <div style="font-weight:600;margin-bottom:2px;">${titulo||'Botão flutuante'}</div>
+          <div style="font-size:11px;opacity:.6;">Aparece acima do botão WhatsApp</div>
+        </div>
       </div>`;
   } else {
     const bgStyle = img ? `background-image:url(${img});background-size:cover;background-position:center;` : `background:${corFg};`;
