@@ -54,7 +54,9 @@ h1,h2,h3,.serif{font-family:'Cormorant Garamond',Georgia,serif;}
 .campanha-faixa{
   width:100%;padding:10px 60px;
   display:none;align-items:center;justify-content:center;gap:16px;
-  flex-wrap:wrap;position:relative;z-index:101;
+  flex-wrap:wrap;
+  position:fixed;top:0;left:0;right:0;
+  z-index:102;
   font-size:13px;font-weight:500;
   transition:all .3s;
 }
@@ -171,7 +173,7 @@ h1,h2,h3,.serif{font-family:'Cormorant Garamond',Georgia,serif;}
 
 /* ── NAV ── */
 nav{
-  position:fixed;top:0;left:0;right:0;z-index:100;
+  position:fixed;top:var(--faixa-h,0px);left:0;right:0;z-index:100;
   display:flex;align-items:center;justify-content:space-between;
   padding:20px 60px;
   transition:all .4s;
@@ -1824,12 +1826,9 @@ function loadCampanhas() {
     // Faixa
     var faixa = ativas.find(function(c){ return c.tipo === 'faixa'; });
     if (faixa) renderFaixa(faixa);
-    // Banners com texto
-    var banners = ativas.filter(function(c){ return c.tipo === 'banner'; });
+    // Banners com texto + Somente Imagem → todos entram no mesmo carrossel
+    var banners = ativas.filter(function(c){ return c.tipo === 'banner' || c.tipo === 'imagem'; });
     if (banners.length) renderBannerCarrossel(banners);
-    // Somente imagem — trata como banner sem overlay/texto
-    var imgs = ativas.filter(function(c){ return c.tipo === 'imagem'; });
-    if (imgs.length && !banners.length) renderBannerImagem(imgs[0]);
     // Botão flutuante de campanha
     var flutuante = ativas.find(function(c){ return c.tipo === 'flutuante'; });
     if (flutuante) renderFlutuanteCampanha(flutuante);
@@ -1855,9 +1854,18 @@ function renderFaixa(c) {
   }
   el._campId = c.id;
   el.classList.add('ativa');
-  // Ajustar padding do hero para compensar faixa
-  var nav = document.getElementById('mainNav');
-  if (nav) nav.style.top = el.offsetHeight + 'px';
+  // Usar requestAnimationFrame para garantir que a faixa já foi renderizada
+  requestAnimationFrame(function() {
+    var h = el.offsetHeight;
+    document.documentElement.style.setProperty('--faixa-h', h + 'px');
+    // Empurra o hero para não ficar atrás da faixa + nav
+    var hero = document.getElementById('hero');
+    if (hero) {
+      var navEl = document.getElementById('mainNav');
+      var navH = navEl ? navEl.offsetHeight : 80;
+      hero.style.paddingTop = (h + navH) + 'px';
+    }
+  });
 }
 
 function renderBannerImagem(c) {
@@ -1936,12 +1944,20 @@ function renderBannerCarrossel(banners) {
   }
 
   slides.innerHTML = banners.map(function(c) {
+    var soImagem = c.tipo === 'imagem';
     var bgStyle = c.imagem_desktop
       ? 'background-image:url(' + c.imagem_desktop + ');'
       : 'background:linear-gradient(135deg,' + (c.cor_fundo||'#0A2040') + ',' + (c.cor_fundo||'#1565A8') + ');';
     var btnHtml = (c.btn_texto && c.btn_link)
       ? '<a class="campanha-banner-btn" href="' + escHtml(c.btn_link) + '" target="_blank">' + escHtml(c.btn_texto) + '</a>'
       : '';
+    if (soImagem) {
+      // Sem overlay, sem texto — imagem pura com botão opcional
+      return '<div class="banner-slide">'
+        + '<div class="campanha-banner-bg" style="' + bgStyle + '"></div>'
+        + (btnHtml ? '<div class="campanha-banner-content">' + btnHtml + '</div>' : '')
+        + '</div>';
+    }
     return '<div class="banner-slide">'
       + '<div class="campanha-banner-bg" style="' + bgStyle + '"></div>'
       + '<div class="campanha-banner-overlay"></div>'
@@ -2002,9 +2018,10 @@ function fecharFaixa() {
       localStorage.setItem('campanhas_fechadas', JSON.stringify(fechadas));
     }
   }
-  // Resetar nav position
-  var nav = document.getElementById('mainNav');
-  if (nav) nav.style.top = '0';
+  document.documentElement.style.setProperty('--faixa-h', '0px');
+  // Resetar hero padding
+  var hero = document.getElementById('hero');
+  if (hero) hero.style.paddingTop = '';
 }
 
 // ── INIT ─────────────────────────────────────────────────────
