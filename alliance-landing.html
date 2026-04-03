@@ -1398,7 +1398,8 @@ footer{
         </a>
       </div>
     </div>
-    <div class="modelos-grid">
+    <div class="modelos-grid" id="modelosGrid">
+      <!-- Fallback estático — substituído pelo JS quando carregar do Supabase -->
       <div class="modelo-card reveal">
         <div class="modelo-card-img-wrap">
           <img class="modelo-card-img" src="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=600&q=80" alt="Modelo compacto">
@@ -1406,16 +1407,8 @@ footer{
         </div>
         <div class="modelo-card-body">
           <div class="modelo-card-name">Modelo Atenas</div>
-          <div class="modelo-card-specs">
-            <span>57 m²</span>
-            <span>·</span>
-            <span>2 quartos</span>
-            <span>·</span>
-            <span>1 banheiro</span>
-          </div>
-          <div class="modelo-card-price">
-            <span>A partir de</span> R$ 88.000
-          </div>
+          <div class="modelo-card-specs"><span>57 m²</span><span>·</span><span>2 quartos</span><span>·</span><span>1 banheiro</span></div>
+          <div class="modelo-card-price"><span>A partir de</span> R$ 88.000</div>
         </div>
       </div>
       <div class="modelo-card reveal reveal-delay-1">
@@ -1425,16 +1418,8 @@ footer{
         </div>
         <div class="modelo-card-body">
           <div class="modelo-card-name">Modelo Dallas</div>
-          <div class="modelo-card-specs">
-            <span>85 m²</span>
-            <span>·</span>
-            <span>3 quartos</span>
-            <span>·</span>
-            <span>1 banheiro</span>
-          </div>
-          <div class="modelo-card-price">
-            <span>A partir de</span> R$ 210.000
-          </div>
+          <div class="modelo-card-specs"><span>85 m²</span><span>·</span><span>3 quartos</span><span>·</span><span>1 banheiro</span></div>
+          <div class="modelo-card-price"><span>A partir de</span> R$ 210.000</div>
         </div>
       </div>
       <div class="modelo-card reveal reveal-delay-2">
@@ -1444,12 +1429,8 @@ footer{
         </div>
         <div class="modelo-card-body">
           <div class="modelo-card-name">Modelo Personalizado</div>
-          <div class="modelo-card-specs">
-            <span>A partir de 100 m²</span>
-          </div>
-          <div class="modelo-card-price">
-            <span>Consulte</span>
-          </div>
+          <div class="modelo-card-specs"><span>A partir de 100 m²</span></div>
+          <div class="modelo-card-price"><span>Consulte</span></div>
         </div>
       </div>
     </div>
@@ -2534,10 +2515,71 @@ document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape')     fecharLightbox();
 });
 
+// ── MODELOS DO CATÁLOGO ───────────────────────────────────────
+function loadModelos() {
+  fetch(SB_URL + '/rest/v1/casas_catalogo?visivel_site=eq.true&status=eq.publicado&order=created_at.desc', {
+    headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY }
+  })
+  .then(function(r){ return r.ok ? r.json() : null; })
+  .then(function(data){
+    if (!Array.isArray(data) || !data.length) return; // mantém fallback estático
+    renderModelosGrid(data);
+  })
+  .catch(function(){});
+}
+
+function renderModelosGrid(lista) {
+  var grid = document.getElementById('modelosGrid');
+  if (!grid) return;
+
+  var seloMap = {
+    'mais-vendido':'Mais Vendido',
+    'novo':'Novo',
+    'destaque':'Destaque',
+    'lancamento':'Lançamento'
+  };
+
+  function brl(v) {
+    return 'R$ ' + parseFloat(v).toLocaleString('pt-BR', {minimumFractionDigits:0, maximumFractionDigits:0});
+  }
+
+  grid.innerHTML = lista.map(function(c, i) {
+    var fotos = Array.isArray(c.fotos) && c.fotos.length ? c.fotos : (c.foto ? [c.foto] : []);
+    var imgUrl = fotos[0] || '';
+    var area   = (parseFloat(c.area_interna)||0) + (parseFloat(c.area_ext)||0) || parseFloat(c.area)||0;
+    var tag    = (c.selo && seloMap[c.selo]) ? seloMap[c.selo] : (c.tipo || '');
+    var delay  = i === 1 ? ' reveal-delay-1' : i === 2 ? ' reveal-delay-2' : '';
+
+    var specs = [];
+    if (area)       specs.push(area + ' m²');
+    if (c.quartos)  specs.push(c.quartos + (c.quartos>1?' quartos':' quarto'));
+    if (c.banheiros)specs.push(c.banheiros + (c.banheiros>1?' banheiros':' banheiro'));
+
+    var precoHtml = c.preco
+      ? '<span>A partir de</span> ' + brl(c.preco)
+      : '<span>Consulte</span>';
+
+    return '<a class="modelo-card reveal' + delay + '" href="https://leandrorocha95.github.io/alliance-orcamento/catalogo.html?modelo=' + c.id + '" target="_blank" style="text-decoration:none;color:inherit;">'
+      + '<div class="modelo-card-img-wrap">'
+      + (imgUrl
+          ? '<img class="modelo-card-img" src="' + imgUrl + '" alt="' + (c.nome||'') + '" loading="lazy" onerror="this.style.display=\'none\'">'
+          : '<div class="modelo-card-img" style="background:var(--cream2);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:32px;">🏠</div>')
+      + (tag ? '<div class="modelo-card-tag">' + tag + '</div>' : '')
+      + '</div>'
+      + '<div class="modelo-card-body">'
+      + '<div class="modelo-card-name">' + (c.nome||'') + '</div>'
+      + (specs.length ? '<div class="modelo-card-specs">' + specs.map(function(s,j){ return (j>0?'<span>·</span>':'') + '<span>' + s + '</span>'; }).join('') + '</div>' : '')
+      + '<div class="modelo-card-price">' + precoHtml + '</div>'
+      + '</div>'
+      + '</a>';
+  }).join('');
+}
+
 // ── INIT ─────────────────────────────────────────────────────
 loadLojas();
 loadCampanhas();
 loadPortfolio();
+loadModelos();
 
 // ── WHATSAPP FLUTUANTE ────────────────────────────────────────
 function openWappFloat() {
