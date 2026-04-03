@@ -539,6 +539,11 @@ body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif
       <span class="nav-label">Depoimentos</span>
     </div>
 
+    <div class="nav-item" data-module="conteudo" data-tip="Conteúdo do Site" onclick="navigate('conteudo')">
+      <span class="nav-icon">✏️</span>
+      <span class="nav-label">Conteúdo</span>
+    </div>
+
     <div class="nav-item" data-module="custos" data-tip="Gestão de Custos" onclick="navigate('custos')">
       <span class="nav-icon">💰</span>
       <span class="nav-label">Gestão de Custos</span>
@@ -663,6 +668,12 @@ body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif
         <div class="home-card-desc">Cadastre depoimentos de clientes com texto e áudio. Aparecem automaticamente no site.</div>
         <div class="home-card-btn">Abrir →</div>
       </div>
+      <div class="home-card" onclick="navigate('conteudo')">
+        <div class="home-card-icon">✏️</div>
+        <div class="home-card-title">Conteúdo do Site</div>
+        <div class="home-card-desc">Edite os números em destaque e os diferenciais que aparecem na landing page.</div>
+        <div class="home-card-btn">Abrir →</div>
+      </div>
       <div class="home-card" onclick="navigate('banco')">
         <div class="home-card-icon">🗄️</div>
         <div class="home-card-title">Banco de Dados</div>
@@ -698,6 +709,10 @@ body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif
 
   <div class="iframe-container" id="module-depoimentos">
     <iframe class="module-iframe" id="iframe-depoimentos" src="" title="Depoimentos"></iframe>
+  </div>
+
+  <div class="iframe-container" id="module-conteudo">
+    <iframe class="module-iframe" id="iframe-conteudo" src="" title="Conteúdo"></iframe>
   </div>
 
 </main>
@@ -766,6 +781,7 @@ var MODULES = {
   campanhas:  'https://alliance-orcamento.pages.dev/campanhas-admin.html',
   portfolio:    'https://alliance-orcamento.pages.dev/portfolio-admin.html',
   depoimentos: 'https://alliance-orcamento.pages.dev/depoimentos-admin.html',
+  conteudo:    'https://alliance-orcamento.pages.dev/conteudo-admin.html',
   banco:      'https://supabase.com/dashboard/project/gzzclbxnohokttujvaqa',
 };
 var LOCKED   = ['custos', 'banco', 'crm', 'campanhas', 'portfolio', 'depoimentos'];
@@ -895,7 +911,7 @@ function doLogout() {
   _session = null;
   localStorage.removeItem('alliance_session');
   // Limpar iframes
-  ['orcamento','catalogo','custos','crm','campanhas','portfolio','depoimentos'].forEach(function(m) {
+  ['orcamento','catalogo','custos','crm','campanhas','portfolio','depoimentos','conteudo'].forEach(function(m) {
     var iframe = document.getElementById('iframe-' + m);
     if (iframe) iframe.src = '';
   });
@@ -977,7 +993,7 @@ function loadModule(module) {
 
 // LOCK
 function showLock(module) {
-  var titles = { custos:'Gestão de Custos', banco:'Banco de Dados', crm:'CRM de Leads', campanhas:'Campanhas', portfolio:'Portfólio', depoimentos:'Depoimentos' };
+  var titles = { custos:'Gestão de Custos', banco:'Banco de Dados', crm:'CRM de Leads', campanhas:'Campanhas', portfolio:'Portfólio', depoimentos:'Depoimentos', conteudo:'Conteúdo do Site' };
   document.getElementById('lockTitle').textContent = titles[module] || 'Área Restrita';
   document.getElementById('lockInput').value = '';
   document.getElementById('lockErr').textContent = '';
