@@ -2517,10 +2517,19 @@ document.addEventListener('keydown', function(e) {
 
 // ── MODELOS DO CATÁLOGO ───────────────────────────────────────
 function loadModelos() {
+  // Tenta primeiro com filtro visivel_site (requer coluna criada via SQL)
   fetch(SB_URL + '/rest/v1/casas_catalogo?visivel_site=eq.true&status=eq.publicado&order=created_at.desc', {
     headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY }
   })
-  .then(function(r){ return r.ok ? r.json() : null; })
+  .then(function(r){
+    if (!r.ok) {
+      // Coluna não existe ainda — tenta sem filtro visivel_site, pega os 6 mais recentes publicados
+      return fetch(SB_URL + '/rest/v1/casas_catalogo?status=eq.publicado&order=created_at.desc&limit=6', {
+        headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY }
+      }).then(function(r2){ return r2.ok ? r2.json() : null; });
+    }
+    return r.json();
+  })
   .then(function(data){
     if (!Array.isArray(data) || !data.length) return; // mantém fallback estático
     renderModelosGrid(data);
