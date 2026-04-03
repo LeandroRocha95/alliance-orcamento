@@ -45,6 +45,44 @@
   .tab { padding: 11px 18px; font-size: 13px; font-weight: 500; cursor: pointer; border-bottom: 2px solid transparent; color: var(--muted); transition: all 0.2s; }
   .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
 
+  /* DASHBOARD */
+  .dash-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr)); gap: 14px; margin-bottom: 24px; }
+  .dash-kpi { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px 16px; }
+  .dash-kpi-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); font-weight: 700; margin-bottom: 8px; }
+  .dash-kpi-val { font-size: 28px; font-weight: 700; color: var(--accent); line-height: 1; }
+  .dash-kpi-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+  .dash-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .dash-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px; }
+  .dash-card-title { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); font-weight: 700; margin-bottom: 14px; }
+  .dash-bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .dash-bar-label { font-size: 12px; color: var(--text); width: 110px; flex-shrink: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .dash-bar-track { flex: 1; background: var(--surface2); border-radius: 4px; height: 8px; overflow: hidden; }
+  .dash-bar-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--accent2), var(--accent)); transition: width .5s ease; }
+  .dash-bar-val { font-size: 11px; color: var(--muted); width: 60px; text-align: right; flex-shrink: 0; }
+  .dash-period { display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap; }
+  .dash-period-btn { background: var(--surface2); border: 1px solid var(--border); color: var(--muted); border-radius: 20px; padding: 5px 12px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all .15s; }
+  .dash-period-btn.active { background: rgba(245,166,35,.15); border-color: var(--accent); color: var(--accent); }
+  .dash-list-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .dash-list-item:last-child { border-bottom: none; }
+  .dash-empty { text-align: center; color: var(--muted); font-size: 13px; padding: 32px 0; }
+  .dash-sparkline { display: flex; align-items: flex-end; gap: 4px; height: 48px; margin-top: 8px; }
+  .dash-spark-bar { flex: 1; background: rgba(245,166,35,.3); border-radius: 3px 3px 0 0; transition: height .4s ease; min-width: 8px; }
+  .dash-spark-bar.today { background: var(--accent); }
+
+  /* MODELOS */
+  .modelo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px,1fr)); gap: 14px; }
+  .modelo-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px; cursor: pointer; transition: border-color .15s, box-shadow .15s; }
+  .modelo-card:hover { border-color: var(--accent); box-shadow: 0 8px 24px rgba(245,166,35,.1); }
+  .modelo-card-name { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 1.5px; margin-bottom: 4px; }
+  .modelo-card-desc { font-size: 12px; color: var(--muted); line-height: 1.5; margin-bottom: 12px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .modelo-card-meta { font-size: 11px; color: var(--muted); display: flex; gap: 10px; flex-wrap: wrap; }
+  .modelo-card-actions { display: flex; gap: 6px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border); }
+  .modelo-save-form { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+  .modelo-save-title { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 12px; }
+  .modelo-inp { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 9px 12px; outline: none; width: 100%; transition: border-color .15s; margin-bottom: 8px; }
+  .modelo-inp:focus { border-color: var(--accent); }
+  .modelo-empty { text-align: center; color: var(--muted); font-size: 13px; padding: 40px 0; }
+
   /* LAYOUT */
   .container { max-width: 960px; margin: 0 auto; padding: 28px 20px 60px; }
   .page { display: none; }
@@ -362,6 +400,8 @@
 <div class="tabs">
   <div class="tab active" id="tabOrc" onclick="switchTab('orcamento')">📋 Orçamento</div>
   <div class="tab" id="tabHist" onclick="switchTab('historico')">🗂 Histórico</div>
+  <div class="tab" id="tabModelos" onclick="switchTab('modelos')">📐 Modelos</div>
+  <div class="tab" id="tabDash" style="display:none" onclick="switchTab('dashboard')">📊 Dashboard</div>
   <div class="tab" id="tabAdm" style="display:none" onclick="switchTab('admin')">⚙️ Administração</div>
 </div>
 
@@ -532,6 +572,70 @@
     </select>
   </div>
   <div id="historyList" style="display:flex;flex-direction:column;gap:10px;margin-top:16px;"></div>
+</div>
+
+<!-- ══════════ MODELOS ══════════ -->
+<div class="container page" id="page-modelos">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+    <div class="section-title" style="margin:0;">Modelos de Orçamento</div>
+  </div>
+
+  <!-- Salvar orçamento atual como modelo -->
+  <div class="modelo-save-form" id="modeloSaveForm">
+    <div class="modelo-save-title">💾 Salvar orçamento atual como modelo</div>
+    <input class="modelo-inp" id="modeloNomeInp" placeholder="Nome do modelo (ex: Casa 2 Quartos Madeira de Lei)">
+    <textarea class="modelo-inp" id="modeloDescInp" placeholder="Descrição opcional..." style="resize:vertical;min-height:60px;"></textarea>
+    <button class="btn btn-primary btn-sm" onclick="salvarModelo()">Salvar como Modelo</button>
+  </div>
+
+  <!-- Lista de modelos -->
+  <div class="modelo-grid" id="modeloGrid">
+    <div class="modelo-empty">Nenhum modelo salvo ainda.<br>Preencha um orçamento e salve como modelo acima.</div>
+  </div>
+</div>
+
+<!-- ══════════ DASHBOARD ══════════ -->
+<div class="container page" id="page-dashboard">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+    <div class="section-title" style="margin:0;">Dashboard</div>
+    <div class="dash-period">
+      <button class="dash-period-btn active" id="dpBtn7" onclick="setDashPeriod(7,this)">7 dias</button>
+      <button class="dash-period-btn" id="dpBtn30" onclick="setDashPeriod(30,this)">30 dias</button>
+      <button class="dash-period-btn" id="dpBtn90" onclick="setDashPeriod(90,this)">90 dias</button>
+      <button class="dash-period-btn" id="dpBtnAll" onclick="setDashPeriod(0,this)">Todos</button>
+    </div>
+  </div>
+
+  <!-- KPIs -->
+  <div class="dash-kpis" id="dashKpis"></div>
+
+  <!-- Charts row -->
+  <div class="dash-row" id="dashRow1">
+    <div class="dash-card">
+      <div class="dash-card-title">Por Vendedor</div>
+      <div id="dashVendedor"></div>
+    </div>
+    <div class="dash-card">
+      <div class="dash-card-title">Por Status</div>
+      <div id="dashStatus"></div>
+    </div>
+  </div>
+
+  <div class="dash-row" id="dashRow2">
+    <div class="dash-card">
+      <div class="dash-card-title">Por Tipo de Madeira</div>
+      <div id="dashMadeira"></div>
+    </div>
+    <div class="dash-card">
+      <div class="dash-card-title">Orçamentos por Dia</div>
+      <div id="dashSparkline"></div>
+    </div>
+  </div>
+
+  <div class="dash-card" style="margin-bottom:16px;">
+    <div class="dash-card-title">Maiores Orçamentos</div>
+    <div id="dashTop"></div>
+  </div>
 </div>
 
 <!-- ══════════ ADMIN ══════════ -->
@@ -718,6 +822,7 @@ function checkPw() {
     if (!_isAdmin) { document.getElementById('pwErr').textContent = 'Você não tem permissão de admin.'; return; }
     closeAdminModal();
     document.getElementById('tabAdm').style.display = '';
+    document.getElementById('tabDash').style.display = '';
     switchTab('admin');
   } else {
     document.getElementById('pwErr').textContent = 'Senha incorreta.';
@@ -730,15 +835,18 @@ function checkPw() {
 // TABS
 // ═══════════════════════════════════════════════════
 function switchTab(page) {
-  ['orcamento','historico','admin'].forEach(function(p) {
-    document.getElementById('page-'+p).classList.toggle('active', p===page);
-    var tabId = p==='orcamento' ? 'tabOrc' : p==='historico' ? 'tabHist' : 'tabAdm';
+  ['orcamento','historico','modelos','dashboard','admin'].forEach(function(p) {
+    var el = document.getElementById('page-'+p);
+    if (el) el.classList.toggle('active', p===page);
+    var tabId = p==='orcamento' ? 'tabOrc' : p==='historico' ? 'tabHist' : p==='modelos' ? 'tabModelos' : p==='dashboard' ? 'tabDash' : 'tabAdm';
     var tab = document.getElementById(tabId);
     if (tab) tab.classList.toggle('active', p===page);
   });
-  if (page === 'admin') { renderConfigPanels(); renderAdminTable(); }
-  if (page === 'orcamento') renderOrcamento();
-  if (page === 'historico') renderHistory();
+  if (page === 'admin')     { renderConfigPanels(); renderAdminTable(); }
+  if (page === 'orcamento')   renderOrcamento();
+  if (page === 'historico')   renderHistory();
+  if (page === 'modelos')     renderModelos();
+  if (page === 'dashboard')   renderDashboard();
 }
 
 // ═══════════════════════════════════════════════════
@@ -1404,7 +1512,7 @@ function saveToHistory() {
     if (r.ok || r.status === 201) {
       _currentQuoteId = id;
       updateQuoteCodeDisplay();
-      _historyCache = null;
+      _historyCache = null; _dashCache = null;
       showToast('✓ Orçamento ' + genQuoteCode(id) + ' salvo!');
     } else {
       r.text().then(function(t){ showToast('Erro: ' + t, 'error'); });
@@ -1586,7 +1694,7 @@ function deleteFromHistory(id) {
   if (!confirm('Excluir este orçamento para todos os vendedores?')) return;
   sbFetch('DELETE', TABLE_URL + '?id=eq.' + id)
   .then(function(r) {
-    if (r.ok) { _historyCache = null; showToast('Removido!'); renderHistory(); }
+    if (r.ok) { _historyCache = null; _dashCache = null; showToast('Removido!'); renderHistory(); }
     else showToast('Erro ao excluir','error');
   })
   .catch(function(){ showToast('Sem conexão','error'); });
@@ -1596,7 +1704,7 @@ function clearHistory() {
   if (!confirm('Apagar TODOS os orçamentos? Isso afeta todos os vendedores.')) return;
   sbFetch('DELETE', TABLE_URL + '?id=gt.0')
   .then(function(r) {
-    if (r.ok) { _historyCache = null; showToast('Histórico limpo!'); renderHistory(); }
+    if (r.ok) { _historyCache = null; _dashCache = null; showToast('Histórico limpo!'); renderHistory(); }
     else showToast('Erro ao limpar','error');
   })
   .catch(function(){ showToast('Sem conexão','error'); });
@@ -2406,6 +2514,305 @@ document.addEventListener('click', function(e) {
 });
 // Restore session and load
 restoreSession();
-</script>
+// ═══════════════════════════════════════════════════
+// MODELOS DE ORÇAMENTO
+// ═══════════════════════════════════════════════════
+var MODELOS_KEY = 'alliance_modelos_v1';
+
+function getModelos() {
+  try { return JSON.parse(localStorage.getItem(MODELOS_KEY) || '[]'); } catch(e) { return []; }
+}
+function saveModelosLocal(arr) {
+  localStorage.setItem(MODELOS_KEY, JSON.stringify(arr));
+}
+
+function salvarModelo() {
+  var nome = (document.getElementById('modeloNomeInp').value || '').trim();
+  if (!nome) { showToast('Digite um nome para o modelo','error'); return; }
+  var desc = (document.getElementById('modeloDescInp').value || '').trim();
+
+  // Captura estado atual do orçamento
+  var snap = {
+    id:          Date.now(),
+    nome:        nome,
+    desc:        desc,
+    created_at:  new Date().toLocaleString('pt-BR'),
+    vendor:      document.getElementById('vendorName').value || '',
+    tipo_madeira:document.getElementById('tipoMadeira').value || '',
+    discount_val: document.getElementById('discountVal').value || '',
+    discount_type:document.getElementById('discountType').value || 'pct',
+    acrescimo_val:document.getElementById('acrescimoVal').value || '',
+    obs:          document.getElementById('quoteObs').value || '',
+    payment_data: JSON.stringify(getPaymentData()),
+    state:        JSON.parse(JSON.stringify(state)),
+    total:        document.getElementById('finalTotal').textContent || ''
+  };
+
+  var arr = getModelos();
+  arr.unshift(snap);
+  saveModelosLocal(arr);
+  document.getElementById('modeloNomeInp').value = '';
+  document.getElementById('modeloDescInp').value = '';
+  showToast('✓ Modelo "' + nome + '" salvo!');
+  renderModelos();
+}
+
+function renderModelos() {
+  var grid = document.getElementById('modeloGrid');
+  if (!grid) return;
+  var arr = getModelos();
+  if (!arr.length) {
+    grid.innerHTML = '<div class="modelo-empty">Nenhum modelo salvo ainda.<br>Preencha um orçamento e salve como modelo acima.</div>';
+    return;
+  }
+  grid.innerHTML = arr.map(function(m, i) {
+    var itemsCount = m.state ? Object.values(m.state).filter(function(v){ return v > 0; }).length : 0;
+    return '<div class="modelo-card">' +
+      '<div class="modelo-card-name">' + escHtml(m.nome) + '</div>' +
+      (m.desc ? '<div class="modelo-card-desc">' + escHtml(m.desc) + '</div>' : '') +
+      '<div class="modelo-card-meta">' +
+        (m.tipo_madeira ? '<span>🪵 ' + escHtml(m.tipo_madeira) + '</span>' : '') +
+        (itemsCount ? '<span>📦 ' + itemsCount + ' itens</span>' : '') +
+        (m.total ? '<span style="color:var(--accent);font-weight:700;">' + escHtml(m.total) + '</span>' : '') +
+        '<span style="color:var(--muted);">' + escHtml(m.created_at) + '</span>' +
+      '</div>' +
+      '<div class="modelo-card-actions">' +
+        '<button class="btn btn-primary btn-sm" onclick="aplicarModelo(' + i + ')">📂 Usar como base</button>' +
+        '<button class="btn btn-ghost btn-sm" onclick="excluirModelo(' + i + ')">🗑</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function aplicarModelo(i) {
+  var arr = getModelos();
+  var m = arr[i];
+  if (!m) return;
+  if (!confirm('Aplicar o modelo "' + m.nome + '"? O orçamento atual será substituído.')) return;
+
+  state = (m.state && typeof m.state === 'object') ? JSON.parse(JSON.stringify(m.state)) : {};
+  if (m.vendor)        document.getElementById('vendorName').value    = m.vendor;
+  if (m.tipo_madeira)  document.getElementById('tipoMadeira').value   = m.tipo_madeira;
+  if (m.discount_val)  document.getElementById('discountVal').value   = m.discount_val;
+  if (m.discount_type) document.getElementById('discountType').value  = m.discount_type;
+  if (m.acrescimo_val) document.getElementById('acrescimoVal').value  = m.acrescimo_val;
+  if (m.obs)           document.getElementById('quoteObs').value      = m.obs;
+  try { if (m.payment_data) setPaymentData(JSON.parse(m.payment_data)); } catch(ex){}
+  // Clear client-specific fields
+  document.getElementById('clientName').value = '';
+  document.getElementById('clientCity').value = '';
+  document.getElementById('clientPhone').value = '';
+  _currentQuoteId = null;
+  updateQuoteCodeDisplay();
+  switchTab('orcamento');
+  renderOrcamento();
+  showToast('✓ Modelo "' + m.nome + '" aplicado!');
+}
+
+function excluirModelo(i) {
+  var arr = getModelos();
+  if (!arr[i]) return;
+  if (!confirm('Excluir o modelo "' + arr[i].nome + '"?')) return;
+  arr.splice(i, 1);
+  saveModelosLocal(arr);
+  renderModelos();
+  showToast('Modelo excluído');
+}
+
+function escHtml(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ═══════════════════════════════════════════════════
+// DASHBOARD
+// ═══════════════════════════════════════════════════
+var _dashPeriod = 7;
+var _dashCache  = null;
+
+function setDashPeriod(days, btn) {
+  _dashPeriod = days;
+  document.querySelectorAll('.dash-period-btn').forEach(function(b){ b.classList.remove('active'); });
+  if (btn) btn.classList.add('active');
+  renderDashboard();
+}
+
+function renderDashboard() {
+  if (!_currentUser) return;
+  if (_dashCache) { _buildDash(_dashCache); return; }
+  // Reuse history cache if available
+  if (_historyCache) { _dashCache = _historyCache; _buildDash(_dashCache); return; }
+  var url = _isAdmin ? TABLE_URL + '?order=id.desc' : TABLE_URL + '?order=id.desc&user_id=eq.' + _currentUser.id;
+  sbFetch('GET', url)
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      _dashCache = data;
+      _historyCache = data;
+      _buildDash(data);
+    })
+    .catch(function(){
+      document.getElementById('dashKpis').innerHTML = '<div class="dash-empty">❌ Sem conexão com a nuvem.</div>';
+    });
+}
+
+function _filterByPeriod(data) {
+  if (!_dashPeriod) return data;
+  var cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - _dashPeriod);
+  return (data||[]).filter(function(e) {
+    if (!e.saved_at) return true;
+    // saved_at format: "dd/mm/yyyy, hh:mm:ss"
+    var parts = e.saved_at.split(/[\/,\s:]+/);
+    if (parts.length >= 3) {
+      var d = new Date(parts[2], parts[1]-1, parts[0]);
+      return d >= cutoff;
+    }
+    return true;
+  });
+}
+
+function _parseMoney(s) {
+  if (!s) return 0;
+  return parseFloat(String(s).replace(/[^0-9,]/g,'').replace(',','.')) || 0;
+}
+
+function _buildDash(allData) {
+  var data = _filterByPeriod(allData);
+  var total = data.length;
+  var totalVal = data.reduce(function(acc,e){ return acc + _parseMoney(e.total); }, 0);
+  var aprovados = data.filter(function(e){ return e.status === 'aprovado'; }).length;
+  var taxaAp = total ? Math.round(aprovados/total*100) : 0;
+  var ticketMed = total ? totalVal / total : 0;
+
+  // KPIs
+  document.getElementById('dashKpis').innerHTML =
+    _kpi('Total de Orçamentos', total, '') +
+    _kpi('Volume Total', 'R$ ' + _fmt(totalVal), '') +
+    _kpi('Taxa de Aprovação', taxaAp + '%', aprovados + ' aprovados') +
+    _kpi('Ticket Médio', 'R$ ' + _fmt(ticketMed), 'por orçamento') +
+    (_isAdmin ? _kpi('Vendedores Ativos', _countUniq(data,'vendor'), 'no período') : '');
+
+  // Por Vendedor
+  var byVendor = _groupSum(data, 'vendor', 'total');
+  _renderBars('dashVendedor', byVendor, 'orçamentos');
+
+  // Por Status
+  var statusLabel = { negociacao:'💬 Negociação', aprovado:'✅ Aprovado', perdido:'❌ Perdido' };
+  var byStatus = _groupCount(data, 'status');
+  var byStatusLabeled = byStatus.map(function(item){
+    return { label: statusLabel[item.label] || item.label || '—', val: item.val };
+  });
+  _renderBars('dashStatus', byStatusLabeled, '');
+
+  // Por Madeira
+  var byMadeira = _groupCount(data, 'tipo_madeira');
+  _renderBars('dashMadeira', byMadeira, '');
+
+  // Sparkline (por dia, últimos 14 dias)
+  _renderSparkline('dashSparkline', data);
+
+  // Top orçamentos
+  var sorted = data.slice().sort(function(a,b){ return _parseMoney(b.total) - _parseMoney(a.total); }).slice(0,8);
+  if (!sorted.length) {
+    document.getElementById('dashTop').innerHTML = '<div class="dash-empty">Nenhum dado</div>';
+  } else {
+    document.getElementById('dashTop').innerHTML = sorted.map(function(e){
+      return '<div class="dash-list-item">' +
+        '<div><span style="font-weight:600;">' + escHtml(e.client||'—') + '</span>' +
+        (_isAdmin && e.vendor ? ' <span style="font-size:11px;color:var(--muted);">· ' + escHtml(e.vendor) + '</span>' : '') +
+        (e.date ? ' <span style="font-size:11px;color:var(--muted);">· ' + escHtml(e.date) + '</span>' : '') +
+        '</div>' +
+        '<span style="font-weight:700;color:var(--accent);">' + escHtml(e.total||'—') + '</span>' +
+        '</div>';
+    }).join('');
+  }
+}
+
+function _kpi(label, val, sub) {
+  return '<div class="dash-kpi">' +
+    '<div class="dash-kpi-label">' + label + '</div>' +
+    '<div class="dash-kpi-val">' + val + '</div>' +
+    (sub ? '<div class="dash-kpi-sub">' + sub + '</div>' : '') +
+    '</div>';
+}
+
+function _fmt(n) {
+  return Number(n).toLocaleString('pt-BR', {minimumFractionDigits:0, maximumFractionDigits:0});
+}
+
+function _countUniq(data, field) {
+  var s = new Set();
+  data.forEach(function(e){ if (e[field]) s.add(e[field]); });
+  return s.size;
+}
+
+function _groupCount(data, field) {
+  var map = {};
+  data.forEach(function(e){ var k = e[field]||'—'; map[k] = (map[k]||0)+1; });
+  return Object.keys(map).sort(function(a,b){ return map[b]-map[a]; })
+    .map(function(k){ return {label:k, val:map[k]}; });
+}
+
+function _groupSum(data, groupField, sumField) {
+  var countMap = {}, valMap = {};
+  data.forEach(function(e){
+    var k = e[groupField]||'—';
+    countMap[k] = (countMap[k]||0)+1;
+    valMap[k] = (valMap[k]||0) + _parseMoney(e[sumField]);
+  });
+  return Object.keys(countMap).sort(function(a,b){ return countMap[b]-countMap[a]; })
+    .slice(0,8)
+    .map(function(k){ return {label:k, val:countMap[k], extra:'R$ '+_fmt(valMap[k])}; });
+}
+
+function _renderBars(elId, items, unit) {
+  var el = document.getElementById(elId);
+  if (!el) return;
+  if (!items.length) { el.innerHTML = '<div class="dash-empty">Sem dados</div>'; return; }
+  var max = Math.max.apply(null, items.map(function(i){ return i.val; }));
+  el.innerHTML = items.map(function(item){
+    var pct = max ? Math.round(item.val/max*100) : 0;
+    return '<div class="dash-bar-row">' +
+      '<div class="dash-bar-label" title="' + escHtml(item.label) + '">' + escHtml(item.label) + '</div>' +
+      '<div class="dash-bar-track"><div class="dash-bar-fill" style="width:' + pct + '%"></div></div>' +
+      '<div class="dash-bar-val">' + item.val + (unit?' '+unit:'') + (item.extra?' · '+item.extra:'') + '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function _renderSparkline(elId, data) {
+  var el = document.getElementById(elId);
+  if (!el) return;
+  var days = 14;
+  var buckets = {};
+  var today = new Date();
+  for (var i = days-1; i >= 0; i--) {
+    var d = new Date(today); d.setDate(d.getDate()-i);
+    buckets[d.toLocaleDateString('pt-BR')] = 0;
+  }
+  data.forEach(function(e) {
+    if (!e.saved_at) return;
+    var parts = e.saved_at.split(/[\/,\s:]+/);
+    if (parts.length >= 3) {
+      var key = parts[0]+'/'+parts[1]+'/'+parts[2];
+      if (key in buckets) buckets[key]++;
+    }
+  });
+  var vals = Object.values(buckets);
+  var maxV = Math.max.apply(null, vals) || 1;
+  var todayKey = today.toLocaleDateString('pt-BR');
+  var labels = Object.keys(buckets);
+  el.innerHTML = '<div class="dash-sparkline">' +
+    labels.map(function(k, i){
+      var h = Math.max(4, Math.round(vals[i]/maxV*48));
+      var isToday = k === todayKey;
+      return '<div class="dash-spark-bar' + (isToday?' today':'') + '" style="height:'+h+'px" title="'+k+': '+vals[i]+' orçamento(s)"></div>';
+    }).join('') +
+  '</div>' +
+  '<div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-top:4px;">' +
+    '<span>' + labels[0] + '</span><span>Hoje</span>' +
+  '</div>';
+}
+
+
 </body>
 </html>
