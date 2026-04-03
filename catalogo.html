@@ -876,7 +876,7 @@ function sbFetch(method, url, body) {
       'apikey': SB_KEY,
       'Authorization': 'Bearer ' + SB_KEY,
       'Content-Type': 'application/json',
-      'Prefer': method === 'POST' ? 'return=minimal,resolution=merge-duplicates' : ''
+      'Prefer': (method === 'POST' || method === 'PATCH') ? 'return=minimal,resolution=merge-duplicates' : ''
     },
     body: body ? JSON.stringify(body) : undefined
   });
@@ -915,11 +915,8 @@ async function loadCasas() {
   if (_isInternal) {
     const btn = document.getElementById('headerOrcamentoBtn');
     if (btn) btn.style.display = '';
-  } else {
-    // Ocultar botão admin para clientes
-    const adminBtn = document.getElementById('btnAdminToggle');
-    if (adminBtn) adminBtn.style.display = 'none';
   }
+  // Botão admin sempre visível (usuário precisa digitar senha para ativar)
 
   // Abrir modal se URL tiver ?modelo=id (link compartilhado)
   const modeloId = new URLSearchParams(location.search).get('modelo');
@@ -1514,13 +1511,26 @@ async function toggleVisivelSite(id, val) {
   const c = casas.find(x => x.id === id);
   if (!c) return;
   c.visivel_site = val;
+  renderCatalogo(); // atualiza UI imediatamente (otimista)
   try {
-    await sbFetch('PATCH', `${SB_URL}/rest/v1/${CATALOG_TABLE}?id=eq.${id}`, { visivel_site: val });
-    renderCatalogo();
+    const r = await sbFetch('PATCH', `${SB_URL}/rest/v1/${CATALOG_TABLE}?id=eq.${id}`, { visivel_site: val });
+    if (!r.ok) {
+      const body = await r.text();
+      c.visivel_site = !val; // reverter
+      renderCatalogo();
+      // Se coluna não existe, mostra instrução SQL
+      if (body.includes('visivel_site') || r.status === 400) {
+        toast('Rode o SQL: ALTER TABLE casas_catalogo ADD COLUMN visivel_site boolean DEFAULT false', 'err');
+      } else {
+        toast('Erro ' + r.status + ': ' + body.slice(0,60), 'err');
+      }
+      return;
+    }
     toast(val ? '🌐 Visível no site' : 'Ocultado do site');
   } catch(e) {
-    c.visivel_site = !val; // reverter em caso de erro
-    toast('Erro ao salvar: ' + e.message, 'err');
+    c.visivel_site = !val;
+    renderCatalogo();
+    toast('Erro: ' + e.message, 'err');
   }
 }
 
