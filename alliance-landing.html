@@ -1263,7 +1263,7 @@ footer{
       </a>
     </div>
   </div>
-  <div class="hero-stats">
+  <div class="hero-stats" id="heroStats">
     <div>
       <div class="hero-stat-val">+1.000</div>
       <div class="hero-stat-lbl">Casas entregues</div>
@@ -1379,7 +1379,7 @@ footer{
         Projetos personalizados, materiais nobres e obra completa para clientes que buscam conforto, sofisticação e confiança na construção da sua casa de madeira em Santa Catarina.
       </p>
     </div>
-    <div class="diff-grid">
+    <div class="diff-grid" id="diffGrid">
       <div class="diff-item reveal">
         <div class="diff-num">01</div>
         <div class="diff-icon">🪵</div>
@@ -1473,7 +1473,7 @@ footer{
     <div class="galeria-header reveal">
       <div>
         <span class="eyebrow">Portfólio Alliance</span>
-        <h2 class="section-title" style="color:#fff;">Projetos entregues<br><em style="color:var(--gold2)">pela Alliance</em></h2>
+        <h2 class="section-title" style="color:#fff;">Obras reais,<br><em style="color:var(--gold2)">resultados concretos</em></h2>
       </div>
       <a href="#contato" class="galeria-link">
         Solicitar visita técnica
@@ -1828,7 +1828,7 @@ footer{
         <div class="footer-logo">
           <img src="https://leandrorocha95.github.io/alliance-orcamento/logo_alliance.jpg" alt="Alliance Casas">
         </div>
-        <p class="footer-tagline">"Nada melhor que um lugar<br>para chamar de seu."</p>
+        <p class="footer-tagline">"Sua ideia encontra o<br>caminho para a realidade."</p>
         <div class="footer-socials">
           <a href="https://www.instagram.com/alliancecasas" target="_blank" class="footer-social" title="Instagram">
             <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
@@ -2702,12 +2702,58 @@ function toggleDepAudio(id, btn) {
   }
 }
 
+// ── NÚMEROS DINÂMICOS ─────────────────────────────────────────
+function loadNumeros() {
+  fetch(SB_URL + '/rest/v1/site_numeros?order=ordem.asc', {
+    headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY }
+  })
+  .then(function(r){ return r.ok ? r.json() : null; })
+  .then(function(data){
+    if (!Array.isArray(data) || !data.length) return;
+    var wrap = document.getElementById('heroStats');
+    if (!wrap) return;
+    wrap.innerHTML = data.map(function(n) {
+      var val = (n.prefixo || '') + (n.valor || '') + (n.sufixo || '');
+      return '<div><div class="hero-stat-val">' + val + '</div>'
+           + '<div class="hero-stat-lbl">' + (n.label || '') + '</div></div>';
+    }).join('');
+  })
+  .catch(function(){});
+}
+
+// ── DIFERENCIAIS DINÂMICOS ────────────────────────────────────
+function loadDiferenciais() {
+  fetch(SB_URL + '/rest/v1/site_diferenciais?order=ordem.asc', {
+    headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY }
+  })
+  .then(function(r){ return r.ok ? r.json() : null; })
+  .then(function(data){
+    if (!Array.isArray(data) || !data.length) return;
+    var grid = document.getElementById('diffGrid');
+    if (!grid) return;
+    var delays = ['', ' reveal-delay-1', ' reveal-delay-2', ' reveal-delay-3'];
+    grid.innerHTML = data.map(function(d, i) {
+      var num = String(i + 1).padStart(2, '0');
+      return '<div class="diff-item reveal' + (delays[i] || '') + '">'
+        + '<div class="diff-num">' + num + '</div>'
+        + '<div class="diff-icon">' + (d.icone || '⭐') + '</div>'
+        + '<h3 class="diff-title">' + escHtml(d.titulo || '') + '</h3>'
+        + '<p class="diff-text">'  + escHtml(d.texto  || '') + '</p>'
+        + '</div>';
+    }).join('');
+    function escHtml(s){ var d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+  })
+  .catch(function(){});
+}
+
 // ── INIT ─────────────────────────────────────────────────────
 loadLojas();
 loadCampanhas();
 loadPortfolio();
 loadModelos();
 loadDepoimentos();
+loadNumeros();
+loadDiferenciais();
 
 // ── WHATSAPP FLUTUANTE ────────────────────────────────────────
 function openWappFloat() {
