@@ -1389,8 +1389,8 @@ footer{
       <div class="diff-item reveal reveal-delay-1">
         <div class="diff-num">02</div>
         <div class="diff-icon">📐</div>
-        <h3 class="diff-title">Projetos personalizados para o seu estilo de vida</h3>
-        <p class="diff-text">Cada projeto é desenvolvido de forma exclusiva, considerando o terreno, as necessidades da família e o padrão desejado. Você tem mais liberdade para criar uma casa de madeira funcional, sofisticada e feita sob medida.</p>
+        <h3 class="diff-title">Projetos sob medida e modelos de catálogo</h3>
+        <p class="diff-text">Oferecemos opções de modelos prontos em catálogo para facilitar sua escolha, além de uma equipe de arquitetura preparada para desenvolver um projeto totalmente personalizado, de acordo com o terreno, estilo de vida e necessidades do cliente.</p>
       </div>
       <div class="diff-item reveal reveal-delay-2">
         <div class="diff-num">03</div>
@@ -2642,6 +2642,9 @@ function renderDepoimentos(lista) {
 
   grid.innerHTML = lista.map(function(d, i) {
     var inicial = (d.nome || '?')[0].toUpperCase();
+    var avatarContent = d.url_foto
+      ? '<img src="' + d.url_foto + '" alt="' + esc(d.nome) + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">'
+      : inicial;
     var delay   = i === 1 ? ' reveal-delay-1' : i === 2 ? ' reveal-delay-2' : '';
     var stars   = Array.from({length:5}, function(_,j){
       return '<span class="dep-star" style="' + (j < (d.estrelas||5) ? '' : 'opacity:.2;') + '">★</span>';
@@ -2665,7 +2668,7 @@ function renderDepoimentos(lista) {
       + (d.texto ? '<p class="dep-text">' + esc(d.texto) + '</p>' : '')
       + audioHtml
       + '<div class="dep-author">'
-      + '<div class="dep-avatar">' + inicial + '</div>'
+      + '<div class="dep-avatar">' + avatarContent + '</div>'
       + '<div><div class="dep-name">' + esc(d.nome||'') + '</div>'
       + (d.cidade ? '<div class="dep-city">' + esc(d.cidade) + '</div>' : '')
       + '</div></div></div>';
