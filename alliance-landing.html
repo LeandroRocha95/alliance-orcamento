@@ -1306,6 +1306,27 @@ footer{
               <option>Ainda não sei</option>
             </select>
           </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Já possui terreno?</label>
+              <select id="leadTerreno">
+                <option value="">— Selecione —</option>
+                <option value="Sim, já tenho terreno">✅ Sim, já tenho</option>
+                <option value="Não, ainda vou adquirir">🔍 Não, ainda vou adquirir</option>
+                <option value="Estou procurando terreno">🗺️ Estou procurando</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Quando pretende construir?</label>
+              <select id="leadPrazo">
+                <option value="">— Selecione —</option>
+                <option value="O mais rápido possível">🚀 O mais rápido possível</option>
+                <option value="Nos próximos 3 meses">📅 Nos próximos 3 meses</option>
+                <option value="Em 6 a 12 meses">⏳ Em 6 a 12 meses</option>
+                <option value="Ainda estou planejando">💭 Ainda estou planejando</option>
+              </select>
+            </div>
+          </div>
           <div class="form-group">
             <label>Mensagem (opcional)</label>
             <textarea id="leadMsg" placeholder="Conte um pouco sobre o seu projeto..."></textarea>
@@ -1486,6 +1507,8 @@ function submitLead(e){
     cidade:     document.getElementById('leadCidade').value.trim(),
     interesse:  document.getElementById('leadInteresse').value,
     area_m2:    document.getElementById('leadArea').value,
+    terreno:    document.getElementById('leadTerreno').value,
+    prazo:      document.getElementById('leadPrazo').value,
     mensagem:   document.getElementById('leadMsg').value.trim(),
     origem:     'landing_page',
     status:     'novo',
@@ -1513,8 +1536,13 @@ function saveLead(lead) {
 // ── MODAL DE LOJAS ────────────────────────────────────────────
 function openLojaModal(lead) {
   // Mostra info do lead no modal
-  var info = document.getElementById('lojaModalLeadInfo');
-  info.textContent = '👤 ' + lead.nome + (lead.cidade ? ' · ' + lead.cidade : '') + (lead.telefone ? ' · ' + lead.telefone : '');
+  var extras = [];
+  if (lead.terreno) extras.push(lead.terreno);
+  if (lead.prazo)   extras.push(lead.prazo);
+  info.textContent = '👤 ' + lead.nome
+    + (lead.cidade    ? ' · ' + lead.cidade    : '')
+    + (lead.telefone  ? ' · ' + lead.telefone  : '')
+    + (extras.length  ? ' · ' + extras.join(' · ') : '');
 
   // Renderiza lojas
   renderLojasModal();
@@ -1562,6 +1590,8 @@ function abrirWappLoja(lojaId) {
     '📍 *Cidade:* ' + (_pendingLead.cidade||'—') + '\n' +
     '👤 *Nome:* ' + _pendingLead.nome + '\n' +
     '📱 *Telefone:* ' + _pendingLead.telefone + '\n' +
+    (_pendingLead.terreno ? '🏡 *Terreno:* ' + _pendingLead.terreno + '\n' : '') +
+    (_pendingLead.prazo   ? '📅 *Prazo:* '   + _pendingLead.prazo   + '\n' : '') +
     (_pendingLead.mensagem ? '💬 ' + _pendingLead.mensagem + '\n' : '') +
     '\nAguardo o contato!';
 
