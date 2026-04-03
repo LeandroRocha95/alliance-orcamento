@@ -534,9 +534,11 @@ async function uploadArquivo(file) {
         progressBar.style.background = 'var(--green)';
         resolve(publicUrl);
       } else {
-        progressLabel.textContent = 'Erro no upload: ' + xhr.status;
+        let detail = xhr.responseText;
+        try { detail = JSON.parse(xhr.responseText).message || detail; } catch(e){}
+        progressLabel.textContent = 'Erro ' + xhr.status + ': ' + detail;
         progressBar.style.background = 'var(--red)';
-        reject(new Error('Upload falhou: ' + xhr.status + ' ' + xhr.responseText));
+        reject(new Error('Upload falhou ' + xhr.status + ': ' + detail));
       }
     };
     xhr.onerror = () => reject(new Error('Erro de rede no upload'));
