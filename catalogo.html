@@ -574,7 +574,17 @@ textarea.field-inp{resize:vertical;min-height:76px;white-space:pre-wrap;}
           <div class="field-hint" id="statusHint">Visível no catálogo para todos.</div>
         </div>
         <div class="field-group">
-          <label class="field-label">Selo Visual</label>
+          <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:rgba(48,142,238,.06);border:1px solid rgba(48,142,238,.2);border-radius:8px;">
+            <label class="toggle-mini" style="cursor:pointer;">
+              <input type="checkbox" id="fVisivelSite">
+              <span class="toggle-mini-slider"></span>
+            </label>
+            <div>
+              <div style="font-size:12px;font-weight:700;color:var(--accent);">🌐 Visível no site</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:2px;">Exibir na seção "Nossos Modelos" da landing page</div>
+            </div>
+          </div>
+        </div>
           <select class="field-inp" id="fSelo" onchange="updateSeloPreview()">
             <option value="">— Sem selo —</option>
             <option value="mais-vendido">🏆 Mais Vendido</option>
@@ -911,12 +921,14 @@ async function loadCasas() {
   renderFilters();
   renderCatalogo();
   renderHeaderSocials();
+  // Botão admin: visível apenas em modo interno (hub) ou se já autenticado
+  const adminBtn = document.getElementById('btnAdminToggle');
+  if (adminBtn && !_isInternal) adminBtn.style.display = 'none';
   // Mostrar btn orçamento no header se modo interno
   if (_isInternal) {
     const btn = document.getElementById('headerOrcamentoBtn');
     if (btn) btn.style.display = '';
   }
-  // Botão admin sempre visível (usuário precisa digitar senha para ativar)
 
   // Abrir modal se URL tiver ?modelo=id (link compartilhado)
   const modeloId = new URLSearchParams(location.search).get('modelo');
@@ -1789,8 +1801,10 @@ function checkAdminPw() {
   if (document.getElementById('adminPwInp').value===ADMIN_PASS) {
     _isAdmin=true; closeAdminLogin();
     document.getElementById('adminBar').classList.add('show');
-    document.getElementById('btnAdminToggle').textContent='✓ Admin';
-    document.getElementById('btnAdminToggle').style.color='var(--accent)';
+    const btnToggle = document.getElementById('btnAdminToggle');
+    btnToggle.textContent='✓ Admin';
+    btnToggle.style.color='var(--accent)';
+    btnToggle.style.display=''; // mostra mesmo se estava oculto
     renderCatalogo(); toast('Modo admin ativado!');
   } else {
     document.getElementById('adminPwErr').textContent='Senha incorreta.';
@@ -1898,7 +1912,8 @@ function openEditCasa(id) {
   document.getElementById('fSelo').value       = c.selo        ||'';
   updateSeloPreview();
   _formStatus = c.status || 'publicado'; setStatusForm(_formStatus);
-  document.getElementById('fVisivelSite').checked = c.visivel_site === true || c.visivel_site === 'true';
+  const visivelEl = document.getElementById('fVisivelSite');
+  if (visivelEl) visivelEl.checked = c.visivel_site === true || c.visivel_site === 'true';
   renderSelect('fTipo','tipo',c.tipo);
   renderSelect('fMadeira','madeira',c.madeira);
   _formTags = Array.isArray(c.tags)?[...c.tags]:[]; renderFormTags();
@@ -1961,7 +1976,7 @@ async function saveCasa() {
     portfolio:   document.getElementById('fPortfolio').value.trim(),
     selo:        document.getElementById('fSelo').value,
     status:      _formStatus,
-    visivel_site: document.getElementById('fVisivelSite').checked,
+    visivel_site: (document.getElementById('fVisivelSite') || {}).checked || false,
     tags:        _formTags,
     fotos,
     foto:        fotos[0]||'',
