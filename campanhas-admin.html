@@ -143,13 +143,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
       <button class="btn-primary" onclick="openForm()">+ Nova Campanha</button>
     </div>
 
-    <div class="campanhas-grid" id="campanhasGrid">
-      <div class="empty-state" id="emptyState" style="display:none;">
-        <div class="empty-icon">📣</div>
-        <p>Nenhuma campanha cadastrada ainda.</p>
-        <p style="font-size:12px;margin-top:8px;">Crie sua primeira campanha clicando no botão acima.</p>
-      </div>
-    </div>
+    <div class="campanhas-grid" id="campanhasGrid"></div>
   </div>
 </div>
 
@@ -329,14 +323,16 @@ async function load() {
 // ── RENDER CARDS ──────────────────────────────────────────────
 function render() {
   const grid = document.getElementById('campanhasGrid');
-  const empty = document.getElementById('emptyState');
+
   if (!campanhas.length) {
-    grid.innerHTML = '';
-    grid.appendChild(empty);
-    empty.style.display = 'block';
+    grid.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">📣</div>
+        <p>Nenhuma campanha cadastrada ainda.</p>
+        <p style="font-size:12px;margin-top:8px;">Crie sua primeira campanha clicando no botão acima.</p>
+      </div>`;
     return;
   }
-  empty.style.display = 'none';
   const hoje = new Date().toISOString().split('T')[0];
 
   grid.innerHTML = campanhas.map(c => {
@@ -589,10 +585,11 @@ async function saveCampanha() {
 
 async function toggleAtivo(id, val) {
   try {
-    // Usa upsert (POST com on_conflict) — mais confiável com anon key
     const c = campanhas.find(x => String(x.id) === String(id));
     if (!c) return;
-    const payload = { ...c, ativo: val };
+    // Envia apenas campos editáveis — exclui created_at para evitar conflito
+    const { created_at, ...rest } = c;
+    const payload = { ...rest, ativo: val };
     const r = await fetch(`${SB_URL}/rest/v1/${TABLE}?on_conflict=id`, {
       method: 'POST',
       headers: {
