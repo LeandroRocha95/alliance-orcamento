@@ -298,6 +298,15 @@ textarea.field-inp{resize:vertical;min-height:76px;white-space:pre-wrap;}
 .admin-login-title{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;margin-bottom:8px;}
 .admin-login-sub{font-size:13px;color:var(--muted);margin-bottom:20px;}
 
+/* ── STATUS PUBLICADO/OCULTO ── */
+.status-toggle-wrap{display:flex;border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+.status-btn{flex:1;background:none;border:none;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;padding:9px 10px;cursor:pointer;transition:all .15s;text-align:center;}
+.status-btn:hover{background:var(--surface3);}
+.status-btn.active-pub{background:rgba(46,204,113,.15);color:#2ecc71;}
+.status-btn.active-ocu{background:rgba(231,76,60,.12);color:#e74c3c;}
+.card-oculto-badge{position:absolute;top:10px;right:10px;background:rgba(231,76,60,.85);color:#fff;font-size:9px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;padding:3px 7px;border-radius:6px;z-index:6;}
+.card.is-oculto{opacity:.65;border-style:dashed;}
+
 /* ── SELOS ── */
 .card-selo{position:absolute;top:12px;left:12px;z-index:5;display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:20px;font-size:10px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;box-shadow:0 2px 12px rgba(0,0,0,.35);backdrop-filter:blur(4px);}
 .card-selo svg{width:11px;height:11px;flex-shrink:0;}
@@ -531,6 +540,14 @@ textarea.field-inp{resize:vertical;min-height:76px;white-space:pre-wrap;}
 
       <div class="field-row">
         <div class="field-group">
+          <label class="field-label">Visibilidade</label>
+          <div class="status-toggle-wrap">
+            <button type="button" class="status-btn active-pub" id="statusPublicado" onclick="setStatusForm('publicado')">✅ Publicado</button>
+            <button type="button" class="status-btn" id="statusOculto" onclick="setStatusForm('oculto')">🔒 Oculto</button>
+          </div>
+          <div class="field-hint" id="statusHint">Visível no catálogo para todos.</div>
+        </div>
+        <div class="field-group">
           <label class="field-label">Selo Visual</label>
           <select class="field-inp" id="fSelo" onchange="updateSeloPreview()">
             <option value="">— Sem selo —</option>
@@ -540,10 +557,8 @@ textarea.field-inp{resize:vertical;min-height:76px;white-space:pre-wrap;}
             <option value="lancamento">🚀 Lançamento</option>
           </select>
         </div>
-        <div class="field-group" style="display:flex;align-items:flex-end;">
-          <div id="seloPreview" style="padding:6px 0;font-size:12px;color:var(--muted);">Nenhum selo selecionado</div>
-        </div>
       </div>
+      <div style="margin-bottom:14px;"><div id="seloPreview" style="font-size:12px;color:var(--muted);">Nenhum selo</div></div>
 
       <div class="field-row">
         <div class="field-group">
@@ -671,6 +686,7 @@ textarea.field-inp{resize:vertical;min-height:76px;white-space:pre-wrap;}
     </div>
     <div class="modal-foot">
       <button class="btn-outline" onclick="closeCasaForm()">Cancelar</button>
+      <button id="fDupBtn" class="btn-outline" style="display:none;" onclick="duplicateCasa()">⧉ Duplicar</button>
       <button id="fDelBtn" class="btn-danger" style="display:none" onclick="delCasa()">Excluir</button>
       <button class="btn-primary" onclick="saveCasa()">Salvar</button>
     </div>
@@ -816,7 +832,8 @@ let _plantaFiles    = [];   // novos uploads (máx 2)
 let _existingPlantas = [];  // URLs já salvas
 
 // Tags input
-let _formTags = [];
+let _formTags   = [];
+let _formStatus = 'publicado'; // 'publicado' | 'oculto'
 
 // Options
 let _optsKey = '';
@@ -1475,6 +1492,8 @@ function renderCatalogo() {
     if (_activeFilter!=='todos' && c.tipo!==_activeFilter) return false;
     if (!advMatch(c)) return false;
     if (!smartMatch(c, q)) return false;
+    // Oculto: só aparece para admins
+    if (c.status === 'oculto' && !_isAdmin) return false;
     return true;
   });
 
@@ -1515,12 +1534,13 @@ function renderCatalogo() {
     };
     const selo = c.selo && seloMap[c.selo] ? seloMap[c.selo] : null;
 
-    return `<div class="card" onclick="openDetail('${c.id}')">
+    return `<div class="card${c.status==='oculto'?' is-oculto':''}" onclick="openDetail('${c.id}')">
       <div class="card-img-wrap">
         ${imgUrl
           ? `<img class="card-img loading" src="${esc(imgUrl)}" alt="${esc(c.nome)}" loading="lazy" onload="this.classList.remove('loading')" onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<div class=card-img-ph><svg fill=none stroke=currentColor viewBox=\\'0 0 24 24\\'><path stroke-linecap=round stroke-linejoin=round stroke-width=1.5 d=\\'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z\\'/></svg></div>');this.onerror=null;">`
           : `<div class="card-img-ph"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg></div>`}
         ${selo ? `<div class="card-selo ${selo.cls}">${selo.icon} ${selo.label}</div>` : ''}
+        ${c.status==='oculto' ? `<div class="card-oculto-badge">🔒 Oculto</div>` : ''}
       </div>
       ${(() => {
         const plantas = Array.isArray(c.plantas) && c.plantas.length ? c.plantas : (c.planta ? [c.planta] : []);
@@ -1781,6 +1801,7 @@ function clearForm() {
   document.getElementById('fSelo').value = '';
   updateSeloPreview();
   document.getElementById('areaTotalCalc').textContent='';
+  _formStatus = 'publicado'; setStatusForm('publicado');
   _formTags=[]; renderFormTags();
   document.getElementById('tagsDatalist').innerHTML = getAllTags().map(t=>`<option value="#${esc(t)}">`).join('');
   _uploadFiles=[]; _existingPhotos=[]; _plantaFiles=[]; _existingPlantas=[];
@@ -1791,6 +1812,7 @@ function openNewCasa() {
   _editId=null; clearForm();
   document.getElementById('casaFormTitle').textContent='Nova Casa';
   document.getElementById('fDelBtn').style.display='none';
+  document.getElementById('fDupBtn').style.display='none';
   renderSelect('fTipo','tipo',_opts.tipo[0]);
   renderSelect('fMadeira','madeira',_opts.madeira[0]);
   document.getElementById('casaFormOverlay').classList.add('open');
@@ -1802,6 +1824,7 @@ function openEditCasa(id) {
   _editId=id; clearForm();
   document.getElementById('casaFormTitle').textContent='Editar Casa';
   document.getElementById('fDelBtn').style.display='';
+  document.getElementById('fDupBtn').style.display='';
   document.getElementById('fCodigo').value     = c.codigo      ||'';
   document.getElementById('fNome').value       = c.nome        ||'';
   document.getElementById('fAreaInterna').value= c.area_interna||c.area||'';
@@ -1818,6 +1841,7 @@ function openEditCasa(id) {
   document.getElementById('fPortfolio').value  = c.portfolio   ||'';
   document.getElementById('fSelo').value       = c.selo        ||'';
   updateSeloPreview();
+  _formStatus = c.status || 'publicado'; setStatusForm(_formStatus);
   renderSelect('fTipo','tipo',c.tipo);
   renderSelect('fMadeira','madeira',c.madeira);
   _formTags = Array.isArray(c.tags)?[...c.tags]:[]; renderFormTags();
@@ -1879,6 +1903,7 @@ async function saveCasa() {
     notas:       document.getElementById('fNotes').value.trim(),
     portfolio:   document.getElementById('fPortfolio').value.trim(),
     selo:        document.getElementById('fSelo').value,
+    status:      _formStatus,
     tags:        _formTags,
     fotos,
     foto:        fotos[0]||'',
@@ -1905,6 +1930,16 @@ async function delCasa() {
   } catch(e) { toast('Erro ao excluir: '+e.message,'err'); }
 }
 
+// ── STATUS FORM ──────────────────────────────────────────────────
+function setStatusForm(val) {
+  _formStatus = val;
+  document.getElementById('statusPublicado').className = 'status-btn' + (val==='publicado' ? ' active-pub' : '');
+  document.getElementById('statusOculto').className    = 'status-btn' + (val==='oculto'    ? ' active-ocu' : '');
+  document.getElementById('statusHint').textContent    = val==='oculto'
+    ? '🔒 Oculto: salvo mas não aparece no catálogo público.'
+    : '✅ Publicado: visível no catálogo para todos.';
+}
+
 // ── SELO PREVIEW ────────────────────────────────────────────────
 function updateSeloPreview() {
   const val = document.getElementById('fSelo').value;
@@ -1920,6 +1955,61 @@ function updateSeloPreview() {
   } else {
     prev.innerHTML = `<span style="font-size:12px;color:var(--muted);">Nenhum selo</span>`;
   }
+}
+
+// ── DUPLICAR CASA ────────────────────────────────────────────────
+function duplicateCasa() {
+  if (!_editId) return;
+  const orig = casas.find(c => c.id === _editId);
+  if (!orig) return;
+  closeCasaForm();
+  setTimeout(() => {
+    _editId = null;
+    clearForm();
+    document.getElementById('casaFormTitle').textContent = 'Duplicar Casa';
+    document.getElementById('fDelBtn').style.display = 'none';
+    document.getElementById('fDupBtn').style.display = 'none';
+
+    // Preenche todos os campos com os dados do original
+    document.getElementById('fCodigo').value      = (orig.codigo||'') + '-COPIA';
+    document.getElementById('fNome').value        = 'Cópia de ' + (orig.nome||'');
+    document.getElementById('fAreaInterna').value = orig.area_interna || orig.area || '';
+    document.getElementById('fAreaExt').value     = orig.area_ext    || '';
+    document.getElementById('fTerreno').value     = orig.terreno     || '';
+    document.getElementById('fQuartos').value     = orig.quartos     || '';
+    document.getElementById('fBanheiros').value   = orig.banheiros   || '';
+    document.getElementById('fLavabos').value     = orig.lavabos     || '';
+    document.getElementById('fVagas').value       = orig.vagas       || '';
+    document.getElementById('fLavanderia').value  = orig.lavanderia  || '';
+    document.getElementById('fPreco').value       = orig.preco       || '';
+    document.getElementById('fDesc').value        = orig.descricao   || '';
+    document.getElementById('fNotes').value       = orig.notas       || '';
+    document.getElementById('fPortfolio').value   = orig.portfolio   || '';
+    document.getElementById('fSelo').value        = orig.selo        || '';
+    updateSeloPreview();
+    renderSelect('fTipo',    'tipo',    orig.tipo);
+    renderSelect('fMadeira', 'madeira', orig.madeira);
+
+    // Tags
+    _formTags = Array.isArray(orig.tags) ? [...orig.tags] : [];
+    renderFormTags();
+
+    // Fotos e plantas existentes (reusa as URLs, sem re-upload)
+    _existingPhotos  = Array.isArray(orig.fotos)   ? [...orig.fotos]   : (orig.foto   ? [orig.foto]   : []);
+    _existingPlantas = Array.isArray(orig.plantas)  ? [...orig.plantas] : (orig.planta ? [orig.planta] : []);
+    _uploadFiles  = [];
+    _plantaFiles  = [];
+    renderUploadPreview();
+    renderPlantaPreview();
+    calcAreaTotal();
+
+    // Cópia começa sempre como Oculto — admin revisa antes de publicar
+    _formStatus = 'oculto'; setStatusForm('oculto');
+
+    document.getElementById('casaFormOverlay').classList.add('open');
+    setTimeout(() => document.getElementById('fNome').focus(), 80);
+    toast('Cópia criada — revise e salve');
+  }, 200);
 }
 
 // ── VIEW MODE ────────────────────────────────────────────────────
