@@ -63,7 +63,7 @@ nav.scrolled{
   padding:14px 60px;
   border-bottom:1px solid var(--border);
 }
-.nav-logo img{height:36px;filter:brightness(0) invert(1);}
+.nav-logo img{height:38px;border-radius:8px;}
 .nav-links{display:flex;gap:36px;list-style:none;}
 .nav-links a{
   color:rgba(255,255,255,.75);
@@ -107,8 +107,8 @@ nav.scrolled{
 .hero-img{
   position:absolute;inset:0;
   background:
-    url('https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1600&q=80') center/cover no-repeat;
-  opacity:.35;
+    url('https://leandrorocha95.github.io/alliance-orcamento/hero-obra.jpg') center/cover no-repeat;
+  opacity:.45;
   z-index:0;
 }
 .hero-content{
@@ -785,7 +785,8 @@ footer{
   display:flex;align-items:center;justify-content:center;
   box-shadow:0 4px 24px rgba(37,211,102,.35);
   z-index:200;
-  text-decoration:none;
+  cursor:pointer;
+  border:none;
   transition:transform .2s,box-shadow .2s;
 }
 .wapp-float:hover{
@@ -998,32 +999,36 @@ footer{
   <div class="container">
     <div class="section-header reveal">
       <span class="eyebrow">Por que a Alliance</span>
-      <h2 class="section-title" style="color:#fff;">Construímos com quem<br><em style="color:var(--gold2)">você pode confiar</em></h2>
+      <h2 class="section-title" style="color:#fff;">Por que a Alliance é referência<br>em <em style="color:var(--gold2)">casas de madeira</em></h2>
+      <div class="gold-line" style="background:var(--gold);margin-top:24px;margin-bottom:0;"></div>
+      <p style="color:rgba(255,255,255,.5);font-size:15px;font-weight:300;line-height:1.8;max-width:680px;margin-top:20px;">
+        Projetos personalizados, materiais nobres e obra completa para clientes que buscam conforto, sofisticação e confiança na construção da sua casa de madeira em Santa Catarina.
+      </p>
     </div>
     <div class="diff-grid">
       <div class="diff-item reveal">
         <div class="diff-num">01</div>
         <div class="diff-icon">🪵</div>
-        <h3 class="diff-title">Madeira de Alta Qualidade</h3>
-        <p class="diff-text">Utilizamos madeiras nobres como grápia, itaúba, angelim e peroba — espécies de alta durabilidade, resistentes a fungos, umidade e cupins.</p>
+        <h3 class="diff-title">Madeira nobre e alta durabilidade</h3>
+        <p class="diff-text">Utilizamos madeiras selecionadas como grápia, itaúba, angelim e peroba, ideais para quem procura uma casa de madeira com resistência, beleza e excelente acabamento. Mais qualidade para entregar segurança, conforto e valorização do imóvel.</p>
       </div>
       <div class="diff-item reveal reveal-delay-1">
         <div class="diff-num">02</div>
         <div class="diff-icon">📐</div>
-        <h3 class="diff-title">Projetos Personalizados</h3>
-        <p class="diff-text">Cada casa é projetada exclusivamente para o cliente. Você escolhe o tamanho e o estilo, nossa equipe realiza cada detalhe.</p>
+        <h3 class="diff-title">Projetos personalizados para o seu estilo de vida</h3>
+        <p class="diff-text">Cada projeto é desenvolvido de forma exclusiva, considerando o terreno, as necessidades da família e o padrão desejado. Você tem mais liberdade para criar uma casa de madeira funcional, sofisticada e feita sob medida.</p>
       </div>
       <div class="diff-item reveal reveal-delay-2">
         <div class="diff-num">03</div>
         <div class="diff-icon">🏠</div>
-        <h3 class="diff-title">Obra Completa</h3>
-        <p class="diff-text">Sem pegadinhas. Da fundação à entrega da chave — hidráulica, elétrica, cerâmica, esquadrias e forro. Sua casa pronta para morar.</p>
+        <h3 class="diff-title">Obra completa com mais praticidade</h3>
+        <p class="diff-text">Cuidamos de todas as etapas da construção, da fundação à entrega das chaves. Com acompanhamento técnico e execução planejada, sua obra ganha mais organização, integração entre etapas e tranquilidade durante todo o processo.</p>
       </div>
       <div class="diff-item reveal reveal-delay-3">
         <div class="diff-num">04</div>
         <div class="diff-icon">⚡</div>
-        <h3 class="diff-title">Entrega Rápida</h3>
-        <p class="diff-text">Mais de 50 obras simultâneas com equipe especializada. Em 2025, realizamos o sonho de mais de 100 famílias catarinenses.</p>
+        <h3 class="diff-title">Agilidade na execução da sua casa</h3>
+        <p class="diff-text">Nossa experiência em obras residenciais em Santa Catarina permite uma execução mais eficiente, com cronograma bem definido e foco em qualidade. Mais previsibilidade para quem quer construir com segurança e confiança.</p>
       </div>
     </div>
   </div>
@@ -1395,9 +1400,9 @@ footer{
 <div class="modal-overlay" id="lojaModalOverlay" onclick="if(event.target===this)closeLojaModal()">
   <div class="modal-lojas">
     <button class="modal-lojas-close" onclick="closeLojaModal()">×</button>
-    <div class="modal-lojas-eyebrow">Quase lá!</div>
+    <div class="modal-lojas-eyebrow">Fale com a Alliance!</div>
     <h3 class="modal-lojas-title">Escolha a loja mais próxima</h3>
-    <p class="modal-lojas-sub">Um consultor vai entrar em contato com você pelo WhatsApp em breve.</p>
+    <p class="modal-lojas-sub">Um consultor vai atender você pelo WhatsApp.</p>
     <div class="modal-lojas-lead" id="lojaModalLeadInfo"></div>
     <div id="lojaModalList">
       <div class="modal-lojas-loading">Carregando unidades...</div>
@@ -1406,9 +1411,9 @@ footer{
 </div>
 
 <!-- WHATSAPP FLOAT -->
-<a href="https://api.whatsapp.com/send?phone=5547988209090&text=Ol%C3%A1!%20Tenho%20interesse%20em%20uma%20casa%20pr%C3%A9-fabricada.%20Podem%20me%20ajudar?" target="_blank" class="wapp-float" title="Falar no WhatsApp">
+<button class="wapp-float" id="wappFloat" onclick="openWappFloat()" title="Falar no WhatsApp" aria-label="WhatsApp">
   <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.122.554 4.118 1.52 5.854L0 24l6.335-1.498A11.94 11.94 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.808 9.808 0 01-5.034-1.387l-.361-.214-3.741.884.939-3.658-.235-.374A9.808 9.808 0 012.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/></svg>
-</a>
+</button>
 
 <script>
 // ── NAV SCROLL ──
@@ -1578,6 +1583,51 @@ function esc(s) {
 
 // ── INIT ─────────────────────────────────────────────────────
 loadLojas(); // carrega lojas ao abrir a página
+
+// ── WHATSAPP FLUTUANTE ────────────────────────────────────────
+function openWappFloat() {
+  // Reusa o mesmo modal de lojas, mas sem contexto de lead
+  var info = document.getElementById('lojaModalLeadInfo');
+  info.textContent = 'Escolha a unidade mais próxima para falar com um consultor.';
+  // Modo "flutuante" — ao clicar numa loja abre WhatsApp genérico
+  _pendingLead = {
+    nome: '', telefone: '', cidade: '', interesse: '',
+    area_m2: '', mensagem: '', _isFloat: true
+  };
+  renderLojasModalFloat();
+  document.getElementById('lojaModalOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function renderLojasModalFloat() {
+  var list = document.getElementById('lojaModalList');
+  if (!_lojas.length) {
+    list.innerHTML = '<div class="modal-lojas-loading">Carregando unidades...</div>';
+    loadLojas(function(){ renderLojasModalFloat(); });
+    return;
+  }
+  var wappSvg = '<svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.122.554 4.118 1.52 5.854L0 24l6.335-1.498A11.94 11.94 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.808 9.808 0 01-5.034-1.387l-.361-.214-3.741.884.939-3.658-.235-.374A9.808 9.808 0 012.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/></svg>';
+  list.innerHTML = _lojas.map(function(loja) {
+    return '<div class="modal-loja-item" onclick="abrirWappLojaFloat(\'' + loja.id + '\')">' +
+      '<div>' +
+        '<div class="modal-loja-nome">' + esc(loja.nome) + '</div>' +
+        '<div class="modal-loja-cidade">' + esc(loja.cidade||'') + '</div>' +
+        (loja.numero ? '<div class="modal-loja-num">📱 +' + loja.numero + '</div>' : '') +
+      '</div>' +
+      '<div class="modal-loja-wapp">' + wappSvg + '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function abrirWappLojaFloat(lojaId) {
+  var loja = _lojas.find(function(l){ return l.id === lojaId || String(l.id) === String(lojaId); });
+  if (!loja) return;
+  var msg = 'Olá! Tenho interesse em uma casa pré-fabricada. Podem me ajudar?';
+  window.open('https://wa.me/' + loja.numero + '?text=' + encodeURIComponent(msg), '_blank');
+  document.getElementById('lojaModalOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+  _pendingLead = null;
+}
 
 // ── SMOOTH SCROLL ──
 document.querySelectorAll('a[href^="#"]').forEach(function(a){
