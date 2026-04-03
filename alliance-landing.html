@@ -2517,24 +2517,31 @@ document.addEventListener('keydown', function(e) {
 
 // ── MODELOS DO CATÁLOGO ───────────────────────────────────────
 function loadModelos() {
-  // Tenta primeiro com filtro visivel_site (requer coluna criada via SQL)
-  fetch(SB_URL + '/rest/v1/casas_catalogo?visivel_site=eq.true&status=eq.publicado&order=created_at.desc', {
-    headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY }
-  })
-  .then(function(r){
-    if (!r.ok) {
-      // Coluna não existe ainda — tenta sem filtro visivel_site, pega os 6 mais recentes publicados
-      return fetch(SB_URL + '/rest/v1/casas_catalogo?status=eq.publicado&order=created_at.desc&limit=6', {
-        headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY }
-      }).then(function(r2){ return r2.ok ? r2.json() : null; });
-    }
-    return r.json();
-  })
-  .then(function(data){
-    if (!Array.isArray(data) || !data.length) return; // mantém fallback estático
-    renderModelosGrid(data);
-  })
-  .catch(function(){});
+  // Estratégia: tenta visivel_site=true → fallback status=publicado → mantém HTML estático
+  function fetchModelos(url) {
+    return fetch(url, { headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY } })
+      .then(function(r) { return r.ok ? r.json() : Promise.reject(r.status); });
+  }
+
+  fetchModelos(SB_URL + '/rest/v1/casas_catalogo?visivel_site=eq.true&status=eq.publicado&order=created_at.desc&limit=9')
+    .then(function(data) {
+      if (Array.isArray(data) && data.length) {
+        renderModelosGrid(data);
+      } else {
+        // Nenhum marcado como visivel — tenta pegar publicados recentes
+        return fetchModelos(SB_URL + '/rest/v1/casas_catalogo?status=eq.publicado&order=created_at.desc&limit=3');
+      }
+    })
+    .then(function(data) {
+      if (data && Array.isArray(data) && data.length) renderModelosGrid(data);
+      // se data for undefined (já renderizou) ou vazio, mantém HTML estático
+    })
+    .catch(function(err) {
+      // Erro na 1a query (ex: coluna não existe) → tenta sem visivel_site
+      fetchModelos(SB_URL + '/rest/v1/casas_catalogo?status=eq.publicado&order=created_at.desc&limit=3')
+        .then(function(data) { if (Array.isArray(data) && data.length) renderModelosGrid(data); })
+        .catch(function() {}); // sem conexão — mantém HTML estático
+    });
 }
 
 function renderModelosGrid(lista) {
@@ -2553,8 +2560,19 @@ function renderModelosGrid(lista) {
   }
 
   grid.innerHTML = lista.map(function(c, i) {
-    var fotos = Array.isArray(c.fotos) && c.fotos.length ? c.fotos : (c.foto ? [c.foto] : []);
-    var imgUrl = fotos[0] || '';
+    // fotos pode ser array nativo, string JSON, ou string simples
+    var rawFotos = c.fotos;
+    var fotos;
+    if (Array.isArray(rawFotos)) {
+      fotos = rawFotos;
+    } else if (typeof rawFotos === 'string' && rawFotos.trim().startsWith('[')) {
+      try { fotos = JSON.parse(rawFotos); } catch(e) { fotos = []; }
+    } else if (rawFotos) {
+      fotos = [rawFotos];
+    } else {
+      fotos = [];
+    }
+    var imgUrl = (fotos.length ? fotos[0] : '') || c.foto || '';
     var area   = (parseFloat(c.area_interna)||0) + (parseFloat(c.area_ext)||0) || parseFloat(c.area)||0;
     var tag    = (c.selo && seloMap[c.selo]) ? seloMap[c.selo] : (c.tipo || '');
     var delay  = i === 1 ? ' reveal-delay-1' : i === 2 ? ' reveal-delay-2' : '';
@@ -2568,7 +2586,7 @@ function renderModelosGrid(lista) {
       ? '<span>A partir de</span> ' + brl(c.preco)
       : '<span>Consulte</span>';
 
-    return '<a class="modelo-card reveal' + delay + '" href="https://leandrorocha95.github.io/alliance-orcamento/catalogo.html?modelo=' + c.id + '" target="_blank" style="text-decoration:none;color:inherit;">'
+    return '<a class="modelo-card' + delay + '" href="https://leandrorocha95.github.io/alliance-orcamento/catalogo.html?modelo=' + c.id + '" target="_blank" style="text-decoration:none;color:inherit;">'
       + '<div class="modelo-card-img-wrap">'
       + (imgUrl
           ? '<img class="modelo-card-img" src="' + imgUrl + '" alt="' + (c.nome||'') + '" loading="lazy" onerror="this.style.display=\'none\'">'
@@ -2582,6 +2600,14 @@ function renderModelosGrid(lista) {
       + '</div>'
       + '</a>';
   }).join('');
+
+  // Re-trigger reveal animation nos novos elementos
+  setTimeout(function() {
+    grid.querySelectorAll('.modelo-card').forEach(function(el) {
+      el.style.opacity = '1';
+      el.style.transform = 'none';
+    });
+  }, 100);
 }
 
 // ── INIT ─────────────────────────────────────────────────────
