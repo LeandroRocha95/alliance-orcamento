@@ -212,6 +212,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
     <button class="filtro" onclick="setFiltro('campo',this)">Casa de Campo</button>
     <button class="filtro" onclick="setFiltro('alto-padrao',this)">Alto Padrão</button>
     <button class="filtro" onclick="setFiltro('entregue',this)">Entregues</button>
+    <button class="filtro" onclick="setFiltro('andamento',this)">Em Andamento</button>
   </div>
 
   <div class="portfolio-grid" id="portfolioGrid"></div>
@@ -427,12 +428,19 @@ function render() {
   grid.innerHTML = visíveis.map(it => {
     const isVideo = it.tipo === 'video';
     const cats = (it.categorias || []).map(c => `<span class="card-tag">${c}</span>`).join('');
+    // url_media pode ser string ou array — usa sempre a capa (primeiro item)
+    const urls  = Array.isArray(it.url_media) ? it.url_media : (it.url_media ? [it.url_media] : []);
+    const capa  = urls[0] || '';
+    const multi = urls.length > 1;
     const thumb = isVideo
       ? `<div class="card-thumb-video">
-           ${it.url_media ? `<video src="${it.url_media}" muted preload="metadata"></video>` : ''}
+           ${capa ? `<video src="${capa}" muted preload="metadata"></video>` : ''}
            <div class="play-icon"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
          </div>`
-      : `<img class="card-thumb" src="${it.url_media}" alt="${esc(it.nome)}" loading="lazy">`;
+      : `<div style="position:relative;">
+           <img class="card-thumb" src="${capa}" alt="${esc(it.nome)}" loading="lazy">
+           ${multi ? `<div style="position:absolute;top:8px;right:8px;background:rgba(0,0,0,.55);color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;">⊞ ${urls.length}</div>` : ''}
+         </div>`;
     return `<div class="portfolio-card ${it.ativo===false?'inativo':''}">
       ${thumb}
       <span class="card-tipo-badge badge-${it.tipo}">${isVideo?'▶ Vídeo':'📷 Foto'}</span>
