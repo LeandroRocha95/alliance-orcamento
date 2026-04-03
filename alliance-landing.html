@@ -791,6 +791,31 @@ section{padding:120px 60px;}
   margin-bottom:28px;
   position:relative;z-index:1;
 }
+.dep-audio{
+  position:relative;z-index:1;
+  margin-bottom:20px;
+}
+.dep-audio-btn{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--dark);color:var(--gold2);
+  border:1px solid rgba(48,142,238,.25);
+  padding:8px 16px;border-radius:24px;
+  font-size:12px;font-weight:600;letter-spacing:.5px;
+  cursor:pointer;transition:all .2s;
+  font-family:'Outfit',sans-serif;
+}
+.dep-audio-btn:hover{background:#0d1e35;border-color:var(--gold);}
+.dep-audio-btn svg{width:14px;height:14px;flex-shrink:0;}
+.dep-audio-player{
+  margin-top:10px;
+  display:none;
+}
+.dep-audio-player.show{display:block;}
+.dep-audio-player audio{
+  width:100%;height:36px;
+  border-radius:20px;
+  accent-color:var(--gold);
+}
 .dep-author{
   display:flex;align-items:center;gap:14px;
   border-top:1px solid rgba(48,142,238,.15);
@@ -1231,7 +1256,7 @@ footer{
       Projetamos e construímos sua casa pré-fabricada com madeira nobre, do alicerce à chave — com a agilidade que você merece e a qualidade que sua família exige.
     </p>
     <div class="hero-actions">
-      <a href="#contato" class="btn-primary">Solicitar Orçamento Grátis</a>
+      <a href="#contato" class="btn-primary">Solicitar Orçamento</a>
       <a href="#galeria" class="btn-ghost">
         Ver obras entregues
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
@@ -1648,44 +1673,30 @@ footer{
       <h2 class="section-title">O que nossos clientes<br><em>estão dizendo</em></h2>
       <div class="gold-line center"></div>
     </div>
-    <div class="dep-grid">
+    <div class="dep-grid" id="depGrid">
+      <!-- Fallback estático — substituído pelo JS -->
       <div class="dep-item reveal">
-        <div class="dep-stars">
-          <span class="dep-star">★</span><span class="dep-star">★</span><span class="dep-star">★</span><span class="dep-star">★</span><span class="dep-star">★</span>
-        </div>
+        <div class="dep-stars"><span class="dep-star">★</span><span class="dep-star">★</span><span class="dep-star">★</span><span class="dep-star">★</span><span class="dep-star">★</span></div>
         <p class="dep-text">"Estive em vários lugares e a Alliance foi a melhor que eu achei. O atendimento foi muito bom."</p>
         <div class="dep-author">
           <div class="dep-avatar">L</div>
-          <div>
-            <div class="dep-name">Laura</div>
-            <div class="dep-city">Joinville — SC</div>
-          </div>
+          <div><div class="dep-name">Laura</div><div class="dep-city">Joinville — SC</div></div>
         </div>
       </div>
       <div class="dep-item reveal reveal-delay-1">
-        <div class="dep-stars">
-          <span class="dep-star">★</span><span class="dep-star">★</span><span class="dep-star">★</span><span class="dep-star">★</span><span class="dep-star">★</span>
-        </div>
+        <div class="dep-stars"><span class="dep-star">★</span><span class="dep-star">★</span><span class="dep-star">★</span><span class="dep-star">★</span><span class="dep-star">★</span></div>
         <p class="dep-text">"Era um sonho meu, sempre foi, agora deu certo. Uma casa para reunir a família e passar o final de semana."</p>
         <div class="dep-author">
           <div class="dep-avatar">A</div>
-          <div>
-            <div class="dep-name">Antônio</div>
-            <div class="dep-city">Tijucas — SC</div>
-          </div>
+          <div><div class="dep-name">Antônio</div><div class="dep-city">Tijucas — SC</div></div>
         </div>
       </div>
       <div class="dep-item reveal reveal-delay-2">
-        <div class="dep-stars">
-          <span class="dep-star">★</span><span class="dep-star">★</span><span class="dep-star">★</span><span class="dep-star">★</span><span class="dep-star">★</span>
-        </div>
+        <div class="dep-stars"><span class="dep-star">★</span><span class="dep-star">★</span><span class="dep-star">★</span><span class="dep-star">★</span><span class="dep-star">★</span></div>
         <p class="dep-text">"Fiquei muito feliz! Entrega na data, tudo muito lindo, perfeito! Empresa muito séria e comprometida."</p>
         <div class="dep-author">
           <div class="dep-avatar">M</div>
-          <div>
-            <div class="dep-name">Maria das Neves</div>
-            <div class="dep-city">São Francisco do Sul — SC</div>
-          </div>
+          <div><div class="dep-name">Maria das Neves</div><div class="dep-city">São Francisco do Sul — SC</div></div>
         </div>
       </div>
     </div>
@@ -2610,11 +2621,90 @@ function renderModelosGrid(lista) {
   }, 100);
 }
 
+// ── DEPOIMENTOS ──────────────────────────────────────────────
+function loadDepoimentos() {
+  fetch(SB_URL + '/rest/v1/depoimentos?ativo=eq.true&order=ordem.asc,created_at.desc', {
+    headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY }
+  })
+  .then(function(r){ return r.ok ? r.json() : null; })
+  .then(function(data){
+    if (!Array.isArray(data) || !data.length) return;
+    renderDepoimentos(data);
+  })
+  .catch(function(){});
+}
+
+function renderDepoimentos(lista) {
+  var grid = document.getElementById('depGrid');
+  if (!grid) return;
+
+  var _depAudios = {}; // guarda instâncias de audio
+
+  grid.innerHTML = lista.map(function(d, i) {
+    var inicial = (d.nome || '?')[0].toUpperCase();
+    var delay   = i === 1 ? ' reveal-delay-1' : i === 2 ? ' reveal-delay-2' : '';
+    var stars   = Array.from({length:5}, function(_,j){
+      return '<span class="dep-star" style="' + (j < (d.estrelas||5) ? '' : 'opacity:.2;') + '">★</span>';
+    }).join('');
+
+    var audioHtml = '';
+    if (d.url_audio) {
+      var audioId = 'audio_' + d.id;
+      audioHtml = '<div class="dep-audio">'
+        + '<button class="dep-audio-btn" onclick="toggleDepAudio(\'' + audioId + '\',this)">'
+        + '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>'
+        + ' Ouvir depoimento</button>'
+        + '<div class="dep-audio-player" id="' + audioId + '_wrap">'
+        + '<audio id="' + audioId + '" src="' + d.url_audio + '" preload="none"></audio>'
+        + '</div>'
+        + '</div>';
+    }
+
+    return '<div class="dep-item' + delay + '">'
+      + '<div class="dep-stars">' + stars + '</div>'
+      + (d.texto ? '<p class="dep-text">' + esc(d.texto) + '</p>' : '')
+      + audioHtml
+      + '<div class="dep-author">'
+      + '<div class="dep-avatar">' + inicial + '</div>'
+      + '<div><div class="dep-name">' + esc(d.nome||'') + '</div>'
+      + (d.cidade ? '<div class="dep-city">' + esc(d.cidade) + '</div>' : '')
+      + '</div></div></div>';
+  }).join('');
+
+  // Re-reveal
+  setTimeout(function() {
+    grid.querySelectorAll('.dep-item').forEach(function(el) {
+      el.style.opacity = '1'; el.style.transform = 'none';
+    });
+  }, 100);
+
+  function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+}
+
+function toggleDepAudio(id, btn) {
+  var wrap  = document.getElementById(id + '_wrap');
+  var audio = document.getElementById(id);
+  if (!wrap || !audio) return;
+  var isOpen = wrap.classList.contains('show');
+  // Pausa todos os outros áudios
+  document.querySelectorAll('.dep-audio-player audio').forEach(function(a){ a.pause(); });
+  document.querySelectorAll('.dep-audio-player').forEach(function(w){ w.classList.remove('show'); });
+  document.querySelectorAll('.dep-audio-btn').forEach(function(b){
+    b.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg> Ouvir depoimento';
+  });
+  if (!isOpen) {
+    wrap.classList.add('show');
+    audio.play();
+    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6zm8-14v14h4V5z"/></svg> Pausar';
+  }
+}
+
 // ── INIT ─────────────────────────────────────────────────────
 loadLojas();
 loadCampanhas();
 loadPortfolio();
 loadModelos();
+loadDepoimentos();
 
 // ── WHATSAPP FLUTUANTE ────────────────────────────────────────
 function openWappFloat() {
