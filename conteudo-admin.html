@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alliance — Conteúdo do Site</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0c0e14;--surface:#13161f;--surface2:#1a1e2b;--surface3:#222638;
+  --border:#2d3348;--accent:#308EEE;--accent2:#1A65B8;
+  --green:#2ecc71;--red:#e74c3c;--text:#e8eaf0;--muted:#7a7f9a;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;}
+
+.header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 28px;display:flex;align-items:center;gap:14px;height:58px;position:sticky;top:0;z-index:50;}
+.header-logo{height:30px;background:#fff;border-radius:8px;padding:4px 10px;}
+.header-title{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:3px;}
+.header-badge{background:rgba(48,142,238,.15);border:1px solid rgba(48,142,238,.3);color:var(--accent);font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:3px 10px;border-radius:20px;}
+.header-right{margin-left:auto;display:flex;gap:10px;}
+.btn-hub{background:none;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:6px 14px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;transition:all .15s;text-decoration:none;display:flex;align-items:center;gap:6px;}
+.btn-hub:hover{border-color:var(--accent);color:var(--accent);}
+
+.main{max-width:900px;margin:0 auto;padding:32px 28px;}
+
+/* Seções */
+.section-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;margin-bottom:28px;overflow:hidden;}
+.section-head{padding:18px 24px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.section-head-left{display:flex;align-items:center;gap:10px;}
+.section-icon{font-size:20px;}
+.section-title{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;}
+.section-desc{font-size:11px;color:var(--muted);margin-top:2px;}
+.section-body{padding:20px 24px;}
+
+.btn-primary{background:linear-gradient(135deg,var(--accent2),var(--accent));border:none;color:#fff;border-radius:8px;padding:8px 16px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;display:flex;align-items:center;gap:6px;transition:opacity .15s;}
+.btn-primary:hover{opacity:.88;}
+.btn-sm{padding:5px 12px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;border:1px solid var(--border);background:none;color:var(--muted);transition:all .15s;}
+.btn-sm:hover{border-color:var(--accent);color:var(--accent);}
+.btn-sm.danger:hover{border-color:var(--red);color:var(--red);}
+
+/* Números */
+.numeros-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;}
+.numero-card{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px;}
+.numero-val-wrap{display:flex;align-items:center;gap:6px;margin-bottom:6px;}
+.numero-prefixo{font-size:11px;color:var(--muted);font-weight:600;}
+.numero-valor{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:2px;color:var(--accent);line-height:1;}
+.numero-sufixo{font-size:11px;color:var(--muted);font-weight:600;}
+.numero-label{font-size:12px;color:var(--text);margin-bottom:12px;}
+.numero-actions{display:flex;gap:6px;}
+
+/* Diferenciais */
+.diff-list{display:flex;flex-direction:column;gap:10px;}
+.diff-card{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;display:flex;gap:14px;align-items:flex-start;}
+.diff-card-left{display:flex;flex-direction:column;align-items:center;gap:6px;flex-shrink:0;}
+.diff-order{font-family:'Bebas Neue',sans-serif;font-size:11px;color:var(--muted);letter-spacing:1px;}
+.diff-emoji{font-size:24px;}
+.diff-card-body{flex:1;min-width:0;}
+.diff-card-title{font-size:13px;font-weight:700;margin-bottom:4px;}
+.diff-card-text{font-size:12px;color:var(--muted);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.diff-card-actions{display:flex;gap:6px;margin-left:auto;flex-shrink:0;}
+
+/* Form inputs */
+.form-group{margin-bottom:14px;}
+.form-label{display:block;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:5px;}
+.form-inp,.form-sel,.form-textarea{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;padding:9px 12px;outline:none;transition:border-color .15s;}
+.form-inp:focus,.form-sel:focus,.form-textarea:focus{border-color:var(--accent);}
+.form-textarea{resize:vertical;min-height:72px;}
+.form-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+.form-hint{font-size:11px;color:var(--muted);margin-top:4px;}
+
+/* Modal */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);z-index:200;display:none;align-items:flex-start;justify-content:center;padding:24px;overflow-y:auto;}
+.overlay.open{display:flex;}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;width:100%;max-width:560px;margin:auto;}
+.modal-head{padding:18px 22px 14px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.modal-title{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;}
+.modal-close{background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer;}
+.modal-close:hover{color:var(--red);}
+.modal-body{padding:20px 22px;}
+.modal-foot{padding:12px 22px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end;}
+.btn-outline{background:none;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:8px 16px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent);}
+
+/* Toast */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--surface3);border:1px solid var(--border);border-radius:10px;padding:12px 18px;font-size:13px;z-index:999;transform:translateY(80px);opacity:0;transition:all .3s;pointer-events:none;}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.ok{border-color:var(--green);color:var(--green);}
+.toast.err{border-color:var(--red);color:var(--red);}
+
+.empty{text-align:center;padding:40px;color:var(--muted);font-size:13px;}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <img class="header-logo" src="https://leandrorocha95.github.io/alliance-orcamento/logo_alliance.jpg" alt="Alliance">
+  <div class="header-title">Conteúdo do Site</div>
+  <div class="header-badge">Admin</div>
+  <div class="header-right">
+    <a href="hub.html" class="btn-hub">← Hub</a>
+    <a href="alliance-landing.html" target="_blank" class="btn-hub">🌐 Ver Site</a>
+  </div>
+</header>
+
+<div class="main">
+
+  <!-- NÚMEROS -->
+  <div class="section-card">
+    <div class="section-head">
+      <div class="section-head-left">
+        <div class="section-icon">📊</div>
+        <div>
+          <div class="section-title">Números em Destaque</div>
+          <div class="section-desc">Aparecem no hero do site (+1.000 casas, +30 cidades…)</div>
+        </div>
+      </div>
+      <button class="btn-primary" onclick="openNumeroForm()">+ Novo</button>
+    </div>
+    <div class="section-body">
+      <div class="numeros-grid" id="numerosGrid">
+        <div class="empty">Carregando...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DIFERENCIAIS -->
+  <div class="section-card">
+    <div class="section-head">
+      <div class="section-head-left">
+        <div class="section-icon">⭐</div>
+        <div>
+          <div class="section-title">Diferenciais</div>
+          <div class="section-desc">Cards da seção "Por que Alliance?" no site</div>
+        </div>
+      </div>
+      <button class="btn-primary" onclick="openDiffForm()">+ Novo</button>
+    </div>
+    <div class="section-body">
+      <div class="diff-list" id="diffList">
+        <div class="empty">Carregando...</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- MODAL NÚMERO -->
+<div class="overlay" id="numeroOverlay" onclick="if(event.target===this)closeNumeroForm()">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="numeroFormTitle">Novo Número</div>
+      <button class="modal-close" onclick="closeNumeroForm()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Prefixo</label>
+          <input class="form-inp" id="nPrefixo" placeholder="Ex: +">
+          <div class="form-hint">Símbolo antes do valor</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Valor *</label>
+          <input class="form-inp" id="nValor" placeholder="Ex: 1.000">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Sufixo</label>
+          <input class="form-inp" id="nSufixo" placeholder="Ex: anos">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Rótulo *</label>
+        <input class="form-inp" id="nLabel" placeholder="Ex: Casas entregues">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Ordem</label>
+        <input class="form-inp" type="number" id="nOrdem" value="1" min="1">
+        <div class="form-hint">Menor número aparece primeiro</div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-outline" onclick="closeNumeroForm()">Cancelar</button>
+      <button class="btn-primary" onclick="salvarNumero()">💾 Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DIFERENCIAL -->
+<div class="overlay" id="diffOverlay" onclick="if(event.target===this)closeDiffForm()">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="diffFormTitle">Novo Diferencial</div>
+      <button class="modal-close" onclick="closeDiffForm()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row" style="grid-template-columns:80px 1fr 80px;">
+        <div class="form-group">
+          <label class="form-label">Ícone</label>
+          <input class="form-inp" id="dIcone" placeholder="🪵" style="text-align:center;font-size:20px;">
+          <div class="form-hint">Emoji</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Título *</label>
+          <input class="form-inp" id="dTitulo" placeholder="Ex: Madeira nobre e alta durabilidade">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Ordem</label>
+          <input class="form-inp" type="number" id="dOrdem" value="1" min="1">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Descrição *</label>
+        <textarea class="form-textarea" id="dTexto" placeholder="Descreva este diferencial..."></textarea>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-outline" onclick="closeDiffForm()">Cancelar</button>
+      <button class="btn-primary" onclick="salvarDiff()">💾 Salvar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SB_URL = 'https://gzzclbxnohokttujvaqa.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd6emNsYnhub2hva3R0dWp2YXFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4Njc0NDUsImV4cCI6MjA4OTQ0MzQ0NX0.6XPR0m90k6qd66rLeatapLQ8jZYMn-V1lB9h2YT34hc';
+
+let numeros = [], diffs = [];
+let _editNumeroId = null, _editDiffId = null;
+
+function sb(method, url, body) {
+  return fetch(url, {
+    method,
+    headers: {
+      'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY,
+      'Content-Type': 'application/json',
+      'Prefer': method === 'POST' ? 'return=representation' : 'return=minimal'
+    },
+    body: body ? JSON.stringify(body) : undefined
+  });
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+  await Promise.all([loadNumeros(), loadDiffs()]);
+});
+
+// ── NÚMEROS ───────────────────────────────────────────────────
+async function loadNumeros() {
+  try {
+    const r = await sb('GET', `${SB_URL}/rest/v1/site_numeros?order=ordem.asc`);
+    numeros = r.ok ? await r.json() : [];
+    if (!Array.isArray(numeros)) numeros = [];
+  } catch(e) { numeros = []; }
+  renderNumeros();
+}
+
+function renderNumeros() {
+  const g = document.getElementById('numerosGrid');
+  if (!numeros.length) {
+    g.innerHTML = '<div class="empty">Nenhum número cadastrado. Clique em + Novo para começar.</div>';
+    return;
+  }
+  g.innerHTML = numeros.map(n => `
+    <div class="numero-card">
+      <div class="numero-val-wrap">
+        ${n.prefixo ? `<span class="numero-prefixo">${esc(n.prefixo)}</span>` : ''}
+        <span class="numero-valor">${esc(n.valor)}</span>
+        ${n.sufixo ? `<span class="numero-sufixo">${esc(n.sufixo)}</span>` : ''}
+      </div>
+      <div class="numero-label">${esc(n.label)}</div>
+      <div class="numero-actions">
+        <button class="btn-sm" onclick="openNumeroForm('${n.id}')">✏️ Editar</button>
+        <button class="btn-sm danger" onclick="deletarNumero('${n.id}')">🗑</button>
+      </div>
+    </div>`).join('');
+}
+
+function openNumeroForm(id) {
+  _editNumeroId = id || null;
+  if (id) {
+    const n = numeros.find(x => String(x.id) === String(id));
+    if (n) {
+      document.getElementById('nPrefixo').value = n.prefixo || '';
+      document.getElementById('nValor').value   = n.valor   || '';
+      document.getElementById('nSufixo').value  = n.sufixo  || '';
+      document.getElementById('nLabel').value   = n.label   || '';
+      document.getElementById('nOrdem').value   = n.ordem   || 1;
+    }
+    document.getElementById('numeroFormTitle').textContent = 'Editar Número';
+  } else {
+    ['nPrefixo','nValor','nSufixo','nLabel'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('nOrdem').value = numeros.length + 1;
+    document.getElementById('numeroFormTitle').textContent = 'Novo Número';
+  }
+  document.getElementById('numeroOverlay').classList.add('open');
+}
+
+function closeNumeroForm() {
+  document.getElementById('numeroOverlay').classList.remove('open');
+  _editNumeroId = null;
+}
+
+async function salvarNumero() {
+  const valor = document.getElementById('nValor').value.trim();
+  const label = document.getElementById('nLabel').value.trim();
+  if (!valor || !label) { toast('Preencha valor e rótulo', 'err'); return; }
+  const obj = {
+    prefixo: document.getElementById('nPrefixo').value.trim(),
+    valor, label,
+    sufixo: document.getElementById('nSufixo').value.trim(),
+    ordem:  parseInt(document.getElementById('nOrdem').value) || 1,
+  };
+  try {
+    if (_editNumeroId) {
+      const r = await sb('PATCH', `${SB_URL}/rest/v1/site_numeros?id=eq.${_editNumeroId}`, obj);
+      if (!r.ok) throw new Error(await r.text());
+      const idx = numeros.findIndex(x => String(x.id) === String(_editNumeroId));
+      if (idx >= 0) Object.assign(numeros[idx], obj);
+      toast('✓ Número atualizado!');
+    } else {
+      const r = await sb('POST', `${SB_URL}/rest/v1/site_numeros`, obj);
+      if (!r.ok) throw new Error(await r.text());
+      const saved = await r.json();
+      numeros.push(Array.isArray(saved) ? saved[0] : { ...obj, id: Date.now() });
+      toast('✓ Número criado!');
+    }
+    closeNumeroForm();
+    numeros.sort((a,b) => (a.ordem||0) - (b.ordem||0));
+    renderNumeros();
+  } catch(e) { toast('Erro: ' + e.message.slice(0,60), 'err'); }
+}
+
+async function deletarNumero(id) {
+  if (!confirm('Excluir este número?')) return;
+  const r = await sb('DELETE', `${SB_URL}/rest/v1/site_numeros?id=eq.${id}`);
+  if (r.ok) { numeros = numeros.filter(x => String(x.id) !== String(id)); renderNumeros(); toast('Excluído'); }
+  else toast('Erro ao excluir', 'err');
+}
+
+// ── DIFERENCIAIS ──────────────────────────────────────────────
+async function loadDiffs() {
+  try {
+    const r = await sb('GET', `${SB_URL}/rest/v1/site_diferenciais?order=ordem.asc`);
+    diffs = r.ok ? await r.json() : [];
+    if (!Array.isArray(diffs)) diffs = [];
+  } catch(e) { diffs = []; }
+  renderDiffs();
+}
+
+function renderDiffs() {
+  const l = document.getElementById('diffList');
+  if (!diffs.length) {
+    l.innerHTML = '<div class="empty">Nenhum diferencial cadastrado. Clique em + Novo para começar.</div>';
+    return;
+  }
+  l.innerHTML = diffs.map((d, i) => `
+    <div class="diff-card">
+      <div class="diff-card-left">
+        <div class="diff-order">${String(i+1).padStart(2,'0')}</div>
+        <div class="diff-emoji">${d.icone || '⭐'}</div>
+      </div>
+      <div class="diff-card-body">
+        <div class="diff-card-title">${esc(d.titulo)}</div>
+        <div class="diff-card-text">${esc(d.texto || '')}</div>
+      </div>
+      <div class="diff-card-actions">
+        <button class="btn-sm" onclick="moverDiff('${d.id}',-1)" ${i===0?'disabled':''} title="Subir">↑</button>
+        <button class="btn-sm" onclick="moverDiff('${d.id}',1)" ${i===diffs.length-1?'disabled':''} title="Descer">↓</button>
+        <button class="btn-sm" onclick="openDiffForm('${d.id}')">✏️</button>
+        <button class="btn-sm danger" onclick="deletarDiff('${d.id}')">🗑</button>
+      </div>
+    </div>`).join('');
+}
+
+function openDiffForm(id) {
+  _editDiffId = id || null;
+  if (id) {
+    const d = diffs.find(x => String(x.id) === String(id));
+    if (d) {
+      document.getElementById('dIcone').value  = d.icone  || '';
+      document.getElementById('dTitulo').value = d.titulo || '';
+      document.getElementById('dTexto').value  = d.texto  || '';
+      document.getElementById('dOrdem').value  = d.ordem  || 1;
+    }
+    document.getElementById('diffFormTitle').textContent = 'Editar Diferencial';
+  } else {
+    ['dIcone','dTitulo','dTexto'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('dOrdem').value = diffs.length + 1;
+    document.getElementById('diffFormTitle').textContent = 'Novo Diferencial';
+  }
+  document.getElementById('diffOverlay').classList.add('open');
+}
+
+function closeDiffForm() {
+  document.getElementById('diffOverlay').classList.remove('open');
+  _editDiffId = null;
+}
+
+async function salvarDiff() {
+  const titulo = document.getElementById('dTitulo').value.trim();
+  const texto  = document.getElementById('dTexto').value.trim();
+  if (!titulo) { toast('Digite o título', 'err'); return; }
+  const obj = {
+    icone:  document.getElementById('dIcone').value.trim() || '⭐',
+    titulo, texto,
+    ordem:  parseInt(document.getElementById('dOrdem').value) || 1,
+  };
+  try {
+    if (_editDiffId) {
+      const r = await sb('PATCH', `${SB_URL}/rest/v1/site_diferenciais?id=eq.${_editDiffId}`, obj);
+      if (!r.ok) throw new Error(await r.text());
+      const idx = diffs.findIndex(x => String(x.id) === String(_editDiffId));
+      if (idx >= 0) Object.assign(diffs[idx], obj);
+      toast('✓ Diferencial atualizado!');
+    } else {
+      const r = await sb('POST', `${SB_URL}/rest/v1/site_diferenciais`, obj);
+      if (!r.ok) throw new Error(await r.text());
+      const saved = await r.json();
+      diffs.push(Array.isArray(saved) ? saved[0] : { ...obj, id: Date.now() });
+      toast('✓ Diferencial criado!');
+    }
+    closeDiffForm();
+    diffs.sort((a,b) => (a.ordem||0) - (b.ordem||0));
+    renderDiffs();
+  } catch(e) { toast('Erro: ' + e.message.slice(0,60), 'err'); }
+}
+
+async function moverDiff(id, dir) {
+  const idx = diffs.findIndex(x => String(x.id) === String(id));
+  const troca = diffs[idx + dir];
+  if (!troca) return;
+  // Troca ordens
+  const oA = diffs[idx].ordem, oB = troca.ordem;
+  diffs[idx].ordem = oB; troca.ordem = oA;
+  // Salva os dois
+  await Promise.all([
+    sb('PATCH', `${SB_URL}/rest/v1/site_diferenciais?id=eq.${diffs[idx].id}`, { ordem: oB }),
+    sb('PATCH', `${SB_URL}/rest/v1/site_diferenciais?id=eq.${troca.id}`,      { ordem: oA })
+  ]);
+  diffs.sort((a,b) => (a.ordem||0) - (b.ordem||0));
+  renderDiffs();
+}
+
+async function deletarDiff(id) {
+  if (!confirm('Excluir este diferencial?')) return;
+  const r = await sb('DELETE', `${SB_URL}/rest/v1/site_diferenciais?id=eq.${id}`);
+  if (r.ok) { diffs = diffs.filter(x => String(x.id) !== String(id)); renderDiffs(); toast('Excluído'); }
+  else toast('Erro ao excluir', 'err');
+}
+
+// Utils
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function toast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast show ' + (type||'ok');
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => t.className = 'toast', 3000);
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closeNumeroForm(); closeDiffForm(); }
+});
+</script>
+</body>
+</html>
