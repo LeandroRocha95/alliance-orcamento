@@ -535,43 +535,188 @@ section{padding:120px 60px;}
 }
 .btn-outline-dark:hover{background:var(--text);color:var(--cream);}
 
-/* ── GALERIA ── */
-.galeria{background:var(--dark);padding:120px 0;}
+/* ── PORTFÓLIO ── */
+.galeria{background:var(--dark);padding:100px 0 120px;}
 .galeria .container{padding:0 60px;}
 .galeria-header{
   display:flex;justify-content:space-between;
-  align-items:flex-end;
-  margin-bottom:48px;
+  align-items:flex-end;margin-bottom:36px;
+  flex-wrap:wrap;gap:16px;
 }
 .galeria-header .section-title{color:#fff;}
-.galeria-grid{
+
+/* Filtros */
+.portfolio-filtros{
+  display:flex;gap:8px;flex-wrap:wrap;
+  margin-bottom:36px;
+}
+.filtro-btn{
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.12);
+  color:rgba(255,255,255,.55);
+  padding:7px 16px;
+  font-family:'Outfit',sans-serif;font-size:11px;font-weight:600;
+  letter-spacing:1px;text-transform:uppercase;
+  cursor:pointer;transition:all .2s;
+}
+.filtro-btn:hover{border-color:var(--gold);color:var(--gold);}
+.filtro-btn.ativo{
+  background:var(--gold);color:var(--dark);
+  border-color:var(--gold);
+}
+.filtro-sep{
+  width:1px;background:rgba(255,255,255,.15);
+  margin:0 4px;align-self:stretch;
+}
+
+/* Grid masonry-like */
+.portfolio-grid{
   display:grid;
-  grid-template-columns:repeat(12,1fr);
-  grid-template-rows:auto;
-  gap:4px;
+  grid-template-columns:repeat(4,1fr);
+  gap:6px;
 }
-.galeria-item{overflow:hidden;cursor:pointer;}
-.galeria-item img{
+.portfolio-item{
+  position:relative;overflow:hidden;cursor:pointer;
+  background:#0A2040;
+}
+.portfolio-item.oculto{display:none;}
+.portfolio-item img,
+.portfolio-item .portfolio-thumb{
   width:100%;height:100%;
-  object-fit:cover;
-  display:block;
-  transition:transform .5s,filter .3s;
-  filter:brightness(.82) saturate(1.1);
+  object-fit:cover;display:block;
+  transition:transform .5s,filter .4s;
+  filter:brightness(.82) saturate(1.05);
 }
-.galeria-item:hover img{transform:scale(1.05);filter:brightness(1);}
-.galeria-item:nth-child(1){grid-column:span 5;grid-row:span 2;aspect-ratio:auto;height:420px;}
-.galeria-item:nth-child(2){grid-column:span 4;height:207px;}
-.galeria-item:nth-child(3){grid-column:span 3;height:207px;}
-.galeria-item:nth-child(4){grid-column:span 2;height:207px;}
-.galeria-item:nth-child(5){grid-column:span 3;height:207px;}
-.galeria-item:nth-child(6){grid-column:span 4;height:207px;}
-.galeria-item:nth-child(7){grid-column:span 3;height:207px;}
+.portfolio-item:hover img,
+.portfolio-item:hover .portfolio-thumb{
+  transform:scale(1.05);filter:brightness(1);
+}
+/* Tamanhos variados */
+.portfolio-item[data-size="grande"]{grid-column:span 2;grid-row:span 2;}
+.portfolio-item[data-size="largo"]{grid-column:span 2;}
+.portfolio-item[data-size="normal"]{grid-column:span 1;}
+/* Altura automática por ratio */
+.portfolio-item[data-size="grande"]{height:360px;}
+.portfolio-item[data-size="largo"]{height:210px;}
+.portfolio-item[data-size="normal"]{height:210px;}
+
+/* Overlay info */
+.portfolio-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(to top, rgba(5,12,25,.92) 0%, rgba(5,12,25,.0) 55%);
+  display:flex;flex-direction:column;justify-content:flex-end;
+  padding:18px;
+  opacity:0;transition:opacity .3s;
+}
+.portfolio-item:hover .portfolio-overlay{opacity:1;}
+.portfolio-overlay-nome{
+  font-family:'Cormorant Garamond',serif;
+  font-size:17px;font-weight:400;color:#fff;
+  line-height:1.2;margin-bottom:4px;
+}
+.portfolio-overlay-meta{
+  font-size:11px;color:rgba(255,255,255,.6);
+  letter-spacing:.5px;display:flex;gap:10px;flex-wrap:wrap;
+}
+.portfolio-overlay-tag{
+  font-size:10px;font-weight:700;letter-spacing:1px;
+  text-transform:uppercase;padding:3px 8px;
+  background:rgba(255,255,255,.12);color:rgba(255,255,255,.8);
+  display:inline-block;margin-bottom:6px;
+  align-self:flex-start;
+}
+
+/* Indicador de vídeo */
+.portfolio-play{
+  position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%) scale(.9);
+  width:52px;height:52px;
+  background:rgba(255,255,255,.18);
+  backdrop-filter:blur(6px);
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .25s;
+  pointer-events:none;
+  border:2px solid rgba(255,255,255,.4);
+}
+.portfolio-item:hover .portfolio-play{
+  transform:translate(-50%,-50%) scale(1);
+  background:rgba(255,255,255,.28);
+}
+.portfolio-play svg{
+  width:20px;height:20px;fill:#fff;
+  margin-left:3px;
+}
+/* Badge tipo foto */
+.portfolio-badge-foto{
+  position:absolute;top:12px;right:12px;
+  font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+  padding:3px 8px;background:rgba(0,0,0,.45);backdrop-filter:blur(4px);
+  color:rgba(255,255,255,.7);
+  display:none;
+}
+.portfolio-item:hover .portfolio-badge-foto{display:block;}
+/* Thumb vídeo */
+.portfolio-thumb{
+  width:100%;height:100%;object-fit:cover;
+  pointer-events:none;
+}
+
+/* Lightbox */
+.lightbox{
+  position:fixed;inset:0;
+  background:rgba(3,8,18,.96);
+  backdrop-filter:blur(12px);
+  z-index:500;
+  display:none;align-items:center;justify-content:center;
+}
+.lightbox.aberto{display:flex;}
+.lightbox-inner{
+  position:relative;
+  max-width:90vw;max-height:90vh;
+  display:flex;flex-direction:column;gap:16px;
+}
+.lightbox-media{
+  max-width:100%;max-height:78vh;
+  display:block;object-fit:contain;
+}
+.lightbox-media-video{
+  width:min(900px,90vw);
+  aspect-ratio:16/9;
+  border:none;
+}
+.lightbox-info{
+  display:flex;align-items:flex-start;justify-content:space-between;gap:16px;
+}
+.lightbox-nome{
+  font-family:'Cormorant Garamond',serif;
+  font-size:22px;font-weight:300;color:#fff;
+  line-height:1.2;
+}
+.lightbox-meta{font-size:12px;color:rgba(255,255,255,.5);margin-top:4px;}
+.lightbox-close{
+  position:absolute;top:-44px;right:0;
+  background:none;border:none;color:rgba(255,255,255,.5);
+  font-size:28px;cursor:pointer;padding:4px;
+  transition:color .15s;line-height:1;
+}
+.lightbox-close:hover{color:#fff;}
+.lightbox-nav{
+  position:absolute;top:50%;transform:translateY(-50%);
+  background:rgba(255,255,255,.1);border:none;color:#fff;
+  width:44px;height:44px;border-radius:50%;cursor:pointer;
+  font-size:20px;display:flex;align-items:center;justify-content:center;
+  transition:background .2s;
+}
+.lightbox-nav:hover{background:rgba(255,255,255,.2);}
+.lightbox-prev{left:-60px;}
+.lightbox-next{right:-60px;}
+
+/* Link ver mais */
 .galeria-link{
   display:flex;align-items:center;gap:10px;
-  color:var(--gold2);
-  font-size:13px;font-weight:400;
-  letter-spacing:.5px;
-  text-decoration:none;
+  color:var(--gold2);font-size:13px;font-weight:400;
+  letter-spacing:.5px;text-decoration:none;
   transition:gap .2s;
 }
 .galeria-link:hover{gap:16px;}
@@ -958,13 +1103,16 @@ footer{
   .modelos-grid{grid-template-columns:1fr 1fr;}
   .dep-grid{grid-template-columns:1fr;}
   .footer-grid{grid-template-columns:1fr 1fr;}
-  .galeria-item:nth-child(1){grid-column:span 12;height:260px;}
-  .galeria-item:nth-child(2){grid-column:span 6;height:160px;}
-  .galeria-item:nth-child(3){grid-column:span 6;height:160px;}
-  .galeria-item:nth-child(4){grid-column:span 4;height:140px;}
-  .galeria-item:nth-child(5){grid-column:span 4;height:140px;}
-  .galeria-item:nth-child(6){grid-column:span 4;height:140px;}
-  .galeria-item:nth-child(7){display:none;}
+  .portfolio-grid{grid-template-columns:repeat(2,1fr);}
+  .portfolio-item[data-size="grande"]{grid-column:span 2;height:220px;}
+  .portfolio-item[data-size="largo"]{grid-column:span 2;height:180px;}
+  .portfolio-item[data-size="normal"]{height:150px;}
+  .portfolio-overlay{opacity:1;}
+  .lightbox-prev{left:-36px;}
+  .lightbox-next{right:-36px;}
+  .galeria .container{padding:0 20px;}
+  .portfolio-filtros{gap:6px;}
+  .filtro-btn{padding:6px 12px;font-size:10px;}
   .form-row{grid-template-columns:1fr;}
   .numeros .container{justify-content:center;}
   .numero-div{display:none;}
@@ -1307,44 +1455,171 @@ footer{
   </div>
 </section>
 
-<!-- GALERIA -->
+<!-- PORTFÓLIO -->
 <section class="galeria" id="galeria">
   <div class="container">
     <div class="galeria-header reveal">
       <div>
-        <span class="eyebrow">Projetos entregues</span>
-        <h2 class="section-title" style="color:#fff;">Obras que falam<br><em style="color:var(--gold2)">por si mesmas</em></h2>
+        <span class="eyebrow">Portfólio Alliance</span>
+        <h2 class="section-title" style="color:#fff;">Obras reais,<br><em style="color:var(--gold2)">resultados concretos</em></h2>
       </div>
-      <a href="https://www.alliancecasas.com.br/blank" target="_blank" class="galeria-link">
-        Ver todas as fotos
+      <a href="#contato" class="galeria-link">
+        Solicitar visita técnica
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </a>
     </div>
-    <div class="galeria-grid reveal">
-      <div class="galeria-item">
-        <img src="https://images.unsplash.com/photo-1518780664697-55e3ad937233?w=800&q=80" alt="Obra 1">
+
+    <!-- FILTROS -->
+    <div class="portfolio-filtros reveal">
+      <button class="filtro-btn ativo" onclick="filtrarPortfolio('todos',this)">Todos</button>
+      <button class="filtro-btn" onclick="filtrarPortfolio('foto',this)">📷 Fotos</button>
+      <button class="filtro-btn" onclick="filtrarPortfolio('video',this)">▶ Vídeos</button>
+      <div class="filtro-sep"></div>
+      <button class="filtro-btn" onclick="filtrarPortfolio('fachada',this)">Fachadas</button>
+      <button class="filtro-btn" onclick="filtrarPortfolio('interior',this)">Interiores</button>
+      <button class="filtro-btn" onclick="filtrarPortfolio('campo',this)">Casas de Campo</button>
+      <button class="filtro-btn" onclick="filtrarPortfolio('alto-padrao',this)">Alto Padrão</button>
+      <button class="filtro-btn" onclick="filtrarPortfolio('entregue',this)">Entregues</button>
+    </div>
+
+    <!-- GRID -->
+    <div class="portfolio-grid reveal" id="portfolioGrid">
+
+      <!-- Item 1 – FOTO grande destaque -->
+      <div class="portfolio-item" data-tipo="foto" data-cat="fachada entregue" data-size="grande"
+           data-nome="Casa Chapecó" data-cidade="Chapecó — SC" data-area="68m²"
+           data-src="https://images.unsplash.com/photo-1518780664697-55e3ad937233?w=1200&q=85"
+           onclick="abrirLightbox(this)">
+        <img src="https://images.unsplash.com/photo-1518780664697-55e3ad937233?w=800&q=80" alt="Casa Chapecó">
+        <div class="portfolio-overlay">
+          <span class="portfolio-overlay-tag">Fachada · Entregue</span>
+          <div class="portfolio-overlay-nome">Casa Chapecó</div>
+          <div class="portfolio-overlay-meta"><span>Chapecó — SC</span><span>68m²</span></div>
+        </div>
       </div>
-      <div class="galeria-item">
-        <img src="https://images.unsplash.com/photo-1449844908441-8829872d2607?w=600&q=80" alt="Obra 2">
+
+      <!-- Item 2 – VÍDEO YouTube -->
+      <div class="portfolio-item" data-tipo="video" data-cat="entregue alto-padrao" data-size="largo"
+           data-nome="Casa Alto Padrão — Joinville" data-cidade="Joinville — SC" data-area="120m²"
+           data-video="https://www.youtube.com/embed/dQw4w9WgXcQ"
+           data-thumb="https://images.unsplash.com/photo-1449844908441-8829872d2607?w=800&q=80"
+           onclick="abrirLightbox(this)">
+        <img class="portfolio-thumb" src="https://images.unsplash.com/photo-1449844908441-8829872d2607?w=800&q=80" alt="Casa Alto Padrão">
+        <div class="portfolio-play">
+          <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        </div>
+        <div class="portfolio-overlay">
+          <span class="portfolio-overlay-tag">▶ Vídeo · Alto Padrão</span>
+          <div class="portfolio-overlay-nome">Casa Alto Padrão — Joinville</div>
+          <div class="portfolio-overlay-meta"><span>Joinville — SC</span><span>120m²</span></div>
+        </div>
       </div>
-      <div class="galeria-item">
-        <img src="https://images.unsplash.com/photo-1480074568708-e7b720bb3f09?w=500&q=80" alt="Obra 3">
+
+      <!-- Item 3 – FOTO -->
+      <div class="portfolio-item" data-tipo="foto" data-cat="interior" data-size="normal"
+           data-nome="Interior Florianópolis" data-cidade="Florianópolis — SC" data-area="84m²"
+           data-src="https://images.unsplash.com/photo-1480074568708-e7b720bb3f09?w=800&q=80"
+           onclick="abrirLightbox(this)">
+        <img src="https://images.unsplash.com/photo-1480074568708-e7b720bb3f09?w=600&q=80" alt="Interior">
+        <div class="portfolio-overlay">
+          <span class="portfolio-overlay-tag">Interior</span>
+          <div class="portfolio-overlay-nome">Interior Florianópolis</div>
+          <div class="portfolio-overlay-meta"><span>Florianópolis — SC</span><span>84m²</span></div>
+        </div>
       </div>
-      <div class="galeria-item">
-        <img src="https://images.unsplash.com/photo-1567496898669-ee935f5f647a?w=400&q=80" alt="Obra 4">
+
+      <!-- Item 4 – FOTO -->
+      <div class="portfolio-item" data-tipo="foto" data-cat="campo entregue" data-size="normal"
+           data-nome="Casa de Campo — Lages" data-cidade="Lages — SC" data-area="95m²"
+           data-src="https://images.unsplash.com/photo-1567496898669-ee935f5f647a?w=800&q=80"
+           onclick="abrirLightbox(this)">
+        <img src="https://images.unsplash.com/photo-1567496898669-ee935f5f647a?w=600&q=80" alt="Casa de Campo">
+        <div class="portfolio-overlay">
+          <span class="portfolio-overlay-tag">Casa de Campo</span>
+          <div class="portfolio-overlay-nome">Casa de Campo — Lages</div>
+          <div class="portfolio-overlay-meta"><span>Lages — SC</span><span>95m²</span></div>
+        </div>
       </div>
-      <div class="galeria-item">
-        <img src="https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?w=500&q=80" alt="Obra 5">
+
+      <!-- Item 5 – VÍDEO YouTube -->
+      <div class="portfolio-item" data-tipo="video" data-cat="campo fachada" data-size="largo"
+           data-nome="Tour — Casa de Campo Tijucas" data-cidade="Tijucas — SC" data-area="78m²"
+           data-video="https://www.youtube.com/embed/dQw4w9WgXcQ"
+           data-thumb="https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?w=800&q=80"
+           onclick="abrirLightbox(this)">
+        <img class="portfolio-thumb" src="https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?w=800&q=80" alt="Tour Tijucas">
+        <div class="portfolio-play">
+          <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        </div>
+        <div class="portfolio-overlay">
+          <span class="portfolio-overlay-tag">▶ Vídeo · Casa de Campo</span>
+          <div class="portfolio-overlay-nome">Tour — Casa de Campo Tijucas</div>
+          <div class="portfolio-overlay-meta"><span>Tijucas — SC</span><span>78m²</span></div>
+        </div>
       </div>
-      <div class="galeria-item">
-        <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600&q=80" alt="Obra 6">
+
+      <!-- Item 6 – FOTO -->
+      <div class="portfolio-item" data-tipo="foto" data-cat="fachada alto-padrao" data-size="normal"
+           data-nome="Residência Blumenau" data-cidade="Blumenau — SC" data-area="110m²"
+           data-src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80"
+           onclick="abrirLightbox(this)">
+        <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600&q=80" alt="Residência Blumenau">
+        <div class="portfolio-overlay">
+          <span class="portfolio-overlay-tag">Fachada · Alto Padrão</span>
+          <div class="portfolio-overlay-nome">Residência Blumenau</div>
+          <div class="portfolio-overlay-meta"><span>Blumenau — SC</span><span>110m²</span></div>
+        </div>
       </div>
-      <div class="galeria-item">
-        <img src="https://images.unsplash.com/photo-1502005229762-cf1b2da7c5d6?w=500&q=80" alt="Obra 7">
+
+      <!-- Item 7 – FOTO -->
+      <div class="portfolio-item" data-tipo="foto" data-cat="interior entregue" data-size="normal"
+           data-nome="Sala — Criciúma" data-cidade="Criciúma — SC" data-area="72m²"
+           data-src="https://images.unsplash.com/photo-1502005229762-cf1b2da7c5d6?w=800&q=80"
+           onclick="abrirLightbox(this)">
+        <img src="https://images.unsplash.com/photo-1502005229762-cf1b2da7c5d6?w=600&q=80" alt="Interior Criciúma">
+        <div class="portfolio-overlay">
+          <span class="portfolio-overlay-tag">Interior · Entregue</span>
+          <div class="portfolio-overlay-nome">Sala — Criciúma</div>
+          <div class="portfolio-overlay-meta"><span>Criciúma — SC</span><span>72m²</span></div>
+        </div>
+      </div>
+
+      <!-- Item 8 – VÍDEO YouTube -->
+      <div class="portfolio-item" data-tipo="video" data-cat="interior alto-padrao" data-size="normal"
+           data-nome="Tour Interior — Itajaí" data-cidade="Itajaí — SC" data-area="130m²"
+           data-video="https://www.youtube.com/embed/dQw4w9WgXcQ"
+           data-thumb="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&q=80"
+           onclick="abrirLightbox(this)">
+        <img class="portfolio-thumb" src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&q=80" alt="Tour Interior Itajaí">
+        <div class="portfolio-play">
+          <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        </div>
+        <div class="portfolio-overlay">
+          <span class="portfolio-overlay-tag">▶ Vídeo · Interior</span>
+          <div class="portfolio-overlay-nome">Tour Interior — Itajaí</div>
+          <div class="portfolio-overlay-meta"><span>Itajaí — SC</span><span>130m²</span></div>
+        </div>
+      </div>
+
+    </div><!-- /portfolio-grid -->
+  </div>
+</section>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="if(event.target===this)fecharLightbox()">
+  <button class="lightbox-nav lightbox-prev" onclick="lightboxNav(-1)">‹</button>
+  <div class="lightbox-inner">
+    <button class="lightbox-close" onclick="fecharLightbox()">×</button>
+    <div id="lightboxMedia"></div>
+    <div class="lightbox-info">
+      <div>
+        <div class="lightbox-nome" id="lightboxNome"></div>
+        <div class="lightbox-meta" id="lightboxMeta"></div>
       </div>
     </div>
   </div>
-</section>
+  <button class="lightbox-nav lightbox-next" onclick="lightboxNav(1)">›</button>
+</div>
 
 <!-- NÚMEROS -->
 <div class="numeros">
@@ -2024,9 +2299,226 @@ function fecharFaixa() {
   if (hero) hero.style.paddingTop = '';
 }
 
+// ── PORTFÓLIO ────────────────────────────────────────────────
+var _lbItems = [];
+var _lbIdx   = 0;
+var _pfItems = []; // todos os itens carregados do Supabase
+var _pfFiltro = 'todos';
+
+// Carrega itens do Supabase ao iniciar
+function loadPortfolio() {
+  fetch(SB_URL + '/rest/v1/portfolio_items?ativo=eq.true&order=ordem.asc,created_at.desc', {
+    headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY }
+  })
+  .then(function(r){ return r.ok ? r.json() : []; })
+  .then(function(data){
+    _pfItems = Array.isArray(data) ? data : [];
+    if (_pfItems.length) renderPortfolioGrid();
+    // Se não tem dados no Supabase, mantém o HTML estático já no grid
+  })
+  .catch(function(){ /* mantém HTML estático */ });
+}
+
+function renderPortfolioGrid() {
+  var grid = document.getElementById('portfolioGrid');
+  if (!grid || !_pfItems.length) return;
+
+  var sizeMap = { grande:'grande', largo:'largo', normal:'normal' };
+
+  grid.innerHTML = _pfItems.map(function(it, idx) {
+    var isVideo = it.tipo === 'video';
+    var cats    = (it.categorias || []).join(' ');
+    var size    = sizeMap[it.size] || 'normal';
+
+    var mediaHtml = isVideo
+      ? `<video class="portfolio-thumb" src="${it.url_media}" muted playsinline preload="metadata" loading="lazy"></video>`
+      : `<img src="${it.url_media}" alt="${escHtml(it.nome)}" loading="lazy">`;
+
+    var playHtml = isVideo
+      ? `<div class="portfolio-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>`
+      : '';
+
+    return `<div class="portfolio-item"
+        data-tipo="${it.tipo}"
+        data-cat="${cats}"
+        data-size="${size}"
+        data-nome="${escHtml(it.nome||'')}"
+        data-cidade="${escHtml(it.cidade||'')}"
+        data-area="${escHtml(it.area||'')}"
+        data-src="${isVideo ? '' : it.url_media}"
+        data-video="${isVideo ? it.url_media : ''}"
+        data-thumb="${it.url_media}"
+        onclick="abrirLightbox(this)">
+      ${mediaHtml}
+      ${playHtml}
+      <div class="portfolio-overlay">
+        <span class="portfolio-overlay-tag">${isVideo ? '▶ Vídeo' : '📷 Foto'}${cats ? ' · ' + (it.categorias||[])[0] : ''}</span>
+        <div class="portfolio-overlay-nome">${escHtml(it.nome||'')}</div>
+        <div class="portfolio-overlay-meta">
+          ${it.cidade ? '<span>' + escHtml(it.cidade) + '</span>' : ''}
+          ${it.area   ? '<span>' + escHtml(it.area)   + '</span>' : ''}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  function escHtml(s){
+    var d = document.createElement('div'); d.textContent = String(s||''); return d.innerHTML;
+  }
+}
+
+function filtrarPortfolio(cat, btn) {
+  document.querySelectorAll('.filtro-btn').forEach(function(b){ b.classList.remove('ativo'); });
+  btn.classList.add('ativo');
+  _pfFiltro = cat;
+
+  var items = document.querySelectorAll('.portfolio-item');
+  items.forEach(function(item) {
+    var tipo = item.dataset.tipo;
+    var cats = (item.dataset.cat || '').split(' ');
+    var ok = cat === 'todos' || cat === tipo || cats.includes(cat);
+    item.classList.toggle('oculto', !ok);
+  });
+}
+
+function abrirLightbox(el) {
+  _lbItems = Array.from(document.querySelectorAll('.portfolio-item:not(.oculto)'));
+  _lbIdx   = _lbItems.indexOf(el);
+  renderLightbox(_lbIdx);
+  document.getElementById('lightbox').classList.add('aberto');
+  document.body.style.overflow = 'hidden';
+}
+
+function fecharLightbox() {
+  document.getElementById('lightbox').classList.remove('aberto');
+  document.body.style.overflow = '';
+  var mediaEl = document.getElementById('lightboxMedia');
+  // Para vídeo: pausa se for elemento video, ou reload se for iframe
+  var vid = mediaEl.querySelector('video');
+  if (vid) vid.pause();
+  var iframe = mediaEl.querySelector('iframe');
+  if (iframe) iframe.src = iframe.src;
+}
+
+function lightboxNav(dir) {
+  _lbIdx = (_lbIdx + dir + _lbItems.length) % _lbItems.length;
+  renderLightbox(_lbIdx);
+}
+
+function renderLightbox(idx) {
+  var el    = _lbItems[idx];
+  var tipo  = el.dataset.tipo;
+  var nome  = el.dataset.nome   || '';
+  var cidade = el.dataset.cidade || '';
+  var area   = el.dataset.area   || '';
+  var mediaEl = document.getElementById('lightboxMedia');
+
+  if (tipo === 'video') {
+    var src = el.dataset.video || el.dataset.thumb;
+    // YouTube/Vimeo → iframe, arquivo local → <video>
+    if (src.includes('youtube.com') || src.includes('youtu.be') || src.includes('vimeo.com')) {
+      var embedUrl = src + (src.includes('?') ? '&' : '?') + 'autoplay=1&rel=0';
+      mediaEl.innerHTML = '<iframe class="lightbox-media-video" src="' + embedUrl + '" allow="autoplay; fullscreen" allowfullscreen></iframe>';
+    } else {
+      mediaEl.innerHTML = '<video class="lightbox-media-video" src="' + src + '" controls autoplay style="width:min(900px,90vw);aspect-ratio:16/9;"></video>';
+    }
+  } else {
+    var src = el.dataset.src || el.querySelector('img').src;
+    mediaEl.innerHTML = '<img class="lightbox-media" src="' + src + '" alt="' + nome + '">';
+  }
+
+  document.getElementById('lightboxNome').textContent = nome;
+  document.getElementById('lightboxMeta').textContent = [cidade, area].filter(Boolean).join(' · ');
+
+  var navEls = document.querySelectorAll('.lightbox-nav');
+  navEls.forEach(function(n){ n.style.display = _lbItems.length > 1 ? '' : 'none'; });
+}
+
+// Teclado: setas e ESC
+document.addEventListener('keydown', function(e) {
+  var lb = document.getElementById('lightbox');
+  if (!lb || !lb.classList.contains('aberto')) return;
+  if (e.key === 'ArrowRight') lightboxNav(1);
+  if (e.key === 'ArrowLeft')  lightboxNav(-1);
+  if (e.key === 'Escape')     fecharLightbox();
+});
+  // Atualiza botão ativo
+  document.querySelectorAll('.filtro-btn').forEach(function(b){ b.classList.remove('ativo'); });
+  btn.classList.add('ativo');
+
+  var items = document.querySelectorAll('.portfolio-item');
+  items.forEach(function(item) {
+    var tipo = item.dataset.tipo;
+    var cats = (item.dataset.cat || '').split(' ');
+    var ok = cat === 'todos'
+          || cat === tipo
+          || cats.includes(cat);
+    item.classList.toggle('oculto', !ok);
+  });
+}
+
+function abrirLightbox(el) {
+  // Monta lista de itens visíveis
+  _lbItems = Array.from(document.querySelectorAll('.portfolio-item:not(.oculto)'));
+  _lbIdx   = _lbItems.indexOf(el);
+  renderLightbox(_lbIdx);
+  document.getElementById('lightbox').classList.add('aberto');
+  document.body.style.overflow = 'hidden';
+}
+
+function fecharLightbox() {
+  document.getElementById('lightbox').classList.remove('aberto');
+  document.body.style.overflow = '';
+  // Para vídeo ao fechar
+  var mediaEl = document.getElementById('lightboxMedia');
+  var iframe  = mediaEl.querySelector('iframe');
+  if (iframe) iframe.src = iframe.src;
+}
+
+function lightboxNav(dir) {
+  _lbIdx = (_lbIdx + dir + _lbItems.length) % _lbItems.length;
+  renderLightbox(_lbIdx);
+}
+
+function renderLightbox(idx) {
+  var el      = _lbItems[idx];
+  var tipo    = el.dataset.tipo;
+  var nome    = el.dataset.nome    || '';
+  var cidade  = el.dataset.cidade  || '';
+  var area    = el.dataset.area    || '';
+  var mediaEl = document.getElementById('lightboxMedia');
+
+  if (tipo === 'video') {
+    var vidUrl = el.dataset.video;
+    // Adiciona autoplay ao abrir
+    var autoUrl = vidUrl + (vidUrl.includes('?') ? '&' : '?') + 'autoplay=1&rel=0';
+    mediaEl.innerHTML = '<iframe class="lightbox-media-video" src="' + autoUrl + '" allow="autoplay; fullscreen" allowfullscreen></iframe>';
+  } else {
+    var src = el.dataset.src || el.querySelector('img').src;
+    mediaEl.innerHTML = '<img class="lightbox-media" src="' + src + '" alt="' + nome + '">';
+  }
+
+  document.getElementById('lightboxNome').textContent = nome;
+  document.getElementById('lightboxMeta').textContent = [cidade, area].filter(Boolean).join(' · ');
+
+  // Esconde nav se só 1 item
+  var navEls = document.querySelectorAll('.lightbox-nav');
+  navEls.forEach(function(n){ n.style.display = _lbItems.length > 1 ? '' : 'none'; });
+}
+
+// Teclado: setas e ESC
+document.addEventListener('keydown', function(e) {
+  var lb = document.getElementById('lightbox');
+  if (!lb.classList.contains('aberto')) return;
+  if (e.key === 'ArrowRight') lightboxNav(1);
+  if (e.key === 'ArrowLeft')  lightboxNav(-1);
+  if (e.key === 'Escape')     fecharLightbox();
+});
+
 // ── INIT ─────────────────────────────────────────────────────
 loadLojas();
 loadCampanhas();
+loadPortfolio();
 
 // ── WHATSAPP FLUTUANTE ────────────────────────────────────────
 function openWappFloat() {
