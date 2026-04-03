@@ -338,12 +338,17 @@ document.getElementById('lockInp').addEventListener('keydown', e => { if(e.key==
 async function init() { await load(); render(); }
 
 function sbFetch(method, url, body) {
+  const prefer = method === 'POST'
+    ? 'return=representation,resolution=merge-duplicates'
+    : method === 'PATCH' || method === 'DELETE'
+    ? 'return=minimal'
+    : '';
   return fetch(url, {
     method,
     headers: {
       'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY,
       'Content-Type': 'application/json',
-      'Prefer': method==='POST' ? 'return=representation,resolution=merge-duplicates' : ''
+      ...(prefer ? { 'Prefer': prefer } : {})
     },
     body: body ? JSON.stringify(body) : undefined
   });
@@ -541,12 +546,14 @@ async function saveCampanha() {
 
   try {
     if (_editId) {
-      await sbFetch('PATCH', `${SB_URL}/rest/v1/${TABLE}?id=eq.${_editId}`, obj);
+      const r = await sbFetch('PATCH', `${SB_URL}/rest/v1/${TABLE}?id=eq.${_editId}`, obj);
+      if (!r.ok) { toast('Erro ao salvar: ' + r.status, 'err'); return; }
       const idx = campanhas.findIndex(c => String(c.id)===String(_editId));
       if (idx >= 0) Object.assign(campanhas[idx], obj);
       toast('✓ Campanha atualizada!');
     } else {
       const r = await sbFetch('POST', `${SB_URL}/rest/v1/${TABLE}`, obj);
+      if (!r.ok) { toast('Erro ao criar: ' + r.status, 'err'); return; }
       const saved = await r.json();
       campanhas.unshift(Array.isArray(saved) ? saved[0] : { ...obj, id: Date.now() });
       toast('✓ Campanha criada!');
@@ -558,12 +565,21 @@ async function saveCampanha() {
 
 async function toggleAtivo(id, val) {
   try {
-    await sbFetch('PATCH', `${SB_URL}/rest/v1/${TABLE}?id=eq.${id}`, { ativo: val });
-    const c = campanhas.find(x => String(x.id)===String(id));
+    const r = await sbFetch('PATCH', `${SB_URL}/rest/v1/${TABLE}?id=eq.${id}`, { ativo: val });
+    if (!r.ok) {
+      const err = await r.text();
+      console.error('PATCH error:', r.status, err);
+      toast('Erro ao salvar: ' + r.status, 'err');
+      return;
+    }
+    const c = campanhas.find(x => String(x.id) === String(id));
     if (c) c.ativo = val;
     render();
     toast(val ? '▶ Campanha ativada' : '⏸ Campanha pausada');
-  } catch(e) { toast('Erro', 'err'); }
+  } catch(e) {
+    console.error('toggleAtivo error:', e);
+    toast('Erro de conexão', 'err');
+  }
 }
 
 function closeConfirm() { document.getElementById('confirmOverlay').classList.remove('open'); }
