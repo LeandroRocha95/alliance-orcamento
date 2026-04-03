@@ -327,6 +327,32 @@ textarea.field-inp{resize:vertical;min-height:76px;white-space:pre-wrap;}
   .filters-bar{padding:14px;}
   .modal-detail-img{height:220px;}
 }
+
+/* Visível no site toggle */
+.card-site-toggle{
+  display:flex;align-items:center;gap:8px;
+  padding:8px 14px;
+  border-top:1px solid var(--border);
+  background:rgba(48,142,238,.04);
+}
+.card-site-toggle label{
+  font-size:11px;font-weight:600;letter-spacing:.5px;
+  text-transform:uppercase;color:var(--muted);cursor:pointer;
+  user-select:none;flex:1;
+}
+.card-site-toggle label.on{color:var(--accent);}
+.toggle-mini{position:relative;width:36px;height:20px;flex-shrink:0;}
+.toggle-mini input{opacity:0;width:0;height:0;}
+.toggle-mini-slider{
+  position:absolute;inset:0;background:var(--surface3);
+  border-radius:20px;cursor:pointer;transition:background .2s;
+}
+.toggle-mini-slider::before{
+  content:'';position:absolute;width:14px;height:14px;
+  left:3px;top:3px;background:#fff;border-radius:50%;transition:transform .2s;
+}
+.toggle-mini input:checked + .toggle-mini-slider{background:var(--accent);}
+.toggle-mini input:checked + .toggle-mini-slider::before{transform:translateX(16px);}
 </style>
 </head>
 <body>
@@ -1484,6 +1510,20 @@ function setFilter(val, el) {
 }
 
 // ── RENDER ──────────────────────────────────────────────────────
+async function toggleVisivelSite(id, val) {
+  const c = casas.find(x => x.id === id);
+  if (!c) return;
+  c.visivel_site = val;
+  try {
+    await sbFetch('PATCH', `${SB_URL}/rest/v1/${CATALOG_TABLE}?id=eq.${id}`, { visivel_site: val });
+    renderCatalogo();
+    toast(val ? '🌐 Visível no site' : 'Ocultado do site');
+  } catch(e) {
+    c.visivel_site = !val; // reverter em caso de erro
+    toast('Erro ao salvar: ' + e.message, 'err');
+  }
+}
+
 function renderCatalogo() {
   const q = document.getElementById('searchInp').value.trim();
   const list = casas.filter(c => {
@@ -1572,6 +1612,13 @@ function renderCatalogo() {
           : _isInternal
             ? `<button class="btn-orcamento" onclick="event.stopPropagation();solicitarOrcamentoId('${c.id}')">📋 Orçamento</button>`
             : ''}
+        ${_isAdmin ? `
+        <button class="btn-site-toggle ${c.visivel_site ? 'on' : ''}"
+          onclick="event.stopPropagation();toggleVisivelSite('${c.id}',${c.visivel_site?'false':'true'})"
+          title="${c.visivel_site ? 'Visível no site — clique para ocultar' : 'Oculto do site — clique para exibir'}"
+          style="border:1px solid ${c.visivel_site ? 'var(--accent)' : 'var(--border)'};background:${c.visivel_site ? 'rgba(48,142,238,.12)' : 'none'};color:${c.visivel_site ? 'var(--accent)' : 'var(--muted)'};border-radius:6px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer;transition:all .2s;">
+          ${c.visivel_site ? '🌐 Visível no site' : '🌐 Oculto do site'}
+        </button>` : ''}
         <button class="btn-share-card" onclick="event.stopPropagation();compartilharLink('${c.id}')" title="Copiar link do modelo">
           <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
         </button>
@@ -1842,6 +1889,7 @@ function openEditCasa(id) {
   document.getElementById('fSelo').value       = c.selo        ||'';
   updateSeloPreview();
   _formStatus = c.status || 'publicado'; setStatusForm(_formStatus);
+  document.getElementById('fVisivelSite').checked = c.visivel_site === true || c.visivel_site === 'true';
   renderSelect('fTipo','tipo',c.tipo);
   renderSelect('fMadeira','madeira',c.madeira);
   _formTags = Array.isArray(c.tags)?[...c.tags]:[]; renderFormTags();
@@ -1904,6 +1952,7 @@ async function saveCasa() {
     portfolio:   document.getElementById('fPortfolio').value.trim(),
     selo:        document.getElementById('fSelo').value,
     status:      _formStatus,
+    visivel_site: document.getElementById('fVisivelSite').checked,
     tags:        _formTags,
     fotos,
     foto:        fotos[0]||'',
