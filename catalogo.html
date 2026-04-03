@@ -1508,7 +1508,8 @@ function setFilter(val, el) {
 
 // ── RENDER ──────────────────────────────────────────────────────
 async function toggleVisivelSite(id, val) {
-  const c = casas.find(x => x.id === id);
+  val = val === true || val === 'true';
+  const c = casas.find(x => String(x.id) === String(id));
   if (!c) return;
   c.visivel_site = val;
   renderCatalogo(); // atualiza UI imediatamente (otimista)
@@ -1622,12 +1623,10 @@ function renderCatalogo() {
           : _isInternal
             ? `<button class="btn-orcamento" onclick="event.stopPropagation();solicitarOrcamentoId('${c.id}')">📋 Orçamento</button>`
             : ''}
-        ${_isAdmin ? `
-        <button class="btn-site-toggle ${c.visivel_site ? 'on' : ''}"
-          onclick="event.stopPropagation();toggleVisivelSite('${c.id}',${c.visivel_site?'false':'true'})"
-          title="${c.visivel_site ? 'Visível no site — clique para ocultar' : 'Oculto do site — clique para exibir'}"
-          style="border:1px solid ${c.visivel_site ? 'var(--accent)' : 'var(--border)'};background:${c.visivel_site ? 'rgba(48,142,238,.12)' : 'none'};color:${c.visivel_site ? 'var(--accent)' : 'var(--muted)'};border-radius:6px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer;transition:all .2s;">
-          ${c.visivel_site ? '🌐 Visível no site' : '🌐 Oculto do site'}
+        ${_isAdmin ? `<button
+          onclick="event.stopPropagation();toggleVisivelSite('${c.id}',${!c.visivel_site})"
+          style="border:1px solid ${c.visivel_site?'var(--accent)':'var(--border)'};background:${c.visivel_site?'rgba(48,142,238,.12)':'none'};color:${c.visivel_site?'var(--accent)':'var(--muted)'};border-radius:6px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;">
+          ${c.visivel_site?'🌐 No site':'🌐 Oculto'}
         </button>` : ''}
         <button class="btn-share-card" onclick="event.stopPropagation();compartilharLink('${c.id}')" title="Copiar link do modelo">
           <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
@@ -1877,7 +1876,7 @@ function openNewCasa() {
 }
 
 function openEditCasa(id) {
-  const c=casas.find(x=>x.id===id); if(!c) return;
+  const c=casas.find(x=>String(x.id)===String(id)); if(!c) return;
   _editId=id; clearForm();
   document.getElementById('casaFormTitle').textContent='Editar Casa';
   document.getElementById('fDelBtn').style.display='';
