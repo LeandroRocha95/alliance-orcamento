@@ -2111,7 +2111,12 @@ function submitLead(e){
   setTimeout(function() {
     btn.disabled = false;
     txt.textContent = 'Solicitar Orçamento Gratuito';
-    openLojaModal(_pendingLead);
+    try {
+      openLojaModal(_pendingLead);
+    } catch(err) {
+      console.warn('Erro ao abrir modal de lojas:', err);
+      showLeadSuccess();
+    }
   }, 800);
 }
 
