@@ -68,6 +68,13 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 
 .ga-btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;background:linear-gradient(135deg,var(--accent2),var(--accent));border-radius:10px;text-decoration:none;color:#fff;font-size:13px;font-weight:700;margin-top:14px;transition:opacity .15s;}
 .ga-btn:hover{opacity:.88;}
+
+/* Filtros de período */
+.periodo-bar{display:flex;gap:8px;margin-bottom:20px;align-items:center;}
+.periodo-label{font-size:11px;color:var(--muted);font-weight:600;margin-right:4px;}
+.periodo-btn{background:var(--surface);border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:6px 14px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;transition:all .15s;}
+.periodo-btn:hover{border-color:var(--accent);color:var(--accent);}
+.periodo-btn.ativo{background:var(--accent);border-color:var(--accent);color:#fff;}
 .updated{font-size:10px;color:var(--muted);text-align:right;margin-top:10px;opacity:.6;}
 </style>
 </head>
@@ -85,6 +92,15 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 </header>
 
 <div class="main">
+
+  <div class="periodo-bar">
+    <span class="periodo-label">Período:</span>
+    <button class="periodo-btn" onclick="setPeriodo('today','today','Hoje')">Hoje</button>
+    <button class="periodo-btn" onclick="setPeriodo('3daysAgo','today','3 dias')">3 dias</button>
+    <button class="periodo-btn ativo" onclick="setPeriodo('7daysAgo','today','7 dias')">7 dias</button>
+    <button class="periodo-btn" onclick="setPeriodo('14daysAgo','today','15 dias')">15 dias</button>
+    <button class="periodo-btn" onclick="setPeriodo('29daysAgo','today','30 dias')">30 dias</button>
+  </div>
 
   <div class="kpi-grid">
     <div class="kpi rt">
@@ -159,6 +175,25 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 <script>
 const WORKER = 'https://alliance-analytics.leandrorocha1995.workers.dev';
 
+var _periodoStart = '7daysAgo';
+var _periodoEnd   = 'today';
+var _periodoLabel = '7 dias';
+
+function setPeriodo(start, end, label) {
+  _periodoStart = start;
+  _periodoEnd   = end;
+  _periodoLabel = label;
+  // Atualiza botões
+  document.querySelectorAll('.periodo-btn').forEach(function(b) {
+    b.classList.toggle('ativo', b.textContent === label);
+  });
+  // Atualiza labels dos painéis
+  document.querySelectorAll('.panel-period').forEach(function(el) {
+    el.textContent = label;
+  });
+  carregar();
+}
+
 // Tradução e descrição de cada evento
 const EVENTOS_MAP = {
   // Automáticos do GA4
@@ -189,7 +224,8 @@ function set(id, val) {
 }
 
 function carregar() {
-  fetch(WORKER)
+  var url = WORKER + '?start=' + _periodoStart + '&end=' + _periodoEnd;
+  fetch(url)
     .then(function(r){ return r.json(); })
     .then(function(d) {
       set('kpi-rt',       d.realtime);
