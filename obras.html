@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alliance — Obras</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0c0e14;--surface:#13161f;--surface2:#1a1e2b;--surface3:#222638;
+  --border:#2d3348;--accent:#308EEE;--accent2:#1A65B8;
+  --green:#2ecc71;--red:#e74c3c;--yellow:#f5a623;--orange:#e67e22;--purple:#a855f7;
+  --text:#e8eaf0;--muted:#7a7f9a;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;}
+
+/* HEADER */
+.header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;gap:12px;height:54px;position:sticky;top:0;z-index:50;}
+.header-logo{height:28px;background:#fff;border-radius:6px;padding:3px 8px;}
+.header-title{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:3px;}
+.badge{background:rgba(48,142,238,.15);border:1px solid rgba(48,142,238,.3);color:var(--accent);font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:2px 8px;border-radius:20px;}
+.header-right{margin-left:auto;display:flex;gap:8px;align-items:center;}
+.btn-hub{background:none;border:1px solid var(--border);color:var(--muted);border-radius:7px;padding:5px 12px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;text-decoration:none;display:flex;align-items:center;gap:5px;transition:all .15s;cursor:pointer;}
+.btn-hub:hover{border-color:var(--accent);color:var(--accent);}
+.btn-refresh{background:var(--accent);border:none;color:#fff;border-radius:7px;padding:5px 12px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;cursor:pointer;transition:opacity .15s;}
+.btn-refresh:hover{opacity:.85;}
+
+/* MAIN */
+.main{max-width:1200px;margin:0 auto;padding:24px;}
+
+/* FILTROS */
+.filtros{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;align-items:center;}
+.filtro-label{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);}
+.filtro-btn{background:var(--surface);border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:6px 14px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;transition:all .15s;}
+.filtro-btn:hover{border-color:var(--accent);color:var(--accent);}
+.filtro-btn.ativo{background:var(--accent);border-color:var(--accent);color:#fff;}
+
+/* KPIs */
+.kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:24px;}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px;position:relative;overflow:hidden;}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:12px 12px 0 0;}
+.kpi.total::before{background:var(--accent);}
+.kpi.andamento::before{background:var(--yellow);}
+.kpi.concluido::before{background:var(--green);}
+.kpi.atrasado::before{background:var(--red);}
+.kpi.m2::before{background:var(--purple);}
+.kpi-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+.kpi-val{font-family:'Bebas Neue',sans-serif;font-size:38px;letter-spacing:2px;line-height:1;margin-bottom:4px;}
+.kpi.total     .kpi-val{color:var(--accent);}
+.kpi.andamento .kpi-val{color:var(--yellow);}
+.kpi.concluido .kpi-val{color:var(--green);}
+.kpi.atrasado  .kpi-val{color:var(--red);}
+.kpi.m2        .kpi-val{color:var(--purple);}
+.kpi-sub{font-size:11px;color:var(--muted);}
+
+/* LISTA DE OBRAS */
+.obras-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.obras-title{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;}
+.search-wrap{position:relative;}
+.search-inp{background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:7px 12px 7px 32px;font-family:'DM Sans',sans-serif;font-size:12px;width:200px;outline:none;transition:border-color .15s;}
+.search-inp:focus{border-color:var(--accent);}
+.search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:14px;pointer-events:none;}
+
+/* GRUPO */
+.grupo{margin-bottom:20px;}
+.grupo-header{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--surface2);border-radius:10px 10px 0 0;border:1px solid var(--border);border-bottom:none;cursor:pointer;user-select:none;}
+.grupo-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.grupo-nome{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:1.5px;}
+.grupo-count{font-size:11px;color:var(--muted);margin-left:auto;}
+.grupo-chevron{color:var(--muted);transition:transform .2s;font-size:14px;}
+.grupo.collapsed .grupo-chevron{transform:rotate(-90deg);}
+.grupo.collapsed .grupo-body{display:none;}
+.grupo-body{border:1px solid var(--border);border-radius:0 0 10px 10px;overflow:hidden;}
+
+/* TABELA */
+.obras-table{width:100%;border-collapse:collapse;}
+.obras-table th{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);padding:10px 14px;text-align:left;border-bottom:1px solid var(--border);background:var(--surface);white-space:nowrap;}
+.obras-table td{padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.04);font-size:12px;vertical-align:middle;}
+.obras-table tr:last-child td{border-bottom:none;}
+.obras-table tr:hover td{background:rgba(48,142,238,.04);}
+
+.obra-nome{font-weight:700;font-size:13px;color:var(--text);}
+.obra-local{font-size:11px;color:var(--muted);margin-top:2px;}
+
+/* STATUS */
+.status-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;white-space:nowrap;}
+
+/* PROGRESSO */
+.prog-wrap{display:flex;align-items:center;gap:8px;}
+.prog-bar-bg{flex:1;height:6px;background:var(--surface3);border-radius:3px;min-width:60px;}
+.prog-bar{height:100%;border-radius:3px;transition:width .3s;}
+.prog-pct{font-size:11px;font-weight:700;color:var(--muted);width:32px;text-align:right;flex-shrink:0;}
+
+/* DATA */
+.data-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;}
+.data-badge.atrasada{color:var(--red);}
+.data-badge.ok{color:var(--green);}
+.data-badge.neutro{color:var(--muted);}
+
+/* LOADING */
+.loading{text-align:center;padding:60px;color:var(--muted);}
+.spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 12px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+.empty{text-align:center;padding:40px;color:var(--muted);font-size:13px;}
+.updated{font-size:10px;color:var(--muted);text-align:right;margin-top:12px;opacity:.6;}
+
+@keyframes shimmer{0%,100%{opacity:.3;}50%{opacity:1;}}
+.shimmer{display:inline-block;background:var(--surface3);border-radius:4px;animation:shimmer 1.2s ease-in-out infinite;}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <img class="header-logo" src="https://leandrorocha95.github.io/alliance-orcamento/logo_alliance.jpg" alt="Alliance">
+  <div class="header-title">Gestão de Obras</div>
+  <div class="badge">Monday.com</div>
+  <div class="header-right">
+    <button class="btn-refresh" onclick="carregar()">↻ Atualizar</button>
+    <a href="hub.html" class="btn-hub">← Hub</a>
+  </div>
+</header>
+
+<div class="main">
+
+  <!-- Filtros de loja -->
+  <div class="filtros">
+    <span class="filtro-label">Loja:</span>
+    <button class="filtro-btn ativo" onclick="setLoja('todas',this)">Todas</button>
+    <button class="filtro-btn" onclick="setLoja('new_group29179',this)">Joinville</button>
+    <button class="filtro-btn" onclick="setLoja('new_group43041',this)">Tijucas</button>
+    <button class="filtro-btn" onclick="setLoja('group_mkxtr89x',this)">Guaramirim</button>
+    <span class="filtro-label" style="margin-left:12px;">Status:</span>
+    <button class="filtro-btn ativo" onclick="setStatus('todos',this)" id="sf-todos">Todos</button>
+    <button class="filtro-btn" onclick="setStatus('andamento',this)" id="sf-andamento">Em andamento</button>
+    <button class="filtro-btn" onclick="setStatus('concluido',this)" id="sf-concluido">Concluídos</button>
+    <button class="filtro-btn" onclick="setStatus('atrasado',this)" id="sf-atrasado">Atrasados</button>
+  </div>
+
+  <!-- KPIs -->
+  <div class="kpi-grid">
+    <div class="kpi total">
+      <div class="kpi-label">Total de Obras</div>
+      <div class="kpi-val" id="kpi-total"><span class="shimmer" style="width:40px;height:36px;display:block;border-radius:6px;"></span></div>
+      <div class="kpi-sub">contratos</div>
+    </div>
+    <div class="kpi andamento">
+      <div class="kpi-label">Em Andamento</div>
+      <div class="kpi-val" id="kpi-andamento"><span class="shimmer" style="width:40px;height:36px;display:block;border-radius:6px;"></span></div>
+      <div class="kpi-sub">obras ativas</div>
+    </div>
+    <div class="kpi concluido">
+      <div class="kpi-label">Concluídas</div>
+      <div class="kpi-val" id="kpi-concluido"><span class="shimmer" style="width:40px;height:36px;display:block;border-radius:6px;"></span></div>
+      <div class="kpi-sub">finalizadas</div>
+    </div>
+    <div class="kpi atrasado">
+      <div class="kpi-label">Atrasadas</div>
+      <div class="kpi-val" id="kpi-atrasado"><span class="shimmer" style="width:40px;height:36px;display:block;border-radius:6px;"></span></div>
+      <div class="kpi-sub">prazo vencido</div>
+    </div>
+    <div class="kpi m2">
+      <div class="kpi-label">m² em Obras</div>
+      <div class="kpi-val" id="kpi-m2"><span class="shimmer" style="width:60px;height:36px;display:block;border-radius:6px;"></span></div>
+      <div class="kpi-sub">metragem total</div>
+    </div>
+  </div>
+
+  <!-- Lista -->
+  <div class="obras-header">
+    <div class="obras-title">📋 Contratos</div>
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input class="search-inp" id="searchInp" placeholder="Buscar obra..." oninput="filtrarObras()">
+    </div>
+  </div>
+
+  <div id="obras-container">
+    <div class="loading">
+      <div class="spinner"></div>
+      <div>Carregando obras do Monday...</div>
+    </div>
+  </div>
+
+  <div class="updated" id="updated"></div>
+</div>
+
+<script>
+const MONDAY_TOKEN = 'eyJhbGciOiJIUzI1NiJ9.eyJ0aWQiOjY0MTU5OTM4OCwiYWFpIjoxMSwidWlkIjo3MDQwMzEzOCwiaWFkIjoiMjAyNi0wNC0wNFQxNjo0MjoyMC4xMzVaIiwicGVyIjoibWU6d3JpdGUiLCJhY3RpZCI6MjczMDA5MDAsInJnbiI6InVzZTEifQ.-y8koB2eNV4woMPAwacSw1PRXpLdyRS5GSvxTVIq_aw';
+const BOARD_ID     = '8182483753';
+const GRUPOS_ATIVOS = ['new_group29179','new_group43041','group_mkxtr89x'];
+const GRUPOS_NOMES  = {
+  'new_group29179': 'Joinville',
+  'new_group43041': 'Tijucas',
+  'group_mkxtr89x': 'Guaramirim'
+};
+const GRUPO_CORES = {
+  'new_group29179': '#308EEE',
+  'new_group43041': '#2ecc71',
+  'group_mkxtr89x': '#f5a623'
+};
+
+var _todosItens = [];
+var _filtroLoja   = 'todas';
+var _filtroStatus = 'todos';
+
+// ── MONDAY API ────────────────────────────────────────────────
+async function mondayQuery(query) {
+  const r = await fetch('https://api.monday.com/v2', {
+    method: 'POST',
+    headers: {
+      'Authorization': MONDAY_TOKEN,
+      'Content-Type': 'application/json',
+      'API-Version': '2024-01'
+    },
+    body: JSON.stringify({ query })
+  });
+  return r.json();
+}
+
+// ── CARREGAR DADOS ────────────────────────────────────────────
+async function carregar() {
+  document.getElementById('obras-container').innerHTML =
+    '<div class="loading"><div class="spinner"></div><div>Carregando obras...</div></div>';
+
+  try {
+    const query = `{
+      boards(ids: [${BOARD_ID}]) {
+        groups(ids: ${JSON.stringify(GRUPOS_ATIVOS)}) {
+          id title
+          items_page(limit: 100) {
+            items {
+              id name
+              column_values(ids: [
+                "espelho_mkm9fps3",
+                "lookup_mkpnepap",
+                "espelho_mkm9v782",
+                "espelho_1_mkmc2q1b",
+                "texto_mkkznkyv",
+                "lista_suspensa_mkkzq8ff",
+                "n_meros_mkkze5hz"
+              ]) {
+                id text value
+              }
+            }
+          }
+        }
+      }
+    }`;
+
+    const data = await mondayQuery(query);
+    const board = data?.data?.boards?.[0];
+    if (!board) throw new Error('Board não encontrado');
+
+    _todosItens = [];
+    board.groups.forEach(function(grupo) {
+      grupo.items_page.items.forEach(function(item) {
+        var obj = {
+          id:       item.id,
+          nome:     item.name,
+          grupoId:  grupo.id,
+          grupoNome: GRUPOS_NOMES[grupo.id] || grupo.title,
+          status:   '',
+          entrega:  '',
+          progresso: '',
+          encarregado: '',
+          local:    '',
+          vendedor: '',
+          m2:       ''
+        };
+        item.column_values.forEach(function(col) {
+          if (col.id === 'espelho_mkm9fps3') obj.status    = col.text || '';
+          if (col.id === 'lookup_mkpnepap') obj.entrega    = col.text || '';
+          if (col.id === 'espelho_mkm9v782') obj.progresso = col.text || '';
+          if (col.id === 'espelho_1_mkmc2q1b') obj.encarregado = col.text || '';
+          if (col.id === 'texto_mkkznkyv')  obj.local      = col.text || '';
+          if (col.id === 'lista_suspensa_mkkzq8ff') obj.vendedor = col.text || '';
+          if (col.id === 'n_meros_mkkze5hz') obj.m2        = col.text || '';
+        });
+        _todosItens.push(obj);
+      });
+    });
+
+    atualizarKPIs();
+    renderObras();
+
+    var t = new Date();
+    document.getElementById('updated').textContent =
+      'Atualizado às ' + t.toLocaleTimeString('pt-BR');
+
+  } catch(e) {
+    document.getElementById('obras-container').innerHTML =
+      '<div class="empty">❌ Erro ao carregar: ' + e.message + '</div>';
+  }
+}
+
+// ── HELPERS ───────────────────────────────────────────────────
+function isAtrasada(item) {
+  if (!item.entrega) return false;
+  var partes = item.entrega.split('/');
+  if (partes.length === 3) {
+    var d = new Date(partes[2], partes[1]-1, partes[0]);
+    return d < new Date() && !isConcluida(item);
+  }
+  return false;
+}
+
+function isConcluida(item) {
+  var s = (item.status || '').toLowerCase();
+  return s.includes('conclu') || s.includes('entregue') || s.includes('finaliz');
+}
+
+function isAndamento(item) {
+  return !isConcluida(item) && !isAtrasada(item) && item.status !== '';
+}
+
+function getProgresso(item) {
+  var p = parseFloat(item.progresso);
+  return isNaN(p) ? 0 : Math.min(100, Math.max(0, p));
+}
+
+function corStatus(status) {
+  var s = (status || '').toLowerCase();
+  if (s.includes('conclu') || s.includes('entregue')) return { bg:'rgba(46,204,113,.15)', color:'#2ecc71' };
+  if (s.includes('atraso') || s.includes('parad'))    return { bg:'rgba(231,76,60,.15)',  color:'#e74c3c' };
+  if (s.includes('andamento') || s.includes('execu')) return { bg:'rgba(245,166,35,.15)', color:'#f5a623' };
+  if (s.includes('inicio') || s.includes('início'))   return { bg:'rgba(48,142,238,.15)', color:'#308EEE' };
+  if (s === '') return { bg:'rgba(122,127,154,.12)', color:'#7a7f9a' };
+  return { bg:'rgba(168,85,247,.15)', color:'#a855f7' };
+}
+
+function corProgresso(pct) {
+  if (pct >= 80) return '#2ecc71';
+  if (pct >= 50) return '#308EEE';
+  if (pct >= 25) return '#f5a623';
+  return '#e74c3c';
+}
+
+// ── KPIs ──────────────────────────────────────────────────────
+function atualizarKPIs() {
+  var itens = itensFiltrados();
+  var total    = itens.length;
+  var concl    = itens.filter(isConcluida).length;
+  var atras    = itens.filter(isAtrasada).length;
+  var anda     = itens.filter(function(i){ return isAndamento(i) && !isAtrasada(i); }).length;
+  var m2Total  = itens.reduce(function(acc, i) {
+    var v = parseFloat(i.m2); return acc + (isNaN(v) ? 0 : v);
+  }, 0);
+
+  document.getElementById('kpi-total').textContent     = total;
+  document.getElementById('kpi-andamento').textContent = anda;
+  document.getElementById('kpi-concluido').textContent = concl;
+  document.getElementById('kpi-atrasado').textContent  = atras;
+  document.getElementById('kpi-m2').textContent        = m2Total > 0 ? m2Total.toLocaleString('pt-BR') : '—';
+}
+
+// ── FILTROS ───────────────────────────────────────────────────
+function itensFiltrados() {
+  var busca = (document.getElementById('searchInp')?.value || '').toLowerCase();
+  return _todosItens.filter(function(i) {
+    if (_filtroLoja !== 'todas' && i.grupoId !== _filtroLoja) return false;
+    if (_filtroStatus === 'andamento' && !isAndamento(i)) return false;
+    if (_filtroStatus === 'concluido' && !isConcluida(i)) return false;
+    if (_filtroStatus === 'atrasado'  && !isAtrasada(i))  return false;
+    if (busca && !i.nome.toLowerCase().includes(busca) &&
+        !i.local.toLowerCase().includes(busca) &&
+        !i.encarregado.toLowerCase().includes(busca)) return false;
+    return true;
+  });
+}
+
+function setLoja(id, btn) {
+  _filtroLoja = id;
+  document.querySelectorAll('.filtros .filtro-btn').forEach(function(b) {
+    if (['Todas','Joinville','Tijucas','Guaramirim'].includes(b.textContent)) {
+      b.classList.toggle('ativo', b === btn);
+    }
+  });
+  atualizarKPIs();
+  renderObras();
+}
+
+function setStatus(id, btn) {
+  _filtroStatus = id;
+  ['todos','andamento','concluido','atrasado'].forEach(function(s) {
+    var el = document.getElementById('sf-' + s);
+    if (el) el.classList.toggle('ativo', s === id);
+  });
+  atualizarKPIs();
+  renderObras();
+}
+
+function filtrarObras() {
+  atualizarKPIs();
+  renderObras();
+}
+
+// ── RENDER ────────────────────────────────────────────────────
+function renderObras() {
+  var itens = itensFiltrados();
+  var container = document.getElementById('obras-container');
+
+  if (!itens.length) {
+    container.innerHTML = '<div class="empty">Nenhuma obra encontrada.</div>';
+    return;
+  }
+
+  // Agrupa por loja
+  var porGrupo = {};
+  GRUPOS_ATIVOS.forEach(function(g) { porGrupo[g] = []; });
+  itens.forEach(function(i) {
+    if (porGrupo[i.grupoId]) porGrupo[i.grupoId].push(i);
+  });
+
+  var html = '';
+  GRUPOS_ATIVOS.forEach(function(gId) {
+    var lista = porGrupo[gId];
+    if (!lista.length && _filtroLoja !== 'todas') return;
+    if (!lista.length) return;
+
+    var cor = GRUPO_CORES[gId] || '#308EEE';
+    html += '<div class="grupo" id="grupo-' + gId + '">';
+    html += '<div class="grupo-header" onclick="toggleGrupo(\'' + gId + '\')">';
+    html += '<div class="grupo-dot" style="background:' + cor + ';"></div>';
+    html += '<div class="grupo-nome">📍 ' + (GRUPOS_NOMES[gId] || gId) + '</div>';
+    html += '<div class="grupo-count">' + lista.length + ' obra' + (lista.length !== 1 ? 's' : '') + '</div>';
+    html += '<div class="grupo-chevron">▾</div>';
+    html += '</div>';
+    html += '<div class="grupo-body">';
+    html += '<table class="obras-table">';
+    html += '<thead><tr>';
+    html += '<th>Obra / Local</th>';
+    html += '<th>Status</th>';
+    html += '<th>Progresso</th>';
+    html += '<th>Entrega</th>';
+    html += '<th>Encarregado</th>';
+    html += '<th>Vendedor</th>';
+    html += '<th>m²</th>';
+    html += '</tr></thead><tbody>';
+
+    lista.forEach(function(item) {
+      var st = corStatus(item.status);
+      var pct = getProgresso(item);
+      var corProg = corProgresso(pct);
+      var atras = isAtrasada(item);
+      var concl = isConcluida(item);
+
+      var dataClass = atras ? 'atrasada' : concl ? 'ok' : 'neutro';
+      var dataIcon  = atras ? '⚠️' : concl ? '✅' : '📅';
+
+      html += '<tr>';
+      // Nome + Local
+      html += '<td style="max-width:220px;">';
+      html += '<div class="obra-nome">' + escHtml(item.nome) + '</div>';
+      if (item.local) html += '<div class="obra-local">📍 ' + escHtml(item.local) + '</div>';
+      html += '</td>';
+      // Status
+      html += '<td><span class="status-badge" style="background:' + st.bg + ';color:' + st.color + ';">';
+      html += escHtml(item.status || '—') + '</span></td>';
+      // Progresso
+      html += '<td style="min-width:120px;">';
+      html += '<div class="prog-wrap">';
+      html += '<div class="prog-bar-bg"><div class="prog-bar" style="width:' + pct + '%;background:' + corProg + ';"></div></div>';
+      html += '<div class="prog-pct">' + (pct > 0 ? pct + '%' : '—') + '</div>';
+      html += '</div></td>';
+      // Entrega
+      html += '<td><span class="data-badge ' + dataClass + '">' + dataIcon + ' ' + escHtml(item.entrega || '—') + '</span></td>';
+      // Encarregado
+      html += '<td style="font-size:12px;">' + escHtml(item.encarregado || '—') + '</td>';
+      // Vendedor
+      html += '<td style="font-size:12px;">' + escHtml(item.vendedor || '—') + '</td>';
+      // m²
+      html += '<td style="font-family:\'Bebas Neue\',sans-serif;font-size:16px;color:var(--purple);">';
+      html += (item.m2 ? item.m2 + ' m²' : '—') + '</td>';
+      html += '</tr>';
+    });
+
+    html += '</tbody></table></div></div>';
+  });
+
+  container.innerHTML = html;
+}
+
+function toggleGrupo(id) {
+  var el = document.getElementById('grupo-' + id);
+  if (el) el.classList.toggle('collapsed');
+}
+
+function escHtml(s) {
+  var d = document.createElement('div');
+  d.textContent = String(s || '');
+  return d.innerHTML;
+}
+
+// Init
+document.addEventListener('DOMContentLoaded', carregar);
+</script>
+</body>
+</html>
