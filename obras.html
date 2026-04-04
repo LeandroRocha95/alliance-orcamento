@@ -81,12 +81,10 @@ tr:hover td{background:rgba(48,142,238,.03);}
 .pw{display:flex;align-items:center;gap:5px;}
 .pb{flex:1;height:6px;background:var(--surface3);border-radius:3px;min-width:60px;}
 .pf{height:100%;border-radius:3px;}
-.pp{font-size:10px;font-weight:700;color:var(--muted);width:32px;text-align:right;flex-shrink:0;}
+.pp{font-size:11px;font-weight:700;color:var(--muted);width:32px;text-align:right;flex-shrink:0;}
 .dok{color:var(--green);}
 .dat{color:var(--red);}
 .dne{color:var(--muted);}
-.etapas{display:flex;gap:3px;flex-wrap:wrap;}
-.etapa-dot{width:10px;height:10px;border-radius:2px;title:'';}
 .loading{text-align:center;padding:50px;color:var(--muted);}
 .spin{width:26px;height:26px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 10px;}
 @keyframes spin{to{transform:rotate(360deg);}}
@@ -128,7 +126,7 @@ tr:hover td{background:rgba(48,142,238,.03);}
   </div>
   <div class="cfg-panel" id="cfgPanel">
     <div class="cfg-title">⚙️ Configurar Colunas</div>
-    <div class="cfg-sub">Marque as colunas que quer exibir e arraste para reordenar. 📋 = Contratos · 📊 = Cronograma</div>
+    <div class="cfg-sub">Marque e arraste para reordenar. 📊 = Cronograma · 📋 = Contrato</div>
     <div class="cfg-grid" id="cfgCols"></div>
     <div class="cfg-acts">
       <button class="btn pri" onclick="salvarCfg()">💾 Salvar</button>
@@ -145,209 +143,256 @@ tr:hover td{background:rgba(48,142,238,.03);}
 </div>
 <script>
 const TOK='eyJhbGciOiJIUzI1NiJ9.eyJ0aWQiOjY0MTU5OTM4OCwiYWFpIjoxMSwidWlkIjo3MDQwMzEzOCwiaWFkIjoiMjAyNi0wNC0wNFQxNjo0MjoyMC4xMzVaIiwicGVyIjoibWU6d3JpdGUiLCJhY3RpZCI6MjczMDA5MDAsInJnbiI6InVzZTEifQ.-y8koB2eNV4woMPAwacSw1PRXpLdyRS5GSvxTVIq_aw';
+
+// Boards
 const BOARD_CONTRATOS='8182483753';
-const GCS={ 'new_group29179':{nome:'Joinville',loja:'JOI',cor:'#308EEE'}, 'new_group43041':{nome:'Tijucas',loja:'TIJ',cor:'#2ecc71'}, 'group_mkxtr89x':{nome:'Guaramirim',loja:'GUA',cor:'#f5a623'} };
-const BOARDS_CRON={ JOI:'8189168336', TIJ:'9465760121', GUA:'18383178942' };
+const GRUPOS_CONTRATOS={
+  'new_group29179':{nome:'Joinville',loja:'JOI',cor:'#308EEE'},
+  'new_group43041':{nome:'Tijucas',  loja:'TIJ',cor:'#2ecc71'},
+  'group_mkxtr89x':{nome:'Guaramirim',loja:'GUA',cor:'#f5a623'}
+};
+const BOARDS_CRON={JOI:'8189168336',TIJ:'9465760121',GUA:'18383178942'};
+// Grupos a excluir do cronograma (templates)
+const GRUPOS_EXCLUIR=['group_mm1m6f7z','group_mm196hr2','group_mm08zqec'];
+
 const CFG_KEY='alliance_obras_v4';
 
 // Colunas disponíveis
 const COLS=[
-  {id:'nome',        label:'Nome da Obra',   src:'c', tipo:'text',   vis:true, ord:0},
-  {id:'local',       label:'Local',          src:'c', tipo:'text',   vis:true, ord:1},
-  {id:'status',      label:'Status',         src:'k', tipo:'status', vis:true, ord:2},
-  {id:'progresso',   label:'Progresso',      src:'k', tipo:'prog',   vis:true, ord:3},
-  {id:'prazo',       label:'Prazo Real',     src:'k', tipo:'text',   vis:true, ord:4},
-  {id:'entrega',     label:'Entrega Prevista',src:'k',tipo:'date',   vis:true, ord:5},
-  {id:'encarregado', label:'Encarregado',    src:'k', tipo:'text',   vis:true, ord:6},
-  {id:'vendedor',    label:'Vendedor',       src:'c', tipo:'text',   vis:true, ord:7},
-  {id:'m2',          label:'m² Total',       src:'c', tipo:'num',    vis:true, ord:8},
-  {id:'etapas',      label:'Etapas',         src:'k', tipo:'etapas', vis:false,ord:9},
-  {id:'data_venda',  label:'Data Venda',     src:'c', tipo:'text',   vis:false,ord:10},
-  {id:'estrutura',   label:'Estrutura',      src:'c', tipo:'text',   vis:false,ord:11},
-  {id:'paredes',     label:'Paredes',        src:'c', tipo:'text',   vis:false,ord:12},
-  {id:'telha',       label:'Telha',          src:'c', tipo:'text',   vis:false,ord:13},
-  {id:'ceramica',    label:'Cerâmica',       src:'c', tipo:'text',   vis:false,ord:14},
-  {id:'esquadrias',  label:'Esquadrias',     src:'c', tipo:'text',   vis:false,ord:15},
-  {id:'pintura',     label:'Pintura',        src:'c', tipo:'text',   vis:false,ord:16},
-  {id:'pgto',        label:'Pgto Cliente',   src:'c', tipo:'text',   vis:false,ord:17},
-  {id:'prioridade',  label:'Prioridade',     src:'c', tipo:'status', vis:false,ord:18},
-  {id:'regularizacao',label:'C/ Regularização',src:'c',tipo:'text', vis:false,ord:19},
+  {id:'nome',          label:'Obra / Cliente',    src:'c', tipo:'text',    vis:true, ord:0},
+  {id:'local',         label:'Local da Obra',      src:'c', tipo:'text',    vis:true, ord:1},
+  {id:'status',        label:'Status da Obra',     src:'k', tipo:'status',  vis:true, ord:2},
+  {id:'progresso',     label:'Progresso',          src:'k', tipo:'progress',vis:true, ord:3},
+  {id:'prazo',         label:'Prazo',              src:'k', tipo:'timeline',vis:true, ord:4},
+  {id:'entrega',       label:'Data de Entrega',    src:'k', tipo:'date',    vis:true, ord:5},
+  {id:'encarregado',   label:'Encarregado',        src:'k', tipo:'people',  vis:true, ord:6},
+  {id:'vendedor',      label:'Vendedor',           src:'c', tipo:'dropdown',vis:true, ord:7},
+  {id:'m2',            label:'m² Total',           src:'c', tipo:'numbers', vis:true, ord:8},
+  {id:'data_venda',    label:'Data Venda',         src:'c', tipo:'date',    vis:false,ord:9},
+  {id:'regularizacao', label:'C/ Regularização',   src:'c', tipo:'dropdown',vis:false,ord:10},
+  {id:'estrutura',     label:'Estrutura',          src:'c', tipo:'dropdown',vis:false,ord:11},
+  {id:'paredes',       label:'Paredes',            src:'c', tipo:'dropdown',vis:false,ord:12},
+  {id:'forro',         label:'Forro',              src:'c', tipo:'dropdown',vis:false,ord:13},
+  {id:'ceramica_mat',  label:'Cerâmica (material)',src:'c', tipo:'dropdown',vis:false,ord:14},
+  {id:'telha',         label:'Telha',              src:'c', tipo:'dropdown',vis:false,ord:15},
+  {id:'pgto',          label:'Pgto do Cliente',    src:'c', tipo:'dropdown',vis:false,ord:16},
 ];
 
-var _cfg=loadCfg(),_itens=[],_fLoja='todas',_fStatus='todos',_drag=null;
+var _cfg=loadCfg(), _itens=[], _fLoja='todas', _fStatus='todos', _drag=null;
 
-function loadCfg(){try{var s=localStorage.getItem(CFG_KEY);if(s)return JSON.parse(s);}catch(e){}return COLS.map(function(c){return{id:c.id,vis:c.vis,ord:c.ord};});}
+function loadCfg(){
+  try{var s=localStorage.getItem(CFG_KEY);if(s)return JSON.parse(s);}catch(e){}
+  return COLS.map(function(c){return{id:c.id,vis:c.vis,ord:c.ord};});
+}
 function saveCfg(){localStorage.setItem(CFG_KEY,JSON.stringify(_cfg));}
 function resetCfg(){_cfg=COLS.map(function(c){return{id:c.id,vis:c.vis,ord:c.ord};});localStorage.removeItem(CFG_KEY);renderCfg();renderObras();}
-function colsAtivas(){return _cfg.slice().sort(function(a,b){return a.ord-b.ord;}).filter(function(c){return c.vis;}).map(function(c){return COLS.find(function(t){return t.id===c.id;});}).filter(Boolean);}
-
+function colsAtivas(){
+  return _cfg.slice().sort(function(a,b){return a.ord-b.ord;})
+    .filter(function(c){return c.vis;})
+    .map(function(c){return COLS.find(function(t){return t.id===c.id;});})
+    .filter(Boolean);
+}
 function toggleCfg(){var el=document.getElementById('cfgPanel');if(el.classList.toggle('open'))renderCfg();}
 function renderCfg(){
-  var ord=_cfg.slice().sort(function(a,b){return a.ord-b.ord;});
-  document.getElementById('cfgCols').innerHTML=ord.map(function(cfg){
+  var ordered=_cfg.slice().sort(function(a,b){return a.ord-b.ord;});
+  document.getElementById('cfgCols').innerHTML=ordered.map(function(cfg){
     var col=COLS.find(function(c){return c.id===cfg.id;});if(!col)return'';
-    return'<div class="ci'+(cfg.vis?' on':'')+'" data-id="'+col.id+'" draggable="true" ondragstart="dS(event)" ondragover="dO(event)" ondrop="dD(event)" ondragend="dE(event)">'
-      +'<span class="ci-h">⠿</span><input type="checkbox" class="ci-cb"'+(cfg.vis?' checked':'')+' onchange="this.closest(\'.ci\').classList.toggle(\'on\',this.checked)">'
-      +'<span class="ci-n">'+col.label+'</span><span class="ci-t">'+(col.src==='k'?'📊':'📋')+'</span></div>';
+    return'<div class="ci'+(cfg.vis?' on':'')+'" data-id="'+col.id+'" draggable="true"'
+      +' ondragstart="dS(event)" ondragover="dO(event)" ondrop="dD(event)" ondragend="dE(event)">'
+      +'<span class="ci-h">⠿</span>'
+      +'<input type="checkbox" class="ci-cb"'+(cfg.vis?' checked':'')+' onchange="this.closest(\'.ci\').classList.toggle(\'on\',this.checked)">'
+      +'<span class="ci-n">'+col.label+'</span>'
+      +'<span class="ci-t">'+(col.src==='k'?'📊':'📋')+'</span></div>';
   }).join('');
 }
-function salvarCfg(){_cfg=Array.from(document.querySelectorAll('.ci')).map(function(el,i){return{id:el.dataset.id,vis:el.querySelector('.ci-cb').checked,ord:i};});saveCfg();toggleCfg();renderObras();}
+function salvarCfg(){
+  _cfg=Array.from(document.querySelectorAll('.ci')).map(function(el,i){
+    return{id:el.dataset.id,vis:el.querySelector('.ci-cb').checked,ord:i};
+  });
+  saveCfg();toggleCfg();renderObras();
+}
 function dS(e){_drag=e.currentTarget;e.currentTarget.classList.add('drag');e.dataTransfer.effectAllowed='move';}
 function dO(e){e.preventDefault();}
-function dD(e){e.preventDefault();if(_drag&&_drag!==e.currentTarget){var p=e.currentTarget.parentNode,its=Array.from(p.children);if(its.indexOf(_drag)<its.indexOf(e.currentTarget))p.insertBefore(_drag,e.currentTarget.nextSibling);else p.insertBefore(_drag,e.currentTarget);}}
+function dD(e){
+  e.preventDefault();
+  if(_drag&&_drag!==e.currentTarget){
+    var p=e.currentTarget.parentNode,its=Array.from(p.children);
+    if(its.indexOf(_drag)<its.indexOf(e.currentTarget))p.insertBefore(_drag,e.currentTarget.nextSibling);
+    else p.insertBefore(_drag,e.currentTarget);
+  }
+}
 function dE(e){e.currentTarget.classList.remove('drag');_drag=null;}
 
-async function mq(q){const r=await fetch('https://api.monday.com/v2',{method:'POST',headers:{'Authorization':TOK,'Content-Type':'application/json','API-Version':'2024-01'},body:JSON.stringify({query:q})});return r.json();}
-
-// IDs dos campos de etapas no cronograma
-const ETAPA_IDS=['status_1_mkm930w3','status_1_mkm9tq47','color_mkm9f6nt','color_mkm9f3bh','dup__of_frontal_mkm9vmbb','dup__of_hidraulica_mkm9nq1h','dup__of_hidraulica_mkm9asxm','dup__of_el_trica_mkm96ht2','dup__of_forro_plano_mkm9rzb0','color_mkm9j49c','dup__of_acabamentos_mkm9m57c','dup__of_limpeza_de_obra_mkm9abcz','dup__of_limpeza_de_obra_mkm9p38y'];
-const ETAPA_NOMES=['Fundação','Alvenaria','Estrutura/Cobertura','Frontal/Forro','Hidráulica','Cerâmica','Elétrica','Forro Plano','Esquadrias','Acabamentos','Limpeza','Entrega','Pintura'];
+async function mq(q){
+  const r=await fetch('https://api.monday.com/v2',{method:'POST',
+    headers:{'Authorization':TOK,'Content-Type':'application/json','API-Version':'2024-01'},
+    body:JSON.stringify({query:q})});
+  return r.json();
+}
 
 async function carregar(){
   document.getElementById('obras-c').innerHTML='<div class="loading"><div class="spin"></div><div>Carregando obras...</div></div>';
   try{
-    // Query contratos
-    var cQ=`{boards(ids:[${BOARD_CONTRATOS}]){groups(ids:${JSON.stringify(Object.keys(GCS))}){id items_page(limit:100){items{id name column_values(ids:["texto_mkkznkyv","n_meros_mkkze5hz","lista_suspensa_mkkzq8ff","data_mkmgvcak","dropdown_mm09adag","lista_suspensa_mkkz9qah","lista_suspensa_mkkzzgzs","lista_suspensa_mkkzr4hj","lista_suspensa_mkkzm3vq","lista_suspensa_mkkz26ta","lista_suspensa_mkkz7cbs","lista_suspensa_mkkz9c50","lista_suspensa_mkkzyky0","dup__of_vendedor_mkmcjeft","priority_1","pgto_cliente_mkkzfehp"]){id text value ... on StatusValue{label} ... on DropdownValue{values{label}}}}}}}}`;
+    // Query 1: Board de Contratos
+    var contratosQ=`{boards(ids:[${BOARD_CONTRATOS}]){groups(ids:${JSON.stringify(Object.keys(GRUPOS_CONTRATOS))}){id items_page(limit:100){items{id name column_values(ids:["texto_mkkznkyv","n_meros_mkkze5hz","lista_suspensa_mkkzq8ff","data_mkmgvcak","dropdown_mm09adag","lista_suspensa_mkkz9qah","lista_suspensa_mkkzzgzs","lista_suspensa_mkkzr4hj","lista_suspensa_mkkzm3vq","lista_suspensa_mkkzyky0","pgto_cliente_mkkzfehp","dup__of_vendedor_mkmcjeft"]){id text value ... on StatusValue{label} ... on DropdownValue{values{label}}}}}}}}`;
 
-    // IDs cronograma
-    var allCronIds=['feito_mkm0ha0e','pessoas_mkmcn7as','cronograma_mkm99srh','data_mkmpchmz'].concat(ETAPA_IDS);
-    var allCronBoards=Object.values(BOARDS_CRON).join(',');
-    var kQ=`{boards(ids:[${allCronBoards}]){id groups{id title items_page(limit:50){items{id name column_values(ids:[${allCronIds.map(function(x){return'"'+x+'"';}).join(',')}]){id type text value ... on StatusValue{label} ... on PeopleValue{persons_and_teams{id}}}}}}}}}`;
+    // Query 2: Boards de Cronograma — busca todos os grupos e itens
+    var cronQ=`{boards(ids:[${Object.values(BOARDS_CRON).join(',')}]){id groups{id title items_page(limit:20){items{id name column_values(ids:["feito_mkm0ha0e","pessoas_mkmcn7as","cronograma_mkm99srh","data_mkmpchmz"]){id text value ... on StatusValue{label}}}}}}}`;
 
-    var [cR,kR]=await Promise.all([mq(cQ),mq(kQ)]);
+    var [contratosR, cronR]=await Promise.all([mq(contratosQ),mq(cronQ)]);
 
-    // Mapa de usuários (IDs → nomes simplificados)
-    // Ana Cristina=71189836, Reginaldo=71169160
-    var PESSOAS={71189836:'Ana Cristina',71169160:'Reginaldo',70403138:'Leandro',84869668:'Thiago',75672470:'Eduardo'};
-
-    // Indexa cronograma por título do grupo (nome da obra)
-    var bLojaMap={'8189168336':'JOI','9465760121':'TIJ','18383178942':'GUA'};
-    var cronIdx={};
-    (kR?.data?.boards||[]).forEach(function(board){
-      var loja=bLojaMap[board.id]||'JOI';
-      (board.groups||[]).forEach(function(grupo){
-        var obraKey=norm(grupo.title);
-        // Item principal = tem "4." no nome
-        var itemPrincipal=grupo.items_page.items.find(function(i){return i.name.match(/^4\./)||i.name.match(/^\d+\.\s+(?!Planejamento|Compras|Custo|Projetos|Gestão)/);});
-        if(!itemPrincipal)itemPrincipal=grupo.items_page.items[0];
-        var todosStatus=grupo.items_page.items.map(function(i){
-          var s=i.column_values.find(function(c){return c.id==='feito_mkm0ha0e';});
-          return s?s.label||s.text||'':'';
-        }).filter(function(s){return s&&!s.includes('Espera');});
-        var concluidos=todosStatus.filter(function(s){return s.toLowerCase().includes('conclu');}).length;
-        var progresso=todosStatus.length>0?Math.round(concluidos/todosStatus.length*100):0;
-
-        var obj={status:'',prazo:'',entrega:'',encarregado:'',etapas:[],progresso:progresso};
-        if(itemPrincipal){
-          itemPrincipal.column_values.forEach(function(col){
-            if(col.id==='feito_mkm0ha0e')obj.status=col.label||col.text||'';
-            if(col.id==='cronograma_mkm99srh'){
-              try{var v=JSON.parse(col.value||'{}');if(v.from&&v.to)obj.prazo=fmtD(v.from)+' → '+fmtD(v.to);}catch(e){obj.prazo=col.text||'';}
-            }
-            if(col.id==='data_mkmpchmz'){
-              try{var v2=JSON.parse(col.value||'{}');obj.entrega=fmtD(v2.date||col.text||'');}catch(e){obj.entrega=fmtD(col.text||'');}
-            }
-            if(col.id==='pessoas_mkmcn7as'){
-              try{
-                var v3=JSON.parse(col.value||'{}');
-                var ids=(v3.personsAndTeams||[]).map(function(p){return p.id;});
-                obj.encarregado=ids.map(function(id){return PESSOAS[id]||('ID:'+id);}).join(', ');
-              }catch(e){obj.encarregado=col.text||'';}
-            }
-          });
-        }
-        // Etapas — pega de todos os itens que têm esses status
-        ETAPA_IDS.forEach(function(eid,ei){
-          var vals=grupo.items_page.items.map(function(item){
-            var c=item.column_values.find(function(x){return x.id===eid;});
-            return c?c.label||c.text||'':'';
-          }).filter(Boolean);
-          obj.etapas.push({nome:ETAPA_NOMES[ei],status:vals[0]||''});
-        });
-
-        if(!cronIdx[loja])cronIdx[loja]={};
-        cronIdx[loja][obraKey]=obj;
-      });
-    });
-
-    // Monta itens finais
-    _itens=[];
-    var cBoard=cR?.data?.boards?.[0];
-    if(!cBoard)throw new Error('Board de contratos não encontrado');
-    cBoard.groups.forEach(function(grupo){
-      var gInfo=GCS[grupo.id];if(!gInfo)return;
-      grupo.items_page.items.forEach(function(item){
-        var obj={id:item.id,name:item.name,loja:gInfo.loja,_c:{nome:item.name}};
-        // Campos do contrato
+    // Índice de contratos por nome normalizado
+    var contratosPorNome={};
+    var board=contratosR?.data?.boards?.[0];
+    if(!board)throw new Error('Board de contratos não encontrado');
+    board.groups.forEach(function(g){
+      var gInfo=GRUPOS_CONTRATOS[g.id];if(!gInfo)return;
+      g.items_page.items.forEach(function(item){
+        var obj={grupoId:g.id,loja:gInfo.loja,_c:{}};
         item.column_values.forEach(function(col){
           var v=col.label||'';
           if(!v&&col.values&&col.values.length)v=col.values.map(function(x){return x.label;}).join(', ');
           if(!v)v=col.text||'';
-          var mapa={
-            'texto_mkkznkyv':'local','n_meros_mkkze5hz':'m2','lista_suspensa_mkkzq8ff':'vendedor',
-            'data_mkmgvcak':'data_venda','dropdown_mm09adag':'regularizacao',
-            'lista_suspensa_mkkz9qah':'estrutura','lista_suspensa_mkkzzgzs':'paredes',
-            'lista_suspensa_mkkzr4hj':'telha_c','lista_suspensa_mkkzm3vq':'ceramica',
-            'lista_suspensa_mkkz26ta':'loucas','lista_suspensa_mkkz7cbs':'box',
-            'lista_suspensa_mkkz9c50':'esquadrias','lista_suspensa_mkkzyky0':'telha',
-            'dup__of_vendedor_mkmcjeft':'pintura','priority_1':'prioridade','pgto_cliente_mkkzfehp':'pgto'
-          };
-          if(mapa[col.id])obj._c[mapa[col.id]]=v;
+          obj._c[col.id]=v;
         });
-        // Dados do cronograma — tenta cruzar pelo nome do contrato
-        var key=norm(item.name);
-        var cron=(cronIdx[gInfo.loja]&&cronIdx[gInfo.loja][key])||null;
-        // Tenta busca parcial se não achou direto
-        if(!cron&&cronIdx[gInfo.loja]){
-          var keys=Object.keys(cronIdx[gInfo.loja]);
-          var found=keys.find(function(k){return k.includes(key.split(' ')[0]+'  '+key.split(' ')[1])||key.includes(k.split(' ')[0]);});
-          if(found)cron=cronIdx[gInfo.loja][found];
+        contratosPorNome[norm(item.name)]=obj;
+      });
+    });
+
+    // Mapa board → loja
+    var boardLojaMap={
+      '8189168336':'JOI',
+      '9465760121':'TIJ',
+      '18383178942':'GUA'
+    };
+
+    // Processa cronograma: cada grupo = uma obra
+    _itens=[];
+    (cronR?.data?.boards||[]).forEach(function(cronBoard){
+      var loja=boardLojaMap[cronBoard.id];if(!loja)return;
+      cronBoard.groups.forEach(function(grupo){
+        // Pula templates
+        if(GRUPOS_EXCLUIR.includes(grupo.id))return;
+        if(grupo.title.startsWith('.Template')||grupo.title.startsWith('Template'))return;
+
+        var items=grupo.items_page.items;
+        // Item principal = começa com "4." ou tem Contrato preenchido
+        var itemPrincipal=items.find(function(it){return /^4\./.test(it.name);})||items[0];
+        if(!itemPrincipal)return;
+
+        // Calcula progresso: itens com status Concluído / total de itens com status
+        var statusItems=items.filter(function(it){
+          return it.column_values.some(function(cv){return cv.id==='feito_mkm0ha0e'&&cv.text;});
+        });
+        var concluidos=statusItems.filter(function(it){
+          return it.column_values.some(function(cv){
+            return cv.id==='feito_mkm0ha0e'&&(cv.text||'').toLowerCase().includes('conclu');
+          });
+        }).length;
+        var progresso=statusItems.length>0?Math.round(concluidos/statusItems.length*100):0;
+
+        // Extrai dados do item principal
+        var getCV=function(item,id){
+          var col=item.column_values.find(function(c){return c.id===id;});
+          return col?(col.label||col.text||''):'';
+        };
+        var status=getCV(itemPrincipal,'feito_mkm0ha0e');
+        var encarregado=getCV(itemPrincipal,'pessoas_mkmcn7as');
+        var prazoRaw=getCV(itemPrincipal,'cronograma_mkm99srh');
+        var entregaRaw=getCV(itemPrincipal,'data_mkmpchmz');
+
+        // Parse prazo: "2026-03-24 - 2026-07-21"
+        var prazo='',entrega='';
+        if(prazoRaw){
+          var parts=prazoRaw.split(' - ');
+          prazo=fmtD(parts[0])+(parts[1]?' → '+fmtD(parts[1]):'');
+          entrega=parts[1]?fmtD(parts[1]):fmtD(parts[0]);
         }
-        if(cron){
-          obj._c.status=cron.status;
-          obj._c.progresso=cron.progresso;
-          obj._c.prazo=cron.prazo;
-          obj._c.entrega=cron.entrega;
-          obj._c.encarregado=cron.encarregado;
-          obj._c.etapas=cron.etapas;
+        if(entregaRaw)entrega=fmtD(entregaRaw)||entrega;
+
+        // Nome da obra = título do grupo
+        var nomeObra=grupo.title;
+
+        // Tenta cruzar com contrato pelo nome do cliente
+        // O título do grupo costuma ter formato "Nome Cliente - Local"
+        var contrato=null;
+        var nomeNorm=norm(nomeObra);
+        // Tenta match direto
+        if(contratosPorNome[nomeNorm]){
+          contrato=contratosPorNome[nomeNorm];
+        } else {
+          // Tenta match parcial por nome
+          Object.keys(contratosPorNome).forEach(function(k){
+            if(!contrato&&(nomeNorm.includes(k)||k.includes(nomeNorm.split('-')[0].trim()))){
+              contrato=contratosPorNome[k];
+            }
+          });
         }
+
+        // Só inclui se for da loja correta (ou sem contrato mas do board certo)
+        if(contrato&&contrato.loja!==loja)return;
+
+        var obj={
+          id:itemPrincipal.id,
+          nome:nomeObra,
+          loja:loja,
+          status:status,
+          progresso:progresso,
+          prazo:prazo,
+          entrega:entrega,
+          encarregado:encarregado,
+          _c:{
+            nome:nomeObra,
+            status:status,
+            progresso:String(progresso),
+            prazo:prazo,
+            entrega:entrega,
+            encarregado:encarregado,
+            vendedor:     contrato?contrato._c['lista_suspensa_mkkzq8ff']||contrato._c['dup__of_vendedor_mkmcjeft']||'':'',
+            m2:           contrato?contrato._c['n_meros_mkkze5hz']||'':'',
+            local:        contrato?contrato._c['texto_mkkznkyv']||'':'',
+            data_venda:   contrato?fmtD(contrato._c['data_mkmgvcak'])||'':'',
+            regularizacao:contrato?contrato._c['dropdown_mm09adag']||'':'',
+            estrutura:    contrato?contrato._c['lista_suspensa_mkkz9qah']||'':'',
+            paredes:      contrato?contrato._c['lista_suspensa_mkkzzgzs']||'':'',
+            forro:        contrato?contrato._c['lista_suspensa_mkkzr4hj']||'':'',
+            ceramica_mat: contrato?contrato._c['lista_suspensa_mkkzm3vq']||'':'',
+            telha:        contrato?contrato._c['lista_suspensa_mkkzyky0']||'':'',
+            pgto:         contrato?contrato._c['pgto_cliente_mkkzfehp']||'':'',
+          }
+        };
         _itens.push(obj);
       });
     });
 
     updKPIs();renderObras();
     document.getElementById('upd').textContent='Atualizado às '+new Date().toLocaleTimeString('pt-BR');
-  }catch(e){document.getElementById('obras-c').innerHTML='<div class="empty">❌ Erro: '+e.message+'</div>';}
+  }catch(e){
+    document.getElementById('obras-c').innerHTML='<div class="empty">❌ Erro: '+e.message+'</div>';
+  }
 }
 
 function norm(s){return(s||'').toLowerCase().trim().replace(/\s+/g,' ');}
-function fmtD(s){if(!s)return'';var p=s.split('-');return p.length===3?p[2]+'/'+p[1]+'/'+p[0]:s;}
+function fmtD(s){if(!s)return'';var p=s.trim().split('-');return p.length===3?p[2]+'/'+p[1]+'/'+p[0]:s;}
 function gv(item,id){return item._c[id]||'';}
-function gn(item){return gv(item,'nome');}
 
-function isCon(i){var s=(gv(i,'status')||'').toLowerCase();return s.includes('conclu')||s.includes('entregue')||s.includes('done');}
+function isCon(i){var s=(i.status||'').toLowerCase();return s.includes('conclu')||s.includes('entregue')||s.includes('done');}
 function isAtr(i){
   if(isCon(i))return false;
-  var d=gv(i,'entrega');if(!d)return false;
+  var d=i.entrega;if(!d)return false;
   var p=d.split('/');return p.length===3&&new Date(p[2],p[1]-1,p[0])<new Date();
 }
-function isAnd(i){return!isCon(i)&&!isAtr(i);}
-function cSt(s){var t=(s||'').toLowerCase();
+function isAnd(i){return!isCon(i)&&!isAtr(i)&&i.status!=='';}
+function cSt(s){
+  var t=(s||'').toLowerCase();
   if(t.includes('conclu')||t.includes('entregue'))return{b:'rgba(46,204,113,.15)',c:'#2ecc71'};
-  if(t.includes('atraso')||t.includes('parad')||t.includes('espera'))return{b:'rgba(231,76,60,.15)',c:'#e74c3c'};
-  if(t.includes('andamento')||t.includes('execu')||t.includes('programado'))return{b:'rgba(245,166,35,.15)',c:'#f5a623'};
-  if(t.includes('iniciar')||t.includes('início')||t.includes('iniciar'))return{b:'rgba(48,142,238,.15)',c:'#308EEE'};
-  if(!t)return{b:'rgba(122,127,154,.1)',c:'#7a7f9a'};
+  if(t.includes('atraso')||t.includes('parad'))   return{b:'rgba(231,76,60,.15)', c:'#e74c3c'};
+  if(t.includes('andamento')||t.includes('execu'))return{b:'rgba(245,166,35,.15)',c:'#f5a623'};
+  if(t.includes('espera')||t.includes('program')) return{b:'rgba(48,142,238,.15)',c:'#308EEE'};
+  if(t.includes('iniciar'))                       return{b:'rgba(122,127,154,.1)',c:'#7a7f9a'};
   return{b:'rgba(168,85,247,.15)',c:'#a855f7'};
 }
 function cPr(p){return p>=80?'#2ecc71':p>=50?'#308EEE':p>=25?'#f5a623':'#e74c3c';}
-function cEtapa(s){var t=(s||'').toLowerCase();
-  if(t.includes('conclu'))return'#2ecc71';
-  if(t.includes('andamento'))return'#f5a623';
-  if(t.includes('iniciar'))return'#308EEE';
-  if(t.includes('espera'))return'#e74c3c';
-  return'#2d3348';
-}
 
 function updKPIs(){
   var its=filtered();
@@ -358,6 +403,7 @@ function updKPIs(){
   document.getElementById('kAt').textContent=its.filter(isAtr).length;
   document.getElementById('kM').textContent=m2>0?m2.toLocaleString('pt-BR'):'—';
 }
+
 function filtered(){
   var b=(document.getElementById('srch')?.value||'').toLowerCase();
   return _itens.filter(function(i){
@@ -369,20 +415,24 @@ function filtered(){
     return true;
   });
 }
+
 function setF(tipo,val,btn){
   if(tipo==='loja')_fLoja=val;
   if(tipo==='status')_fStatus=val;
   btn.parentElement.querySelectorAll('.fb').forEach(function(b){b.classList.remove('on');});
-  btn.classList.add('on');updKPIs();renderObras();
+  btn.classList.add('on');
+  updKPIs();renderObras();
 }
+
+var LOJAS=[{id:'JOI',nome:'Joinville',cor:'#308EEE'},{id:'TIJ',nome:'Tijucas',cor:'#2ecc71'},{id:'GUA',nome:'Guaramirim',cor:'#f5a623'}];
+
 function renderObras(){
   var its=filtered(),cols=colsAtivas(),c=document.getElementById('obras-c');
   if(!its.length){c.innerHTML='<div class="empty">Nenhuma obra encontrada.</div>';return;}
   var pg={JOI:[],TIJ:[],GUA:[]};
   its.forEach(function(i){if(pg[i.loja])pg[i.loja].push(i);});
-  var lojas=[{id:'JOI',nome:'Joinville',cor:'#308EEE'},{id:'TIJ',nome:'Tijucas',cor:'#2ecc71'},{id:'GUA',nome:'Guaramirim',cor:'#f5a623'}];
   var html='';
-  lojas.forEach(function(lj){
+  LOJAS.forEach(function(lj){
     var lst=pg[lj.id];if(!lst.length)return;
     html+='<div class="grupo" id="g-'+lj.id+'">';
     html+='<div class="gh" onclick="togG(\''+lj.id+'\')">';
@@ -402,20 +452,20 @@ function renderObras(){
   });
   c.innerHTML=html;
 }
+
 function rCell(item,col){
   var v=gv(item,col.id);
   if(col.id==='nome'){
     var loc=gv(item,'local');
     return'<span class="on-b">'+esc(v)+'</span>'+(loc?'<div class="sub-info">📍 '+esc(loc)+'</div>':'');
   }
-  if(col.tipo==='status'){
+  if(col.id==='status'){
     var st=cSt(v);
     return v?'<span class="sb" style="background:'+st.b+';color:'+st.c+';">'+esc(v)+'</span>':'<span style="color:var(--muted)">—</span>';
   }
   if(col.id==='progresso'){
-    var p=typeof v==='number'?v:parseInt(v)||0;
-    var cp=cPr(p);
-    return'<div class="pw"><div class="pb"><div class="pf" style="width:'+p+'%;background:'+cp+';"></div></div><div class="pp">'+p+'%</div></div>';
+    var p=parseInt(v)||0,cp=cPr(p);
+    return'<div class="pw"><div class="pb"><div class="pf" style="width:'+p+'%;background:'+cp+';"></div></div><div class="pp">'+(p>0?p+'%':'—')+'</div></div>';
   }
   if(col.id==='entrega'){
     if(!v)return'<span style="color:var(--muted)">—</span>';
@@ -423,19 +473,13 @@ function rCell(item,col){
     var ico=isAtr(item)?'⚠️':isCon(item)?'✅':'📅';
     return'<span class="'+cls+'">'+ico+' '+esc(v)+'</span>';
   }
-  if(col.id==='m2')
-    return v?'<span style="font-family:\'Bebas Neue\',sans-serif;font-size:14px;color:var(--purple);">'+v+' m²</span>':'<span style="color:var(--muted)">—</span>';
-  if(col.id==='etapas'){
-    var etapas=item._c.etapas||[];
-    if(!etapas.length)return'<span style="color:var(--muted)">—</span>';
-    return'<div class="etapas">'+etapas.map(function(e){
-      return'<div class="etapa-dot" style="background:'+cEtapa(e.status)+';width:10px;height:10px;border-radius:2px;" title="'+esc(e.nome)+': '+esc(e.status||'—')+'"></div>';
-    }).join('')+'</div>';
-  }
+  if(col.id==='m2')return v?'<span style="font-family:\'Bebas Neue\',sans-serif;font-size:14px;color:var(--purple);">'+v+' m²</span>':'<span style="color:var(--muted)">—</span>';
   return v?esc(v):'<span style="color:var(--muted)">—</span>';
 }
+
 function togG(id){var el=document.getElementById('g-'+id);if(el)el.classList.toggle('col');}
 function esc(s){var d=document.createElement('div');d.textContent=String(s||'');return d.innerHTML;}
+
 document.addEventListener('DOMContentLoaded',carregar);
 </script>
 </body>
