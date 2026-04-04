@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Alliance — Analytics</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#0c0e14;--surface:#13161f;--surface2:#1a1e2b;--border:#2d3348;--accent:#308EEE;--accent2:#1A65B8;--green:#2ecc71;--red:#e74c3c;--yellow:#f5a623;--purple:#a855f7;--text:#e8eaf0;--muted:#7a7f9a;}
@@ -91,6 +93,25 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .agora-cidade{font-size:12px;font-weight:700;flex:1;}
 .agora-pagina{font-size:10px;color:var(--muted);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .agora-num{font-size:12px;font-weight:700;color:var(--green);}
+
+/* Mapa */
+.mapa-wrap{position:relative;border-radius:12px;overflow:hidden;border:1px solid var(--border);height:420px;margin-bottom:14px;}
+#analytics-map{width:100%;height:100%;}
+.leaflet-container{background:#0c1220 !important;}
+.mapa-overlay{position:absolute;top:10px;right:10px;z-index:999;display:flex;flex-direction:column;gap:6px;}
+.mapa-stat{background:rgba(19,22,31,.92);border:1px solid var(--border);border-radius:8px;padding:8px 12px;backdrop-filter:blur(8px);}
+.mapa-stat-label{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:3px;}
+.mapa-stat-val{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;line-height:1;}
+.mapa-stat.green .mapa-stat-val{color:var(--green);}
+.mapa-stat.blue  .mapa-stat-val{color:var(--accent);}
+.mapa-loading{position:absolute;inset:0;background:rgba(12,14,20,.85);display:flex;align-items:center;justify-content:center;z-index:998;flex-direction:column;gap:10px;}
+.mapa-spinner{width:30px;height:30px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.mapa-popup .leaflet-popup-content-wrapper{background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,.5);}
+.mapa-popup .leaflet-popup-tip{background:var(--surface);}
+.popup-c-nome{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:1px;margin-bottom:5px;}
+.popup-c-row{display:flex;justify-content:space-between;gap:14px;font-size:11px;color:var(--muted);margin-bottom:2px;}
+.popup-c-val{font-weight:700;color:var(--text);}
 .updated{font-size:10px;color:var(--muted);text-align:right;margin-top:10px;opacity:.6;}
 </style>
 </head>
@@ -118,6 +139,9 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
     <button class="periodo-btn" onclick="setPeriodo('29daysAgo','today','30 dias')">30 dias</button>
   </div>
 
+  <div id="aviso-latencia" style="display:none;align-items:center;gap:10px;background:rgba(245,166,35,.08);border:1px solid rgba(245,166,35,.3);border-radius:10px;padding:10px 16px;margin-bottom:16px;font-size:12px;color:var(--yellow);">
+    ⏱ <span>Os dados de <strong>Hoje</strong> têm latência de 15–30 min no GA4. O tempo real (usuários agora) é instantâneo.</span>
+  </div>
   <div class="kpi-grid">
     <div class="kpi rt">
       <div class="kpi-label">Agora no site</div>
@@ -204,6 +228,33 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
     </div>
   </div>
 
+
+  <div class="panel full" style="margin-bottom:14px;">
+    <div class="panel-head">
+      <div class="panel-title">🗺️ Mapa de Acessos</div>
+      <span class="panel-period" id="period-mapa">7 dias</span>
+    </div>
+    <div class="panel-body" style="padding:0;">
+      <div class="mapa-wrap">
+        <div class="mapa-loading" id="mapa-loading">
+          <div class="mapa-spinner"></div>
+          <div style="font-size:12px;color:var(--muted);">Carregando mapa...</div>
+        </div>
+        <div id="analytics-map"></div>
+        <div class="mapa-overlay">
+          <div class="mapa-stat green">
+            <div class="mapa-stat-label">🟢 Agora</div>
+            <div class="mapa-stat-val" id="mapa-rt">—</div>
+          </div>
+          <div class="mapa-stat blue">
+            <div class="mapa-stat-label">👥 Visitas</div>
+            <div class="mapa-stat-val" id="mapa-usuarios">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <a class="ga-btn" href="https://analytics.google.com" target="_blank">
     📊 Abrir Google Analytics completo →
   </a>
@@ -267,6 +318,9 @@ function carregar() {
     .then(function(r){ return r.json(); })
     .then(function(d) {
       set('kpi-rt',       d.realtime);
+      // Aviso de latência quando filtro é "Hoje"
+      var avisoEl = document.getElementById('aviso-latencia');
+      if (avisoEl) avisoEl.style.display = _periodoLabel === 'Hoje' ? 'flex' : 'none';
       set('kpi-usuarios', d.usuarios);
       set('kpi-sessoes',  d.sessoes);
       set('kpi-paginas',  d.paginas);
@@ -382,6 +436,13 @@ function carregar() {
         }
       }
 
+      // Mapa
+      var pmEl = document.getElementById('period-mapa');
+      if (pmEl) pmEl.textContent = _periodoLabel;
+      if (_mapaObj) {
+        renderizarMapa(d.cidades, d.cidadesAgora, d.realtime, d.usuarios);
+      }
+
       var t = new Date(d.atualizadoEm);
       set('atualizado', 'Atualizado às ' + t.toLocaleTimeString('pt-BR'));
     })
@@ -390,7 +451,127 @@ function carregar() {
     });
 }
 
+
+// ── COORDENADAS DE CIDADES ────────────────────────────────────
+var COORDS = {
+  'Joinville':[-26.3044,-48.8456],'Florianópolis':[-27.5954,-48.5480],'Blumenau':[-26.9194,-49.0661],
+  'São José':[-27.5969,-48.6388],'Criciúma':[-28.6775,-49.3701],'Chapecó':[-27.1003,-52.6157],
+  'Itajaí':[-26.9078,-48.6619],'Lages':[-27.8166,-50.3262],'Jaraguá do Sul':[-26.4854,-49.0717],
+  'Palhoça':[-27.6453,-48.6695],'Balneário Camboriú':[-26.9914,-48.6350],'Brusque':[-27.0990,-48.9148],
+  'Tubarão':[-28.4678,-49.0075],'São Bento do Sul':[-26.2500,-49.3833],'Tijucas':[-27.2389,-48.6358],
+  'Guaramirim':[-26.4736,-49.0017],'Indaial':[-26.8978,-49.2331],'Penha':[-26.7731,-48.6494],
+  'Navegantes':[-26.8981,-48.6544],'Gaspar':[-26.9311,-49.0583],'Camboriú':[-27.0247,-48.6553],
+  'Curitiba':[-25.4296,-49.2716],'Londrina':[-23.3045,-51.1696],'Maringá':[-23.4273,-51.9375],
+  'Ponta Grossa':[-25.0945,-50.1633],'Cascavel':[-24.9578,-53.4595],'Foz do Iguaçu':[-25.5478,-54.5882],
+  'Porto Alegre':[-30.0346,-51.2177],'Caxias do Sul':[-29.1678,-51.1794],'Canoas':[-29.9178,-51.1839],
+  'Pelotas':[-31.7654,-52.3376],'Santa Maria':[-29.6842,-53.8069],'Passo Fundo':[-28.2620,-52.4064],
+  'São Paulo':[-23.5505,-46.6333],'Campinas':[-22.9099,-47.0626],'Guarulhos':[-23.4536,-46.5330],
+  'Ribeirão Preto':[-21.1784,-47.8104],'São José dos Campos':[-23.1794,-45.8869],'Santos':[-23.9608,-46.3342],
+  'Rio de Janeiro':[-22.9068,-43.1729],'Niterói':[-22.8833,-43.1036],'Petrópolis':[-22.5050,-43.1783],
+  'Belo Horizonte':[-19.9245,-43.9352],'Brasília':[-15.7801,-47.9292],'Salvador':[-12.9714,-38.5014],
+  'Fortaleza':[-3.7172,-38.5433],'Manaus':[-3.1190,-60.0217],'Recife':[-8.0578,-34.8829],
+  'Belém':[-1.4558,-48.4902],'Goiânia':[-16.6864,-49.2643],'Vitória':[-20.2976,-40.2958],
+  'Maceió':[-9.6498,-35.7089],'Natal':[-5.7945,-35.2110],'Campo Grande':[-20.4697,-54.6201],
+  'Cuiabá':[-15.6010,-56.0979],'João Pessoa':[-7.1195,-34.8450],'Aracaju':[-10.9472,-37.0731],
+  'São José do Rio Preto':[-20.8197,-49.3794],'Bauru':[-22.3147,-49.0597],'Jundiaí':[-23.1864,-46.8964],
+  'Sorocaba':[-23.5017,-47.4581],'Franca':[-20.5386,-47.4008],'Piracicaba':[-22.7253,-47.6492],
+  'Mogi das Cruzes':[-23.5233,-46.1856],'Osasco':[-23.5325,-46.7917],'Santo André':[-23.6639,-46.5383],
+  'Concórdia':[-27.2342,-52.0269],'Araranguá':[-28.9353,-49.4856],'Caçador':[-26.7750,-51.0144],
+  'Xanxerê':[-26.8758,-52.4044],'Joaçaba':[-27.1700,-51.5044],'Rio do Sul':[-27.2142,-49.6433],
+  'Itapema':[-27.0897,-48.6147],'São Francisco do Sul':[-26.2439,-48.6406],'Laguna':[-28.4833,-48.7833],
+  'Umuarama':[-23.7661,-53.3256],'Francisco Beltrão':[-26.0775,-53.0533],'Apucarana':[-23.5508,-51.4608],
+  'Novo Hamburgo':[-29.6783,-51.1308],'São Leopoldo':[-29.7600,-51.1483],'Bento Gonçalves':[-29.1703,-51.5186],
+  'Uruguaiana':[-29.7547,-57.0883],'Erechim':[-27.6344,-52.2747],'Bagé':[-31.3311,-54.1006],
+};
+
+var _mapaIniciado = false;
+var _mapaObj = null;
+var _marcadores = [], _marcadoresAgora = [];
+
+function getCoords(cidade) {
+  if (!cidade) return null;
+  if (COORDS[cidade]) return COORDS[cidade];
+  for (var k in COORDS) {
+    if (k.toLowerCase() === cidade.toLowerCase()) return COORDS[k];
+  }
+  return null;
+}
+
+function initMapa() {
+  if (_mapaIniciado || typeof L === 'undefined') return;
+  _mapaIniciado = true;
+  _mapaObj = L.map('analytics-map', { center:[-27.5,-50.5], zoom:6, zoomControl:true });
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution:'© OpenStreetMap © CARTO', subdomains:'abcd', maxZoom:18
+  }).addTo(_mapaObj);
+}
+
+function renderizarMapa(cidades, cidadesAgora, realtime, usuarios) {
+  if (!_mapaObj) return;
+  document.getElementById('mapa-loading').style.display = 'none';
+  document.getElementById('mapa-rt').textContent       = realtime || 0;
+  document.getElementById('mapa-usuarios').textContent = usuarios || 0;
+
+  // Limpa marcadores antigos
+  _marcadores.forEach(function(m){ _mapaObj.removeLayer(m); }); _marcadores = [];
+  _marcadoresAgora.forEach(function(m){ _mapaObj.removeLayer(m); }); _marcadoresAgora = [];
+
+  var validos = (cidades||[]).filter(function(c){ return c.cidade && c.cidade !== '(not set)' && getCoords(c.cidade); });
+  var max = Math.max.apply(null, validos.map(function(c){ return c.usuarios||0; })) || 1;
+
+  validos.forEach(function(c) {
+    var coords = getCoords(c.cidade);
+    var raio = Math.max(10, Math.min(55, 10 + (c.usuarios/max)*45));
+    var est = c.estado && c.estado !== '(not set)' ? ' · ' + c.estado : '';
+    var m = L.circleMarker(coords, {
+      radius: raio, fillColor:'#308EEE', color:'#1A65B8',
+      weight:2, opacity:.9, fillOpacity:.45
+    });
+    m.bindPopup(
+      '<div class="popup-c-nome">📍 ' + c.cidade + '</div>' +
+      '<div style="font-size:11px;color:#7a7f9a;margin-bottom:6px;">' + (c.pais==='Brazil'?'Brasil':c.pais||'') + est + '</div>' +
+      '<div class="popup-c-row"><span>Visitantes</span><span class="popup-c-val">' + c.usuarios + '</span></div>' +
+      '<div class="popup-c-row"><span>Sessões</span><span class="popup-c-val">' + c.sessoes + '</span></div>',
+      { className:'mapa-popup' }
+    );
+    m.addTo(_mapaObj);
+    _marcadores.push(m);
+  });
+
+  // Online agora — pontos verdes
+  (cidadesAgora||[]).filter(function(c){ return c.cidade && c.cidade!=='(not set)' && getCoords(c.cidade); })
+  .forEach(function(c) {
+    var coords = getCoords(c.cidade);
+    var lat = coords[0] + (Math.random()-.5)*.04;
+    var lng = coords[1] + (Math.random()-.5)*.04;
+    var m = L.circleMarker([lat,lng], {
+      radius:9, fillColor:'#2ecc71', color:'#27ae60',
+      weight:2, opacity:1, fillOpacity:.9
+    });
+    var pag = (c.pagina||'').replace('Alliance Casas Pré-Fabricadas','Landing Page').replace('Alliance Casas — Catálogo','Catálogo').replace(/\|.*/,'').trim() || 'Navegando';
+    m.bindPopup(
+      '<div class="popup-c-nome" style="color:#2ecc71;">🟢 Online agora</div>' +
+      '<div style="font-size:12px;margin-bottom:3px;">' + c.cidade + '</div>' +
+      '<div style="font-size:11px;color:#7a7f9a;">' + pag + '</div>',
+      { className:'mapa-popup' }
+    );
+    m.addTo(_mapaObj);
+    _marcadoresAgora.push(m);
+  });
+}
+
 document.addEventListener('DOMContentLoaded', function() {
+  // Inicia mapa após Leaflet carregar
+  var tentativas = 0;
+  var checkLeaflet = setInterval(function() {
+    tentativas++;
+    if (typeof L !== 'undefined') {
+      clearInterval(checkLeaflet);
+      initMapa();
+    } else if (tentativas > 20) {
+      clearInterval(checkLeaflet);
+    }
+  }, 200);
   carregar();
   setInterval(carregar, 60000);
 });
