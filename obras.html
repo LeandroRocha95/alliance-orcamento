@@ -6,7 +6,7 @@
 <title>Alliance — Obras</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0c0e14;--surface:#13161f;--surface2:#1a1e2b;--surface3:#222638;--border:#2d3348;--accent:#308EEE;--accent2:#1A65B8;--green:#2ecc71;--red:#e74c3c;--yellow:#f5a623;--purple:#a855f7;--text:#e8eaf0;--muted:#7a7f9a;}
+:root{--bg:#0c0e14;--surface:#13161f;--surface2:#1a1e2b;--surface3:#222638;--border:#2d3348;--accent:#308EEE;--green:#2ecc71;--red:#e74c3c;--yellow:#f5a623;--purple:#a855f7;--text:#e8eaf0;--muted:#7a7f9a;}
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;}
 .header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;gap:12px;height:54px;position:sticky;top:0;z-index:50;}
@@ -90,7 +90,7 @@ tr:hover td{background:rgba(48,142,238,.03);}
 @keyframes spin{to{transform:rotate(360deg);}}
 .empty{text-align:center;padding:30px;color:var(--muted);font-size:12px;}
 .upd{font-size:10px;color:var(--muted);text-align:right;margin-top:10px;opacity:.6;}
-.err-box{background:rgba(231,76,60,.08);border:1px solid rgba(231,76,60,.25);border-radius:10px;padding:20px 24px;color:var(--red);font-size:12px;}
+.err-box{background:rgba(231,76,60,.08);border:1px solid rgba(231,76,60,.25);border-radius:10px;padding:20px 24px;color:var(--red);font-size:12px;line-height:1.6;}
 .err-box code{display:block;margin-top:8px;font-family:monospace;font-size:11px;color:var(--muted);word-break:break-all;}
 </style>
 </head>
@@ -105,13 +105,12 @@ tr:hover td{background:rgba(48,142,238,.03);}
     <a href="hub.html" class="btn">← Hub</a>
   </div>
 </header>
+
 <div class="main">
   <div class="filtros">
-    <span class="fl">Loja:</span>
-    <button class="fb on" onclick="setF('loja','todas',this)">Todas</button>
-    <button class="fb" onclick="setF('loja','JOI',this)">Joinville</button>
-    <button class="fb" onclick="setF('loja','TIJ',this)">Tijucas</button>
-    <button class="fb" onclick="setF('loja','GUA',this)">Guaramirim</button>
+    <span class="fl">Grupo:</span>
+    <button class="fb on" id="fb-todos" onclick="setF('grupo','todos',this)">Todos</button>
+    <!-- grupos dinâmicos inseridos aqui -->
     <div class="sep"></div>
     <span class="fl">Status:</span>
     <button class="fb on" onclick="setF('status','todos',this)">Todos</button>
@@ -119,6 +118,7 @@ tr:hover td{background:rgba(48,142,238,.03);}
     <button class="fb" onclick="setF('status','concluido',this)">Concluídos</button>
     <button class="fb" onclick="setF('status','atrasado',this)">Atrasados</button>
   </div>
+
   <div class="kpi-grid">
     <div class="kpi k1"><div class="kpi-lb">Total</div><div class="kpi-v" id="kT">—</div><div class="kpi-s">obras</div></div>
     <div class="kpi k2"><div class="kpi-lb">Em Andamento</div><div class="kpi-v" id="kA">—</div><div class="kpi-s">ativas</div></div>
@@ -126,9 +126,10 @@ tr:hover td{background:rgba(48,142,238,.03);}
     <div class="kpi k4"><div class="kpi-lb">Atrasadas</div><div class="kpi-v" id="kAt">—</div><div class="kpi-s">vencidas</div></div>
     <div class="kpi k5"><div class="kpi-lb">m² Total</div><div class="kpi-v" id="kM">—</div><div class="kpi-s">em obras</div></div>
   </div>
+
   <div class="cfg-panel" id="cfgPanel">
     <div class="cfg-title">⚙️ Configurar Colunas</div>
-    <div class="cfg-sub">Marque e arraste para reordenar. 📊 = Cronograma · 📋 = Contrato</div>
+    <div class="cfg-sub">Marque as colunas desejadas e arraste para reordenar.</div>
     <div class="cfg-grid" id="cfgCols"></div>
     <div class="cfg-acts">
       <button class="btn pri" onclick="salvarCfg()">💾 Salvar</button>
@@ -136,78 +137,55 @@ tr:hover td{background:rgba(48,142,238,.03);}
       <button class="btn" onclick="toggleCfg()">Fechar</button>
     </div>
   </div>
+
   <div class="obras-bar">
     <div class="obras-tit">📋 Contratos</div>
-    <div class="srch"><span class="srch-ico">🔍</span><input class="srch-inp" id="srch" placeholder="Buscar..." oninput="renderObras()"></div>
+    <div class="srch">
+      <span class="srch-ico">🔍</span>
+      <input class="srch-inp" id="srch" placeholder="Buscar..." oninput="renderObras()">
+    </div>
   </div>
-  <div id="obras-c"><div class="loading"><div class="spin"></div><div>Carregando obras...</div></div></div>
+
+  <div id="obras-c">
+    <div class="loading"><div class="spin"></div><div>Carregando obras...</div></div>
+  </div>
   <div class="upd" id="upd"></div>
 </div>
+
 <script>
-const TOK='eyJhbGciOiJIUzI1NiJ9.eyJ0aWQiOjY0MTU5OTM4OCwiYWFpIjoxMSwidWlkIjo3MDQwMzEzOCwiaWFkIjoiMjAyNi0wNC0wNFQxNjo0MjoyMC4xMzVaIiwicGVyIjoibWU6d3JpdGUiLCJhY3RpZCI6MjczMDA5MDAsInJnbiI6InVzZTEifQ.-y8koB2eNV4woMPAwacSw1PRXpLdyRS5GSvxTVIq_aw';
+const TOK = 'eyJhbGciOiJIUzI1NiJ9.eyJ0aWQiOjY0MTU5OTM4OCwiYWFpIjoxMSwidWlkIjo3MDQwMzEzOCwiaWFkIjoiMjAyNi0wNC0wNFQxNjo0MjoyMC4xMzVaIiwicGVyIjoibWU6d3JpdGUiLCJhY3RpZCI6MjczMDA5MDAsInJnbiI6InVzZTEifQ.-y8koB2eNV4woMPAwacSw1PRXpLdyRS5GSvxTVIq_aw';
+const BOARD_ID = '8182483753';
+const CFG_KEY  = 'alliance_obras_v6';
 
-const BOARD_CONTRATOS='8182483753';
-const GRUPOS_CONTRATOS={
-  'new_group29179':{nome:'Joinville', loja:'JOI',cor:'#308EEE'},
-  'new_group43041':{nome:'Tijucas',   loja:'TIJ',cor:'#2ecc71'},
-  'group_mkxtr89x':{nome:'Guaramirim',loja:'GUA',cor:'#f5a623'}
-};
-const BOARDS_CRON={JOI:'8189168336',TIJ:'9465760121',GUA:'18383178942'};
-const GRUPOS_EXCLUIR=['group_mm1m6f7z','group_mm196hr2','group_mm08zqec'];
-const CFG_KEY='alliance_obras_v5';
+// Colunas padrão — serão substituídas pelas reais do board após carregar
+var COLS = [];
+var _cfg = [], _itens = [], _grupos = [], _fGrupo = 'todos', _fStatus = 'todos', _drag = null;
 
-const COLS=[
-  {id:'nome',          label:'Obra / Cliente',     src:'c', vis:true, ord:0},
-  {id:'local',         label:'Local da Obra',       src:'c', vis:true, ord:1},
-  {id:'status',        label:'Status da Obra',      src:'k', vis:true, ord:2},
-  {id:'progresso',     label:'Progresso',           src:'k', vis:true, ord:3},
-  {id:'prazo',         label:'Prazo',               src:'k', vis:true, ord:4},
-  {id:'entrega',       label:'Data de Entrega',     src:'k', vis:true, ord:5},
-  {id:'encarregado',   label:'Encarregado',         src:'k', vis:true, ord:6},
-  {id:'vendedor',      label:'Vendedor',            src:'c', vis:true, ord:7},
-  {id:'m2',            label:'m² Total',            src:'c', vis:true, ord:8},
-  {id:'data_venda',    label:'Data Venda',          src:'c', vis:false,ord:9},
-  {id:'regularizacao', label:'C/ Regularização',    src:'c', vis:false,ord:10},
-  {id:'estrutura',     label:'Estrutura',           src:'c', vis:false,ord:11},
-  {id:'paredes',       label:'Paredes',             src:'c', vis:false,ord:12},
-  {id:'forro',         label:'Forro',               src:'c', vis:false,ord:13},
-  {id:'ceramica_mat',  label:'Cerâmica (material)', src:'c', vis:false,ord:14},
-  {id:'telha',         label:'Telha',               src:'c', vis:false,ord:15},
-  {id:'pgto',          label:'Pgto do Cliente',     src:'c', vis:false,ord:16},
-];
-
-var _cfg=loadCfg(),_itens=[],_fLoja='todas',_fStatus='todos',_drag=null;
-
-function loadCfg(){
-  try{var s=localStorage.getItem(CFG_KEY);if(s)return JSON.parse(s);}catch(e){}
-  return COLS.map(function(c){return{id:c.id,vis:c.vis,ord:c.ord};});
+// ── Config ───────────────────────────────────────────────────────────────────
+function loadCfg(cols) {
+  try { var s = localStorage.getItem(CFG_KEY); if (s) return JSON.parse(s); } catch(e) {}
+  return cols.map(function(c, i) { return { id: c.id, label: c.label, vis: i < 8, ord: i }; });
 }
-function saveCfg(){localStorage.setItem(CFG_KEY,JSON.stringify(_cfg));}
-function resetCfg(){_cfg=COLS.map(function(c){return{id:c.id,vis:c.vis,ord:c.ord};});localStorage.removeItem(CFG_KEY);renderCfg();renderObras();}
-function colsAtivas(){
-  return _cfg.slice().sort(function(a,b){return a.ord-b.ord;})
-    .filter(function(c){return c.vis;})
-    .map(function(c){return COLS.find(function(t){return t.id===c.id;});})
-    .filter(Boolean);
+function saveCfg() { localStorage.setItem(CFG_KEY, JSON.stringify(_cfg)); }
+function resetCfg() { _cfg = COLS.map(function(c,i){return{id:c.id,label:c.label,vis:i<8,ord:i};}); localStorage.removeItem(CFG_KEY); renderCfg(); renderObras(); }
+function colsAtivas() {
+  return _cfg.slice().sort(function(a,b){return a.ord-b.ord;}).filter(function(c){return c.vis;});
 }
-function toggleCfg(){var el=document.getElementById('cfgPanel');if(el.classList.toggle('open'))renderCfg();}
-function renderCfg(){
-  var ordered=_cfg.slice().sort(function(a,b){return a.ord-b.ord;});
-  document.getElementById('cfgCols').innerHTML=ordered.map(function(cfg){
-    var col=COLS.find(function(c){return c.id===cfg.id;});if(!col)return'';
-    return'<div class="ci'+(cfg.vis?' on':'')+'" data-id="'+col.id+'" draggable="true"'
+function toggleCfg() { var el=document.getElementById('cfgPanel'); if(el.classList.toggle('open')) renderCfg(); }
+function renderCfg() {
+  document.getElementById('cfgCols').innerHTML = _cfg.slice().sort(function(a,b){return a.ord-b.ord;}).map(function(cfg){
+    return '<div class="ci'+(cfg.vis?' on':'')+'" data-id="'+cfg.id+'" draggable="true"'
       +' ondragstart="dS(event)" ondragover="dO(event)" ondrop="dD(event)" ondragend="dE(event)">'
       +'<span class="ci-h">⠿</span>'
       +'<input type="checkbox" class="ci-cb"'+(cfg.vis?' checked':'')+' onchange="this.closest(\'.ci\').classList.toggle(\'on\',this.checked)">'
-      +'<span class="ci-n">'+col.label+'</span>'
-      +'<span class="ci-t">'+(col.src==='k'?'📊':'📋')+'</span></div>';
+      +'<span class="ci-n">'+esc(cfg.label)+'</span></div>';
   }).join('');
 }
-function salvarCfg(){
-  _cfg=Array.from(document.querySelectorAll('.ci')).map(function(el,i){
-    return{id:el.dataset.id,vis:el.querySelector('.ci-cb').checked,ord:i};
+function salvarCfg() {
+  _cfg = Array.from(document.querySelectorAll('.ci')).map(function(el,i){
+    return { id: el.dataset.id, label: el.querySelector('.ci-n').textContent, vis: el.querySelector('.ci-cb').checked, ord: i };
   });
-  saveCfg();toggleCfg();renderObras();
+  saveCfg(); toggleCfg(); renderObras();
 }
 function dS(e){_drag=e.currentTarget;e.currentTarget.classList.add('drag');e.dataTransfer.effectAllowed='move';}
 function dO(e){e.preventDefault();}
@@ -215,211 +193,242 @@ function dD(e){
   e.preventDefault();
   if(_drag&&_drag!==e.currentTarget){
     var p=e.currentTarget.parentNode,its=Array.from(p.children);
-    if(its.indexOf(_drag)<its.indexOf(e.currentTarget))p.insertBefore(_drag,e.currentTarget.nextSibling);
+    if(its.indexOf(_drag)<its.indexOf(e.currentTarget)) p.insertBefore(_drag,e.currentTarget.nextSibling);
     else p.insertBefore(_drag,e.currentTarget);
   }
 }
 function dE(e){e.currentTarget.classList.remove('drag');_drag=null;}
 
 // ── Monday API ───────────────────────────────────────────────────────────────
-async function mq(query){
-  var r=await fetch('https://api.monday.com/v2',{
-    method:'POST',
-    headers:{'Authorization':TOK,'Content-Type':'application/json','API-Version':'2024-01'},
-    body:JSON.stringify({query:query})
+async function mq(query) {
+  var r = await fetch('https://api.monday.com/v2', {
+    method: 'POST',
+    headers: { 'Authorization': TOK, 'Content-Type': 'application/json', 'API-Version': '2024-01' },
+    body: JSON.stringify({ query: query })
   });
-  var j=await r.json();
-  if(j.errors&&j.errors.length)throw new Error(j.errors.map(function(e){return e.message;}).join(' | '));
-  return j;
+  var j = await r.json();
+  if (j.errors && j.errors.length) throw new Error(j.errors.map(function(e){return e.message;}).join(' | '));
+  return j.data;
 }
 
-function extractVal(col){
-  if(!col)return'';
-  if(col.label!=null&&col.label!=='')return col.label;
-  if(col.values&&col.values.length)return col.values.map(function(x){return x.label||x.text||'';}).filter(Boolean).join(', ');
-  if(col.display_value!=null&&col.display_value!=='')return col.display_value;
-  return col.text||'';
+function extractVal(col) {
+  if (!col) return '';
+  if (col.label != null && col.label !== '') return col.label;
+  if (col.values && col.values.length) return col.values.map(function(x){return x.label||x.text||'';}).filter(Boolean).join(', ');
+  if (col.display_value != null && col.display_value !== '') return col.display_value;
+  return col.text || '';
 }
 
-async function carregar(){
-  document.getElementById('obras-c').innerHTML='<div class="loading"><div class="spin"></div><div>Carregando obras...</div></div>';
-  document.getElementById('upd').textContent='';
-  try{
-    var contratosQ=`{
-      boards(ids:[${BOARD_CONTRATOS}]){
-        groups(ids:${JSON.stringify(Object.keys(GRUPOS_CONTRATOS))}){
-          id
-          items_page(limit:200){
-            items{
-              id name
-              column_values{
-                id text
-                ... on StatusValue{label}
-                ... on DropdownValue{values{label}}
-                ... on MirrorValue{display_value}
-              }
+// ── Carregamento ─────────────────────────────────────────────────────────────
+async function carregar() {
+  document.getElementById('obras-c').innerHTML = '<div class="loading"><div class="spin"></div><div>Carregando obras...</div></div>';
+  document.getElementById('upd').textContent = '';
+
+  try {
+    // Passo 1: descobre colunas do board
+    var metaData = await mq('{ boards(ids:['+BOARD_ID+']) { columns { id title type } } }');
+    var rawCols = metaData.boards[0].columns;
+
+    // Monta COLS dinâmico — exclui coluna "name" (sempre será o título do item)
+    COLS = rawCols.filter(function(c){ return c.type !== 'name'; }).map(function(c){
+      return { id: c.id, label: c.title, type: c.type };
+    });
+
+    // Carrega ou inicializa config
+    _cfg = loadCfg(COLS);
+    // Sincroniza labels e adiciona novas colunas que não estavam na cfg salva
+    COLS.forEach(function(c, i) {
+      var existing = _cfg.find(function(x){ return x.id === c.id; });
+      if (existing) { existing.label = c.label; }
+      else { _cfg.push({ id: c.id, label: c.label, vis: false, ord: _cfg.length }); }
+    });
+
+    // Passo 2: busca itens do board — só colunas visíveis para reduzir complexidade
+    var colIds = COLS.map(function(c){ return '"'+c.id+'"'; }).join(',');
+    var itemsData = await mq(`{
+      boards(ids:[${BOARD_ID}]) {
+        groups { id title color }
+        items_page(limit: 500) {
+          items {
+            id
+            name
+            group { id title }
+            column_values(ids:[${colIds}]) {
+              id text
+              ... on StatusValue    { label }
+              ... on DropdownValue  { values { label } }
+              ... on MirrorValue    { display_value }
+              ... on DateValue      { text }
+              ... on NumbersValue   { text }
+              ... on PeopleValue    { text }
+              ... on TimelineValue  { text }
             }
           }
         }
       }
-    }`;
+    }`);
 
-    var cronBoardIds=Object.values(BOARDS_CRON).join(',');
-    var cronQ=`{
-      boards(ids:[${cronBoardIds}]){
-        id
-        groups{
-          id title
-          items_page(limit:50){
-            items{
-              id name
-              column_values{
-                id text
-                ... on StatusValue{label}
-                ... on PeopleValue{text}
-              }
-            }
-          }
-        }
-      }
-    }`;
+    var boardData = itemsData.boards[0];
+    _grupos = boardData.groups;
 
-    var results=await Promise.all([mq(contratosQ),mq(cronQ)]);
-    var contratosR=results[0], cronR=results[1];
+    // Monta itens
+    _itens = boardData.items_page.items.map(function(item) {
+      var obj = { id: item.id, nome: item.name, grupoId: item.group.id, grupoNome: item.group.title, _c: { nome: item.name } };
+      item.column_values.forEach(function(col) { obj._c[col.id] = extractVal(col); });
 
-    // Indexa contratos
-    var contratosPorNome={};
-    var board=contratosR.data.boards[0];
-    if(!board)throw new Error('Board de contratos não encontrado');
-    board.groups.forEach(function(g){
-      var gInfo=GRUPOS_CONTRATOS[g.id];if(!gInfo)return;
-      g.items_page.items.forEach(function(item){
-        var obj={loja:gInfo.loja,_c:{}};
-        item.column_values.forEach(function(col){obj._c[col.id]=extractVal(col);});
-        contratosPorNome[norm(item.name)]=obj;
-      });
+      // Tenta identificar status e data de entrega de forma genérica
+      obj.status     = findColVal(obj._c, ['status','situação','etapa','fase','andamento']) || '';
+      obj.entrega    = findColVal(obj._c, ['entrega','prazo','conclusão','fim','término']) || '';
+      obj.m2val      = parseFloat((findColVal(obj._c, ['m²','m2','metros','area','área'])||'').replace(',','.')) || 0;
+
+      return obj;
     });
 
-    // Mapa boardId → loja
-    var boardLojaMap={};
-    Object.keys(BOARDS_CRON).forEach(function(loja){boardLojaMap[String(BOARDS_CRON[loja])]=loja;});
+    // Filtra grupos dinâmicos na barra de filtros
+    buildGrupoFilters();
 
-    _itens=[];
-    (cronR.data.boards||[]).forEach(function(cronBoard){
-      var loja=boardLojaMap[String(cronBoard.id)];if(!loja)return;
-      cronBoard.groups.forEach(function(grupo){
-        if(GRUPOS_EXCLUIR.includes(grupo.id))return;
-        if(/^\.?Template/i.test(grupo.title.trim()))return;
+    updKPIs();
+    renderObras();
+    document.getElementById('upd').textContent = 'Atualizado às ' + new Date().toLocaleTimeString('pt-BR') + ' (' + _itens.length + ' obras)';
 
-        var items=grupo.items_page.items;
-        if(!items||!items.length)return;
-
-        var itemPrincipal=items.find(function(it){return /^4\./i.test(it.name);})||items[0];
-        if(!itemPrincipal)return;
-
-        // Progresso: % de itens com status "conclu*"
-        var comStatus=items.filter(function(it){
-          return it.column_values.some(function(cv){return cv.id==='feito_mkm0ha0e'&&(cv.text||'');});
-        });
-        var concl=comStatus.filter(function(it){
-          return it.column_values.some(function(cv){
-            return cv.id==='feito_mkm0ha0e'&&(cv.text||'').toLowerCase().includes('conclu');
-          });
-        }).length;
-        var progresso=comStatus.length>0?Math.round(concl/comStatus.length*100):0;
-
-        function getCV(it,id){
-          var col=it.column_values.find(function(c){return c.id===id;});
-          return col?extractVal(col):'';
-        }
-
-        var status=getCV(itemPrincipal,'feito_mkm0ha0e');
-        var encarregado=getCV(itemPrincipal,'pessoas_mkmcn7as');
-        var prazoRaw=getCV(itemPrincipal,'cronograma_mkm99srh');
-        var entregaRaw=getCV(itemPrincipal,'data_mkmpchmz');
-
-        var prazo='',entrega='';
-        if(prazoRaw){
-          var pts=prazoRaw.split(' - ');
-          prazo=fmtD(pts[0])+(pts[1]?' → '+fmtD(pts[1]):'');
-          entrega=pts[1]?fmtD(pts[1]):fmtD(pts[0]);
-        }
-        if(entregaRaw){var fe=fmtD(entregaRaw);if(fe)entrega=fe;}
-
-        var nomeObra=grupo.title;
-        var nomeNorm=norm(nomeObra);
-        var contrato=null;
-        if(contratosPorNome[nomeNorm]){
-          contrato=contratosPorNome[nomeNorm];
-        } else {
-          var base=nomeNorm.split('-')[0].trim();
-          Object.keys(contratosPorNome).forEach(function(k){
-            if(!contrato&&(nomeNorm.includes(k)||k.includes(base)&&base.length>3))
-              contrato=contratosPorNome[k];
-          });
-        }
-        if(contrato&&contrato.loja!==loja)contrato=null;
-
-        function cv(id){return contrato?contrato._c[id]||''  :'';}
-
-        _itens.push({
-          id:itemPrincipal.id,
-          nome:nomeObra,
-          loja:loja,
-          status:status,
-          progresso:progresso,
-          prazo:prazo,
-          entrega:entrega,
-          encarregado:encarregado,
-          _c:{
-            nome:nomeObra,
-            status:status,
-            progresso:String(progresso),
-            prazo:prazo,
-            entrega:entrega,
-            encarregado:encarregado,
-            vendedor:     cv('lista_suspensa_mkkzq8ff')||cv('dup__of_vendedor_mkmcjeft'),
-            m2:           cv('n_meros_mkkze5hz'),
-            local:        cv('texto_mkkznkyv'),
-            data_venda:   fmtD(cv('data_mkmgvcak')),
-            regularizacao:cv('dropdown_mm09adag'),
-            estrutura:    cv('lista_suspensa_mkkz9qah'),
-            paredes:      cv('lista_suspensa_mkkzzgzs'),
-            forro:        cv('lista_suspensa_mkkzr4hj'),
-            ceramica_mat: cv('lista_suspensa_mkkzm3vq'),
-            telha:        cv('lista_suspensa_mkkzyky0'),
-            pgto:         cv('pgto_cliente_mkkzfehp'),
-          }
-        });
-      });
-    });
-
-    console.log('Obras carregadas:',_itens.length,_itens.slice(0,2));
-    updKPIs();renderObras();
-    document.getElementById('upd').textContent='Atualizado às '+new Date().toLocaleTimeString('pt-BR')+' ('+_itens.length+' obras)';
-  }catch(e){
+  } catch(e) {
     console.error(e);
-    document.getElementById('obras-c').innerHTML=
-      '<div class="err-box">❌ Erro ao carregar dados do Monday.com<code>'+esc(e.message)+'</code><br><small style="color:var(--muted)">Abra o console (F12) para mais detalhes.</small></div>';
+    document.getElementById('obras-c').innerHTML =
+      '<div class="err-box">❌ Erro ao carregar dados do Monday.com<code>' + esc(e.message) + '</code><small style="color:var(--muted)">Abra o console (F12) para mais detalhes.</small></div>';
   }
 }
 
-function norm(s){return(s||'').toLowerCase().trim().replace(/\s+/g,' ');}
-function fmtD(s){
-  if(!s)return'';
-  s=s.trim();
-  var m=s.match(/^(\d{4})-(\d{2})-(\d{2})/);
-  return m?m[3]+'/'+m[2]+'/'+m[1]:s;
+// Procura valor em _c por palavras-chave no id ou label da coluna
+function findColVal(c, keywords) {
+  var keys = Object.keys(c);
+  for (var ki = 0; ki < keywords.length; ki++) {
+    var kw = keywords[ki];
+    for (var i = 0; i < keys.length; i++) {
+      if (keys[i].toLowerCase().includes(kw) && c[keys[i]]) return c[keys[i]];
+    }
+  }
+  return '';
 }
-function gv(item,id){return(item._c&&item._c[id])||'';}
 
-function isCon(i){var s=(i.status||'').toLowerCase();return s.includes('conclu')||s.includes('entregue')||s.includes('done');}
-function isAtr(i){
-  if(isCon(i))return false;
-  var d=i.entrega;if(!d)return false;
-  var p=d.split('/');return p.length===3&&new Date(+p[2],+p[1]-1,+p[0])<new Date();
+function buildGrupoFilters() {
+  // Remove filtros antigos de grupo (mantém "Todos")
+  var filtros = document.querySelector('.filtros');
+  Array.from(filtros.querySelectorAll('.fb-grupo')).forEach(function(el){ el.remove(); });
+  var sep = filtros.querySelector('.sep');
+
+  _grupos.forEach(function(g) {
+    var btn = document.createElement('button');
+    btn.className = 'fb fb-grupo';
+    btn.textContent = g.title;
+    btn.onclick = function(){ setF('grupo', g.id, btn); };
+    filtros.insertBefore(btn, sep);
+  });
 }
-function isAnd(i){return!isCon(i)&&!isAtr(i)&&i.status!=='';}
+
+// ── Filtros e KPIs ───────────────────────────────────────────────────────────
+function isCon(i){ var s=(i.status||'').toLowerCase(); return s.includes('conclu')||s.includes('entregue')||s.includes('done'); }
+function isAtr(i){
+  if(isCon(i)) return false;
+  var d = i.entrega; if(!d) return false;
+  var p = d.split('/'); return p.length===3 && new Date(+p[2],+p[1]-1,+p[0]) < new Date();
+}
+function isAnd(i){ return !isCon(i) && !isAtr(i) && i.status !== ''; }
+
+function filtered() {
+  var b = (document.getElementById('srch') ? document.getElementById('srch').value||'' : '').toLowerCase();
+  return _itens.filter(function(i){
+    if (_fGrupo !== 'todos' && i.grupoId !== _fGrupo) return false;
+    if (_fStatus === 'andamento' && !isAnd(i)) return false;
+    if (_fStatus === 'concluido' && !isCon(i)) return false;
+    if (_fStatus === 'atrasado'  && !isAtr(i)) return false;
+    if (b && !Object.values(i._c).join(' ').toLowerCase().includes(b)) return false;
+    return true;
+  });
+}
+
+function setF(tipo, val, btn) {
+  if (tipo==='grupo')  _fGrupo  = val;
+  if (tipo==='status') _fStatus = val;
+  var scope = tipo==='grupo'
+    ? document.querySelector('.filtros')
+    : btn.parentElement;
+  scope.querySelectorAll('.fb').forEach(function(b){ if(tipo==='grupo'?b.classList.contains('fb-grupo')||b.id==='fb-todos':true) b.classList.remove('on'); });
+  btn.classList.add('on');
+  updKPIs(); renderObras();
+}
+
+function updKPIs() {
+  var its = filtered();
+  var m2  = its.reduce(function(a,i){ return a + (i.m2val||0); }, 0);
+  document.getElementById('kT').textContent  = its.length;
+  document.getElementById('kA').textContent  = its.filter(isAnd).length;
+  document.getElementById('kC').textContent  = its.filter(isCon).length;
+  document.getElementById('kAt').textContent = its.filter(isAtr).length;
+  document.getElementById('kM').textContent  = m2 > 0 ? m2.toLocaleString('pt-BR') : '—';
+}
+
+// ── Render ───────────────────────────────────────────────────────────────────
+function renderObras() {
+  var its  = filtered();
+  var cols = colsAtivas();
+  var c    = document.getElementById('obras-c');
+  if (!its.length) { c.innerHTML = '<div class="empty">Nenhuma obra encontrada.</div>'; return; }
+
+  // Agrupa por grupo do Monday
+  var grupos = {};
+  var ordem  = [];
+  its.forEach(function(i){
+    if (!grupos[i.grupoId]) { grupos[i.grupoId] = { nome: i.grupoNome, items: [] }; ordem.push(i.grupoId); }
+    grupos[i.grupoId].items.push(i);
+  });
+
+  // Cores para grupos (cíclico)
+  var cores = ['#308EEE','#2ecc71','#f5a623','#a855f7','#e74c3c','#1abc9c'];
+
+  var html = '';
+  ordem.forEach(function(gid, gi) {
+    var g   = grupos[gid];
+    var cor = cores[gi % cores.length];
+    html += '<div class="grupo" id="g-'+gid+'">';
+    html += '<div class="gh" onclick="togG(\''+gid+'\')"><div class="gdot" style="background:'+cor+'"></div>';
+    html += '<div class="gnom">📍 '+esc(g.nome)+'</div>';
+    html += '<div class="gcnt">'+g.items.length+' obra'+(g.items.length!==1?'s':'')+'</div>';
+    html += '<div class="gcv">▾</div></div>';
+    html += '<div class="gb"><table><thead><tr><th>Nome</th>';
+    cols.forEach(function(col){ html += '<th>'+esc(col.label)+'</th>'; });
+    html += '</tr></thead><tbody>';
+    g.items.forEach(function(item){
+      html += '<tr><td class="on-b">'+esc(item.nome)+'</td>';
+      cols.forEach(function(col){ html += '<td>'+rCell(item, col)+'</td>'; });
+      html += '</tr>';
+    });
+    html += '</tbody></table></div></div>';
+  });
+  c.innerHTML = html;
+}
+
+function rCell(item, col) {
+  var v = item._c[col.id] || '';
+  // Status: detecta por type
+  var colDef = COLS.find(function(c){ return c.id === col.id; });
+  if (colDef && colDef.type === 'color') {
+    if (!v) return '<span style="color:var(--muted)">—</span>';
+    var st = cSt(v);
+    return '<span class="sb" style="background:'+st.b+';color:'+st.c+'">'+esc(v)+'</span>';
+  }
+  if (colDef && (colDef.type === 'numbers' || colDef.id === col.id && col.label.toLowerCase().includes('m²'))) {
+    return v ? '<span style="font-family:\'Bebas Neue\',sans-serif;font-size:14px;color:var(--purple)">'+esc(v)+'</span>' : '<span style="color:var(--muted)">—</span>';
+  }
+  if (colDef && colDef.type === 'date') {
+    return v ? '<span class="dne">📅 '+esc(fmtD(v))+'</span>' : '<span style="color:var(--muted)">—</span>';
+  }
+  if (colDef && colDef.type === 'timeline') {
+    if (!v) return '<span style="color:var(--muted)">—</span>';
+    var pts = v.split(' - ');
+    return '<span style="color:var(--muted);font-size:10px">'+esc(fmtD(pts[0]))+(pts[1]?' → '+esc(fmtD(pts[1])):'')+'</span>';
+  }
+  return v ? esc(v) : '<span style="color:var(--muted)">—</span>';
+}
 
 function cSt(s){
   var t=(s||'').toLowerCase();
@@ -430,99 +439,17 @@ function cSt(s){
   if(t.includes('iniciar'))                       return{b:'rgba(122,127,154,.1)', c:'#7a7f9a'};
   return{b:'rgba(168,85,247,.15)',c:'#a855f7'};
 }
-function cPr(p){return p>=80?'#2ecc71':p>=50?'#308EEE':p>=25?'#f5a623':'#e74c3c';}
 
-function updKPIs(){
-  var its=filtered();
-  var m2=its.reduce(function(a,i){var v=parseFloat((gv(i,'m2')||'').replace(',','.'));return a+(isNaN(v)?0:v);},0);
-  document.getElementById('kT').textContent=its.length;
-  document.getElementById('kA').textContent=its.filter(isAnd).length;
-  document.getElementById('kC').textContent=its.filter(isCon).length;
-  document.getElementById('kAt').textContent=its.filter(isAtr).length;
-  document.getElementById('kM').textContent=m2>0?m2.toLocaleString('pt-BR'):'—';
+function fmtD(s){
+  if(!s)return''; s=s.trim();
+  var m=s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  return m ? m[3]+'/'+m[2]+'/'+m[1] : s;
 }
 
-function filtered(){
-  var b=(document.getElementById('srch')?document.getElementById('srch').value||'':'').toLowerCase();
-  return _itens.filter(function(i){
-    if(_fLoja!=='todas'&&i.loja!==_fLoja)return false;
-    if(_fStatus==='andamento'&&!isAnd(i))return false;
-    if(_fStatus==='concluido'&&!isCon(i))return false;
-    if(_fStatus==='atrasado'&&!isAtr(i))return false;
-    if(b&&!Object.values(i._c).join(' ').toLowerCase().includes(b))return false;
-    return true;
-  });
-}
+function togG(id){ var el=document.getElementById('g-'+id); if(el) el.classList.toggle('col'); }
+function esc(s){ var d=document.createElement('div'); d.textContent=String(s||''); return d.innerHTML; }
 
-function setF(tipo,val,btn){
-  if(tipo==='loja')_fLoja=val;
-  if(tipo==='status')_fStatus=val;
-  btn.parentElement.querySelectorAll('.fb').forEach(function(b){b.classList.remove('on');});
-  btn.classList.add('on');
-  updKPIs();renderObras();
-}
-
-var LOJAS=[
-  {id:'JOI',nome:'Joinville', cor:'#308EEE'},
-  {id:'TIJ',nome:'Tijucas',   cor:'#2ecc71'},
-  {id:'GUA',nome:'Guaramirim',cor:'#f5a623'}
-];
-
-function renderObras(){
-  var its=filtered(),cols=colsAtivas(),c=document.getElementById('obras-c');
-  if(!its.length){c.innerHTML='<div class="empty">Nenhuma obra encontrada.</div>';return;}
-  var pg={JOI:[],TIJ:[],GUA:[]};
-  its.forEach(function(i){if(pg[i.loja])pg[i.loja].push(i);});
-  var html='';
-  LOJAS.forEach(function(lj){
-    var lst=pg[lj.id];if(!lst.length)return;
-    html+='<div class="grupo" id="g-'+lj.id+'">';
-    html+='<div class="gh" onclick="togG(\''+lj.id+'\')">';
-    html+='<div class="gdot" style="background:'+lj.cor+'"></div>';
-    html+='<div class="gnom">📍 '+lj.nome+'</div>';
-    html+='<div class="gcnt">'+lst.length+' obra'+(lst.length!==1?'s':'')+'</div>';
-    html+='<div class="gcv">▾</div></div>';
-    html+='<div class="gb"><table><thead><tr>';
-    cols.forEach(function(col){html+='<th>'+col.label+'</th>';});
-    html+='</tr></thead><tbody>';
-    lst.forEach(function(item){
-      html+='<tr>';
-      cols.forEach(function(col){html+='<td>'+rCell(item,col)+'</td>';});
-      html+='</tr>';
-    });
-    html+='</tbody></table></div></div>';
-  });
-  c.innerHTML=html;
-}
-
-function rCell(item,col){
-  var v=gv(item,col.id);
-  if(col.id==='nome'){
-    var loc=gv(item,'local');
-    return'<span class="on-b">'+esc(v)+'</span>'+(loc?'<div class="sub-info">📍 '+esc(loc)+'</div>':'');
-  }
-  if(col.id==='status'){
-    var st=cSt(v);
-    return v?'<span class="sb" style="background:'+st.b+';color:'+st.c+'">'+esc(v)+'</span>':'<span style="color:var(--muted)">—</span>';
-  }
-  if(col.id==='progresso'){
-    var p=parseInt(v)||0,cp=cPr(p);
-    return'<div class="pw"><div class="pb"><div class="pf" style="width:'+p+'%;background:'+cp+'"></div></div><div class="pp">'+(p>0?p+'%':'—')+'</div></div>';
-  }
-  if(col.id==='entrega'){
-    if(!v)return'<span style="color:var(--muted)">—</span>';
-    var cls=isAtr(item)?'dat':isCon(item)?'dok':'dne';
-    var ico=isAtr(item)?'⚠️':isCon(item)?'✅':'📅';
-    return'<span class="'+cls+'">'+ico+' '+esc(v)+'</span>';
-  }
-  if(col.id==='m2')return v?'<span style="font-family:\'Bebas Neue\',sans-serif;font-size:14px;color:var(--purple)">'+esc(v)+' m²</span>':'<span style="color:var(--muted)">—</span>';
-  return v?esc(v):'<span style="color:var(--muted)">—</span>';
-}
-
-function togG(id){var el=document.getElementById('g-'+id);if(el)el.classList.toggle('col');}
-function esc(s){var d=document.createElement('div');d.textContent=String(s||'');return d.innerHTML;}
-
-document.addEventListener('DOMContentLoaded',carregar);
+document.addEventListener('DOMContentLoaded', carregar);
 </script>
 </body>
 </html>
