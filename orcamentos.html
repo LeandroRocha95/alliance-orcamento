@@ -1,0 +1,3032 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alliance Casas Pré Fabricadas</title>
+<meta name="theme-color" content="#308EEE">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Alliance">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #22263a;
+    --border: #2e334d;
+    --accent: #308EEE;
+    --accent2: #1A65B8;
+    --text: #e8eaf0;
+    --muted: #7a7f9a;
+    --green: #2ecc71;
+    --red: #e74c3c;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh;
+    background-image: radial-gradient(ellipse at 20% 0%, rgba(48,142,238,0.06) 0%, transparent 60%),
+                      radial-gradient(ellipse at 80% 100%, rgba(26,101,184,0.04) 0%, transparent 60%); }
+
+  /* HEADER */
+  header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 24px;
+    display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; height: 52px; }
+  .logo-wrap { display: flex; align-items: center; flex-shrink: 0; }
+  .logo-wrap img { height: 32px; width: auto; max-width: 120px; background: #fff; border-radius: 6px; padding: 3px 7px; object-fit: contain; }
+  .header-right { display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
+  .header-total-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px; text-align: right; line-height: 1.2; }
+  .header-total-value { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 2px; color: var(--accent); line-height: 1.2; }
+  .admin-btn { background: var(--surface2); border: 1px solid var(--border); color: var(--muted); font-size: 12px;
+    font-family: 'DM Sans', sans-serif; padding: 6px 12px; border-radius: 8px; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+  .admin-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* TABS */
+  .tabs { display: flex; background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 24px; position: sticky; top: 52px; z-index: 99; }
+  .tab { padding: 11px 18px; font-size: 13px; font-weight: 500; cursor: pointer; border-bottom: 2px solid transparent; color: var(--muted); transition: all 0.2s; }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* DASHBOARD */
+  .dash-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); gap: 12px; margin-bottom: 20px; }
+  .dash-kpi { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; position: relative; overflow: hidden; }
+  .dash-kpi::before { content:''; position:absolute; inset:0; background: linear-gradient(135deg, rgba(48,142,238,.06) 0%, transparent 60%); pointer-events:none; }
+  .dash-kpi-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); font-weight: 700; margin-bottom: 8px; }
+  .dash-kpi-val { font-size: 26px; font-weight: 700; color: var(--accent); line-height: 1; }
+  .dash-kpi-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+  .dash-kpi-icon { position:absolute; top:12px; right:14px; font-size:20px; opacity:.25; }
+  .dash-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  .dash-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  .dash-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
+  .dash-card-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); font-weight: 700; margin-bottom: 12px; display:flex; justify-content:space-between; align-items:center; }
+  .dash-bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; }
+  .dash-bar-label { font-size: 12px; color: var(--text); width: 100px; flex-shrink: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .dash-bar-track { flex: 1; background: var(--surface2); border-radius: 4px; height: 7px; overflow: hidden; }
+  .dash-bar-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--accent2), var(--accent)); transition: width .6s ease; }
+  .dash-bar-fill.green { background: linear-gradient(90deg,#1a8a4a,#2ecc71); }
+  .dash-bar-fill.red   { background: linear-gradient(90deg,#a93226,#e74c3c); }
+  .dash-bar-fill.blue  { background: linear-gradient(90deg,#1a5276,#3498db); }
+  .dash-bar-val { font-size: 11px; color: var(--muted); width: 70px; text-align: right; flex-shrink: 0; }
+  .dash-period { display: flex; gap: 5px; flex-wrap: wrap; }
+  .dash-period-btn { background: var(--surface2); border: 1px solid var(--border); color: var(--muted); border-radius: 20px; padding: 5px 12px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all .15s; font-family: 'DM Sans', sans-serif; }
+  .dash-period-btn.active { background: rgba(48,142,238,.15); border-color: var(--accent); color: var(--accent); }
+  .dash-list-item { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .dash-list-item:last-child { border-bottom: none; }
+  .dash-empty { text-align: center; color: var(--muted); font-size: 13px; padding: 28px 0; }
+  .dash-sparkline { display: flex; align-items: flex-end; gap: 3px; height: 56px; margin-top: 8px; }
+  .dash-spark-bar { flex: 1; background: rgba(48,142,238,.25); border-radius: 3px 3px 0 0; transition: height .4s ease; min-width: 6px; cursor: pointer; }
+  .dash-spark-bar:hover { background: rgba(48,142,238,.5); }
+  .dash-spark-bar.today { background: var(--accent); }
+  .dash-monthly { display: flex; align-items: flex-end; gap: 4px; height: 80px; margin-top: 8px; }
+  .dash-month-bar { flex: 1; background: rgba(52,152,219,.25); border-radius: 3px 3px 0 0; transition: height .5s ease; min-width: 8px; cursor: pointer; position: relative; }
+  .dash-month-bar:hover { background: rgba(52,152,219,.55); }
+  .dash-month-labels { display:flex; justify-content:space-between; font-size:9px; color:var(--muted); margin-top:4px; }
+  .dash-status-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+  .dash-funnel { display:flex; flex-direction:column; gap:6px; }
+  .dash-funnel-row { display:flex; align-items:center; gap:10px; }
+  .dash-funnel-label { font-size:12px; color:var(--text); width:90px; flex-shrink:0; }
+  .dash-funnel-bar { height:28px; border-radius:6px; display:flex; align-items:center; padding:0 10px; font-size:12px; font-weight:700; color:#fff; transition: width .6s ease; min-width:40px; }
+  .dash-export-btn { background:none; border:1px solid var(--border); color:var(--muted); border-radius:6px; padding:3px 9px; font-size:10px; font-weight:700; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all .15s; text-transform:uppercase; letter-spacing:.5px; }
+  .dash-export-btn:hover { border-color:var(--accent); color:var(--accent); }
+  @media(max-width:600px){ .dash-row,.dash-row-3 { grid-template-columns:1fr; } }
+
+  /* MODELOS */
+  .modelo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px,1fr)); gap: 14px; }
+  .modelo-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px; cursor: pointer; transition: border-color .15s, box-shadow .15s; }
+  .modelo-card:hover { border-color: var(--accent); box-shadow: 0 8px 24px rgba(48,142,238,.1); }
+  .modelo-card-name { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 1.5px; margin-bottom: 4px; }
+  .modelo-card-desc { font-size: 12px; color: var(--muted); line-height: 1.5; margin-bottom: 12px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .modelo-card-meta { font-size: 11px; color: var(--muted); display: flex; gap: 10px; flex-wrap: wrap; }
+  .modelo-card-actions { display: flex; gap: 6px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border); }
+  .modelo-save-form { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+  .modelo-save-title { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 12px; }
+  .modelo-inp { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 9px 12px; outline: none; width: 100%; transition: border-color .15s; margin-bottom: 8px; }
+  .modelo-inp:focus { border-color: var(--accent); }
+  .modelo-empty { text-align: center; color: var(--muted); font-size: 13px; padding: 40px 0; }
+
+  /* LAYOUT */
+  .container { max-width: 960px; margin: 0 auto; padding: 28px 20px 60px; }
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* SECTION TITLE */
+  .section-title { font-family: 'Bebas Neue', sans-serif; font-size: 13px; letter-spacing: 3px; color: var(--accent);
+    text-transform: uppercase; margin: 28px 0 10px; display: flex; align-items: center; gap: 10px; }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* FIELDS */
+  .client-section { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field label { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); }
+  .field input, .field select { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text);
+    font-size: 14px; font-family: 'DM Sans', sans-serif; padding: 10px 14px; outline: none; transition: border-color 0.2s; }
+  .field input:focus, .field select:focus { border-color: var(--accent); }
+  .field input::placeholder { color: var(--muted); }
+  .field select option { background: var(--surface); }
+  .field textarea { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text);
+    font-size: 14px; font-family: 'DM Sans', sans-serif; padding: 10px 14px; outline: none; transition: border-color 0.2s;
+    resize: vertical; min-height: 90px; line-height: 1.5; }
+  .field textarea:focus { border-color: var(--accent); }
+  .field textarea::placeholder { color: var(--muted); }
+  .obs-section { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px 24px; }
+
+  /* ITEM ROWS */
+  .items-grid { display: flex; flex-direction: column; gap: 6px; }
+  .item-row { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 13px 18px;
+    display: grid; grid-template-columns: 1fr auto auto auto; align-items: center; gap: 16px; transition: border-color 0.2s, background 0.2s; }
+  .item-row:hover { border-color: #3e4468; background: var(--surface2); }
+  .item-row.active { border-color: var(--accent); background: rgba(48,142,238,0.06); }
+
+  .item-obs { font-size: 11px; color: var(--muted); font-style: italic; margin-top: 2px; }
+  .item-label { font-size: 14px; font-weight: 500; color: var(--text); }
+  .item-unit { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .item-price-tag { font-size: 12px; color: var(--muted); text-align: right; white-space: nowrap; }
+  .qty-control { display: flex; align-items: center; gap: 8px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 4px 10px; }
+  .qty-btn { background: none; border: none; color: var(--accent); font-size: 20px; cursor: pointer; line-height: 1; padding: 2px 4px; border-radius: 4px; transition: background 0.15s; font-weight: 300; }
+  .qty-btn:hover { background: rgba(48,142,238,0.12); }
+  .qty-input { width: 64px; text-align: center; background: none; border: none; color: var(--text); font-size: 15px; font-weight: 600; font-family: 'DM Sans', sans-serif; outline: none; -moz-appearance: textfield; }
+  .qty-input::-webkit-outer-spin-button, .qty-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+  .item-total { font-weight: 600; font-size: 14px; color: var(--accent); text-align: right; min-width: 110px; white-space: nowrap; transition: all 0.2s; }
+  .item-total.zero { color: var(--muted); font-weight: 400; }
+
+  /* SUMMARY */
+  .summary-card { margin-top: 32px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+  .summary-header { background: linear-gradient(135deg, var(--accent2), var(--accent)); padding: 20px 28px; display: flex; align-items: center; justify-content: space-between; }
+  .summary-header-title { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 2px; color: #fff; }
+  .summary-header-m2 { font-size: 13px; color: rgba(255,255,255,0.85); }
+  .summary-body { padding: 22px 28px; display: flex; flex-direction: column; gap: 8px; }
+  .summary-line { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); }
+  .summary-line:last-of-type { border-bottom: none; }
+  .summary-line-label { font-size: 13px; color: var(--muted); }
+  .summary-line-value { font-size: 14px; font-weight: 600; }
+  .summary-total-row { margin-top: 8px; background: var(--bg); border: 1px solid var(--accent); border-radius: 12px; padding: 18px 24px; display: flex; justify-content: space-between; align-items: center; }
+  .summary-total-label { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 2px; }
+  .summary-total-value { font-family: 'Bebas Neue', sans-serif; font-size: 34px; letter-spacing: 2px; color: var(--accent); }
+
+  /* DISCOUNT & STATUS */
+  .discount-row { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
+  .discount-row .field { flex: 1; min-width: 140px; }
+  .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 5px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; border: 2px solid transparent; transition: all 0.2s; }
+  .status-negociacao { background: rgba(52,152,219,0.15); color: #3498db; border-color: rgba(52,152,219,0.3); }
+  .status-aprovado   { background: rgba(46,204,113,0.15); color: #2ecc71; border-color: rgba(46,204,113,0.3); }
+  .status-perdido    { background: rgba(231,76,60,0.15);  color: #e74c3c; border-color: rgba(231,76,60,0.3);  }
+  .status-badge.selected { border-width: 2px; box-shadow: 0 0 0 3px rgba(48,142,238,0.2); }
+  .discount-result { background: var(--bg); border: 1px solid var(--accent); border-radius: 8px; padding: 10px 16px; font-size: 13px; color: var(--accent); font-weight: 600; white-space: nowrap; display: flex; align-items: center; }
+
+  /* HISTORY */
+  .history-empty { text-align: center; padding: 32px; color: var(--muted); font-size: 14px; }
+  .history-item { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; gap: 16px; transition: border-color 0.2s; }
+  .history-item:hover { border-color: #3e4468; }
+  .history-item-info { flex: 1; }
+  .history-item-name { font-size: 14px; font-weight: 600; }
+  .history-item-meta { font-size: 12px; color: var(--muted); margin-top: 3px; }
+  .history-item-total { font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: var(--accent); letter-spacing: 1px; }
+  .history-item-actions { display: flex; gap: 8px; }
+  .history-status { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; margin-left: 8px; }
+
+  /* PRESENTATION MODE */
+  .present-overlay { position: fixed; inset: 0; background: #0f1117; z-index: 500; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 40px; }
+  .present-overlay.show { display: flex; }
+  .present-logo { height: 64px; width: auto; background: #fff; border-radius: 10px; padding: 6px 12px; margin-bottom: 32px; }
+  .present-client { font-size: 16px; color: var(--muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 2px; }
+  .present-name { font-family: 'Bebas Neue', sans-serif; font-size: 48px; letter-spacing: 3px; color: var(--text); margin-bottom: 32px; }
+  .present-items { width: 100%; max-width: 700px; display: flex; flex-direction: column; gap: 8px; margin-bottom: 32px; max-height: 45vh; overflow-y: auto; }
+  .present-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; background: var(--surface); border-radius: 10px; font-size: 15px; }
+  .present-item-name { font-weight: 500; }
+  .present-item-val { font-weight: 600; color: var(--accent); }
+  .present-divider { width: 100%; max-width: 700px; height: 1px; background: var(--border); margin-bottom: 24px; }
+  .present-total-label { font-size: 14px; color: var(--muted); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px; }
+  .present-total { font-family: 'Bebas Neue', sans-serif; font-size: 72px; letter-spacing: 4px; color: var(--accent); line-height: 1; }
+  .present-close { position: fixed; top: 24px; right: 24px; background: var(--surface); border: 1px solid var(--border); color: var(--muted); font-size: 13px; font-family: 'DM Sans', sans-serif; padding: 8px 16px; border-radius: 8px; cursor: pointer; transition: all 0.2s; z-index: 501; }
+  .present-close:hover { border-color: var(--red); color: var(--red); }
+
+  /* BUTTONS */
+  .actions { margin-top: 20px; display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn { padding: 13px 24px; border-radius: 10px; font-size: 13px; font-weight: 600; font-family: 'DM Sans', sans-serif;
+    letter-spacing: 0.5px; cursor: pointer; border: none; transition: all 0.2s; text-transform: uppercase; }
+  .btn-primary { background: linear-gradient(135deg, var(--accent2), var(--accent)); color: #fff; flex: 1; }
+  .btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+  .btn-ghost { background: var(--surface); border: 1px solid var(--border); color: var(--muted); }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-danger { background: var(--surface); border: 1px solid var(--red); color: var(--red); }
+  .btn-danger:hover { background: rgba(231,76,60,0.1); }
+  .btn-sm { padding: 7px 14px; font-size: 12px; }
+
+  /* ADMIN */
+  .config-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+  .config-box { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; }
+  .config-box-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); margin-bottom: 14px; }
+  .tag-list { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; min-height: 32px; }
+  .tag { display: inline-flex; align-items: center; gap: 6px; background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 5px 12px; font-size: 12px; font-weight: 500; }
+  .tag-del { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 14px; line-height: 1; padding: 0; transition: color 0.15s; }
+  .tag-del:hover { color: var(--red); }
+  .tag-add-row { display: flex; gap: 8px; }
+  .tag-input { flex: 1; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text);
+    font-size: 13px; font-family: 'DM Sans', sans-serif; padding: 8px 12px; outline: none; transition: border-color 0.2s; }
+  .tag-input:focus { border-color: var(--accent); }
+  .tag-input::placeholder { color: var(--muted); }
+  .tag-add-btn { background: var(--surface2); border: 1px solid var(--border); color: var(--accent); font-size: 18px; border-radius: 8px; width: 36px; cursor: pointer; transition: all 0.15s; }
+  .tag-add-btn:hover { border-color: var(--accent); background: rgba(48,142,238,0.1); }
+  .sec-tag { display: flex; align-items: center; gap: 8px; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 8px 12px; font-size: 13px; justify-content: space-between; }
+
+  .add-form { background: var(--surface); border: 1px solid var(--accent); border-radius: 14px; padding: 22px 24px; margin-bottom: 24px; }
+  .add-form-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 12px; align-items: end; }
+
+  .admin-toolbar { display: flex; gap: 10px; align-items: center; margin-bottom: 16px; flex-wrap: wrap; }
+  .admin-filter { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: var(--text);
+    font-size: 13px; font-family: 'DM Sans', sans-serif; padding: 9px 14px; outline: none; }
+  .admin-filter:focus { border-color: var(--accent); }
+
+  .admin-table { width: 100%; border-collapse: collapse; }
+  .admin-table th { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); }
+  .admin-table td { padding: 11px 14px; border-bottom: 1px solid var(--border); font-size: 13px; vertical-align: middle; color: var(--text); }
+  .admin-table tr:last-child td { border-bottom: none; }
+  .admin-table tr:hover td { background: var(--surface2); }
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+  .edit-input { background: var(--bg); border: 1px solid var(--accent); border-radius: 6px; color: var(--text);
+    font-size: 13px; font-family: 'DM Sans', sans-serif; padding: 5px 10px; width: 100%; outline: none; }
+  .row-actions { display: flex; gap: 6px; }
+
+  /* DROPDOWN SECTION */
+  .dropdown-section { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px 20px; }
+  .dropdown-add-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .dropdown-search-wrap { position: relative; flex: 1; min-width: 180px; }
+  .dropdown-search { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
+    color: var(--text); font-size: 14px; font-family: 'DM Sans', sans-serif; padding: 10px 14px 10px 38px; outline: none; transition: border-color 0.2s; }
+  .dropdown-search:focus { border-color: var(--accent); }
+  .dropdown-search::placeholder { color: var(--muted); }
+  .dropdown-search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 15px; pointer-events: none; }
+  .dropdown-suggestions { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: var(--surface2);
+    border: 1px solid var(--accent); border-radius: 10px; z-index: 50; max-height: 220px; overflow-y: auto; box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
+  .dropdown-suggestion { padding: 10px 14px; cursor: pointer; font-size: 13px; border-bottom: 1px solid var(--border); transition: background 0.15s; }
+  .dropdown-suggestion:last-child { border-bottom: none; }
+  .dropdown-suggestion:hover, .dropdown-suggestion.focused { background: rgba(48,142,238,0.12); color: var(--accent); }
+  .dropdown-suggestion-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .dropdown-empty { padding: 12px 14px; font-size: 13px; color: var(--muted); text-align: center; }
+  .dropdown-add-btn { background: linear-gradient(135deg, var(--accent2), var(--accent)); border: none; color: #fff;
+    font-size: 13px; font-weight: 600; font-family: 'DM Sans', sans-serif; padding: 10px 20px; border-radius: 8px; cursor: pointer; white-space: nowrap; transition: opacity 0.2s; }
+  .dropdown-add-btn:hover { opacity: 0.88; }
+  .dropdown-added { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; }
+  .dropdown-item-row { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 11px 16px;
+    display: grid; grid-template-columns: 1fr auto auto auto; align-items: center; gap: 14px; transition: border-color 0.2s; }
+  .dropdown-item-row.active { border-color: var(--accent); background: rgba(48,142,238,0.06); }
+  .dropdown-remove-btn { background: none; border: none; color: var(--muted); font-size: 18px; cursor: pointer; line-height: 1; padding: 2px 6px; border-radius: 4px; transition: color 0.15s; }
+  .dropdown-remove-btn:hover { color: var(--red); }
+
+  /* TOGGLE SWITCH */
+  .toggle-wrap { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); cursor: pointer; user-select: none; }
+  .toggle { position: relative; width: 36px; height: 20px; flex-shrink: 0; }
+  .toggle input { opacity: 0; width: 0; height: 0; }
+  .toggle-slider { position: absolute; inset: 0; background: var(--border); border-radius: 20px; transition: 0.2s; cursor: pointer; }
+  .toggle-slider:before { content: ''; position: absolute; width: 14px; height: 14px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: 0.2s; }
+  .toggle input:checked + .toggle-slider { background: var(--accent); }
+  .toggle input:checked + .toggle-slider:before { transform: translateX(16px); }
+
+
+  /* LOGIN */
+  .login-overlay { position: fixed; inset: 0; background: var(--bg); z-index: 300; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0;
+    background-image: radial-gradient(ellipse at 20% 0%, rgba(48,142,238,0.10) 0%, transparent 60%), radial-gradient(ellipse at 80% 100%, rgba(26,101,184,0.08) 0%, transparent 60%); }
+  .login-box { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 40px 36px; width: 100%; max-width: 400px; box-shadow: 0 24px 64px rgba(0,0,0,0.4); }
+  .login-logo { display: flex; justify-content: center; margin-bottom: 28px; }
+  .login-logo img { height: 64px; width: auto; background: #fff; border-radius: 10px; padding: 6px 12px; }
+  .login-title { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 3px; color: var(--accent); text-align: center; margin-bottom: 4px; }
+  .login-sub { font-size: 13px; color: var(--muted); text-align: center; margin-bottom: 28px; }
+  .login-field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+  .login-field label { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); }
+  .login-field input { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; color: var(--text); font-size: 15px; font-family: 'DM Sans', sans-serif; padding: 13px 16px; outline: none; transition: border-color 0.2s; }
+  .login-field input:focus { border-color: var(--accent); }
+  .login-field input::placeholder { color: var(--muted); }
+  .login-err { font-size: 12px; color: var(--red); min-height: 16px; margin-bottom: 8px; text-align: center; }
+  .login-btn { width: 100%; padding: 14px; border-radius: 10px; font-size: 14px; font-weight: 600; font-family: 'DM Sans', sans-serif; cursor: pointer; border: none; background: linear-gradient(135deg, var(--accent2), var(--accent)); color: #fff; transition: opacity 0.2s; margin-top: 4px; }
+  .login-btn:hover { opacity: 0.88; }
+  .login-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .user-info { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); }
+  .user-email { max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .logout-btn { background: none; border: 1px solid var(--border); color: var(--muted); font-size: 11px; font-family: 'DM Sans', sans-serif; padding: 5px 10px; border-radius: 6px; cursor: pointer; transition: all 0.2s; }
+  .logout-btn:hover { border-color: var(--red); color: var(--red); }
+
+
+  /* FORMAS DE PAGAMENTO */
+  .payment-card { margin-top: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+  .payment-header { background: linear-gradient(135deg, #1a6b8a, #2196b0); padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; }
+  .payment-header-title { font-family: 'Bebas Neue', sans-serif; font-size: 17px; letter-spacing: 2px; color: #fff; }
+  .payment-body { padding: 16px 20px; }
+  .payment-row { display: grid; grid-template-columns: 1fr 100px 130px 36px; gap: 8px; align-items: center; margin-bottom: 8px; }
+  .payment-row-header { display: grid; grid-template-columns: 1fr 100px 130px 36px; gap: 8px; margin-bottom: 6px; }
+  .payment-row-header span { font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); }
+  .payment-input { background: var(--bg); border: 1px solid var(--border); border-radius: 7px; color: var(--text); font-size: 13px; font-family: 'DM Sans', sans-serif; padding: 8px 10px; outline: none; width: 100%; transition: border-color 0.2s; }
+  .payment-input:focus { border-color: #2196b0; }
+  .payment-pct { background: var(--bg); border: 1px solid var(--border); border-radius: 7px; color: var(--text); font-size: 13px; font-family: 'DM Sans', sans-serif; padding: 8px 10px; outline: none; width: 100%; transition: border-color 0.2s; -moz-appearance: textfield; }
+  .payment-pct::-webkit-outer-spin-button, .payment-pct::-webkit-inner-spin-button { -webkit-appearance: none; }
+  .payment-pct:focus { border-color: #2196b0; }
+  .payment-val { font-size: 13px; font-weight: 600; color: var(--accent); padding: 8px 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 7px; text-align: right; white-space: nowrap; }
+  .payment-del { background: none; border: none; color: var(--muted); font-size: 16px; cursor: pointer; padding: 4px 6px; border-radius: 6px; transition: color 0.15s; }
+  .payment-del:hover { color: var(--red); }
+  .payment-add-btn { background: none; border: 1px dashed var(--border); color: var(--muted); font-size: 12px; font-family: 'DM Sans', sans-serif; padding: 8px; border-radius: 8px; cursor: pointer; width: 100%; margin-top: 4px; transition: all 0.2s; }
+  .payment-add-btn:hover { border-color: #2196b0; color: #2196b0; }
+  .payment-total-row { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
+  .payment-total-pct { font-size: 12px; color: var(--muted); }
+  .payment-total-pct.over { color: var(--red); font-weight: 600; }
+  .payment-total-pct.ok { color: var(--green); font-weight: 600; }
+
+
+
+  /* INSTALL BTN */
+  .install-btn { display:none; background: linear-gradient(135deg, var(--accent2), var(--accent)); border:none; color:#fff; font-size:12px; font-family:'DM Sans',sans-serif; font-weight:600; padding:8px 14px; border-radius:8px; cursor:pointer; transition:opacity 0.2s; white-space:nowrap; }
+  .install-btn:hover { opacity:0.85; }
+
+
+  /* SOMA M2 TOGGLE */
+  .m2-toggle { display:inline-flex; align-items:center; gap:6px; cursor:pointer; font-size:11px; color:var(--muted); user-select:none; }
+  .m2-toggle input { display:none; }
+  .m2-toggle-track { width:32px; height:18px; background:var(--border); border-radius:9px; position:relative; transition:background 0.2s; flex-shrink:0; }
+  .m2-toggle input:checked + .m2-toggle-track { background:var(--accent); }
+  .m2-toggle-thumb { position:absolute; top:2px; left:2px; width:14px; height:14px; background:#fff; border-radius:50%; transition:left 0.2s; }
+  .m2-toggle input:checked + .m2-toggle-track .m2-toggle-thumb { left:16px; }
+
+  .hide-pdf-badge{font-size:10px;background:rgba(231,76,60,0.15);color:#e74c3c;border-radius:4px;padding:1px 5px;margin-left:4px}
+  /* DRAG & DROP */
+  .drag-handle { cursor: grab; color: var(--muted); font-size: 16px; padding: 0 8px; user-select: none; }
+  .drag-handle:active { cursor: grabbing; }
+  tr.dragging { opacity: 0.4; }
+  tr.drag-over { border-top: 2px solid var(--accent); }
+
+  /* MODAL */
+  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); display: flex; align-items: center;
+    justify-content: center; z-index: 200; backdrop-filter: blur(4px); opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+  .overlay.show { opacity: 1; pointer-events: all; }
+  .modal { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 32px; width: 100%; max-width: 380px; }
+  .modal-title { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 2px; color: var(--accent); margin-bottom: 6px; }
+  .modal-sub { font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+  .modal-input { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; color: var(--text);
+    font-size: 16px; font-family: 'DM Sans', sans-serif; padding: 14px 18px; width: 100%; outline: none; margin-bottom: 14px; letter-spacing: 3px; }
+  .modal-input:focus { border-color: var(--accent); }
+  .modal-err { font-size: 12px; color: var(--red); margin-bottom: 10px; min-height: 16px; }
+
+  /* TOAST */
+  .toast { position: fixed; bottom: 24px; right: 24px; padding: 13px 22px; border-radius: 10px; font-weight: 600;
+    font-size: 14px; transform: translateY(100px); opacity: 0; transition: all 0.3s; z-index: 999; }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast.success { background: var(--green); color: #fff; }
+  .toast.error { background: var(--red); color: #fff; }
+
+  @media (max-width: 640px) {
+    .client-section, .config-grid { grid-template-columns: 1fr; }
+    .item-row { grid-template-columns: 1fr auto; }
+    .item-price-tag { display: none; }
+    header { padding: 0 16px; }
+    .tabs { padding: 0 16px; top: 52px; }
+    .add-form-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN OVERLAY -->
+<!-- MODAL SENHA -->
+<script>var _ORIGINAL_HTML = document.documentElement.outerHTML;</script>
+<div class="overlay" id="pwOverlay">
+  <div class="modal">
+    <div class="modal-title">🔒 Área Admin</div>
+    <div class="modal-sub">Digite a senha para acessar o painel de administração.</div>
+    <input class="modal-input" type="password" id="pwInput" placeholder="••••••" onkeydown="if(event.key==='Enter')checkPw()">
+    <div class="modal-err" id="pwErr"></div>
+    <div style="display:flex;gap:10px;">
+      <button class="btn btn-ghost btn-sm" style="flex:1" onclick="closeAdminModal()">Cancelar</button>
+      <button class="btn btn-primary btn-sm" style="flex:1" onclick="checkPw()">Entrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="logo-wrap"><img src="https://leandrorocha95.github.io/alliance-orcamento/logo_alliance.jpg" alt="Alliance" style="height:32px;width:auto;max-width:120px;object-fit:contain;"><span style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:3px;margin-left:12px;color:var(--text);">Orçamentos</span></div>
+  <div class="header-right">
+    <span class="user-email" id="userEmail" style="font-size:11px;color:var(--muted);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>
+    <button class="admin-btn" onclick="openAdminModal()">⚙️ Admin</button>
+    <div style="display:flex;gap:16px;align-items:center;">
+      <div style="text-align:right;">
+        <div class="header-total-label">Área Total</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;color:var(--muted);line-height:1.2;" id="headerM2">0 m²</div>
+      </div>
+      <div style="text-align:right;">
+        <div class="header-total-label">Valor Final</div>
+        <div class="header-total-value" id="headerTotal">R$ 0,00</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- TABS -->
+<div class="tabs">
+  <div class="tab active" id="tabOrc" onclick="switchTab('orcamento')">📋 Orçamento</div>
+  <div class="tab" id="tabHist" onclick="switchTab('historico')">🗂 Histórico</div>
+  <div class="tab" id="tabModelos" onclick="switchTab('modelos')">📐 Modelos</div>
+  <div class="tab" id="tabDash" style="display:none" onclick="switchTab('dashboard')">📊 Dashboard</div>
+  <div class="tab" id="tabAdm" style="display:none" onclick="switchTab('admin')">⚙️ Administração</div>
+</div>
+
+<!-- PRESENTATION OVERLAY -->
+<div class="present-overlay" id="presentOverlay">
+  <button class="present-close" onclick="closePresent()">✕ Fechar</button>
+  <img class="present-logo" id="presentLogo" src="" alt="Alliance">
+  <div class="present-client">Proposta para</div>
+  <div class="present-name" id="presentName">—</div>
+  <div class="present-items" id="presentItems"></div>
+  <div class="present-divider"></div>
+  <div class="present-total-label">Valor Total</div>
+  <div class="present-total" id="presentTotal">R$ 0,00</div>
+</div>
+
+<!-- ══════════ ORÇAMENTO ══════════ -->
+<div class="container page active" id="page-orcamento">
+
+  <div class="section-title">Dados do Cliente</div>
+  <div class="client-section">
+    <div class="field"><label>Nome do Cliente</label><input type="text" id="clientName" placeholder="Ex: João Silva"></div>
+    <div class="field">
+      <label>Vendedor</label>
+      <select id="vendorName" style="background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:14px;font-family:'DM Sans',sans-serif;padding:10px 14px;outline:none;transition:border-color 0.2s;width:100%;">
+        <option value="">— Selecione —</option>
+      </select>
+    </div>
+    <div class="field"><label>Cidade / Endereço</label><input type="text" id="clientCity" placeholder="Ex: Joinville - SC"></div>
+    <div class="field"><label>Telefone (WhatsApp)</label><input type="text" id="clientPhone" placeholder="Ex: 47 99999-9999"></div>
+    <div class="field">
+      <label>Tipo de Madeira</label>
+      <select id="tipoMadeira" style="background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:14px;font-family:'DM Sans',sans-serif;padding:10px 14px;outline:none;transition:border-color 0.2s;width:100%;">
+        <option value="">— Selecione —</option>
+        <option value="Madeira de Lei">Madeira de Lei</option>
+        <option value="Pinus Tratado">Pinus Tratado</option>
+      </select>
+    </div>
+    <div class="field"><label>Data do Orçamento</label><input type="date" id="quoteDate"></div>
+    <div class="field"><label>Validade do Orçamento</label><input type="date" id="quoteValidity"></div>
+  </div>
+
+  <div class="section-title">Status do Orçamento</div>
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 20px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+    <span style="font-size:12px;color:var(--muted);margin-right:4px;">Situação:</span>
+    <div class="status-badge status-negociacao" id="st-negociacao" onclick="setStatus('negociacao')">💬 Em Negociação</div>
+    <div class="status-badge status-aprovado"   id="st-aprovado"   onclick="setStatus('aprovado')">✅ Aprovado</div>
+    <div class="status-badge status-perdido"    id="st-perdido"    onclick="setStatus('perdido')">❌ Perdido</div>
+  </div>
+
+  <div class="section-title" id="secTitle-main">Itens Principais</div>
+  <div class="items-grid" id="secGrid-main"></div>
+
+  <div class="section-title" id="secTitle-extra">Complementos e Acabamentos</div>
+  <div class="items-grid" id="secGrid-extra"></div>
+
+  <div class="section-title" id="secTitle-log">Logística</div>
+  <div class="items-grid" id="secGrid-log"></div>
+
+  <div id="dynamicSections"></div>
+
+  <div class="section-title">Observações</div>
+  <div class="obs-section">
+    <div class="field">
+      <label>Anotações internas / condições especiais</label>
+      <textarea id="quoteObs" placeholder="Ex: Cliente solicitou acabamento premium. Prazo: 90 dias. Pagamento: 30% entrada..."></textarea>
+    </div>
+  </div>
+
+  <div class="summary-card">
+    <div class="summary-header">
+      <div>
+        <div class="summary-header-title">Resumo do Orçamento</div>
+        <div id="summaryHeaderObs" style="font-size:11px;color:rgba(255,255,255,0.75);margin-top:2px;"></div>
+      </div>
+      <div class="summary-header-m2">Tamanho da Casa: <strong id="totalM2">0 m²</strong></div>
+    </div>
+    <div class="summary-body">
+      <div id="summaryLines"></div>
+      <!-- DISCOUNT -->
+      <div style="display:flex;gap:10px;align-items:flex-end;padding:12px 0 4px;border-top:1px solid var(--border);flex-wrap:wrap;">
+        <div class="field" style="flex:1;min-width:120px;">
+          <label>Desconto</label>
+          <input type="number" id="discountVal" min="0" step="0.01" placeholder="0" style="background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:14px;font-family:'DM Sans',sans-serif;padding:9px 12px;outline:none;width:100%;" oninput="recalc()" onchange="recalc()">
+        </div>
+        <div class="field" style="min-width:100px;">
+          <label>Tipo</label>
+          <select id="discountType" onchange="recalc()" style="background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:14px;font-family:'DM Sans',sans-serif;padding:9px 12px;outline:none;">
+            <option value="pct">% Percentual</option>
+            <option value="fix">R$ Fixo</option>
+          </select>
+        </div>
+        <div class="discount-result" id="discountResult" style="display:none">- R$ 0,00</div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:flex-end;padding:8px 0 4px;flex-wrap:wrap;">
+        <div class="field" style="flex:1;min-width:120px;">
+          <label>Acréscimo</label>
+          <input type="number" id="acrescimoVal" min="0" step="0.01" placeholder="0" style="background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:14px;font-family:'DM Sans',sans-serif;padding:9px 12px;outline:none;width:100%;" oninput="recalc()" onchange="recalc()">
+        </div>
+        <div class="discount-result" id="acrescimoResult" style="display:none;background:rgba(46,204,113,0.1);border-color:var(--green);color:var(--green)">+ R$ 0,00</div>
+      </div>
+      <div class="summary-total-row">
+        <div class="summary-total-label">Valor Final</div>
+        <div class="summary-total-value" id="finalTotal">R$ 0,00</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FORMAS DE PAGAMENTO -->
+  <div class="payment-card" id="paymentCard">
+    <div class="payment-header">
+      <div class="payment-header-title">💳 Formas de Pagamento</div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.8)" id="paymentTotalPct">0% do total</div>
+    </div>
+    <div class="payment-body">
+      <div class="payment-row-header">
+        <span>Etapa</span>
+        <span style="text-align:center">% do Total</span>
+        <span style="text-align:right">Valor (R$)</span>
+        <span></span>
+      </div>
+      <div id="paymentRows"></div>
+      <button class="payment-add-btn" onclick="addPaymentRow()">+ Adicionar etapa</button>
+    </div>
+  </div>
+
+  <!-- Código do orçamento -->
+  <div style="display:flex;align-items:center;gap:10px;padding:0 0 12px 0;">
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:8px;">
+      <span>Orçamento:</span>
+      <strong id="quoteCodeDisplay" style="color:var(--accent);font-family:monospace;letter-spacing:1px;">NOVO</strong>
+    </div>
+    <button class="btn btn-ghost btn-sm" onclick="newQuote()" style="font-size:12px;padding:7px 14px;">+ Novo Orçamento</button>
+  </div>
+
+  <div class="actions">
+    <button class="btn btn-ghost" onclick="resetAll()" style="flex:none;">🗑 Limpar</button>
+    <button class="btn btn-ghost" onclick="saveToHistory()" style="flex:none;">💾 Salvar</button>
+    <button class="btn btn-ghost" onclick="openPresent()" style="flex:none;">🖥 Apresentar</button>
+    <button class="btn btn-ghost" onclick="openWhatsAppModal()" style="flex:none;">💬 WhatsApp</button>
+    <div style="display:flex;gap:6px;align-items:center;flex:none;">
+      <input type="hidden" id="pdfMode" value="detailed">
+      <button class="btn btn-primary" onclick="openPdfModal()" style="white-space:nowrap;">🖨️ Gerar PDF</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ HISTÓRICO ══════════ -->
+<div class="container page" id="page-historico">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:10px;">
+    <div class="section-title" style="margin:0;flex:1;">Orçamentos Salvos</div>
+    <button class="btn btn-danger btn-sm" onclick="clearHistory()">🗑 Limpar Tudo</button>
+  </div>
+  <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:16px;">
+    <div style="position:relative;flex:2;min-width:200px;">
+      <span style="position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:14px;pointer-events:none;">🔍</span>
+      <input id="historySearch" type="text" placeholder="Buscar por nome, código ou vendedor..."
+        oninput="renderHistory()"
+        style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;font-family:'DM Sans',sans-serif;padding:9px 14px 9px 36px;outline:none;">
+    </div>
+    <select id="historyVendorFilter" onchange="renderHistory()" style="background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;font-family:'DM Sans',sans-serif;padding:9px 14px;outline:none;min-width:160px;">
+      <option value="">Todos os vendedores</option>
+    </select>
+    <select id="historyStatusFilter" onchange="renderHistory()" style="background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;font-family:'DM Sans',sans-serif;padding:9px 14px;outline:none;">
+      <option value="">Todos os status</option>
+      <option value="negociacao">💬 Em Negociação</option>
+      <option value="aprovado">✅ Aprovado</option>
+      <option value="perdido">❌ Perdido</option>
+    </select>
+  </div>
+  <div id="historyList" style="display:flex;flex-direction:column;gap:10px;margin-top:16px;"></div>
+</div>
+
+<!-- ══════════ MODELOS ══════════ -->
+<div class="container page" id="page-modelos">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+    <div class="section-title" style="margin:0;">Modelos de Orçamento</div>
+  </div>
+
+  <!-- Salvar orçamento atual como modelo -->
+  <div class="modelo-save-form" id="modeloSaveForm">
+    <div class="modelo-save-title">💾 Salvar orçamento atual como modelo</div>
+    <input class="modelo-inp" id="modeloNomeInp" placeholder="Nome do modelo (ex: Casa 2 Quartos Madeira de Lei)">
+    <textarea class="modelo-inp" id="modeloDescInp" placeholder="Descrição opcional..." style="resize:vertical;min-height:60px;"></textarea>
+    <button class="btn btn-primary btn-sm" onclick="salvarModelo()">Salvar como Modelo</button>
+  </div>
+
+  <!-- Lista de modelos -->
+  <div class="modelo-grid" id="modeloGrid">
+    <div class="modelo-empty">Nenhum modelo salvo ainda.<br>Preencha um orçamento e salve como modelo acima.</div>
+  </div>
+</div>
+
+<!-- ══════════ DASHBOARD ══════════ -->
+<div class="container page" id="page-dashboard">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+    <div class="section-title" style="margin:0;">📊 Dashboard</div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+      <div class="dash-period">
+        <button class="dash-period-btn active" id="dpBtn7"   onclick="setDashPeriod(7,this)">7 dias</button>
+        <button class="dash-period-btn"        id="dpBtn30"  onclick="setDashPeriod(30,this)">30 dias</button>
+        <button class="dash-period-btn"        id="dpBtn90"  onclick="setDashPeriod(90,this)">90 dias</button>
+        <button class="dash-period-btn"        id="dpBtnAll" onclick="setDashPeriod(0,this)">Todos</button>
+      </div>
+      <button class="dash-export-btn" onclick="exportDashCSV()">⬇ CSV</button>
+    </div>
+  </div>
+
+  <!-- KPIs -->
+  <div class="dash-kpis" id="dashKpis"></div>
+
+  <!-- Funil de status -->
+  <div class="dash-card" style="margin-bottom:14px;">
+    <div class="dash-card-title">Funil de Negociação</div>
+    <div id="dashFunil"></div>
+  </div>
+
+  <!-- Vendedor + Evolução mensal -->
+  <div class="dash-row" style="margin-bottom:14px;">
+    <div class="dash-card">
+      <div class="dash-card-title">
+        Por Vendedor
+        <span id="dashVendedorTotal" style="font-size:11px;color:var(--accent);font-weight:600;"></span>
+      </div>
+      <div id="dashVendedor"></div>
+    </div>
+    <div class="dash-card">
+      <div class="dash-card-title">Evolução Mensal (orçamentos)</div>
+      <div id="dashMensal"></div>
+    </div>
+  </div>
+
+  <!-- Atividade diária + Madeira -->
+  <div class="dash-row" style="margin-bottom:14px;">
+    <div class="dash-card">
+      <div class="dash-card-title">Atividade — Últimos 14 dias</div>
+      <div id="dashSparkline"></div>
+    </div>
+    <div class="dash-card">
+      <div class="dash-card-title">Por Tipo de Madeira</div>
+      <div id="dashMadeira"></div>
+    </div>
+  </div>
+
+  <!-- Tabela detalhada por vendedor (só admin) -->
+  <div class="dash-card" id="dashVendedorTableWrap" style="margin-bottom:14px;display:none;">
+    <div class="dash-card-title">Desempenho por Vendedor
+      <button class="dash-export-btn" onclick="exportVendedorCSV()">⬇ CSV</button>
+    </div>
+    <div id="dashVendedorTable"></div>
+  </div>
+
+  <!-- Maiores orçamentos -->
+  <div class="dash-card" style="margin-bottom:16px;">
+    <div class="dash-card-title">Maiores Orçamentos do Período
+      <button class="dash-export-btn" onclick="exportTopCSV()">⬇ CSV</button>
+    </div>
+    <div id="dashTop"></div>
+  </div>
+</div>
+
+<!-- ══════════ ADMIN ══════════ -->
+<div class="container page" id="page-admin">
+
+  <div class="section-title">Configurações</div>
+  <div class="config-grid">
+    <div class="config-box">
+      <div class="config-box-title">Unidades de Medida</div>
+      <div class="tag-list" id="unitTagList"></div>
+      <div class="tag-add-row">
+        <input class="tag-input" id="newUnitInput" placeholder="Ex: pç, hr, kg..." onkeydown="if(event.key==='Enter')addUnit()">
+        <button class="tag-add-btn" onclick="addUnit()">+</button>
+      </div>
+    </div>
+    <div class="config-box">
+      <div class="config-box-title">Seções do Orçamento</div>
+      <div id="secTagList" style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px;"></div>
+      <div class="tag-add-row">
+        <input class="tag-input" id="newSecInput" placeholder="Nome da nova seção..." onkeydown="if(event.key==='Enter')addSection()">
+        <button class="tag-add-btn" onclick="addSection()">+</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">Vendedores</div>
+  <div class="config-box" style="margin-bottom:24px;">
+    <div class="config-box-title">Vendedores Cadastrados</div>
+    <div class="tag-list" id="vendorTagList"></div>
+    <div class="tag-add-row">
+      <input class="tag-input" id="newVendorInput" placeholder="Nome do vendedor..." onkeydown="if(event.key==='Enter')addVendor()">
+      <button class="tag-add-btn" onclick="addVendor()">+</button>
+    </div>
+  </div>
+
+  <div class="section-title">Cadastrar Novo Item</div>
+  <div class="add-form">
+    <div class="add-form-grid">
+      <div class="field"><label>Nome do Item</label><input type="text" id="newLabel" placeholder="Ex: Escada Caracol"></div>
+      <div class="field"><label>Unidade</label><select id="newUnit"></select></div>
+      <div class="field"><label>Preço (R$)</label><input type="number" id="newPrice" placeholder="0,00" min="0" step="0.01"></div>
+      <div class="field"><label>Seção</label><select id="newSection"></select></div>
+
+    </div>
+    <div class="field" style="margin-top:10px;"><label>Observação do Item <span style="color:var(--muted);font-size:11px;">(opcional)</span></label><input type="text" id="newObs" placeholder="Ex: Inclui mão de obra, fundação extra..."></div>
+    <div style="margin-top:10px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;">
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer"><span class="m2-toggle"><input type="checkbox" id="newCountM2"><span class="m2-toggle-track"><span class="m2-toggle-thumb"></span></span></span><span style="font-size:13px;color:var(--text)">Soma na <strong>Área Total (m²)</strong></span></label>
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer"><span class="m2-toggle"><input type="checkbox" id="newHidePdf"><span class="m2-toggle-track"><span class="m2-toggle-thumb"></span></span></span><span style="font-size:13px;color:var(--text)">Ocultar no PDF</span></label>
+    </div>
+    <div style="margin-top:14px;">
+      <button class="btn btn-primary" style="flex:none;padding:11px 28px;" onclick="addItem()">+ Adicionar Item</button>
+    </div>
+  </div>
+
+  <div class="section-title">Itens Cadastrados</div>
+  <div class="admin-toolbar">
+    <input class="admin-filter" type="text" id="filterInput" placeholder="🔍  Buscar item..." oninput="renderAdminTable()" style="flex:1;min-width:180px;">
+    <select class="admin-filter" id="filterSection" onchange="renderAdminTable()"></select>
+  </div>
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+    <table class="admin-table">
+      <thead><tr><th style="width:30px"></th><th>Item</th><th>Unidade</th><th>Preço</th><th>Seção</th><th>Ações</th></tr></thead>
+      <tbody id="adminTbody"></tbody>
+    </table>
+  </div>
+  <div style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap;">
+    <button class="btn btn-primary" style="flex:none;padding:11px 28px;" onclick="saveConfig()">☁️ Salvar Configurações na Nuvem</button>
+    <button class="btn btn-ghost btn-sm" onclick="exportItems()">📤 Exportar JSON</button>
+    <button class="btn btn-ghost btn-sm" onclick="document.getElementById('importFile').click()">📥 Importar JSON</button>
+    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importItems(event)">
+  </div>
+  <div style="margin-top:10px;padding:12px 16px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;font-size:12px;color:var(--muted);line-height:1.6;">
+    💡 <strong style="color:var(--text)">Como funciona:</strong>
+    ao clicar em <em>Salvar Configurações na Nuvem</em>, todos os itens, seções e unidades ficam disponíveis para todos os vendedores automaticamente.
+  </div>
+</div>
+
+<!-- ══════════ MODAL PDF ══════════ -->
+<div id="pdfModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:400;align-items:center;justify-content:center;">
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px 32px;width:100%;max-width:420px;box-shadow:0 24px 64px rgba(0,0,0,0.5);">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;color:var(--accent);margin-bottom:6px;">🖨️ Gerar PDF</div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:22px;">Opções antes de gerar</div>
+
+    <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:22px;">
+      <div>
+        <div style="font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:8px;">Tipo de PDF</div>
+        <div style="display:flex;gap:8px;" id="pdfModeWrap">
+          <label style="flex:1;display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 14px;cursor:pointer;" id="pdfLblDetailed">
+            <input type="radio" name="pdfModalMode" value="detailed" id="pdfModeDetailed" style="accent-color:var(--accent);" checked onchange="pdfModeChange()">
+            <div><div style="font-size:13px;font-weight:600;">Detalhado</div><div style="font-size:11px;color:var(--muted);">Com preços unitários</div></div>
+          </label>
+          <label style="flex:1;display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 14px;cursor:pointer;" id="pdfLblSimple">
+            <input type="radio" name="pdfModalMode" value="simple" id="pdfModeSimple" style="accent-color:var(--accent);" onchange="pdfModeChange()">
+            <div><div style="font-size:13px;font-weight:600;">Simplificado</div><div style="font-size:11px;color:var(--muted);">Sem preços unitários</div></div>
+          </label>
+        </div>
+      </div>
+
+      <div>
+        <div style="font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:8px;">Opções de exibição</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:13px;color:var(--text);">
+            <span class="toggle"><input type="checkbox" id="pdfHideAcrescDesc"><span class="toggle-slider"></span></span>
+            Ocultar acréscimos e descontos
+          </label>
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:13px;color:var(--text);">
+            <span class="toggle"><input type="checkbox" id="pdfHideReg"><span class="toggle-slider"></span></span>
+            Ocultar itens de Regularização
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:10px;">
+      <button class="btn btn-ghost" onclick="closePdfModal()" style="flex:1;">Cancelar</button>
+      <button class="btn btn-primary" onclick="printQuote()" style="flex:2;">🖨️ Gerar PDF</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ MODAL WHATSAPP ══════════ -->
+<div id="waModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:400;align-items:center;justify-content:center;">
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px 32px;width:100%;max-width:440px;box-shadow:0 24px 64px rgba(0,0,0,0.5);">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;color:var(--accent);margin-bottom:6px;">💬 Enviar via WhatsApp</div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:22px;">Escolha as opções antes de enviar</div>
+
+    <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:22px;">
+      <div>
+        <div style="font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:8px;">Formato da mensagem</div>
+        <div style="display:flex;gap:8px;">
+          <label style="flex:1;display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 14px;cursor:pointer;transition:border-color 0.2s;" id="waLblSimple">
+            <input type="radio" name="waFormat" value="simple" id="waFmtSimple" style="accent-color:var(--accent);" checked onchange="waFormatChange()">
+            <div><div style="font-size:13px;font-weight:600;">Simplificado</div><div style="font-size:11px;color:var(--muted);">Itens sem valores</div></div>
+          </label>
+          <label style="flex:1;display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 14px;cursor:pointer;transition:border-color 0.2s;" id="waLblDetailed">
+            <input type="radio" name="waFormat" value="detailed" id="waFmtDetailed" style="accent-color:var(--accent);" onchange="waFormatChange()">
+            <div><div style="font-size:13px;font-weight:600;">Detalhado</div><div style="font-size:11px;color:var(--muted);">Itens com valores</div></div>
+          </label>
+        </div>
+      </div>
+
+      <div>
+        <div style="font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:8px;">Opções de exibição</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:13px;color:var(--text);">
+            <span class="toggle"><input type="checkbox" id="waHideAcrescDesc"><span class="toggle-slider"></span></span>
+            Ocultar acréscimos e descontos
+          </label>
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:13px;color:var(--text);">
+            <span class="toggle"><input type="checkbox" id="waHideReg"><span class="toggle-slider"></span></span>
+            Ocultar itens de Regularização
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:10px;">
+      <button class="btn btn-ghost" onclick="closeWhatsAppModal()" style="flex:1;">Cancelar</button>
+      <button class="btn btn-primary" onclick="sendWhatsApp()" style="flex:2;">📱 Enviar no WhatsApp</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+
+<script>
+// ═══════════════════════════════════════════════════
+// SENHA
+// ═══════════════════════════════════════════════════
+const ADMIN_PASSWORD = '1234'; // ← ALTERE AQUI
+
+function openAdminModal() {
+  document.getElementById('pwOverlay').classList.add('show');
+  setTimeout(function(){ document.getElementById('pwInput').focus(); }, 100);
+}
+function closeAdminModal() {
+  document.getElementById('pwOverlay').classList.remove('show');
+  document.getElementById('pwInput').value = '';
+  document.getElementById('pwErr').textContent = '';
+}
+function checkPw() {
+  if (document.getElementById('pwInput').value === ADMIN_PASSWORD) {
+    if (!_isAdmin) { document.getElementById('pwErr').textContent = 'Você não tem permissão de admin.'; return; }
+    closeAdminModal();
+    document.getElementById('tabAdm').style.display = '';
+    document.getElementById('tabDash').style.display = '';
+    switchTab('admin');
+  } else {
+    document.getElementById('pwErr').textContent = 'Senha incorreta.';
+    document.getElementById('pwInput').value = '';
+    document.getElementById('pwInput').focus();
+  }
+}
+
+// ═══════════════════════════════════════════════════
+// TABS
+// ═══════════════════════════════════════════════════
+function switchTab(page) {
+  ['orcamento','historico','modelos','dashboard','admin'].forEach(function(p) {
+    var el = document.getElementById('page-'+p);
+    if (el) el.classList.toggle('active', p===page);
+    var tabId = p==='orcamento' ? 'tabOrc' : p==='historico' ? 'tabHist' : p==='modelos' ? 'tabModelos' : p==='dashboard' ? 'tabDash' : 'tabAdm';
+    var tab = document.getElementById(tabId);
+    if (tab) tab.classList.toggle('active', p===page);
+  });
+  if (page === 'admin')     { renderConfigPanels(); renderAdminTable(); }
+  if (page === 'orcamento')   renderOrcamento();
+  if (page === 'historico')   renderHistory();
+  if (page === 'modelos')     renderModelos();
+  if (page === 'dashboard')   renderDashboard();
+}
+
+// ═══════════════════════════════════════════════════
+// DADOS E PERSISTÊNCIA
+// ═══════════════════════════════════════════════════
+var DEFAULT_UNITS = ['m²','mt linear','unid.','verba'];
+
+var DEFAULT_SECTIONS = [
+  { id:'main',  label:'Itens Principais', dropdown: false },
+  { id:'extra', label:'Complementos',     dropdown: false },
+  { id:'log',   label:'Logística',        dropdown: true  }
+];
+
+var DEFAULT_ITEMS = {
+  main: [
+    { id:'alvara',   label:'Alvará de Construção',        unit:'m²',        price:90,    group:'outros'   },
+    { id:'fechada',  label:'Área Fechada',                 unit:'m²',        price:2200,  group:'fechada'  },
+    { id:'aberta',   label:'Área Aberta',                  unit:'m²',        price:1350,  group:'aberta'   },
+    { id:'banheiro', label:'Banheiros e Lavanderia',       unit:'unid.',     price:2000,  group:'banheiro' },
+    { id:'telhado',  label:'Modelo do Telhado (testeira)', unit:'unid.',     price:10000, group:'outros'   }
+  ],
+  extra: [
+    { id:'beiral',    label:'Beiral do Telhado Forrado',           unit:'m²',        price:200   },
+    { id:'bloco',     label:'Bloco a Mais',                        unit:'mt linear', price:85    },
+    { id:'churras',   label:'Churrasqueira/Lareira Tradicional',   unit:'unid.',     price:15000 },
+    { id:'escada',    label:'Escada Grande',                       unit:'unid.',     price:15000 },
+    { id:'forro_mad', label:'Forro em Madeira',                    unit:'m²',        price:150   },
+    { id:'forro_inc', label:'Forro Inclinado',                     unit:'m²',        price:350   },
+    { id:'forro_lis', label:'Forro Liso',                          unit:'m²',        price:25    },
+    { id:'guarda',    label:'Guarda Corpo',                        unit:'mt linear', price:350   },
+    { id:'porcel',    label:'Colocação de Porcelanato',            unit:'m²',        price:30    },
+    { id:'pdupla',    label:'Parede Dupla',                        unit:'m²',        price:150   },
+    { id:'plat_ab',   label:'Parede Platibanda Área Aberta',       unit:'m²',        price:200   },
+    { id:'plat_fe',   label:'Parede Platibanda Área Fechada',      unit:'m²',        price:150   },
+    { id:'pergolado', label:'Pergolado com Deck e Vidro Temperado',unit:'m²',        price:1800  },
+    { id:'pintura',   label:'Pintura',                             unit:'m²',        price:220   },
+    { id:'eletrico',  label:'Pontos Elétricos a Mais',             unit:'unid.',     price:200   },
+    { id:'box',       label:'Box',                                 unit:'unid.',     price:1000  },
+    { id:'tel_esm',   label:'Telhas Esmaltadas',                   unit:'m²',        price:40    },
+    { id:'tel_sand',  label:'Telhas Sanduíche',                    unit:'m²',        price:110   }
+  ],
+  log: [
+    { id:'desloc', label:'Deslocamento', unit:'unid.', price:10000 }
+  ]
+};
+
+function loadData(key, def) {
+  try { var s = localStorage.getItem(key); return s ? JSON.parse(s) : JSON.parse(JSON.stringify(def)); }
+  catch(e) { return JSON.parse(JSON.stringify(def)); }
+}
+function saveAll() {
+  localStorage.setItem('obras_vendors',  JSON.stringify(VENDORS));
+  localStorage.setItem('obras_units',    JSON.stringify(UNITS));
+  localStorage.setItem('obras_sections', JSON.stringify(SECTIONS));
+  localStorage.setItem('obras_items',    JSON.stringify(ITEMS));
+}
+
+function saveConfig() {
+  showToast('\u23f3 Salvando configurações...', 'success');
+  var payload = {
+    id: 1,
+    units:    JSON.stringify(UNITS),
+    sections: JSON.stringify(SECTIONS),
+    items:    JSON.stringify(ITEMS),
+    vendors:  JSON.stringify(VENDORS)
+  };
+  // Usa a anon key diretamente (policy config_publica permite ALL sem autenticação)
+  fetch(SUPABASE_URL + '/rest/v1/config?on_conflict=id', {
+    method: 'POST',
+    headers: {
+      'apikey':        SUPABASE_KEY,
+      'Authorization': 'Bearer ' + SUPABASE_KEY,
+      'Content-Type':  'application/json',
+      'Prefer':        'resolution=merge-duplicates'
+    },
+    body: JSON.stringify(payload)
+  })
+  .then(function(r) {
+    if (r.ok || r.status === 201) {
+      showToast('\u2713 Configurações salvas na nuvem!');
+    } else {
+      r.text().then(function(t){ showToast('Erro ao salvar: ' + t, 'error'); });
+    }
+  })
+  .catch(function(){ showToast('Sem conexão com a nuvem', 'error'); });
+}
+
+function loadConfig(callback) {
+  sbFetch('GET', SUPABASE_URL + '/rest/v1/config?id=eq.1')
+  .then(function(r){ return r.json(); })
+  .then(function(rows) {
+    if (rows && rows[0]) {
+      try { UNITS    = JSON.parse(rows[0].units);    } catch(e){}
+      try { SECTIONS = JSON.parse(rows[0].sections); } catch(e){}
+      try { ITEMS    = JSON.parse(rows[0].items);    } catch(e){}
+      try { if (rows[0].vendors) VENDORS = JSON.parse(rows[0].vendors); } catch(e){}
+      syncItemKeys();
+      saveAll(); // also update localStorage as cache
+    }
+    // Populate vendor select immediately after data loads, before callback
+    if (typeof populateVendorSelect === 'function') populateVendorSelect();
+    if (callback) callback();
+  })
+  .catch(function(){ if (callback) callback(); });
+}
+function syncItemKeys() {
+  SECTIONS.forEach(function(s) { if (!ITEMS[s.id]) ITEMS[s.id] = []; });
+}
+
+var VENDORS  = loadData('obras_vendors',  []);
+var UNITS    = loadData('obras_units',    DEFAULT_UNITS);
+var SECTIONS = loadData('obras_sections', DEFAULT_SECTIONS);
+var ITEMS    = loadData('obras_items',    DEFAULT_ITEMS);
+syncItemKeys();
+
+var state     = {};
+var editingId = null;
+var currentStatus = 'negociacao';
+
+// ═══════════════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════════════
+function fmt(v) { return 'R$ ' + v.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2}); }
+function uid()  { return 'c' + Date.now() + Math.random().toString(36).slice(2,5); }
+
+function allItems() {
+  var arr = [];
+  SECTIONS.forEach(function(s) { (ITEMS[s.id]||[]).forEach(function(i){ arr.push(i); }); });
+  return arr;
+}
+function getItem(id) { return allItems().find(function(i){ return i.id===id; }); }
+function sectionOf(id) {
+  var found = SECTIONS.find(function(s){ return (ITEMS[s.id]||[]).find(function(i){ return i.id===id; }); });
+  return found ? found.id : SECTIONS[0].id;
+}
+function secLabel(id) {
+  var s = SECTIONS.find(function(s){ return s.id===id; });
+  return s ? s.label : id;
+}
+
+function showToast(msg, type) {
+  type = type || 'success';
+  var t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast ' + type + ' show';
+  setTimeout(function(){ t.className = 'toast'; }, 2600);
+}
+
+var BADGE_COLORS = [
+  ['rgba(48,142,238,0.15)','#308EEE'],
+  ['rgba(46,204,113,0.12)','#2ecc71'],
+  ['rgba(26,101,184,0.12)','#1A65B8'],
+  ['rgba(52,152,219,0.12)','#3498db'],
+  ['rgba(155,89,182,0.12)','#9b59b6'],
+  ['rgba(26,188,156,0.12)','#1abc9c']
+];
+function secBadgeStyle(idx) {
+  var c = BADGE_COLORS[idx % BADGE_COLORS.length];
+  return 'background:' + c[0] + ';color:' + c[1];
+}
+
+// ═══════════════════════════════════════════════════
+// ORÇAMENTO
+// ═══════════════════════════════════════════════════
+var _dropAvailable = {}; // stores available items per dropdown section
+
+function renderOrcamento() {
+  // All sections rendered uniformly
+  var fixedIds = ['main','extra','log'];
+
+  // Clear fixed grids
+  fixedIds.forEach(function(sid) {
+    var grid = document.getElementById('secGrid-' + sid);
+    var title = document.getElementById('secTitle-' + sid);
+    if (!grid) return;
+    grid.innerHTML = '';
+    var sec = SECTIONS.find(function(s){ return s.id===sid; });
+    if (!sec) return;
+    if (title) title.textContent = sec.label;
+    if (sec.dropdown) {
+      grid.appendChild(buildDropdownSection(sec));
+    } else {
+      (ITEMS[sid]||[]).forEach(function(i){ grid.appendChild(buildRow(i)); });
+    }
+  });
+
+  // Dynamic sections
+  var dynContainer = document.getElementById('dynamicSections');
+  dynContainer.innerHTML = '';
+  SECTIONS.forEach(function(sec) {
+    if (fixedIds.indexOf(sec.id) !== -1) return;
+    var titleEl = document.createElement('div');
+    titleEl.className = 'section-title';
+    titleEl.textContent = sec.label;
+    var gridEl = document.createElement('div');
+    gridEl.className = 'items-grid';
+    gridEl.id = 'secGrid-' + sec.id;
+    dynContainer.appendChild(titleEl);
+    dynContainer.appendChild(gridEl);
+    if (sec.dropdown) {
+      gridEl.appendChild(buildDropdownSection(sec));
+    } else {
+      (ITEMS[sec.id]||[]).forEach(function(i){ gridEl.appendChild(buildRow(i)); });
+    }
+  });
+
+  populateVendorSelect();
+  recalc();
+}
+
+function buildDropdownSection(sec) {
+  var items = ITEMS[sec.id] || [];
+  var added     = items.filter(function(i){ return (state[i.id]||0) > 0; });
+  var available = items.filter(function(i){ return (state[i.id]||0) === 0; });
+
+  // Store synchronously so dropdownFilter can read immediately
+  _dropAvailable[sec.id] = available;
+
+  var wrap = document.createElement('div');
+  wrap.className = 'dropdown-section';
+  wrap.id = 'dropsec-' + sec.id;
+
+  wrap.innerHTML =
+    '<div class="dropdown-add-row">' +
+      '<div class="dropdown-search-wrap">' +
+        '<span class="dropdown-search-icon">🔍</span>' +
+        '<input class="dropdown-search" type="text" id="dropsearch-' + sec.id + '"' +
+          ' placeholder="Buscar ou selecionar item..."' +
+          ' oninput="dropdownFilter(\'' + sec.id + '\')"' +
+          ' onfocus="dropdownFilter(\'' + sec.id + '\')"' +
+          ' onkeydown="dropdownKeyNav(event,\'' + sec.id + '\')"' +
+          ' autocomplete="off">' +
+        '<div class="dropdown-suggestions" id="dropsugg-' + sec.id + '" style="display:none;"></div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="dropdown-added" id="dropadded-' + sec.id + '"></div>';
+
+  // Render added items into the container after innerHTML is set
+  var addedContainer = wrap.querySelector('#dropadded-' + sec.id);
+  added.forEach(function(i){ addedContainer.appendChild(buildDropdownRow(i, sec.id)); });
+
+  return wrap;
+}
+
+function dropdownFilter(secId) {
+  var input = document.getElementById('dropsearch-' + secId);
+  var sugg  = document.getElementById('dropsugg-' + secId);
+  if (!input || !sugg) return;
+
+  var q = input.value.trim().toLowerCase();
+  var available = _dropAvailable[secId] || [];
+
+  if (!q) {
+    // show all available items when field is focused with no text
+    if (available.length === 0) { sugg.style.display = 'none'; return; }
+    sugg.innerHTML = available.map(function(i) {
+      return '<div class="dropdown-suggestion" data-id="' + i.id + '"' +
+        ' onmousedown="dropdownPickItem(\'' + i.id + '\',\'' + secId + '\')">' +
+        '<div>' + i.label + '</div>' +
+        '<div class="dropdown-suggestion-sub">' + i.unit + ' · ' + fmt(i.price) + '</div>' +
+        '</div>';
+    }).join('');
+    sugg.style.display = 'block';
+    sugg._focusIdx = -1;
+    return;
+  }
+
+  var matches = available.filter(function(i){ return i.label.toLowerCase().indexOf(q) !== -1; });
+
+  if (matches.length === 0) {
+    sugg.innerHTML = '<div class="dropdown-empty">Nenhum item encontrado</div>';
+  } else {
+    sugg.innerHTML = matches.map(function(i) {
+      return '<div class="dropdown-suggestion" data-id="' + i.id + '"' +
+        ' onmousedown="dropdownPickItem(\'' + i.id + '\',\'' + secId + '\')">' +
+        '<div>' + i.label + '</div>' +
+        '<div class="dropdown-suggestion-sub">' + i.unit + ' · ' + fmt(i.price) + '</div>' +
+        '</div>';
+    }).join('');
+  }
+  sugg.style.display = 'block';
+  sugg._focusIdx = -1;
+}
+
+function dropdownKeyNav(e, secId) {
+  var sugg = document.getElementById('dropsugg-' + secId);
+  if (!sugg || sugg.style.display === 'none') return;
+  var items = sugg.querySelectorAll('.dropdown-suggestion');
+  if (!items.length) return;
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    sugg._focusIdx = Math.min((sugg._focusIdx||0) + 1, items.length - 1);
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    sugg._focusIdx = Math.max((sugg._focusIdx||-1) - 1, 0);
+  } else if (e.key === 'Enter') {
+    e.preventDefault();
+    var idx = sugg._focusIdx >= 0 ? sugg._focusIdx : 0;
+    if (items[idx]) { var id = items[idx].getAttribute('data-id'); dropdownPickItem(id, secId); }
+    return;
+  } else if (e.key === 'Escape') {
+    sugg.style.display = 'none'; return;
+  }
+  items.forEach(function(el, i){ el.classList.toggle('focused', i === sugg._focusIdx); });
+}
+
+function dropdownPickItem(itemId, secId) {
+  state[itemId] = 1;
+  var sec = SECTIONS.find(function(s){ return s.id===secId; });
+  var grid = document.getElementById('secGrid-' + secId);
+  if (grid && sec) { grid.innerHTML = ''; grid.appendChild(buildDropdownSection(sec)); }
+  // focus search again
+  setTimeout(function(){
+    var inp = document.getElementById('dropsearch-' + secId);
+    if (inp) { inp.value = ''; inp.focus(); }
+  }, 50);
+  recalc();
+}
+
+function dropdownAddItem(secId) {
+  var input = document.getElementById('dropsearch-' + secId);
+  if (input && input._pendingId) dropdownPickItem(input._pendingId, secId);
+}
+
+function buildDropdownRow(item, secId) {
+  if (state[item.id] === undefined) state[item.id] = 0;
+  var qty = state[item.id];
+  var row = document.createElement('div');
+  row.className = 'dropdown-item-row' + (qty > 0 ? ' active' : '');
+  row.id = 'row-' + item.id;
+  row.innerHTML =
+    '<div>' +
+      '<div class="item-label">' + item.label + '</div>' +
+      (item.obs ? '<div class="item-obs">' + item.obs + '</div>' : '') +
+      '<div class="item-unit">' + item.unit + ' · ' + fmt(item.price) + '</div>' +
+    '</div>' +
+    '<div class="qty-control">' +
+      '<button class="qty-btn" onclick="changeQty(\'' + item.id + '\',-1)">−</button>' +
+      '<input class="qty-input" type="number" min="0" step="0.01" value="' + qty + '" id="qty-' + item.id + '"' +
+        ' onchange="setQty(\'' + item.id + '\',this.value)" onblur="setQty(\'' + item.id + '\',this.value)">' +
+      '<button class="qty-btn" onclick="changeQty(\'' + item.id + '\',1)">+</button>' +
+    '</div>' +
+    '<div class="item-total' + (qty===0?' zero':'') + '" id="total-' + item.id + '">' + fmt(qty*item.price) + '</div>' +
+    '<button class="dropdown-remove-btn" onclick="dropdownRemoveItem(\'' + item.id + '\',\'' + secId + '\')" title="Remover">×</button>';
+  return row;
+}
+
+function dropdownAddItem(secId) {
+  var sel = document.getElementById('dropsel-' + secId);
+  if (!sel || !sel.value) return;
+  var id = sel.value;
+  state[id] = 1;
+  // Re-render the whole dropdown section
+  var sec = SECTIONS.find(function(s){ return s.id===secId; });
+  var grid = document.getElementById('secGrid-' + secId);
+  if (grid && sec) { grid.innerHTML = ''; grid.appendChild(buildDropdownSection(sec)); }
+  recalc();
+}
+
+function dropdownRemoveItem(itemId, secId) {
+  state[itemId] = 0;
+  var sec = SECTIONS.find(function(s){ return s.id===secId; });
+  var grid = document.getElementById('secGrid-' + secId);
+  if (grid && sec) { grid.innerHTML = ''; grid.appendChild(buildDropdownSection(sec)); }
+  setTimeout(function(){
+    var inp = document.getElementById('dropsearch-' + secId);
+    if (inp) inp.focus();
+  }, 50);
+  recalc();
+}
+
+function buildRow(item) {
+  if (state[item.id] === undefined) state[item.id] = 0;
+  var qty = state[item.id];
+  var row = document.createElement('div');
+  row.className = 'item-row' + (qty > 0 ? ' active' : '');
+  row.id = 'row-' + item.id;
+  row.innerHTML =
+    '<div>' +
+      '<div class="item-label">' + item.label + '</div>' +
+      (item.obs ? '<div class="item-obs">' + item.obs + '</div>' : '') +
+      '<div class="item-unit">' + item.unit + ' · ' + fmt(item.price) + '</div>' +
+    '</div>' +
+    '<div class="item-price-tag">Por ' + item.unit + '<br><strong>' + fmt(item.price) + '</strong></div>' +
+    '<div class="qty-control">' +
+      '<button class="qty-btn" onclick="changeQty(\'' + item.id + '\',-1)">−</button>' +
+      '<input class="qty-input" type="number" min="0" step="0.01" value="' + qty + '" id="qty-' + item.id + '"' +
+        ' onchange="setQty(\'' + item.id + '\',this.value)" onblur="setQty(\'' + item.id + '\',this.value)">' +
+      '<button class="qty-btn" onclick="changeQty(\'' + item.id + '\',1)">+</button>' +
+    '</div>' +
+    '<div class="item-total' + (qty===0?' zero':'') + '" id="total-' + item.id + '">' + fmt(qty*item.price) + '</div>';
+  return row;
+}
+
+function setQty(id, val) {
+  val = Math.max(0, Math.round((parseFloat(String(val).replace(',','.')) || 0) * 100) / 100);
+  state[id] = val;
+  var q = document.getElementById('qty-'+id); if(q) q.value = val;
+  var item = getItem(id); if(!item) return;
+  var total = val * item.price;
+  var el = document.getElementById('total-'+id);
+  if(el) { el.textContent = fmt(total); el.className = 'item-total' + (total===0?' zero':''); }
+  var row = document.getElementById('row-'+id);
+  if(row) row.className = (row.classList.contains('dropdown-item-row') ? 'dropdown-item-row' : 'item-row') + (total>0?' active':'');
+  // if qty is 0 on a dropdown section, remove row and refresh select
+  if (val === 0) {
+    var secId = sectionOf(id);
+    var sec = SECTIONS.find(function(s){ return s.id===secId; });
+    if (sec && sec.dropdown) {
+      var grid = document.getElementById('secGrid-' + secId);
+      if (grid) { grid.innerHTML = ''; grid.appendChild(buildDropdownSection(sec)); }
+    }
+  }
+  recalc();
+}
+function changeQty(id, delta) {
+  var cur = state[id] || 0;
+  // use step 0.5 for fractional values, 1 for whole numbers
+  var step = (cur % 1 !== 0) ? 0.5 : (delta > 0 ? 1 : (cur > 0 && cur <= 1 ? 0.5 : 1));
+  var next = Math.round((cur + delta * step) * 100) / 100;
+  setQty(id, Math.max(0, next));
+}
+
+function recalc() {
+  // Build per-section totals dynamically
+  var secTotals = {};
+  SECTIONS.forEach(function(s){ secTotals[s.id] = 0; });
+  var subtotal = 0;
+  allItems().forEach(function(i) {
+    var val = (state[i.id]||0) * i.price;
+    var sec = sectionOf(i.id);
+    secTotals[sec] = (secTotals[sec]||0) + val;
+  });
+  SECTIONS.forEach(function(s){ subtotal += secTotals[s.id]||0; });
+
+  // Render summary lines
+  var summaryEl = document.getElementById('summaryLines');
+  if (summaryEl) {
+    summaryEl.innerHTML = SECTIONS.map(function(s){
+      return '<div class="summary-line"><span class="summary-line-label">' + s.label + '</span><span class="summary-line-value">' + fmt(secTotals[s.id]||0) + '</span></div>';
+    }).join('');
+  }
+  // m² calculation: use countM2 flag OR legacy group-based
+  var m2 = 0;
+  allItems().forEach(function(i) {
+    var qty = state[i.id] || 0;
+    if (qty <= 0) return;
+    if (i.countM2) { m2 += qty; }
+    else if (i.group === 'fechada' || i.group === 'aberta') { m2 += qty; }
+  });
+  // subtotal already computed above
+
+  // Discount
+  var discVal  = parseFloat(document.getElementById('discountVal').value) || 0;
+  var discType = document.getElementById('discountType').value;
+  var discAmt  = 0;
+  if (discVal > 0) {
+    discAmt = discType === 'pct' ? subtotal * (discVal / 100) : discVal;
+    discAmt = Math.min(discAmt, subtotal);
+  }
+  // Acréscimo
+  var acrescimoVal = parseFloat(document.getElementById('acrescimoVal').value) || 0;
+  var total = subtotal - discAmt + acrescimoVal;
+
+  // summary lines rendered above dynamically
+
+  var discEl = document.getElementById('discountResult');
+  if (discAmt > 0) {
+    discEl.textContent = '- ' + fmt(discAmt);
+    discEl.style.display = 'flex';
+  } else {
+    discEl.style.display = 'none';
+  }
+
+  var acrescimoEl = document.getElementById('acrescimoResult');
+  if (acrescimoVal > 0) {
+    acrescimoEl.textContent = '+ ' + fmt(acrescimoVal);
+    acrescimoEl.style.display = 'flex';
+  } else {
+    acrescimoEl.style.display = 'none';
+  }
+
+  document.getElementById('finalTotal').textContent  = fmt(total);
+  refreshPaymentValues();
+  document.getElementById('headerTotal').textContent = fmt(total);
+  var m2Fmt = (Math.round(m2 * 100) / 100).toLocaleString('pt-BR', {minimumFractionDigits:0, maximumFractionDigits:2});
+  document.getElementById('headerM2').textContent    = m2Fmt + ' m²';
+  document.getElementById('totalM2').textContent     = m2Fmt + ' m²';
+  var _obs = []; allItems().forEach(function(i){ if((state[i.id]||0)>0 && i.obs && (i.group==='fechada'||i.group==='aberta'||i.countM2)) _obs.push(i.obs); });
+  var _obsEl = document.getElementById('summaryHeaderObs'); if(_obsEl) _obsEl.textContent = _obs.length ? '('+_obs.join(' / ')+')' : '';
+}
+
+function resetAll() {
+  if (!confirm('Limpar todos os valores?')) return;
+  _currentQuoteId = null;
+  updateQuoteCodeDisplay();
+  state = {};
+  ['clientName','vendorName','clientCity','clientPhone','quoteObs','discountVal','acrescimoVal','tipoMadeira'].forEach(function(id){
+    var el = document.getElementById(id); if(el) el.value='';
+  });
+  document.getElementById('discountType').value = 'pct';
+  paymentRows = [
+    {id:1,label:'Até o dia Anterior ao início da Obra',pct:25},
+    {id:2,label:'Após o Fundamento Concretado e Paredes de Alvenaria Erguidas, Sem Reboco',pct:25},
+    {id:3,label:'Estrutura em Madeira Erguida e Telhas Colocadas',pct:25},
+    {id:4,label:'Apos Paredes Fechadas de Frontal, Hidraulica e Reboco Pronto',pct:25}
+  ]; paymentNextId=5; renderPaymentRows();
+  document.getElementById('discountResult').style.display = 'none';
+  setStatus('negociacao');
+  var v = new Date(); v.setDate(v.getDate()+15);
+  document.getElementById('quoteValidity').value = v.toISOString().split('T')[0];
+  renderOrcamento();
+}
+
+// ═══════════════════════════════════════════════════
+// STATUS
+// ═══════════════════════════════════════════════════
+function setStatus(s) {
+  currentStatus = s;
+  ['negociacao','aprovado','perdido'].forEach(function(x){
+    var el = document.getElementById('st-'+x);
+    if (el) el.classList.toggle('selected', x===s);
+  });
+}
+
+
+// ═══════════════════════════════════════════════════
+// SUPABASE + AUTENTICAÇÃO
+// ═══════════════════════════════════════════════════
+var SUPABASE_URL = 'https://gzzclbxnohokttujvaqa.supabase.co';
+var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd6emNsYnhub2hva3R0dWp2YXFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4Njc0NDUsImV4cCI6MjA4OTQ0MzQ0NX0.6XPR0m90k6qd66rLeatapLQ8jZYMn-V1lB9h2YT34hc';
+var TABLE_URL    = SUPABASE_URL + '/rest/v1/orcamentos';
+var AUTH_URL     = SUPABASE_URL + '/auth/v1';
+
+var _currentQuoteId = null; // ID do orçamento atual
+var _currentUser  = null;  // { id, email, access_token }
+var _isAdmin      = false;
+var _historyCache = null;
+
+// ── Auth headers (uses user token when logged in) ────────────────
+function sbFetch(method, url, body) {
+  var token = _currentUser ? _currentUser.access_token : SUPABASE_KEY;
+  var opts = {
+    method: method,
+    headers: {
+      'apikey':        SUPABASE_KEY,
+      'Authorization': 'Bearer ' + token,
+      'Content-Type':  'application/json',
+      'Prefer':        method === 'POST' ? 'resolution=merge-duplicates' : ''
+    }
+  };
+  if (body) opts.body = JSON.stringify(body);
+  return fetch(url, opts);
+}
+
+// ── LOGIN ────────────────────────────────────────────────────────
+// ── AUTH — recebido do hub via localStorage, URL param ou postMessage ─
+window.addEventListener('message', function(e) {
+  if (e.data && e.data.type === 'ALLIANCE_SESSION') {
+    var s = e.data.session;
+    _currentUser = s.user    || null;
+    _isAdmin     = s.isAdmin || false;
+    localStorage.setItem('alliance_session', JSON.stringify(s));
+    if (_currentUser) document.getElementById('userEmail').textContent = _currentUser.email || '';
+    _historyCache = null;
+    loadConfig(function() { renderOrcamento(); renderPaymentRows(); updateQuoteCodeDisplay(); });
+    var histPage = document.getElementById('page-historico');
+    if (histPage && histPage.classList.contains('active')) renderHistory();
+  }
+
+  if (e.data && e.data.type === 'PREENCHER_TEMPLATE') {
+    var t = e.data.template;
+    if (!t) return;
+    // Novo orçamento limpo
+    _currentQuoteId = null;
+    state = {};
+    updateQuoteCodeDisplay();
+    // Preencher itens do template
+    Object.keys(t.items || {}).forEach(function(itemId) {
+      state[itemId] = t.items[itemId];
+    });
+    // Nome do modelo como observação
+    if (t.modelo_nome) {
+      var obsEl = document.getElementById('quoteObs');
+      if (obsEl) obsEl.value = 'Modelo: ' + t.modelo_nome;
+    }
+    // Ir para aba orçamento
+    switchTab('orcamento');
+    renderOrcamento();
+    renderPaymentRows();
+    showToast('✓ Template do modelo ' + (t.modelo_nome || '') + ' carregado!');
+  }
+});
+
+function doLogout() {
+  localStorage.removeItem('alliance_session');
+  window.top.location.href = 'hub.html';
+}
+
+function restoreSession() {
+  // 1. Tentar ler da URL (?_sid=...)
+  try {
+    var params = new URLSearchParams(window.location.search);
+    var sid = params.get('_sid');
+    if (sid) {
+      var s = JSON.parse(atob(sid));
+      _currentUser = s.user    || null;
+      _isAdmin     = s.isAdmin || false;
+      localStorage.setItem('alliance_session', JSON.stringify(s));
+      if (_currentUser) document.getElementById('userEmail').textContent = _currentUser.email || '';
+      loadConfig(function() { renderOrcamento(); renderPaymentRows(); updateQuoteCodeDisplay(); });
+      return;
+    }
+  } catch(e) {}
+  // 2. Tentar ler do localStorage
+  try {
+    var saved = localStorage.getItem('alliance_session');
+    if (saved) {
+      var s = JSON.parse(saved);
+      _currentUser = s.user    || null;
+      _isAdmin     = s.isAdmin || false;
+      if (_currentUser) document.getElementById('userEmail').textContent = _currentUser.email || '';
+      loadConfig(function() { renderOrcamento(); renderPaymentRows(); updateQuoteCodeDisplay(); });
+      return;
+    }
+  } catch(e) {}
+  // 3. Sem sessão — aguarda postMessage
+  renderOrcamento();
+  renderPaymentRows();
+  updateQuoteCodeDisplay();
+}
+
+function saveToHistory() {
+  var client = document.getElementById('clientName').value.trim();
+  if (!client) { showToast('Informe o nome do cliente antes de salvar','error'); return; }
+  showToast('⏳ Salvando na nuvem...','success');
+
+  // Use existing ID (update) or create new one
+  var id = _currentQuoteId || Date.now();
+  var entry = {
+    id:            id,
+    client:        client,
+    vendor:        document.getElementById('vendorName').value,
+    city:          document.getElementById('clientCity').value,
+    phone:         document.getElementById('clientPhone').value,
+    date:          document.getElementById('quoteDate').value,
+    validity:      document.getElementById('quoteValidity').value,
+    obs:           document.getElementById('quoteObs').value,
+    status:        currentStatus,
+    total:         document.getElementById('finalTotal').textContent,
+    discount_val:  document.getElementById('discountVal').value,
+    discount_type: document.getElementById('discountType').value,
+    acrescimo_val: document.getElementById('acrescimoVal').value,
+    tipo_madeira:  document.getElementById('tipoMadeira').value,
+    payment_data:  JSON.stringify(getPaymentData()),
+    state:         JSON.parse(JSON.stringify(state)),
+    saved_at:      new Date().toLocaleString('pt-BR'),
+    user_id:       _currentUser ? _currentUser.id : null
+  };
+
+  // Upsert (insert or update)
+  sbFetch('POST', TABLE_URL + '?on_conflict=id', entry)
+  .then(function(r) {
+    if (r.ok || r.status === 201) {
+      _currentQuoteId = id;
+      updateQuoteCodeDisplay();
+      _historyCache = null; _dashCache = null;
+      showToast('✓ Orçamento ' + genQuoteCode(id) + ' salvo!');
+    } else {
+      r.text().then(function(t){ showToast('Erro: ' + t, 'error'); });
+    }
+  })
+  .catch(function(e){ showToast('Sem conexão com a nuvem','error'); console.error(e); });
+}
+
+function renderHistory() {
+  var list = document.getElementById('historyList');
+  // Se não tem sessão ainda, aguarda postMessage do hub
+  if (!_currentUser) {
+    list.innerHTML = '<div class="history-empty">⏳ Aguardando autenticação...</div>';
+    var tries = 0;
+    var wait = setInterval(function() {
+      tries++;
+      if (_currentUser) { clearInterval(wait); _historyCache = null; renderHistory(); }
+      else if (tries > 10) { clearInterval(wait); list.innerHTML = '<div class="history-empty">❌ Sessão não encontrada. Tente recarregar.</div>'; }
+    }, 500);
+    return;
+  }
+  // Se cache existe, só re-filtra
+  if (_historyCache) { _applyHistoryFilters(_historyCache); return; }
+  list.innerHTML = '<div class="history-empty">⏳ Carregando orçamentos...</div>';
+  var histUrl = _isAdmin
+    ? TABLE_URL + '?order=id.desc'
+    : TABLE_URL + '?order=id.desc&user_id=eq.' + _currentUser.id;
+  sbFetch('GET', histUrl)
+  .then(function(r){ return r.json(); })
+  .then(function(h) {
+    _historyCache = h;
+    _populateVendorHistDropdown(h);
+    _applyHistoryFilters(h);
+  })
+  .catch(function(){ list.innerHTML = '<div class="history-empty">❌ Sem conexão com a nuvem. Verifique sua internet.</div>'; });
+}
+
+function _populateVendorHistDropdown(h) {
+  var sel = document.getElementById('historyVendorFilter');
+  if (!sel) return;
+  var cur = sel.value;
+  var vendors = [];
+  (h||[]).forEach(function(e){ if (e.vendor && vendors.indexOf(e.vendor) === -1) vendors.push(e.vendor); });
+  vendors.sort();
+  sel.innerHTML = '<option value="">Todos os vendedores</option>' +
+    vendors.map(function(v){ return '<option value="' + v + '"' + (v===cur?' selected':'') + '>' + v + '</option>'; }).join('');
+}
+
+function _applyHistoryFilters(allData) {
+  var list = document.getElementById('historyList');
+  if (!Array.isArray(allData) || !allData.length) {
+    list.innerHTML = '<div class="history-empty">Nenhum orçamento salvo ainda.<br>Preencha um orçamento e clique em 💾 Salvar.</div>';
+    return;
+  }
+  var h = allData.slice();
+  // Status
+  var statusVal = ((document.getElementById('historyStatusFilter')||{}).value)||'';
+  if (statusVal) h = h.filter(function(e){ return e.status === statusVal; });
+  // Vendor
+  var vendorVal = ((document.getElementById('historyVendorFilter')||{}).value)||'';
+  if (vendorVal) h = h.filter(function(e){ return e.vendor === vendorVal; });
+  // Text search
+  var searchVal = (((document.getElementById('historySearch')||{}).value)||'').trim().toLowerCase();
+  if (searchVal) {
+    h = h.filter(function(e){
+      return (e.client||'').toLowerCase().indexOf(searchVal) !== -1
+          || genQuoteCode(e.id).toLowerCase().indexOf(searchVal) !== -1
+          || (e.vendor||'').toLowerCase().indexOf(searchVal) !== -1
+          || (e.tipo_madeira||'').toLowerCase().indexOf(searchVal) !== -1;
+    });
+  }
+  if (!h.length) {
+    list.innerHTML = '<div class="history-empty">Nenhum orçamento encontrado com esses filtros.</div>';
+    return;
+  }
+  var madeiraBadge = {
+    'Madeira de Lei': { bg:'rgba(48,142,238,0.15)', color:'var(--accent)' },
+    'Pinus Tratado':  { bg:'rgba(46,204,113,0.15)', color:'#2ecc71' }
+  };
+  var statusLabel = { negociacao:'💬 Negociação', aprovado:'✅ Aprovado', perdido:'❌ Perdido' };
+  var statusColor = { negociacao:'#3498db', aprovado:'#2ecc71', perdido:'#e74c3c' };
+  list.innerHTML = '';
+  h.forEach(function(e) {
+    var mad = e.tipo_madeira && madeiraBadge[e.tipo_madeira] ? madeiraBadge[e.tipo_madeira] : null;
+    var madHtml = mad
+      ? '<span style="font-size:11px;background:' + mad.bg + ';color:' + mad.color + ';border-radius:4px;padding:2px 7px;margin-left:6px;font-weight:600;">' + e.tipo_madeira + '</span>'
+      : '';
+    var div = document.createElement('div');
+    div.className = 'history-item';
+    div.innerHTML =
+      '<div class="history-item-info">' +
+        '<div class="history-item-name">' + e.client +
+          '<span class="history-status" style="background:' + (statusColor[e.status]||'#7a7f9a') + '22;color:' + (statusColor[e.status]||'#7a7f9a') + '">' + (statusLabel[e.status]||'—') + '</span>' +
+          '<span style="font-size:11px;font-family:monospace;color:var(--accent);background:rgba(48,142,238,0.1);border-radius:4px;padding:2px 7px;margin-left:6px;letter-spacing:0.5px;">' + genQuoteCode(e.id) + '</span>' +
+          madHtml +
+        '</div>' +
+        '<div class="history-item-meta">' + (_isAdmin && e.vendor ? '<strong style="color:var(--accent)">' + e.vendor + '</strong>' : (e.vendor||'')) + (e.city?' · '+e.city:'') + (e.date?' · '+e.date:'') + (e.validity?' · Válido até: '+e.validity:'') + '</div>' +
+        (e.saved_at ? '<div style="font-size:11px;color:var(--muted);margin-top:2px;">Salvo em: ' + e.saved_at + '</div>' : '') +
+      '</div>' +
+      '<div class="history-item-total">' + e.total + '</div>' +
+      '<div class="history-item-actions">' +
+        '<button class="btn btn-ghost btn-sm" onclick="loadFromHistory(\'' + e.id + '\')">📂 Abrir</button>' +
+        '<button class="btn btn-ghost btn-sm" onclick="duplicateFromHistory(\'' + e.id + '\')" title="Usar como modelo para novo orçamento">📋 Duplicar</button>' +
+        '<button class="btn btn-danger btn-sm" onclick="deleteFromHistory(\'' + e.id + '\')">🗑</button>' +
+      '</div>';
+    list.appendChild(div);
+  });
+}
+
+function loadFromHistory(id) {
+  function applyEntry(e) {
+    if (!e) { showToast('Orçamento não encontrado','error'); return; }
+    _currentQuoteId = e.id;
+    updateQuoteCodeDisplay();
+    state = (e.state && typeof e.state === 'object') ? JSON.parse(JSON.stringify(e.state)) : {};
+    document.getElementById('clientName').value    = e.client        || '';
+    document.getElementById('vendorName').value    = e.vendor        || '';
+    document.getElementById('clientCity').value    = e.city          || '';
+    document.getElementById('clientPhone').value   = e.phone         || '';
+    document.getElementById('quoteDate').value     = e.date          || '';
+    document.getElementById('quoteValidity').value = e.validity      || '';
+    document.getElementById('quoteObs').value      = e.obs           || '';
+    document.getElementById('discountVal').value   = e.discount_val  || '';
+    document.getElementById('discountType').value  = e.discount_type || 'pct';
+    document.getElementById('acrescimoVal').value   = e.acrescimo_val  || '';
+    document.getElementById('tipoMadeira').value    = e.tipo_madeira   || '';
+    try { if (e.payment_data) setPaymentData(JSON.parse(e.payment_data)); } catch(ex){}
+    setStatus(e.status || 'negociacao');
+    switchTab('orcamento');
+    renderOrcamento();
+    showToast('✓ Orçamento carregado!');
+  }
+  if (_historyCache) {
+    applyEntry(_historyCache.find(function(x){ return String(x.id)===String(id); }));
+    return;
+  }
+  showToast('⏳ Carregando...','success');
+  sbFetch('GET', TABLE_URL + '?id=eq.' + id)
+  .then(function(r){ return r.json(); })
+  .then(function(rows){ applyEntry(rows && rows[0]); })
+  .catch(function(){ showToast('Erro ao carregar','error'); });
+}
+
+function duplicateFromHistory(id) {
+  function applyAsCopy(e) {
+    if (!e) { showToast('Orçamento não encontrado','error'); return; }
+    _currentQuoteId = null; // Novo orçamento, sem vínculo com o original
+    updateQuoteCodeDisplay();
+    state = (e.state && typeof e.state === 'object') ? JSON.parse(JSON.stringify(e.state)) : {};
+    document.getElementById('clientName').value    = e.client        || '';
+    document.getElementById('vendorName').value    = e.vendor        || '';
+    document.getElementById('clientCity').value    = e.city          || '';
+    document.getElementById('clientPhone').value   = e.phone         || '';
+    document.getElementById('quoteDate').value     = '';
+    document.getElementById('quoteValidity').value = '';
+    document.getElementById('quoteObs').value      = e.obs           || '';
+    document.getElementById('discountVal').value   = e.discount_val  || '';
+    document.getElementById('discountType').value  = e.discount_type || 'pct';
+    document.getElementById('acrescimoVal').value  = e.acrescimo_val || '';
+    document.getElementById('tipoMadeira').value   = e.tipo_madeira  || '';
+    try { if (e.payment_data) setPaymentData(JSON.parse(e.payment_data)); } catch(ex){}
+    setStatus('negociacao');
+    switchTab('orcamento');
+    renderOrcamento();
+    showToast('✓ Orçamento duplicado! Faça as alterações e salve.');
+  }
+  if (_historyCache) {
+    applyAsCopy(_historyCache.find(function(x){ return String(x.id)===String(id); }));
+    return;
+  }
+  showToast('⏳ Carregando...','success');
+  sbFetch('GET', TABLE_URL + '?id=eq.' + id)
+  .then(function(r){ return r.json(); })
+  .then(function(rows){ applyAsCopy(rows && rows[0]); })
+  .catch(function(){ showToast('Erro ao duplicar','error'); });
+}
+
+function deleteFromHistory(id) {
+  if (!confirm('Excluir este orçamento para todos os vendedores?')) return;
+  sbFetch('DELETE', TABLE_URL + '?id=eq.' + id)
+  .then(function(r) {
+    if (r.ok) { _historyCache = null; _dashCache = null; showToast('Removido!'); renderHistory(); }
+    else showToast('Erro ao excluir','error');
+  })
+  .catch(function(){ showToast('Sem conexão','error'); });
+}
+
+function clearHistory() {
+  if (!confirm('Apagar TODOS os orçamentos? Isso afeta todos os vendedores.')) return;
+  sbFetch('DELETE', TABLE_URL + '?id=gt.0')
+  .then(function(r) {
+    if (r.ok) { _historyCache = null; _dashCache = null; showToast('Histórico limpo!'); renderHistory(); }
+    else showToast('Erro ao limpar','error');
+  })
+  .catch(function(){ showToast('Sem conexão','error'); });
+}
+
+
+// ═══════════════════════════════════════════════════
+// MODO APRESENTAÇÃO
+// ═══════════════════════════════════════════════════
+function openPresent() {
+  var active = allItems().filter(function(i){ return (state[i.id]||0) > 0; });
+  if (!active.length) { showToast('Adicione itens ao orçamento primeiro','error'); return; }
+  document.getElementById('presentName').textContent  = document.getElementById('clientName').value || 'Cliente';
+  document.getElementById('presentTotal').textContent = document.getElementById('finalTotal').textContent;
+  var logoEl = document.querySelector('.logo-wrap img');
+  if (logoEl) document.getElementById('presentLogo').src = logoEl.src;
+  var itemsEl = document.getElementById('presentItems');
+  itemsEl.innerHTML = '';
+  active.forEach(function(i) {
+    var qty = state[i.id]; var val = qty * i.price;
+    var d = document.createElement('div');
+    d.className = 'present-item';
+    d.innerHTML = '<span class="present-item-name">' + i.label + ' <span style="color:var(--muted);font-size:12px;">× ' + qty + ' ' + i.unit + '</span></span><span class="present-item-val">' + fmt(val) + '</span>';
+    itemsEl.appendChild(d);
+  });
+  document.getElementById('presentOverlay').classList.add('show');
+}
+function closePresent() { document.getElementById('presentOverlay').classList.remove('show'); }
+document.addEventListener('keydown', function(e){ if(e.key==='Escape') closePresent(); });
+
+// ═══════════════════════════════════════════════════
+// WHATSAPP
+// ═══════════════════════════════════════════════════
+function openWhatsAppModal() {
+  var active = allItems().filter(function(i){ return (state[i.id]||0) > 0; });
+  if (!active.length) { showToast('Adicione itens ao orçamento primeiro','error'); return; }
+  document.getElementById('waModal').style.display = 'flex';
+  waFormatChange();
+}
+function closeWhatsAppModal() {
+  document.getElementById('waModal').style.display = 'none';
+}
+function waFormatChange() {
+  var isDetailed = document.getElementById('waFmtDetailed').checked;
+  var lblS = document.getElementById('waLblSimple');
+  var lblD = document.getElementById('waLblDetailed');
+  if (lblS) lblS.style.borderColor = isDetailed ? 'var(--border)' : 'var(--accent)';
+  if (lblD) lblD.style.borderColor = isDetailed ? 'var(--accent)' : 'var(--border)';
+}
+function sendWhatsApp() {
+  closeWhatsAppModal();
+  var phone    = document.getElementById('clientPhone').value.replace(/\D/g,'');
+  var client   = document.getElementById('clientName').value  || 'Cliente';
+  var vendor   = document.getElementById('vendorName').value  || '';
+  var validity = document.getElementById('quoteValidity').value;
+  var isDetailed   = document.getElementById('waFmtDetailed') && document.getElementById('waFmtDetailed').checked;
+  var hideAcDesc   = document.getElementById('waHideAcrescDesc') && document.getElementById('waHideAcrescDesc').checked;
+  var hideReg      = document.getElementById('waHideReg') && document.getElementById('waHideReg').checked;
+
+  // Find id of "regularizacao" section
+  var regSecIds = SECTIONS.filter(function(s){
+    return s.label.toLowerCase().indexOf('regulariz') !== -1 || s.id.toLowerCase().indexOf('regulariz') !== -1;
+  }).map(function(s){ return s.id; });
+
+  var active = allItems().filter(function(i){
+    if ((state[i.id]||0) <= 0) return false;
+    if (hideReg && regSecIds.length) {
+      var sec = sectionOf(i.id);
+      if (regSecIds.indexOf(sec) !== -1) return false;
+    }
+    return true;
+  });
+
+  if (!active.length) { showToast('Nenhum item para enviar','error'); return; }
+
+  // Recalculate total considering hidden reg items
+  var subtotalWa = active.reduce(function(s,i){ return s + (state[i.id]||0)*i.price; }, 0);
+  var discVal    = parseFloat(document.getElementById('discountVal').value) || 0;
+  var discType   = document.getElementById('discountType').value;
+  var acrescimo  = parseFloat(document.getElementById('acrescimoVal').value) || 0;
+  var discAmt    = discVal > 0 ? Math.min(discType==='pct' ? subtotalWa*(discVal/100) : discVal, subtotalWa) : 0;
+  var totalWa    = subtotalWa - discAmt + acrescimo;
+  var totalFmt   = 'R$ ' + totalWa.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
+
+  // Se hideAcDesc: total mostrado é só subtotal (sem desc/acrescimo)
+  var totalDisplay = hideAcDesc
+    ? 'R$ ' + subtotalWa.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2})
+    : totalFmt;
+
+  var lines = ['*Orçamento – Alliance Casas Pré Fabricadas*',''];
+  lines.push('Olá ' + client + '! Segue o resumo do seu orçamento:','');
+
+  if (isDetailed) {
+    active.forEach(function(i){
+      var val = (state[i.id]||0) * i.price;
+      var valFmt = 'R$ ' + val.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
+      var line = '• ' + i.label + ': ' + state[i.id] + ' ' + i.unit + ' → *' + valFmt + '*';
+      if (i.obs) line += ' _(' + i.obs + ')_';
+      lines.push(line);
+    });
+  } else {
+    active.forEach(function(i){
+      var line = '• ' + i.label + ': ' + state[i.id] + ' ' + i.unit;
+      if (i.obs) line += ' _(' + i.obs + ')_';
+      lines.push(line);
+    });
+  }
+
+  // Desconto/acrescimo aparece em ambos os modos, a menos que hideAcDesc=true
+  if (!hideAcDesc) {
+    if (discAmt > 0) {
+      lines.push('_Desconto: - R$ ' + discAmt.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}) + '_');
+    }
+    if (acrescimo > 0) {
+      lines.push('_Acréscimo: + R$ ' + acrescimo.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}) + '_');
+    }
+  }
+
+  lines.push('','*Total: ' + totalDisplay + '*');
+  if (validity) lines.push('_Válido até: ' + validity + '_');
+  if (vendor)   lines.push('_Vendedor: ' + vendor + '_');
+
+  var url = phone
+    ? 'https://wa.me/55' + phone + '?text=' + encodeURIComponent(lines.join('\n'))
+    : 'https://wa.me/?text='                + encodeURIComponent(lines.join('\n'));
+  window.open(url, '_blank');
+}
+
+
+function renderConfigPanels() { renderUnitTags(); renderSecTags(); renderVendorTags(); populateSelects(); populateVendorSelect(); }
+
+function renderVendorTags() {
+  var list = document.getElementById('vendorTagList');
+  if (!list) return;
+  list.innerHTML = '';
+  VENDORS.forEach(function(v, i) {
+    var tag = document.createElement('div');
+    tag.className = 'tag';
+    tag.innerHTML = '<span>' + v + '</span><button class="tag-del" onclick="deleteVendor(' + i + ')" title="Remover">×</button>';
+    list.appendChild(tag);
+  });
+}
+function addVendor() {
+  var input = document.getElementById('newVendorInput');
+  var val = input.value.trim();
+  if (!val) return;
+  if (VENDORS.indexOf(val) !== -1) { showToast('Vendedor já cadastrado','error'); return; }
+  VENDORS.push(val); saveAll(); input.value = '';
+  renderVendorTags(); populateVendorSelect();
+  showToast('✓ Vendedor adicionado!');
+}
+function deleteVendor(i) {
+  if (!confirm('Remover o vendedor "' + VENDORS[i] + '"?')) return;
+  VENDORS.splice(i, 1); saveAll();
+  renderVendorTags(); populateVendorSelect();
+  showToast('Vendedor removido');
+}
+function populateVendorSelect() {
+  var sel = document.getElementById('vendorName');
+  if (!sel) return;
+  var cur = sel.value;
+  sel.innerHTML = '<option value="">— Selecione —</option>' +
+    VENDORS.map(function(v){ return '<option value="' + v + '"' + (v===cur?' selected':'') + '>' + v + '</option>'; }).join('');
+}
+
+function renderUnitTags() {
+  var list = document.getElementById('unitTagList');
+  list.innerHTML = '';
+  UNITS.forEach(function(u, i) {
+    var tag = document.createElement('div');
+    tag.className = 'tag';
+    tag.innerHTML = '<span>' + u + '</span><button class="tag-del" onclick="deleteUnit(' + i + ')" title="Remover">×</button>';
+    list.appendChild(tag);
+  });
+}
+function addUnit() {
+  var input = document.getElementById('newUnitInput');
+  var val = input.value.trim();
+  if (!val) return;
+  if (UNITS.indexOf(val) !== -1) { showToast('Unidade já existe','error'); return; }
+  UNITS.push(val); saveAll(); input.value = '';
+  renderUnitTags(); populateSelects();
+  showToast('✓ Unidade adicionada!');
+}
+function deleteUnit(i) {
+  if (UNITS.length <= 1) { showToast('Deve ter ao menos uma unidade','error'); return; }
+  UNITS.splice(i,1); saveAll();
+  renderUnitTags(); populateSelects();
+  showToast('Unidade removida');
+}
+
+function renderSecTags() {
+  var list = document.getElementById('secTagList');
+  list.innerHTML = '';
+  SECTIONS.forEach(function(s, i) {
+    var isFixed = (s.id==='main' || s.id==='extra' || s.id==='log');
+    var isDropdown = !!s.dropdown;
+    var div = document.createElement('div');
+    div.className = 'sec-tag';
+    div.innerHTML =
+      '<div style="display:flex;align-items:center;gap:10px;">' +
+        '<span class="badge" style="' + secBadgeStyle(i) + '">' + s.label + '</span>' +
+        '<span style="font-size:10px;color:var(--muted);font-family:monospace">' + s.id + '</span>' +
+      '</div>' +
+      '<div style="display:flex;align-items:center;gap:12px;">' +
+        '<label class="toggle-wrap">' +
+          '<span>' + (isDropdown ? 'Lista suspensa' : 'Fixo') + '</span>' +
+          '<label class="toggle">' +
+            '<input type="checkbox"' + (isDropdown ? ' checked' : '') + ' onchange="toggleSectionMode(\'' + s.id + '\',this.checked)">' +
+            '<span class="toggle-slider"></span>' +
+          '</label>' +
+        '</label>' +
+        (!isFixed ? '<button class="tag-del" onclick="deleteSection(\'' + s.id + '\')" title="Remover">×</button>' : '') +
+      '</div>';
+    list.appendChild(div);
+  });
+}
+function toggleSectionMode(id, isDropdown) {
+  var sec = SECTIONS.find(function(s){ return s.id===id; });
+  if (sec) { sec.dropdown = isDropdown; saveAll(); renderSecTags(); }
+  showToast('✓ Modo atualizado!');
+}
+function addSection() {
+  var input = document.getElementById('newSecInput');
+  var label = input.value.trim();
+  if (!label) return;
+  if (SECTIONS.find(function(s){ return s.label===label; })) { showToast('Seção já existe','error'); return; }
+  var id = 'sec_' + Date.now().toString(36);
+  SECTIONS.push({ id:id, label:label, dropdown: true });
+  ITEMS[id] = [];
+  saveAll(); input.value = '';
+  renderSecTags(); populateSelects();
+  showToast('✓ Seção adicionada!');
+}
+function deleteSection(id) {
+  var items = ITEMS[id] || [];
+  if (items.length > 0 && !confirm('A seção "' + secLabel(id) + '" tem ' + items.length + ' item(s). Excluir mesmo assim?')) return;
+  SECTIONS = SECTIONS.filter(function(s){ return s.id!==id; });
+  delete ITEMS[id];
+  saveAll();
+  renderSecTags(); populateSelects(); renderAdminTable();
+  showToast('Seção removida');
+}
+
+function populateSelects() {
+  var unitSel = document.getElementById('newUnit');
+  var curUnit = unitSel ? unitSel.value : '';
+  if (unitSel) unitSel.innerHTML = UNITS.map(function(u){ return '<option' + (u===curUnit?' selected':'') + '>' + u + '</option>'; }).join('');
+
+  var secSel = document.getElementById('newSection');
+  var curSec = secSel ? secSel.value : '';
+  if (secSel) secSel.innerHTML = SECTIONS.map(function(s){ return '<option value="' + s.id + '"' + (s.id===curSec?' selected':'') + '>' + s.label + '</option>'; }).join('');
+
+  var fs = document.getElementById('filterSection');
+  var curFs = fs ? fs.value : '';
+  if (fs) fs.innerHTML = '<option value="">Todas as seções</option>' +
+    SECTIONS.map(function(s){ return '<option value="' + s.id + '"' + (s.id===curFs?' selected':'') + '>' + s.label + '</option>'; }).join('');
+}
+
+// ═══════════════════════════════════════════════════
+// ADMIN TABLE
+// ═══════════════════════════════════════════════════
+function renderAdminTable() {
+  var filter = (document.getElementById('filterInput').value||'').toLowerCase();
+  var secF   = document.getElementById('filterSection').value;
+  var tbody  = document.getElementById('adminTbody');
+  tbody.innerHTML = '';
+
+  allItems().forEach(function(item) {
+    var sec    = sectionOf(item.id);
+    var secIdx = SECTIONS.findIndex(function(s){ return s.id===sec; });
+    if (secF && sec!==secF) return;
+    if (filter && item.label.toLowerCase().indexOf(filter)===-1) return;
+
+    var tr = document.createElement('tr');
+    if (editingId === item.id) {
+      tr.innerHTML =
+        '<td colspan="6" style="padding:12px 16px">' +
+          '<div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center">' +
+            '<input class="edit-input" id="edit-label" value="' + item.label + '" placeholder="Nome" style="flex:2;min-width:160px">' +
+            '<select class="edit-input" id="edit-unit" style="width:110px">' +
+              UNITS.map(function(u){ return '<option' + (u===item.unit?' selected':'') + '>' + u + '</option>'; }).join('') +
+            '</select>' +
+            '<input class="edit-input" id="edit-price" type="number" value="' + item.price + '" placeholder="Preço" style="width:110px">' +
+            '<select class="edit-input" id="edit-sec" style="width:150px">' +
+              SECTIONS.map(function(s){ return '<option value="' + s.id + '"' + (s.id===sec?' selected':'') + '>' + s.label + '</option>'; }).join('') +
+            '</select>' +
+            '<input class="edit-input" id="edit-obs" value="' + (item.obs||'') + '" placeholder="Observação (opcional)" style="flex:2;min-width:160px">' +
+            '<label class="m2-toggle" style="display:flex;align-items:center;gap:5px">' +
+              '<input type="checkbox" id="edit-countM2"' + (item.countM2?' checked':'') + '>' +
+              '<span class="m2-toggle-track"><span class="m2-toggle-thumb"></span></span>' +
+              '<span style="font-size:11px;color:var(--muted);white-space:nowrap">Soma no M²</span>' +
+            '</label>' +
+            '<label class="m2-toggle" style="display:flex;align-items:center;gap:5px">' +
+              '<input type="checkbox" id="edit-hidePdf"' + (item.hidePdf?' checked':'') + '>' +
+              '<span class="m2-toggle-track"><span class="m2-toggle-thumb"></span></span>' +
+              '<span style="font-size:11px;color:var(--muted);white-space:nowrap">Ocultar PDF</span>' +
+            '</label>' +
+            '<button class="btn btn-primary btn-sm" onclick="saveEdit(\'' + item.id + '\')">✓ Salvar</button>' +
+            '<button class="btn btn-ghost btn-sm" onclick="cancelEdit()">✕</button>' +
+          '</div>' +
+        '</td>';
+    } else {
+      tr.setAttribute('draggable', 'true');
+      tr.setAttribute('data-id', item.id);
+      tr.setAttribute('data-sec', sec);
+      tr.innerHTML =
+        '<td style="width:30px"><span class="drag-handle" title="Arrastar para reordenar">⠿</span></td>' +
+        '<td>' + item.label + (item.obs ? '<div class="item-obs" style="font-size:11px;color:var(--muted);font-style:italic">' + item.obs + '</div>' : '') + (item.countM2 ? '<span style="font-size:10px;background:rgba(48,142,238,0.15);color:var(--accent);border-radius:4px;padding:1px 5px;margin-left:4px">+m²</span>' : '') + (item.hidePdf ? '<span class="hide-pdf-badge">PDF oculto</span>' : '') + '</td>' +
+        '<td style="color:var(--muted)">' + item.unit + '</td>' +
+        '<td style="font-weight:600">' + fmt(item.price) + '</td>' +
+        '<td><span class="badge" style="' + secBadgeStyle(secIdx) + '">' + secLabel(sec) + '</span></td>' +
+        '<td><div class="row-actions">' +
+          '<button class="btn btn-ghost btn-sm" onclick="startEdit(\'' + item.id + '\')">✏️ Editar</button>' +
+          '<button class="btn btn-danger btn-sm" onclick="deleteItem(\'' + item.id + '\')">🗑</button>' +
+        '</div></td>';
+      tr.addEventListener('dragstart', onDragStart);
+      tr.addEventListener('dragover',  onDragOver);
+      tr.addEventListener('dragleave', onDragLeave);
+      tr.addEventListener('drop',      onDrop);
+      tr.addEventListener('dragend',   onDragEnd);
+    }
+    tbody.appendChild(tr);
+  });
+}
+
+function startEdit(id) { editingId=id; renderAdminTable(); }
+function cancelEdit()  { editingId=null; renderAdminTable(); }
+
+function saveEdit(id) {
+  var label = document.getElementById('edit-label').value.trim();
+  var obs      = document.getElementById('edit-obs') ? document.getElementById('edit-obs').value.trim() : '';
+  var countM2  = document.getElementById('edit-countM2') ? document.getElementById('edit-countM2').checked : false;
+  var hidePdf  = document.getElementById('edit-hidePdf') ? document.getElementById('edit-hidePdf').checked : false;
+  var group    = document.getElementById('edit-group') ? document.getElementById('edit-group').value : (item ? item.group||'outros' : 'outros');
+  var unit  = document.getElementById('edit-unit').value;
+  var price = parseFloat(document.getElementById('edit-price').value)||0;
+  var sec   = document.getElementById('edit-sec').value;
+  if (!label) { showToast('Nome obrigatório','error'); return; }
+  var oldSec = sectionOf(id);
+  var item = (ITEMS[oldSec]||[]).find(function(i){ return i.id===id; });
+  if (!item) return;
+  item.label=label; item.unit=unit; item.price=price; item.obs=obs; item.countM2=countM2; item.hidePdf=hidePdf; item.group=group;
+  if (oldSec!==sec) {
+    ITEMS[oldSec] = ITEMS[oldSec].filter(function(i){ return i.id!==id; });
+    if (!ITEMS[sec]) ITEMS[sec] = [];
+    ITEMS[sec].push(item);
+  }
+  saveAll(); editingId=null; renderAdminTable();
+  showToast('✓ Item atualizado!');
+}
+
+function deleteItem(id) {
+  var item = getItem(id);
+  if (!confirm('Excluir "' + item.label + '"?')) return;
+  var sec = sectionOf(id);
+  ITEMS[sec] = ITEMS[sec].filter(function(i){ return i.id!==id; });
+  delete state[id];
+  saveAll(); renderAdminTable();
+  showToast('Item removido');
+}
+
+function addItem() {
+  var label = document.getElementById('newLabel').value.trim();
+  var unit  = document.getElementById('newUnit').value;
+  var price = parseFloat(document.getElementById('newPrice').value)||0;
+  var sec   = document.getElementById('newSection').value;
+  if (!label) { showToast('Informe o nome do item','error'); return; }
+  if (!price) { showToast('Informe um preço válido','error'); return; }
+  if (!ITEMS[sec]) ITEMS[sec] = [];
+  ITEMS[sec].push({ id:uid(), label:label, unit:unit, price:price, group:'outros' });
+  saveAll();
+  document.getElementById('newLabel').value = '';
+  document.getElementById('newObs').value = '';
+  document.getElementById('newCountM2').checked = false;
+  var ng = document.getElementById('newGroup'); if(ng) ng.value='outros';
+  var nhp = document.getElementById('newHidePdf'); if(nhp) nhp.checked=false;
+  document.getElementById('newPrice').value = '';
+  renderAdminTable();
+  showToast('✓ Item adicionado!');
+}
+
+function exportItems() {
+  var data = { units:UNITS, sections:SECTIONS, items:ITEMS };
+  var blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'itens_obras.json';
+  a.click();
+  showToast('Exportado com sucesso!');
+}
+function importItems(e) {
+  var file = e.target.files[0]; if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    try {
+      var data = JSON.parse(ev.target.result);
+      if (data.items && data.sections) {
+        UNITS = data.units || DEFAULT_UNITS;
+        SECTIONS = data.sections;
+        ITEMS = data.items;
+      } else if (data.main || data.extra || data.log) {
+        ITEMS = data;
+      } else throw new Error();
+      syncItemKeys(); saveAll(); state = {};
+      renderConfigPanels(); renderAdminTable();
+      showToast('✓ Importado com sucesso!');
+    } catch(err) { showToast('Arquivo inválido','error'); }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+
+// ═══════════════════════════════════════════════════
+// PDF
+// ═══════════════════════════════════════════════════
+function openPdfModal() {
+  var active = allItems().filter(function(i){ return (state[i.id]||0) > 0; });
+  if (!active.length) { showToast('Adicione itens ao orçamento primeiro','error'); return; }
+  // Sync pdfMode select → modal radio
+  var mode = (document.getElementById('pdfMode')||{value:'detailed'}).value;
+  var detR = document.getElementById('pdfModeDetailed');
+  var simR = document.getElementById('pdfModeSimple');
+  if (detR) detR.checked = (mode !== 'simple');
+  if (simR) simR.checked = (mode === 'simple');
+  document.getElementById('pdfModal').style.display = 'flex';
+  pdfModeChange();
+}
+function closePdfModal() {
+  document.getElementById('pdfModal').style.display = 'none';
+}
+function pdfModeChange() {
+  var isDetailed = document.getElementById('pdfModeDetailed') && document.getElementById('pdfModeDetailed').checked;
+  var lblD = document.getElementById('pdfLblDetailed');
+  var lblS = document.getElementById('pdfLblSimple');
+  if (lblD) lblD.style.borderColor = isDetailed ? 'var(--accent)' : 'var(--border)';
+  if (lblS) lblS.style.borderColor = isDetailed ? 'var(--border)' : 'var(--accent)';
+}
+function printQuote() {
+  // Read modal settings if modal was used
+  var pdfModeEl = document.getElementById('pdfModeDetailed');
+  if (pdfModeEl) {
+    document.getElementById('pdfMode').value = pdfModeEl.checked ? 'detailed' : 'simple';
+  }
+  closePdfModal();
+  var client   = document.getElementById('clientName').value || 'Cliente';
+  var vendor   = document.getElementById('vendorName').value || '—';
+  var city     = document.getElementById('clientCity').value || '—';
+  var phone    = document.getElementById('clientPhone').value || '—';
+  var date     = document.getElementById('quoteDate').value;
+  var validity = document.getElementById('quoteValidity').value || '—';
+  var total    = document.getElementById('finalTotal').textContent;
+  var m2       = document.getElementById('totalM2').textContent;
+  var obs      = document.getElementById('quoteObs').value.trim();
+
+  var discVal2  = parseFloat(document.getElementById('discountVal').value) || 0;
+  var discType2 = document.getElementById('discountType').value;
+  var subtotal2 = allItems().filter(function(i){ return (state[i.id]||0)>0; }).reduce(function(s,i){ return s + (state[i.id]||0)*i.price; }, 0);
+  var discAmt      = discVal2 > 0 ? Math.min(discType2==='pct' ? subtotal2*(discVal2/100) : discVal2, subtotal2) : 0;
+  var acrescimoAmt = parseFloat(document.getElementById('acrescimoVal').value) || 0;
+
+  var pdfMode = (document.getElementById('pdfMode') || {value:'detailed'}).value;
+  var pdfHideReg = document.getElementById('pdfHideReg') && document.getElementById('pdfHideReg').checked;
+  var pdfHideAD  = document.getElementById('pdfHideAcrescDesc') && document.getElementById('pdfHideAcrescDesc').checked;
+  var pdfRegSecIds = SECTIONS.filter(function(s){
+    return s.label.toLowerCase().indexOf('regulariz') !== -1 || s.id.toLowerCase().indexOf('regulariz') !== -1;
+  }).map(function(s){ return s.id; });
+  var active  = allItems().filter(function(i){
+    if ((state[i.id]||0) <= 0 || i.hidePdf) return false;
+    if (pdfHideReg && pdfRegSecIds.length) {
+      var sec = sectionOf(i.id);
+      if (pdfRegSecIds.indexOf(sec) !== -1) return false;
+    }
+    return true;
+  });
+  // Collect obs from area items for PDF header
+  var materialObs = [];
+  allItems().forEach(function(i) {
+    if ((state[i.id]||0) > 0 && i.obs && (i.group==='fechada' || i.group==='aberta' || i.countM2)) {
+      if (materialObs.indexOf(i.obs) === -1) materialObs.push(i.obs);
+    }
+  });
+  var materialStr = materialObs.join(' / ');
+
+  var rows = active.map(function(i) {
+    var qty = state[i.id]; var val = qty * i.price;
+    var labelCell = i.label + (i.obs ? '<div style="font-size:11px;color:#888;font-style:italic;margin-top:2px">' + i.obs + '</div>' : '');
+    if (pdfMode === 'detailed') {
+      return '<tr><td>' + labelCell + '</td><td style="text-align:center">' + qty + ' ' + i.unit + '</td><td style="text-align:right">' + fmt(i.price) + '</td><td style="text-align:right;font-weight:600">' + fmt(val) + '</td></tr>';
+    } else {
+      return '<tr><td>' + labelCell + '</td><td style="text-align:center">' + qty + ' ' + i.unit + '</td></tr>';
+    }
+  }).join('');
+
+  // Payment table
+  var payHtml = '';
+  var pdata = getPaymentData();
+  if (pdata.length) {
+    var tnum = parseFloat(total.replace('R$','').replace(/\./g,'').replace(',','.').trim()) || 0;
+    var payRows = pdata.map(function(r,i) {
+      var v = tnum * (r.pct/100);
+      return '<tr style="background:' + (i%2===0?'#f0f7ff':'#fff') + '"><td style="padding:9px 14px">' + r.label + '</td><td style="text-align:center;padding:9px 14px">' + r.pct + '%</td><td style="text-align:right;font-weight:700;padding:9px 14px">' + fmt(v) + '</td></tr>';
+    }).join('');
+    payHtml = '<div style="margin-top:28px"><table style="width:100%;border-collapse:collapse;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08)">'
+      + '<thead><tr style="background:#1a6b8a"><th colspan="3" style="padding:13px 14px;font-size:13px;text-align:left;color:#fff;font-family:Arial;letter-spacing:1px;text-transform:uppercase">Formas de Pagamento</th></tr>'
+      + '<tr style="background:#2196b0"><th style="padding:8px 14px;text-align:left;font-size:11px;color:#fff;font-weight:600">Etapa</th><th style="padding:8px 14px;text-align:center;font-size:11px;color:#fff;font-weight:600">%</th><th style="padding:8px 14px;text-align:right;font-size:11px;color:#fff;font-weight:600">Valor (R$)</th></tr></thead>'
+      + '<tbody>' + payRows + '</tbody></table></div>';
+  }
+
+  var css = [
+    'body{margin:0;padding:0;font-family:Arial,sans-serif;color:#1a1a2e;background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}',
+    '.page{max-width:800px;margin:0 auto}',
+    '.hdr{background:linear-gradient(135deg,#1a1a2e,#0f3460);padding:28px 36px;display:flex;align-items:center;justify-content:space-between}',
+    '.hdr-logo{height:58px;background:#fff;border-radius:8px;padding:5px 10px}',
+    '.hdr-right{text-align:right;color:#fff}',
+    '.hdr-title{font-size:22px;font-weight:700;letter-spacing:1px;margin-bottom:3px}',
+    '.hdr-material{font-size:15px;font-weight:700;color:#308EEE;letter-spacing:1px;margin-bottom:3px;text-transform:uppercase}',
+    '.hdr-cnpj{font-size:10px;color:rgba(255,255,255,0.65);margin-bottom:1px}',
+    '.hdr-date{font-size:11px;color:rgba(255,255,255,0.8)}',
+    '.m2bar{background:linear-gradient(135deg,#308EEE,#1A65B8);padding:10px 36px;display:flex;align-items:center;justify-content:space-between}',
+    '.m2bar-label{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,0.85);font-weight:700}',
+    '.m2bar-val{font-size:28px;font-weight:700;color:#fff;letter-spacing:1px}',
+    '.body{padding:28px 36px}',
+    '.cgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px}',
+    '.cbox{background:#f8f9fc;border-left:3px solid #308EEE;padding:9px 13px}',
+    '.cbox-lbl{font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:#888;margin-bottom:2px;font-weight:700}',
+    '.cbox-val{font-size:13px;font-weight:600;color:#1a1a2e}',
+    'table.items{width:100%;border-collapse:collapse;margin-bottom:6px}',
+    'table.items thead tr{background:#1a1a2e}',
+    'table.items thead th{color:#fff;padding:10px 13px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:1px;font-weight:700}',
+    'table.items tbody tr:nth-child(even){background:#f8f9fc}',
+    'table.items tbody tr:nth-child(odd){background:#fff}',
+    'table.items tbody td{padding:9px 13px;font-size:12px;border-bottom:1px solid #edf0f5;color:#2d3748}',
+    '.disc{text-align:right;font-size:12px;color:#e74c3c;padding:5px 0;font-weight:700}',
+    '.totalbar{background:linear-gradient(135deg,#308EEE,#1A65B8);padding:16px 20px;display:flex;justify-content:space-between;align-items:center;margin-top:10px;border-radius:8px}',
+    '.totalbar-lbl{font-size:14px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:1px}',
+    '.totalbar-val{font-size:26px;font-weight:700;color:#fff}',
+    '.obsbox{margin-top:22px;border:1px solid #e2e8f0;border-radius:8px;overflow:hidden}',
+    '.obshdr{background:#f8f9fc;padding:7px 13px;font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:#888;font-weight:700;border-bottom:1px solid #e2e8f0}',
+    '.obsbody{padding:12px 13px;font-size:12px;color:#444;line-height:1.6;white-space:pre-wrap}',
+    '.footer{margin-top:28px;padding:13px 36px;background:#f8f9fc;border-top:2px solid #308EEE;font-size:9px;color:#888;text-align:center}',
+    '@media print{.page{max-width:100%}}'
+  ].join('');
+
+  var thDetailed = '<th style="text-align:left">Descrição</th><th style="text-align:center">Qtde</th><th style="text-align:right">Unit.</th><th style="text-align:right">Total</th>';
+  var thSimple   = '<th style="text-align:left">Descrição</th><th style="text-align:center">Qtde</th>';
+
+  var html = '<!DOCTYPE html><html lang="pt-BR"><head>
+<meta charset="UTF-8"><title>Orçamento - ' + client + '</title>'
+    + '<style>' + css + '</style></head><body><div class="page">'
+    + '<div class="hdr">'
+    + '<img class="hdr-logo" src="https://leandrorocha95.github.io/alliance-orcamento/logo_alliance.jpg" alt="Alliance">'
+    + '<div class="hdr-right">'
+    + '<div class="hdr-title">Orçamento de Obra</div>'
+    + (materialStr ? '<div class="hdr-material">' + materialStr + '</div>' : '')
+    + '<div class="hdr-cnpj">Alliance Casas Pré Fabricadas</div>'
+    + '<div class="hdr-cnpj">CNPJ: 26.520.516/0001-50</div>'
+    + '<div class="hdr-date">Emitido em: ' + date + '</div>'
+    + (_currentQuoteId ? '<div class="hdr-date" style="color:rgba(255,255,255,0.6);font-size:10px;margin-top:2px;font-family:monospace;letter-spacing:0.5px;">' + genQuoteCode(_currentQuoteId) + '</div>' : '')
+    + '</div></div>'
+    + '<div class="m2bar"><div class="m2bar-label">M² Total da Casa</div><div class="m2bar-val">' + m2 + '</div></div>'
+    + '<div class="body">'
+    + '<div class="cgrid">'
+    + '<div class="cbox"><div class="cbox-lbl">Cliente</div><div class="cbox-val">' + client + '</div></div>'
+    + '<div class="cbox"><div class="cbox-lbl">Vendedor</div><div class="cbox-val">' + vendor + '</div></div>'
+    + '<div class="cbox"><div class="cbox-lbl">Cidade</div><div class="cbox-val">' + city + '</div></div>'
+    + '<div class="cbox"><div class="cbox-lbl">Validade</div><div class="cbox-val">' + validity + '</div></div>'
+    + '</div>'
+    + '<table class="items"><thead><tr>' + (pdfMode==='detailed' ? thDetailed : thSimple) + '</tr></thead><tbody>' + rows + '</tbody></table>'
+    + (!pdfHideAD && discAmt > 0 ? '<div class="disc">Desconto: - ' + fmt(discAmt) + '</div>' : '')
+    + (!pdfHideAD && acrescimoAmt > 0 ? '<div class="disc" style="color:#27ae60">Acréscimo: + ' + fmt(acrescimoAmt) + '</div>' : '')
+    + '<div class="totalbar"><span class="totalbar-lbl">Valor Final</span><span class="totalbar-val">' + total + '</span></div>'
+    + (obs ? '<div class="obsbox"><div class="obshdr">Observações</div><div class="obsbody">' + obs + '</div></div>' : '')
+    + payHtml
+    + '</div>'
+    + '<div class="footer">Este orçamento é válido por 15 dias &nbsp;·&nbsp; Preços sujeitos a alteração &nbsp;·&nbsp; CNPJ: 26.520.516/0001-50 &nbsp;·&nbsp; Alliance Casas Pré Fabricadas</div>'
+    + '</div>'
+    + '<scri' + 'pt>setTimeout(function(){window.print();},400);</scri' + 'pt>'
+    + '</body></html>';
+
+  var blob = new Blob([html], {type:'text/html;charset=utf-8'});
+  window.open(URL.createObjectURL(blob), '_blank');
+}
+
+
+// ═══════════════════════════════════════════════════
+// FORMAS DE PAGAMENTO
+// ═══════════════════════════════════════════════════
+var paymentRows = [
+  { id: 1, label: 'Até o dia Anterior ao início da Obra',                                          pct: 25 },
+  { id: 2, label: 'Após o Fundamento Concretado e Paredes de Alvenaria Erguidas, Sem Reboco',      pct: 25 },
+  { id: 3, label: 'Estrutura em Madeira Erguida e Telhas Colocadas',                               pct: 25 },
+  { id: 4, label: 'Apos Paredes Fechadas de Frontal, Hidraulica e Reboco Pronto',                  pct: 25 }
+];
+var paymentNextId = 5;
+
+function getPaymentTotal() {
+  var raw = document.getElementById('finalTotal').textContent;
+  return parseFloat(raw.replace('R$','').replace(/\./g,'').replace(',','.').trim()) || 0;
+}
+
+function renderPaymentRows() {
+  var container = document.getElementById('paymentRows');
+  if (!container) return;
+  var total = getPaymentTotal();
+  container.innerHTML = '';
+  paymentRows.forEach(function(row) {
+    var val = total * (row.pct / 100);
+    var div = document.createElement('div');
+    div.className = 'payment-row';
+    div.id = 'prow-' + row.id;
+    div.innerHTML =
+      '<input class="payment-input" type="text" value="' + row.label + '" placeholder="Ex: Início da obra"' +
+        ' onchange="updatePaymentLabel(' + row.id + ', this.value)">' +
+      '<input class="payment-pct" type="number" min="0" max="100" step="0.01" value="' + row.pct + '"' +
+        ' oninput="updatePaymentPct(' + row.id + ', this.value)"' +
+        ' onchange="updatePaymentPct(' + row.id + ', this.value)"> ' +
+      '<div class="payment-val">' + fmt(val) + '</div>' +
+      '<button class="payment-del" onclick="removePaymentRow(' + row.id + ')" title="Remover">×</button>';
+    container.appendChild(div);
+  });
+  updatePaymentTotals();
+}
+
+function updatePaymentLabel(id, val) {
+  var row = paymentRows.find(function(r){ return r.id === id; });
+  if (row) row.label = val;
+}
+
+function updatePaymentPct(id, val) {
+  var row = paymentRows.find(function(r){ return r.id === id; });
+  if (row) {
+    row.pct = parseFloat(val) || 0;
+    var total = getPaymentTotal();
+    var valEl = document.querySelector('#prow-' + id + ' .payment-val');
+    if (valEl) valEl.textContent = fmt(total * (row.pct / 100));
+    updatePaymentTotals();
+  }
+}
+
+function updatePaymentTotals() {
+  var totalPct = paymentRows.reduce(function(s,r){ return s + (r.pct||0); }, 0);
+  totalPct = Math.round(totalPct * 100) / 100;
+  var el = document.getElementById('paymentTotalPct');
+  if (el) {
+    el.textContent = totalPct + '% do total';
+    el.className = totalPct > 100 ? 'over' : (totalPct === 100 ? 'ok' : '');
+  }
+}
+
+function addPaymentRow() {
+  paymentRows.push({ id: paymentNextId++, label: 'Nova etapa', pct: 0 });
+  renderPaymentRows();
+}
+
+function removePaymentRow(id) {
+  paymentRows = paymentRows.filter(function(r){ return r.id !== id; });
+  renderPaymentRows();
+}
+
+function refreshPaymentValues() {
+  var total = getPaymentTotal();
+  paymentRows.forEach(function(row) {
+    var valEl = document.querySelector('#prow-' + row.id + ' .payment-val');
+    if (valEl) valEl.textContent = fmt(total * (row.pct / 100));
+  });
+  updatePaymentTotals();
+}
+
+function getPaymentData() {
+  return paymentRows.map(function(r){ return { label: r.label, pct: r.pct }; });
+}
+
+function setPaymentData(data) {
+  if (!Array.isArray(data) || !data.length) return;
+  paymentNextId = 1;
+  paymentRows = data.map(function(r) {
+    return { id: paymentNextId++, label: r.label, pct: r.pct };
+  });
+  renderPaymentRows();
+}
+
+
+
+// ═══════════════════════════════════════════════════
+// PWA — Install & Service Worker
+// ═══════════════════════════════════════════════════
+function toggleGroupField() {
+  var sec = document.getElementById('newSection');
+  var wrap = document.getElementById('groupFieldWrap');
+  if (!sec || !wrap) return;
+  var selectedSec = SECTIONS.find(function(s){ return s.id === sec.value; });
+  // Show group selector only for non-log sections
+  wrap.style.display = (sec.value && sec.value !== 'log') ? '' : 'none';
+}
+
+
+function genQuoteCode(id) {
+  // Format: ORC-2024-00123
+  var d = new Date(id);
+  var year = d.getFullYear();
+  var num  = String(id).slice(-5);
+  return 'ORC-' + year + '-' + num;
+}
+
+function updateQuoteCodeDisplay() {
+  var el = document.getElementById('quoteCodeDisplay');
+  if (!el) return;
+  el.textContent = _currentQuoteId ? genQuoteCode(_currentQuoteId) : 'NOVO';
+  el.style.color = _currentQuoteId ? 'var(--accent)' : 'var(--muted)';
+}
+
+function newQuote() {
+  if (_currentQuoteId) {
+    if (!confirm('Criar um novo orçamento em branco? O atual permanece salvo no histórico.')) return;
+  }
+  _currentQuoteId = null;
+  state = {};
+  ['clientName','vendorName','clientCity','clientPhone','quoteObs','discountVal','acrescimoVal','tipoMadeira'].forEach(function(id){
+    var el = document.getElementById(id); if(el) el.value='';
+  });
+  document.getElementById('discountType').value = 'pct';
+  paymentRows = [
+    {id:1,label:'Até o dia Anterior ao início da Obra',pct:25},
+    {id:2,label:'Após o Fundamento Concretado e Paredes de Alvenaria Erguidas, Sem Reboco',pct:25},
+    {id:3,label:'Estrutura em Madeira Erguida e Telhas Colocadas',pct:25},
+    {id:4,label:'Apos Paredes Fechadas de Frontal, Hidraulica e Reboco Pronto',pct:25}
+  ]; paymentNextId=5; renderPaymentRows();
+  document.getElementById('discountResult').style.display = 'none';
+  setStatus('negociacao');
+  var v = new Date(); v.setDate(v.getDate()+15);
+  document.getElementById('quoteValidity').value = v.toISOString().split('T')[0];
+  document.getElementById('quoteDate').value = new Date().toISOString().split('T')[0];
+  renderOrcamento();
+  updateQuoteCodeDisplay();
+  showToast('Novo orçamento iniciado!');
+}
+
+// ═══════════════════════════════════════════════════
+// DRAG & DROP — Admin Table
+// ═══════════════════════════════════════════════════
+var _dragSrcId  = null;
+var _dragSrcSec = null;
+
+function onDragStart(e) {
+  _dragSrcId  = this.getAttribute('data-id');
+  _dragSrcSec = this.getAttribute('data-sec');
+  this.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
+}
+function onDragOver(e) {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  this.classList.add('drag-over');
+}
+function onDragLeave() {
+  this.classList.remove('drag-over');
+}
+function onDragEnd() {
+  document.querySelectorAll('#adminTbody tr').forEach(function(tr) {
+    tr.classList.remove('dragging', 'drag-over');
+  });
+}
+function onDrop(e) {
+  e.preventDefault();
+  this.classList.remove('drag-over');
+  var targetId  = this.getAttribute('data-id');
+  var targetSec = this.getAttribute('data-sec');
+  if (!targetId || targetId === _dragSrcId) return;
+
+  // Move within same section
+  if (_dragSrcSec === targetSec) {
+    var arr = ITEMS[_dragSrcSec];
+    var fromIdx = arr.findIndex(function(i){ return i.id === _dragSrcId; });
+    var toIdx   = arr.findIndex(function(i){ return i.id === targetId; });
+    if (fromIdx === -1 || toIdx === -1) return;
+    var item = arr.splice(fromIdx, 1)[0];
+    arr.splice(toIdx, 0, item);
+  } else {
+    // Move across sections
+    var srcArr = ITEMS[_dragSrcSec];
+    var tgtArr = ITEMS[targetSec] || [];
+    var fromIdx = srcArr.findIndex(function(i){ return i.id === _dragSrcId; });
+    var toIdx   = tgtArr.findIndex(function(i){ return i.id === targetId; });
+    if (fromIdx === -1) return;
+    var item = srcArr.splice(fromIdx, 1)[0];
+    item.group = 'outros';
+    if (toIdx === -1) tgtArr.push(item);
+    else tgtArr.splice(toIdx, 0, item);
+    ITEMS[targetSec] = tgtArr;
+  }
+  saveAll();
+  renderAdminTable();
+  showToast('✓ Ordem atualizada!');
+}
+
+// ═══════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════
+document.getElementById('quoteDate').value = new Date().toISOString().split('T')[0];
+var defValidity = new Date(); defValidity.setDate(defValidity.getDate()+15);
+document.getElementById('quoteValidity').value = defValidity.toISOString().split('T')[0];
+setStatus('negociacao');
+document.addEventListener('click', function(e) {
+  document.querySelectorAll('.dropdown-suggestions').forEach(function(el) {
+    if (!el.parentElement.contains(e.target)) el.style.display = 'none';
+  });
+});
+// Restore session and load
+restoreSession();
+// ═══════════════════════════════════════════════════
+// MODELOS DE ORÇAMENTO
+// ═══════════════════════════════════════════════════
+var MODELOS_KEY = 'alliance_modelos_v1';
+
+function getModelos() {
+  try { return JSON.parse(localStorage.getItem(MODELOS_KEY) || '[]'); } catch(e) { return []; }
+}
+function saveModelosLocal(arr) {
+  localStorage.setItem(MODELOS_KEY, JSON.stringify(arr));
+}
+
+function salvarModelo() {
+  var nome = (document.getElementById('modeloNomeInp').value || '').trim();
+  if (!nome) { showToast('Digite um nome para o modelo','error'); return; }
+  var desc = (document.getElementById('modeloDescInp').value || '').trim();
+
+  // Captura estado atual do orçamento
+  var snap = {
+    id:          Date.now(),
+    nome:        nome,
+    desc:        desc,
+    created_at:  new Date().toLocaleString('pt-BR'),
+    vendor:      document.getElementById('vendorName').value || '',
+    tipo_madeira:document.getElementById('tipoMadeira').value || '',
+    discount_val: document.getElementById('discountVal').value || '',
+    discount_type:document.getElementById('discountType').value || 'pct',
+    acrescimo_val:document.getElementById('acrescimoVal').value || '',
+    obs:          document.getElementById('quoteObs').value || '',
+    payment_data: JSON.stringify(getPaymentData()),
+    state:        JSON.parse(JSON.stringify(state)),
+    total:        document.getElementById('finalTotal').textContent || ''
+  };
+
+  var arr = getModelos();
+  arr.unshift(snap);
+  saveModelosLocal(arr);
+  document.getElementById('modeloNomeInp').value = '';
+  document.getElementById('modeloDescInp').value = '';
+  showToast('✓ Modelo "' + nome + '" salvo!');
+  renderModelos();
+}
+
+function renderModelos() {
+  var grid = document.getElementById('modeloGrid');
+  if (!grid) return;
+  var arr = getModelos();
+  if (!arr.length) {
+    grid.innerHTML = '<div class="modelo-empty">Nenhum modelo salvo ainda.<br>Preencha um orçamento e salve como modelo acima.</div>';
+    return;
+  }
+  grid.innerHTML = arr.map(function(m, i) {
+    var itemsCount = m.state ? Object.values(m.state).filter(function(v){ return v > 0; }).length : 0;
+    return '<div class="modelo-card">' +
+      '<div class="modelo-card-name">' + escHtml(m.nome) + '</div>' +
+      (m.desc ? '<div class="modelo-card-desc">' + escHtml(m.desc) + '</div>' : '') +
+      '<div class="modelo-card-meta">' +
+        (m.tipo_madeira ? '<span>🪵 ' + escHtml(m.tipo_madeira) + '</span>' : '') +
+        (itemsCount ? '<span>📦 ' + itemsCount + ' itens</span>' : '') +
+        (m.total ? '<span style="color:var(--accent);font-weight:700;">' + escHtml(m.total) + '</span>' : '') +
+        '<span style="color:var(--muted);">' + escHtml(m.created_at) + '</span>' +
+      '</div>' +
+      '<div class="modelo-card-actions">' +
+        '<button class="btn btn-primary btn-sm" onclick="aplicarModelo(' + i + ')">📂 Usar como base</button>' +
+        '<button class="btn btn-ghost btn-sm" onclick="excluirModelo(' + i + ')">🗑</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function aplicarModelo(i) {
+  var arr = getModelos();
+  var m = arr[i];
+  if (!m) return;
+  if (!confirm('Aplicar o modelo "' + m.nome + '"? O orçamento atual será substituído.')) return;
+
+  state = (m.state && typeof m.state === 'object') ? JSON.parse(JSON.stringify(m.state)) : {};
+  if (m.vendor)        document.getElementById('vendorName').value    = m.vendor;
+  if (m.tipo_madeira)  document.getElementById('tipoMadeira').value   = m.tipo_madeira;
+  if (m.discount_val)  document.getElementById('discountVal').value   = m.discount_val;
+  if (m.discount_type) document.getElementById('discountType').value  = m.discount_type;
+  if (m.acrescimo_val) document.getElementById('acrescimoVal').value  = m.acrescimo_val;
+  if (m.obs)           document.getElementById('quoteObs').value      = m.obs;
+  try { if (m.payment_data) setPaymentData(JSON.parse(m.payment_data)); } catch(ex){}
+  // Clear client-specific fields
+  document.getElementById('clientName').value = '';
+  document.getElementById('clientCity').value = '';
+  document.getElementById('clientPhone').value = '';
+  _currentQuoteId = null;
+  updateQuoteCodeDisplay();
+  switchTab('orcamento');
+  renderOrcamento();
+  showToast('✓ Modelo "' + m.nome + '" aplicado!');
+}
+
+function excluirModelo(i) {
+  var arr = getModelos();
+  if (!arr[i]) return;
+  if (!confirm('Excluir o modelo "' + arr[i].nome + '"?')) return;
+  arr.splice(i, 1);
+  saveModelosLocal(arr);
+  renderModelos();
+  showToast('Modelo excluído');
+}
+
+function escHtml(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ═══════════════════════════════════════════════════
+// DASHBOARD
+// ═══════════════════════════════════════════════════
+var _dashPeriod = 7;
+var _dashCache  = null;
+var _dashDataFiltered = [];
+
+function setDashPeriod(days, btn) {
+  _dashPeriod = days;
+  document.querySelectorAll('.dash-period-btn').forEach(function(b){ b.classList.remove('active'); });
+  if (btn) btn.classList.add('active');
+  _dashCache = null; // force rebuild with new period
+  renderDashboard();
+}
+
+function renderDashboard() {
+  if (!_currentUser) return;
+  if (_historyCache) { _buildDash(_historyCache); return; }
+  var url = _isAdmin ? TABLE_URL + '?order=id.desc' : TABLE_URL + '?order=id.desc&user_id=eq.' + _currentUser.id;
+  sbFetch('GET', url)
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      _historyCache = data;
+      _buildDash(data);
+    })
+    .catch(function(){
+      document.getElementById('dashKpis').innerHTML = '<div class="dash-empty">❌ Sem conexão com a nuvem.</div>';
+    });
+}
+
+function _filterByPeriod(data) {
+  if (!_dashPeriod) return data;
+  var cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - _dashPeriod);
+  return (data||[]).filter(function(e) {
+    if (!e.saved_at) return true;
+    var parts = e.saved_at.split(/[\/,\s:]+/);
+    if (parts.length >= 3) {
+      var d = new Date(parts[2], parts[1]-1, parts[0]);
+      return d >= cutoff;
+    }
+    return true;
+  });
+}
+
+function _parseMoney(s) {
+  if (!s) return 0;
+  return parseFloat(String(s).replace(/[^0-9,]/g,'').replace(',','.')) || 0;
+}
+
+function _buildDash(allData) {
+  var data = _filterByPeriod(allData);
+  _dashDataFiltered = data;
+  var total     = data.length;
+  var totalVal  = data.reduce(function(acc,e){ return acc + _parseMoney(e.total); }, 0);
+  var aprovados = data.filter(function(e){ return e.status === 'aprovado'; }).length;
+  var perdidos  = data.filter(function(e){ return e.status === 'perdido'; }).length;
+  var negoc     = data.filter(function(e){ return e.status === 'negociacao' || !e.status; }).length;
+  var taxaAp    = total ? Math.round(aprovados/total*100) : 0;
+  var ticketMed = aprovados ? (data.filter(function(e){ return e.status==='aprovado'; })
+                    .reduce(function(a,e){ return a+_parseMoney(e.total);},0) / aprovados) : 0;
+  var volAprov  = data.filter(function(e){ return e.status==='aprovado'; })
+                    .reduce(function(a,e){ return a+_parseMoney(e.total);},0);
+
+  // ── KPIs ──────────────────────────────────────────────────────
+  document.getElementById('dashKpis').innerHTML =
+    _kpi('Total de Orçamentos', total,                '',                         '📋') +
+    _kpi('Volume Total',        'R$ '+_fmt(totalVal), '',                          '💰') +
+    _kpi('Volume Aprovado',     'R$ '+_fmt(volAprov), taxaAp+'% de aprovação',    '✅') +
+    _kpi('Ticket Médio Aprov.', 'R$ '+_fmt(ticketMed),'por orçamento aprovado',   '🎯') +
+    (_isAdmin ? _kpi('Vendedores Ativos', _countUniq(data,'vendor'), 'no período', '👥') : '') +
+    _kpi('Em Negociação',       negoc, '',                                         '💬');
+
+  // ── FUNIL ─────────────────────────────────────────────────────
+  var funilEl = document.getElementById('dashFunil');
+  if (funilEl && total > 0) {
+    var items = [
+      { label: '💬 Negociação', val: negoc,    pct: Math.round(negoc/total*100),    color: '#3498db' },
+      { label: '✅ Aprovado',   val: aprovados, pct: Math.round(aprovados/total*100), color: '#2ecc71' },
+      { label: '❌ Perdido',    val: perdidos,  pct: Math.round(perdidos/total*100),  color: '#e74c3c' },
+    ];
+    funilEl.innerHTML = '<div class="dash-funnel">' +
+      items.map(function(it){
+        return '<div class="dash-funnel-row">' +
+          '<span class="dash-funnel-label">' + it.label + '</span>' +
+          '<div class="dash-funnel-bar" style="width:' + Math.max(it.pct, 8) + '%;background:' + it.color + ';opacity:.85;">' +
+            it.val + ' (' + it.pct + '%)' +
+          '</div>' +
+        '</div>';
+      }).join('') +
+    '</div>';
+  } else if (funilEl) {
+    funilEl.innerHTML = '<div class="dash-empty">Sem dados</div>';
+  }
+
+  // ── POR VENDEDOR ───────────────────────────────────────────────
+  var byVendor = _groupSumFull(data, 'vendor', 'total');
+  _renderBars('dashVendedor', byVendor.map(function(v){
+    return { label: v.label, val: v.count, extra: 'R$ '+_fmt(v.sum) };
+  }), 'orç.');
+  var vtEl = document.getElementById('dashVendedorTotal');
+  if (vtEl) vtEl.textContent = byVendor.length + ' vendedor' + (byVendor.length !== 1 ? 'es' : '');
+
+  // ── TABELA DETALHADA POR VENDEDOR (admin) ──────────────────────
+  var vTableWrap = document.getElementById('dashVendedorTableWrap');
+  if (vTableWrap) {
+    if (_isAdmin && byVendor.length > 0) {
+      vTableWrap.style.display = '';
+      var rows = byVendor.map(function(v){
+        var taxV = v.count ? Math.round(v.aprov/v.count*100) : 0;
+        return '<tr>' +
+          '<td style="padding:8px 10px;font-weight:600;">' + escHtml(v.label) + '</td>' +
+          '<td style="padding:8px 10px;text-align:center;">' + v.count + '</td>' +
+          '<td style="padding:8px 10px;text-align:center;color:#2ecc71;">' + v.aprov + '</td>' +
+          '<td style="padding:8px 10px;text-align:center;color:#e74c3c;">' + v.perd + '</td>' +
+          '<td style="padding:8px 10px;text-align:center;">' + taxV + '%</td>' +
+          '<td style="padding:8px 10px;text-align:right;color:var(--accent);font-weight:700;">R$ ' + _fmt(v.sum) + '</td>' +
+          '<td style="padding:8px 10px;text-align:right;color:var(--muted);">R$ ' + _fmt(v.count ? v.sum/v.count : 0) + '</td>' +
+        '</tr>';
+      }).join('');
+      document.getElementById('dashVendedorTable').innerHTML =
+        '<table style="width:100%;border-collapse:collapse;font-size:12px;">' +
+          '<thead><tr style="border-bottom:1px solid var(--border);">' +
+            '<th style="padding:6px 10px;text-align:left;color:var(--muted);font-size:10px;text-transform:uppercase;">Vendedor</th>' +
+            '<th style="padding:6px 10px;text-align:center;color:var(--muted);font-size:10px;text-transform:uppercase;">Total</th>' +
+            '<th style="padding:6px 10px;text-align:center;color:#2ecc71;font-size:10px;text-transform:uppercase;">Aprov.</th>' +
+            '<th style="padding:6px 10px;text-align:center;color:#e74c3c;font-size:10px;text-transform:uppercase;">Perdido</th>' +
+            '<th style="padding:6px 10px;text-align:center;color:var(--muted);font-size:10px;text-transform:uppercase;">Taxa</th>' +
+            '<th style="padding:6px 10px;text-align:right;color:var(--muted);font-size:10px;text-transform:uppercase;">Volume</th>' +
+            '<th style="padding:6px 10px;text-align:right;color:var(--muted);font-size:10px;text-transform:uppercase;">Ticket</th>' +
+          '</tr></thead>' +
+          '<tbody>' + rows + '</tbody>' +
+        '</table>';
+    } else {
+      vTableWrap.style.display = 'none';
+    }
+  }
+
+  // ── EVOLUÇÃO MENSAL ────────────────────────────────────────────
+  _renderMensal('dashMensal', allData); // usa todos os dados, não filtrado por período
+
+  // ── ATIVIDADE DIÁRIA ───────────────────────────────────────────
+  _renderSparkline('dashSparkline', data);
+
+  // ── POR MADEIRA ────────────────────────────────────────────────
+  var byMadeira = _groupCount(data, 'tipo_madeira');
+  _renderBars('dashMadeira', byMadeira, '');
+
+  // ── MAIORES ORÇAMENTOS ─────────────────────────────────────────
+  var sorted = data.slice().sort(function(a,b){ return _parseMoney(b.total) - _parseMoney(a.total); }).slice(0,10);
+  var topEl = document.getElementById('dashTop');
+  if (!sorted.length) {
+    topEl.innerHTML = '<div class="dash-empty">Nenhum dado no período</div>';
+  } else {
+    topEl.innerHTML =
+      '<table style="width:100%;border-collapse:collapse;font-size:12px;">' +
+        '<thead><tr style="border-bottom:1px solid var(--border);">' +
+          '<th style="padding:6px 10px;text-align:left;color:var(--muted);font-size:10px;text-transform:uppercase;">#</th>' +
+          '<th style="padding:6px 10px;text-align:left;color:var(--muted);font-size:10px;text-transform:uppercase;">Cliente</th>' +
+          (_isAdmin ? '<th style="padding:6px 10px;text-align:left;color:var(--muted);font-size:10px;text-transform:uppercase;">Vendedor</th>' : '') +
+          '<th style="padding:6px 10px;text-align:left;color:var(--muted);font-size:10px;text-transform:uppercase;">Data</th>' +
+          '<th style="padding:6px 10px;text-align:left;color:var(--muted);font-size:10px;text-transform:uppercase;">Status</th>' +
+          '<th style="padding:6px 10px;text-align:right;color:var(--muted);font-size:10px;text-transform:uppercase;">Valor</th>' +
+        '</tr></thead><tbody>' +
+      sorted.map(function(e, idx){
+        var stColor = { aprovado:'#2ecc71', perdido:'#e74c3c', negociacao:'#3498db' };
+        var stLabel = { aprovado:'Aprovado', perdido:'Perdido', negociacao:'Negociação' };
+        var st = e.status || 'negociacao';
+        return '<tr style="border-bottom:1px solid var(--border);">' +
+          '<td style="padding:7px 10px;color:var(--muted);">' + (idx+1) + '</td>' +
+          '<td style="padding:7px 10px;font-weight:600;">' + escHtml(e.client||'—') + '</td>' +
+          (_isAdmin ? '<td style="padding:7px 10px;color:var(--muted);">' + escHtml(e.vendor||'—') + '</td>' : '') +
+          '<td style="padding:7px 10px;color:var(--muted);">' + escHtml(e.date||'—') + '</td>' +
+          '<td style="padding:7px 10px;"><span style="font-size:10px;font-weight:700;color:' + (stColor[st]||'#7a7f9a') + ';">' + (stLabel[st]||st) + '</span></td>' +
+          '<td style="padding:7px 10px;text-align:right;font-weight:700;color:var(--accent);">' + escHtml(e.total||'—') + '</td>' +
+        '</tr>';
+      }).join('') +
+      '</tbody></table>';
+  }
+}
+
+// ── HELPERS ──────────────────────────────────────────────────────
+function _kpi(label, val, sub, icon) {
+  return '<div class="dash-kpi">' +
+    (icon ? '<div class="dash-kpi-icon">' + icon + '</div>' : '') +
+    '<div class="dash-kpi-label">' + label + '</div>' +
+    '<div class="dash-kpi-val">' + val + '</div>' +
+    (sub ? '<div class="dash-kpi-sub">' + sub + '</div>' : '') +
+    '</div>';
+}
+
+function _fmt(n) {
+  return Number(n).toLocaleString('pt-BR', {minimumFractionDigits:0, maximumFractionDigits:0});
+}
+
+function _countUniq(data, field) {
+  var s = new Set();
+  data.forEach(function(e){ if (e[field]) s.add(e[field]); });
+  return s.size;
+}
+
+function _groupCount(data, field) {
+  var map = {};
+  data.forEach(function(e){ var k = e[field]||'—'; map[k] = (map[k]||0)+1; });
+  return Object.keys(map).sort(function(a,b){ return map[b]-map[a]; })
+    .map(function(k){ return {label:k, val:map[k]}; });
+}
+
+function _groupSumFull(data, groupField, sumField) {
+  var countMap = {}, valMap = {}, aprovMap = {}, perdMap = {};
+  data.forEach(function(e){
+    var k = e[groupField]||'—';
+    countMap[k] = (countMap[k]||0) + 1;
+    valMap[k]   = (valMap[k]||0)   + _parseMoney(e[sumField]);
+    if (e.status === 'aprovado') aprovMap[k] = (aprovMap[k]||0) + 1;
+    if (e.status === 'perdido')  perdMap[k]  = (perdMap[k]||0)  + 1;
+  });
+  return Object.keys(countMap).sort(function(a,b){ return countMap[b]-countMap[a]; })
+    .slice(0,10)
+    .map(function(k){ return { label:k, count:countMap[k], sum:valMap[k], aprov:aprovMap[k]||0, perd:perdMap[k]||0 }; });
+}
+
+function _renderBars(elId, items, unit) {
+  var el = document.getElementById(elId);
+  if (!el) return;
+  if (!items.length) { el.innerHTML = '<div class="dash-empty">Sem dados</div>'; return; }
+  var max = Math.max.apply(null, items.map(function(i){ return i.val; }));
+  el.innerHTML = items.map(function(item, idx){
+    var pct = max ? Math.round(item.val/max*100) : 0;
+    var colors = ['', 'green', 'red', 'blue', '', 'green'];
+    var cls = item.colorClass || '';
+    return '<div class="dash-bar-row">' +
+      '<div class="dash-bar-label" title="' + escHtml(item.label) + '">' + escHtml(item.label) + '</div>' +
+      '<div class="dash-bar-track"><div class="dash-bar-fill ' + cls + '" style="width:' + pct + '%"></div></div>' +
+      '<div class="dash-bar-val">' + item.val + (unit?' '+unit:'') + (item.extra?' · '+item.extra:'') + '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function _renderMensal(elId, data) {
+  var el = document.getElementById(elId);
+  if (!el) return;
+  // Last 6 months
+  var months = {};
+  var today = new Date();
+  var monthLabels = [];
+  for (var i = 5; i >= 0; i--) {
+    var d = new Date(today.getFullYear(), today.getMonth() - i, 1);
+    var key = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
+    var label = d.toLocaleDateString('pt-BR', { month:'short' }).replace('.','');
+    months[key] = 0;
+    monthLabels.push({ key: key, label: label });
+  }
+  (data||[]).forEach(function(e){
+    if (!e.saved_at) return;
+    var parts = e.saved_at.split(/[\/,\s:]+/);
+    if (parts.length >= 3) {
+      var key = parts[2] + '-' + String(parts[1]).padStart(2,'0');
+      if (key in months) months[key]++;
+    }
+  });
+  var vals = monthLabels.map(function(m){ return months[m.key]; });
+  var maxV = Math.max.apply(null, vals) || 1;
+  el.innerHTML =
+    '<div class="dash-monthly">' +
+    monthLabels.map(function(m, i){
+      var h = Math.max(4, Math.round(vals[i]/maxV*80));
+      var isCurrent = m.key === (today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0'));
+      return '<div class="dash-month-bar' + (isCurrent ? ' today' : '') + '" ' +
+        'style="height:' + h + 'px;' + (isCurrent ? 'background:rgba(48,142,238,.55);' : '') + '" ' +
+        'title="' + m.label + ': ' + vals[i] + ' orçamento(s)"></div>';
+    }).join('') +
+    '</div>' +
+    '<div class="dash-month-labels">' +
+      monthLabels.map(function(m){ return '<span>' + m.label + '</span>'; }).join('') +
+    '</div>';
+}
+
+function _renderSparkline(elId, data) {
+  var el = document.getElementById(elId);
+  if (!el) return;
+  var days = 14;
+  var buckets = {};
+  var today = new Date();
+  for (var i = days-1; i >= 0; i--) {
+    var d = new Date(today); d.setDate(d.getDate()-i);
+    buckets[d.toLocaleDateString('pt-BR')] = 0;
+  }
+  data.forEach(function(e) {
+    if (!e.saved_at) return;
+    var parts = e.saved_at.split(/[\/,\s:]+/);
+    if (parts.length >= 3) {
+      var key = parts[0]+'/'+parts[1]+'/'+parts[2];
+      if (key in buckets) buckets[key]++;
+    }
+  });
+  var vals = Object.values(buckets);
+  var maxV = Math.max.apply(null, vals) || 1;
+  var todayKey = today.toLocaleDateString('pt-BR');
+  var labels = Object.keys(buckets);
+  el.innerHTML = '<div class="dash-sparkline">' +
+    labels.map(function(k, i){
+      var h = Math.max(4, Math.round(vals[i]/maxV*56));
+      var isToday = k === todayKey;
+      return '<div class="dash-spark-bar' + (isToday?' today':'') + '" style="height:'+h+'px" title="'+k+': '+vals[i]+' orçamento(s)"></div>';
+    }).join('') +
+  '</div>' +
+  '<div style="display:flex;justify-content:space-between;font-size:9px;color:var(--muted);margin-top:4px;">' +
+    '<span>' + labels[0] + '</span><span>Hoje</span>' +
+  '</div>';
+}
+
+// ── EXPORT CSV ───────────────────────────────────────────────────
+function _downloadCSV(rows, filename) {
+  var bom = '\uFEFF';
+  var csv = bom + rows.map(function(r){ return r.map(function(c){ return '"'+String(c||'').replace(/"/g,'""')+'"'; }).join(';'); }).join('\n');
+  var a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = filename;
+  a.click();
+}
+
+function exportDashCSV() {
+  var data = _dashDataFiltered;
+  if (!data || !data.length) { showToast('Sem dados para exportar','error'); return; }
+  var header = ['Cliente','Vendedor','Cidade','Data','Validade','Status','Tipo Madeira','Total','Salvo em'];
+  var rows = [header].concat(data.map(function(e){
+    return [e.client,e.vendor,e.city,e.date,e.validity,e.status,e.tipo_madeira,e.total,e.saved_at];
+  }));
+  _downloadCSV(rows, 'orcamentos_' + new Date().toLocaleDateString('pt-BR').replace(/\//g,'-') + '.csv');
+  showToast('✓ CSV exportado!');
+}
+
+function exportVendedorCSV() {
+  var data = _dashDataFiltered;
+  if (!data || !data.length) { showToast('Sem dados','error'); return; }
+  var byV = _groupSumFull(data, 'vendor', 'total');
+  var header = ['Vendedor','Total Orçamentos','Aprovados','Perdidos','Taxa Aprovação','Volume Total','Ticket Médio'];
+  var rows = [header].concat(byV.map(function(v){
+    var taxa = v.count ? Math.round(v.aprov/v.count*100)+'%' : '0%';
+    var ticket = v.count ? Math.round(v.sum/v.count) : 0;
+    return [v.label, v.count, v.aprov, v.perd, taxa, v.sum, ticket];
+  }));
+  _downloadCSV(rows, 'vendedores_' + new Date().toLocaleDateString('pt-BR').replace(/\//g,'-') + '.csv');
+  showToast('✓ CSV exportado!');
+}
+
+function exportTopCSV() {
+  var data = _dashDataFiltered;
+  if (!data || !data.length) { showToast('Sem dados','error'); return; }
+  var sorted = data.slice().sort(function(a,b){ return _parseMoney(b.total)-_parseMoney(a.total); });
+  var header = ['#','Cliente','Vendedor','Data','Status','Total'];
+  var rows = [header].concat(sorted.map(function(e,i){
+    return [i+1, e.client, e.vendor, e.date, e.status, e.total];
+  }));
+  _downloadCSV(rows, 'ranking_orcamentos_' + new Date().toLocaleDateString('pt-BR').replace(/\//g,'-') + '.csv');
+  showToast('✓ CSV exportado!');
+}
+
+
+</script>
+</body>
+</html>
