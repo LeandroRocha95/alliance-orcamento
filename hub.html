@@ -1123,9 +1123,14 @@ window.addEventListener('message', function(e) {
 var GA_WORKER = 'https://alliance-analytics.leandrorocha1995.workers.dev';
 
 function carregarDashboard() {
-  var hoje = new Date();
-  hoje.setHours(0,0,0,0);
-  var hojeIso = hoje.toISOString();
+  // Calcula meia-noite no horário de Brasília (GMT-3)
+  var agora = new Date();
+  var brasiliaOffset = -3 * 60; // GMT-3 em minutos
+  var localOffset    = agora.getTimezoneOffset(); // offset local em minutos
+  var diffMs = (localOffset - brasiliaOffset) * 60 * 1000;
+  var hojeLocal = new Date(agora.getTime() - diffMs);
+  hojeLocal.setUTCHours(0, 0, 0, 0); // meia-noite UTC equivalente a meia-noite em Brasília
+  var hojeIso = new Date(hojeLocal.getTime() + diffMs).toISOString();
 
   function sbGet(path) {
     return fetch(SUPABASE_URL + '/rest/v1/' + path, {
