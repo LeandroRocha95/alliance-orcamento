@@ -805,7 +805,7 @@ var MODULES = {
   portfolio:    'https://alliance-orcamento.pages.dev/portfolio-admin.html',
   depoimentos: 'https://alliance-orcamento.pages.dev/depoimentos-admin.html',
   conteudo:    'https://alliance-orcamento.pages.dev/conteudo-admin.html',
-  analytics:  'https://alliance-orcamento.pages.dev/analytics.html',
+  analytics:  'https://alliance-orcamento.pages.dev/Analytics.html',
   banco:      'https://supabase.com/dashboard/project/gzzclbxnohokttujvaqa',
 };
 var LOCKED   = ['custos', 'banco', 'crm', 'campanhas', 'portfolio', 'depoimentos'];
@@ -991,7 +991,7 @@ function loadModule(module) {
 
   // Sempre (re)carrega o iframe com a URL correta
   var iframe = document.getElementById('iframe-' + module);
-  if (iframe) {
+  if (iframe && MODULES[module]) {
     var url = MODULES[module];
     // Passa sessão como parâmetro na URL para garantir disponibilidade imediata
     if (_session && _session.user && module !== 'banco') {
