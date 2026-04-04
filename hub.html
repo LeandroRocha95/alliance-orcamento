@@ -177,10 +177,10 @@ body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif
 /* ── DASHBOARD KPIs ── */
 .dash-kpis {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 12px;
   width: 100%;
-  max-width: 860px;
+  max-width: 640px;
   margin-bottom: 28px;
 }
 .dash-kpi {
@@ -616,16 +616,6 @@ body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif
         <div class="dash-kpi-label">Orçamentos</div>
         <div class="dash-kpi-value" id="kpiOrcTotal"><span class="dash-kpi-loading"></span></div>
         <div class="dash-kpi-sub" id="kpiOrcSub">carregando...</div>
-      </div>
-      <div class="dash-kpi kpi-modelos" onclick="navigate('catalogo')" title="Ver Catálogo">
-        <div class="dash-kpi-label">No site</div>
-        <div class="dash-kpi-value" id="kpiModelos"><span class="dash-kpi-loading"></span></div>
-        <div class="dash-kpi-sub" id="kpiModelosSub">carregando...</div>
-      </div>
-      <div class="dash-kpi kpi-port" onclick="navigate('portfolio')" title="Ver Portfólio">
-        <div class="dash-kpi-label">Portfólio</div>
-        <div class="dash-kpi-value" id="kpiPortfolio"><span class="dash-kpi-loading"></span></div>
-        <div class="dash-kpi-sub" id="kpiPortfolioSub">carregando...</div>
       </div>
       <div class="dash-kpi kpi-rt" onclick="navigate('analytics')" title="Ver Analytics" style="cursor:pointer;">
         <div class="dash-kpi-label">🟢 No site agora</div>
