@@ -2124,7 +2124,8 @@ function openLojaModal(lead) {
   var extras = [];
   if (lead.terreno) extras.push(lead.terreno);
   if (lead.prazo)   extras.push(lead.prazo);
-  info.textContent = '👤 ' + lead.nome
+  var infoEl = document.getElementById('lojaModalLeadInfo');
+  if (infoEl) infoEl.textContent = '👤 ' + lead.nome
     + (lead.cidade    ? ' · ' + lead.cidade    : '')
     + (lead.telefone  ? ' · ' + lead.telefone  : '')
     + (extras.length  ? ' · ' + extras.join(' · ') : '');
