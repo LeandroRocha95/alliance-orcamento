@@ -75,6 +75,22 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .periodo-btn{background:var(--surface);border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:6px 14px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;transition:all .15s;}
 .periodo-btn:hover{border-color:var(--accent);color:var(--accent);}
 .periodo-btn.ativo{background:var(--accent);border-color:var(--accent);color:#fff;}
+
+/* Cidades */
+.cidade-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);}
+.cidade-row:last-child{border-bottom:none;}
+.cidade-flag{font-size:16px;flex-shrink:0;}
+.cidade-info{flex:1;min-width:0;}
+.cidade-nome{font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cidade-estado{font-size:10px;color:var(--muted);}
+.cidade-bar-wrap{width:80px;flex-shrink:0;}
+.cidade-bar{height:4px;background:var(--green);border-radius:4px;opacity:.7;margin-bottom:2px;}
+.cidade-count{font-size:11px;font-weight:700;color:var(--green);text-align:right;}
+.agora-row{display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--surface2);border-radius:8px;margin-bottom:6px;}
+.agora-dot{width:6px;height:6px;background:var(--green);border-radius:50%;flex-shrink:0;animation:blink 2s ease-in-out infinite;}
+.agora-cidade{font-size:12px;font-weight:700;flex:1;}
+.agora-pagina{font-size:10px;color:var(--muted);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.agora-num{font-size:12px;font-weight:700;color:var(--green);}
 .updated{font-size:10px;color:var(--muted);text-align:right;margin-top:10px;opacity:.6;}
 </style>
 </head>
@@ -111,17 +127,17 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
     <div class="kpi u">
       <div class="kpi-label">Usuários hoje</div>
       <div class="kpi-val" id="kpi-usuarios"><span class="shimmer"></span></div>
-      <div class="kpi-sub">visitantes únicos</div>
+      <div class="kpi-sub" id="kpi-sub-u">hoje</div>
     </div>
     <div class="kpi s">
       <div class="kpi-label">Sessões hoje</div>
       <div class="kpi-val" id="kpi-sessoes"><span class="shimmer"></span></div>
-      <div class="kpi-sub">acessos totais</div>
+      <div class="kpi-sub" id="kpi-sub-s">hoje</div>
     </div>
     <div class="kpi p">
       <div class="kpi-label">Páginas vistas</div>
       <div class="kpi-val" id="kpi-paginas"><span class="shimmer"></span></div>
-      <div class="kpi-sub">hoje</div>
+      <div class="kpi-sub" id="kpi-sub-p">hoje</div>
     </div>
     <div class="kpi t">
       <div class="kpi-label">Tempo médio</div>
@@ -161,6 +177,28 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
         <span class="panel-period">7 dias</span>
       </div>
       <div class="panel-body" id="eventos-list">
+        <div style="font-size:12px;color:var(--muted);padding:20px 0;text-align:center;">Carregando...</div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="panels" style="margin-top:14px;">
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">📍 Cidades — período</div>
+        <span class="panel-period" id="period-cidades">7 dias</span>
+      </div>
+      <div class="panel-body" id="cidades-list">
+        <div style="font-size:12px;color:var(--muted);padding:20px 0;text-align:center;">Carregando...</div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">🟢 Quem está online agora</div>
+        <div class="dot"></div>
+      </div>
+      <div class="panel-body" id="cidades-agora">
         <div style="font-size:12px;color:var(--muted);padding:20px 0;text-align:center;">Carregando...</div>
       </div>
     </div>
@@ -234,6 +272,11 @@ function carregar() {
       set('kpi-paginas',  d.paginas);
       set('kpi-tempo',    d.tempo || '0s');
       set('rt-big',       d.realtime);
+      // Atualiza sub-labels dos KPIs com o período
+      var periodoLabel = _periodoLabel === 'Hoje' ? 'hoje' : 'em ' + _periodoLabel;
+      var subU = document.getElementById('kpi-sub-u'); if(subU) subU.textContent = periodoLabel;
+      var subS = document.getElementById('kpi-sub-s'); if(subS) subS.textContent = periodoLabel;
+      var subP = document.getElementById('kpi-sub-p'); if(subP) subP.textContent = periodoLabel;
 
       // Páginas
       var pEl = document.getElementById('paginas-top');
@@ -286,6 +329,57 @@ function carregar() {
           + '</div>';
       } else if (eEl) {
         eEl.innerHTML = '<div style="font-size:12px;color:var(--muted);padding:20px 0;text-align:center;">Aguardando eventos...</div>';
+      }
+
+      // Atualiza label período cidades
+      var pCid = document.getElementById('period-cidades');
+      if (pCid) pCid.textContent = _periodoLabel;
+
+      // Cidades do período
+      var cEl = document.getElementById('cidades-list');
+      if (cEl && d.cidades && d.cidades.length) {
+        var maxC = Math.max.apply(null, d.cidades.map(function(c){ return c.usuarios||0; })) || 1;
+        cEl.innerHTML = d.cidades.filter(function(c){ return c.cidade && c.cidade !== '(not set)'; })
+          .slice(0,10).map(function(c) {
+            var pct = Math.round(c.usuarios / maxC * 100);
+            var flag = c.pais === 'Brazil' ? '🇧🇷' : '🌍';
+            var estado = c.estado && c.estado !== '(not set)' ? ' · ' + c.estado : '';
+            return '<div class="cidade-row">'
+              + '<span class="cidade-flag">' + flag + '</span>'
+              + '<div class="cidade-info">'
+              + '<div class="cidade-nome">' + c.cidade + '</div>'
+              + '<div class="cidade-estado">' + (c.pais==='Brazil'?'Brasil':c.pais) + estado + '</div>'
+              + '</div>'
+              + '<div class="cidade-bar-wrap">'
+              + '<div class="cidade-bar" style="width:' + pct + '%;"></div>'
+              + '<div class="cidade-count">' + c.usuarios + ' visita' + (c.usuarios!==1?'s':'') + '</div>'
+              + '</div>'
+              + '</div>';
+          }).join('');
+      } else if (cEl) {
+        cEl.innerHTML = '<div style="font-size:12px;color:var(--muted);padding:20px 0;text-align:center;">Nenhum dado disponível</div>';
+      }
+
+      // Quem está online agora por cidade
+      var aEl = document.getElementById('cidades-agora');
+      if (aEl) {
+        var agora = (d.cidadesAgora||[]).filter(function(c){ return c.cidade && c.cidade !== '(not set)'; });
+        if (agora.length) {
+          aEl.innerHTML = agora.map(function(c) {
+            var pagNome = (c.pagina||'')
+              .replace('alliance-landing','Landing Page')
+              .replace('catalogo','Catálogo')
+              || 'Navegando';
+            return '<div class="agora-row">'
+              + '<div class="agora-dot"></div>'
+              + '<span class="agora-cidade">' + c.cidade + '</span>'
+              + '<span class="agora-pagina">📄 ' + pagNome + '</span>'
+              + '<span class="agora-num">' + c.usuarios + '</span>'
+              + '</div>';
+          }).join('');
+        } else {
+          aEl.innerHTML = '<div style="font-size:12px;color:var(--muted);padding:20px 0;text-align:center;">Ninguém online no momento</div>';
+        }
       }
 
       var t = new Date(d.atualizadoEm);
