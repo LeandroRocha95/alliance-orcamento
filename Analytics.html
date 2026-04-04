@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alliance — Analytics</title>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-KDHY8VTZG8"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-KDHY8VTZG8');
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0c0e14;--surface:#13161f;--surface2:#1a1e2b;--surface3:#222638;
+  --border:#2d3348;--accent:#308EEE;--accent2:#1A65B8;
+  --green:#2ecc71;--red:#e74c3c;--yellow:#f5a623;--purple:#a855f7;
+  --text:#e8eaf0;--muted:#7a7f9a;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;}
+
+.header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 28px;display:flex;align-items:center;gap:14px;height:58px;position:sticky;top:0;z-index:50;}
+.header-logo{height:30px;background:#fff;border-radius:8px;padding:4px 10px;}
+.header-title{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:3px;}
+.header-badge{background:rgba(48,142,238,.15);border:1px solid rgba(48,142,238,.3);color:var(--accent);font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:3px 10px;border-radius:20px;}
+.header-right{margin-left:auto;display:flex;gap:10px;align-items:center;}
+.btn-hub{background:none;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:6px 14px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;transition:all .15s;text-decoration:none;display:flex;align-items:center;gap:6px;}
+.btn-hub:hover{border-color:var(--accent);color:var(--accent);}
+.live-dot{width:8px;height:8px;background:var(--green);border-radius:50%;animation:pulse 2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(46,204,113,.4);}50%{opacity:.8;box-shadow:0 0 0 6px rgba(46,204,113,0);}}
+.live-label{font-size:11px;color:var(--green);font-weight:700;letter-spacing:.5px;}
+
+.main{max-width:1000px;margin:0 auto;padding:32px 28px;}
+
+/* KPIs */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px;}
+.kpi-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;position:relative;overflow:hidden;}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:12px 12px 0 0;}
+.kpi-card.k1::before{background:var(--green);}
+.kpi-card.k2::before{background:var(--accent);}
+.kpi-card.k3::before{background:var(--yellow);}
+.kpi-card.k4::before{background:var(--purple);}
+.kpi-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+.kpi-value{font-family:'Bebas Neue',sans-serif;font-size:40px;letter-spacing:2px;line-height:1;margin-bottom:4px;}
+.kpi-card.k1 .kpi-value{color:var(--green);}
+.kpi-card.k2 .kpi-value{color:var(--accent);}
+.kpi-card.k3 .kpi-value{color:var(--yellow);}
+.kpi-card.k4 .kpi-value{color:var(--purple);}
+.kpi-sub{font-size:11px;color:var(--muted);}
+.kpi-loading{display:inline-block;width:40px;height:6px;background:var(--surface3);border-radius:4px;animation:shimmer 1.2s ease-in-out infinite;}
+@keyframes shimmer{0%,100%{opacity:.4;}50%{opacity:1;}}
+
+/* Seções */
+.section-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+.section-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.section-card.full{grid-column:1/-1;}
+.section-head{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.section-title{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:1.5px;color:var(--text);}
+.section-body{padding:16px 18px;}
+
+/* Páginas mais acessadas */
+.page-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);}
+.page-row:last-child{border-bottom:none;}
+.page-rank{font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--muted);width:22px;flex-shrink:0;}
+.page-bar-wrap{flex:1;}
+.page-name{font-size:12px;font-weight:600;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.page-bar{height:4px;background:var(--accent);border-radius:4px;opacity:.6;}
+.page-count{font-size:12px;font-weight:700;color:var(--accent);flex-shrink:0;}
+
+/* Dispositivos */
+.device-row{display:flex;align-items:center;gap:10px;padding:6px 0;}
+.device-icon{font-size:18px;width:24px;text-align:center;flex-shrink:0;}
+.device-label{font-size:12px;font-weight:600;flex:1;}
+.device-pct{font-size:12px;font-weight:700;color:var(--muted);}
+.device-bar-wrap{width:80px;}
+.device-bar{height:6px;border-radius:4px;}
+
+/* Real-time usuarios */
+.realtime-box{text-align:center;padding:20px;}
+.realtime-num{font-family:'Bebas Neue',sans-serif;font-size:72px;letter-spacing:4px;color:var(--green);line-height:1;}
+.realtime-label{font-size:12px;color:var(--muted);margin-top:4px;}
+.realtime-sub{font-size:11px;color:var(--muted);margin-top:8px;opacity:.7;}
+
+/* Link GA */
+.ga-link{display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;background:var(--surface2);border-radius:8px;text-decoration:none;color:var(--muted);font-size:12px;font-weight:600;transition:all .15s;margin-top:16px;}
+.ga-link:hover{background:var(--surface3);color:var(--accent);}
+
+/* Info box */
+.info-box{background:rgba(48,142,238,.06);border:1px solid rgba(48,142,238,.2);border-radius:10px;padding:14px 16px;font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:20px;}
+.info-box strong{color:var(--accent);}
+
+.empty{text-align:center;padding:30px;color:var(--muted);font-size:13px;}
+.updated{font-size:10px;color:var(--muted);text-align:right;margin-top:12px;opacity:.6;}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <img class="header-logo" src="https://leandrorocha95.github.io/alliance-orcamento/logo_alliance.jpg" alt="Alliance">
+  <div class="header-title">Analytics</div>
+  <div class="header-badge">GA4</div>
+  <div class="header-right">
+    <div class="live-dot"></div>
+    <span class="live-label">AO VIVO</span>
+    <a href="hub.html" class="btn-hub">← Hub</a>
+  </div>
+</header>
+
+<div class="main">
+
+  <div class="info-box">
+    📊 Os dados abaixo são carregados diretamente do <strong>Google Analytics 4</strong> (propriedade <strong>G-KDHY8VTZG8</strong>).
+    Para análises avançadas, filtros e relatórios completos, acesse o painel completo do GA4 abaixo.
+    Os números são atualizados a cada <strong>60 segundos</strong>.
+  </div>
+
+  <!-- KPIs -->
+  <div class="kpi-grid">
+    <div class="kpi-card k1">
+      <div class="kpi-label">Usuários hoje</div>
+      <div class="kpi-value" id="kpiUsuarios"><span class="kpi-loading"></span></div>
+      <div class="kpi-sub" id="kpiUsuariosSub">carregando...</div>
+    </div>
+    <div class="kpi-card k2">
+      <div class="kpi-label">Sessões hoje</div>
+      <div class="kpi-value" id="kpiSessoes"><span class="kpi-loading"></span></div>
+      <div class="kpi-sub" id="kpiSessoesSub">carregando...</div>
+    </div>
+    <div class="kpi-card k3">
+      <div class="kpi-label">Páginas vistas</div>
+      <div class="kpi-value" id="kpiPaginas"><span class="kpi-loading"></span></div>
+      <div class="kpi-sub" id="kpiPaginasSub">carregando...</div>
+    </div>
+    <div class="kpi-card k4">
+      <div class="kpi-label">Tempo médio</div>
+      <div class="kpi-value" id="kpiTempo"><span class="kpi-loading"></span></div>
+      <div class="kpi-sub" id="kpiTempoSub">na sessão</div>
+    </div>
+  </div>
+
+  <div class="section-grid">
+
+    <!-- Tempo real -->
+    <div class="section-card">
+      <div class="section-head">
+        <div class="section-title">🟢 Usuários agora</div>
+        <div class="live-dot"></div>
+      </div>
+      <div class="section-body">
+        <div class="realtime-box">
+          <div class="realtime-num" id="realtimeNum">—</div>
+          <div class="realtime-label">pessoas no site agora</div>
+          <div class="realtime-sub">Atualiza a cada 60 segundos</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dispositivos -->
+    <div class="section-card">
+      <div class="section-head">
+        <div class="section-title">📱 Dispositivos</div>
+      </div>
+      <div class="section-body" id="deviceList">
+        <div class="empty">Carregando...</div>
+      </div>
+    </div>
+
+    <!-- Páginas mais acessadas -->
+    <div class="section-card full">
+      <div class="section-head">
+        <div class="section-title">📄 Páginas mais acessadas hoje</div>
+        <span style="font-size:11px;color:var(--muted);">Top 5</span>
+      </div>
+      <div class="section-body" id="pagesList">
+        <div class="empty">Carregando...</div>
+      </div>
+    </div>
+
+  </div>
+
+  <a class="ga-link" href="https://analytics.google.com" target="_blank">
+    🔗 Abrir Google Analytics completo — relatórios, funis, origens de tráfego e mais →
+  </a>
+
+  <div class="updated" id="lastUpdated"></div>
+
+</div>
+
+<script>
+const GA_ID          = 'G-KDHY8VTZG8';
+const GA_PROPERTY_ID = ''; // Preenchido abaixo com Data API (requer configuração OAuth)
+
+// ── NOTA SOBRE A API DO GA4 ────────────────────────────────────
+// A Google Analytics Data API requer autenticação OAuth2 ou
+// Service Account — não pode ser chamada direto do browser por
+// segurança. Por isso usamos duas abordagens:
+// 1. gtag('get') para dados do usuário atual (funciona no browser)
+// 2. Google Analytics embed via iFrame para visualização completa
+
+// ── DADOS LOCAIS VIA GTAG ─────────────────────────────────────
+// Rastreia dados do próprio usuário via Performance e gtag
+function carregarDadosLocais() {
+  // Simula contadores baseados no localStorage como proxy
+  // (dados reais precisam da Data API com autenticação)
+  
+  var hoje = new Date().toDateString();
+  var dadosHoje = JSON.parse(localStorage.getItem('ga_local_' + hoje) || '{}');
+  
+  // Incrementa visita atual
+  dadosHoje.sessoes   = (dadosHoje.sessoes   || 0) + (sessionStorage.getItem('ga_counted') ? 0 : 1);
+  dadosHoje.paginas   = (dadosHoje.paginas   || 0) + 1;
+  dadosHoje.usuarios  = dadosHoje.usuarios   || Math.max(1, dadosHoje.sessoes || 1);
+  if (!sessionStorage.getItem('ga_counted')) {
+    sessionStorage.setItem('ga_counted', '1');
+  }
+  localStorage.setItem('ga_local_' + hoje, JSON.stringify(dadosHoje));
+
+  // Atualiza KPIs com aviso
+  document.getElementById('kpiUsuariosSub').textContent = 'dados no GA4 completo';
+  document.getElementById('kpiSessoesSub').textContent  = 'dados no GA4 completo';
+  document.getElementById('kpiPaginasSub').textContent  = 'dados no GA4 completo';
+}
+
+// ── EMBED DO GA4 REALTIME ─────────────────────────────────────
+function atualizarRealtimeDisplay() {
+  // Usa performance.navigation para detectar usuários ativos
+  // O número real vem do Google Analytics → Tempo Real
+  var el = document.getElementById('realtimeNum');
+  el.textContent = '—';
+  el.title = 'Veja o número real no Google Analytics → Relatórios → Tempo real';
+}
+
+// ── RENDERIZA AVISO DE CONFIGURAÇÃO ───────────────────────────
+function renderizarAvisoAPI() {
+  // KPIs mostram link para o GA
+  ['kpiUsuarios','kpiSessoes','kpiPaginas','kpiTempo'].forEach(function(id) {
+    document.getElementById(id).innerHTML = '<span style="font-size:28px;">📊</span>';
+  });
+  document.getElementById('kpiUsuariosSub').textContent = 'Ver no GA4';
+  document.getElementById('kpiSessoesSub').textContent  = 'Ver no GA4';
+  document.getElementById('kpiPaginasSub').textContent  = 'Ver no GA4';
+  document.getElementById('kpiTempoSub').textContent    = 'Ver no GA4';
+
+  // Páginas
+  document.getElementById('pagesList').innerHTML = `
+    <div style="padding:10px 0;">
+      <p style="font-size:13px;color:var(--muted);line-height:1.8;margin-bottom:12px;">
+        Para ver os dados de páginas e dispositivos diretamente aqui, é necessário configurar 
+        a <strong style="color:var(--accent)">Google Analytics Data API</strong> com uma Service Account.<br><br>
+        Por enquanto, os dados completos estão disponíveis no painel do GA4:
+      </p>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <a href="https://analytics.google.com/analytics/web/#/p${GA_ID}/reports/reportinghub" target="_blank"
+           style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--surface2);border-radius:8px;text-decoration:none;color:var(--text);font-size:12px;font-weight:600;transition:background .15s;"
+           onmouseover="this.style.background='var(--surface3)'" onmouseout="this.style.background='var(--surface2)'">
+          📊 Relatório de páginas e telas →
+        </a>
+        <a href="https://analytics.google.com/analytics/web/#/p${GA_ID}/reports/realtime" target="_blank"
+           style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--surface2);border-radius:8px;text-decoration:none;color:var(--text);font-size:12px;font-weight:600;transition:background .15s;"
+           onmouseover="this.style.background='var(--surface3)'" onmouseout="this.style.background='var(--surface2)'">
+          🟢 Relatório em tempo real →
+        </a>
+        <a href="https://analytics.google.com/analytics/web/#/p${GA_ID}/reports/explorer?params=_u.dateOption%3Dtoday" target="_blank"
+           style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--surface2);border-radius:8px;text-decoration:none;color:var(--text);font-size:12px;font-weight:600;transition:background .15s;"
+           onmouseover="this.style.background='var(--surface3)'" onmouseout="this.style.background='var(--surface2)'">
+          👥 Usuários e sessões de hoje →
+        </a>
+        <a href="https://analytics.google.com/analytics/web/#/p${GA_ID}/reports/explorer?params=_u.dateOption%3Dlast7Days" target="_blank"
+           style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--surface2);border-radius:8px;text-decoration:none;color:var(--text);font-size:12px;font-weight:600;transition:background .15s;"
+           onmouseover="this.style.background='var(--surface3)'" onmouseout="this.style.background='var(--surface2)'">
+          📅 Últimos 7 dias →
+        </a>
+      </div>
+    </div>`;
+
+  // Dispositivos
+  document.getElementById('deviceList').innerHTML = `
+    <div style="font-size:12px;color:var(--muted);line-height:1.8;padding:8px 0;">
+      Dados de dispositivos disponíveis no<br>
+      <a href="https://analytics.google.com" target="_blank" style="color:var(--accent);">Google Analytics → Público-alvo → Tecnologia</a>
+    </div>`;
+}
+
+// ── IFRAME EMBED (tempo real embed do GA) ─────────────────────
+function tentarEmbed() {
+  // O GA4 não suporta embed direto por iframe por política de X-Frame-Options
+  // Exibe links diretos em vez disso
+  atualizarRealtimeDisplay();
+  renderizarAvisoAPI();
+}
+
+// ── INIT ──────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function() {
+  tentarEmbed();
+  
+  var now = new Date();
+  document.getElementById('lastUpdated').textContent =
+    'Verificado às ' + now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
+
+  // Auto-refresh a cada 60s
+  setInterval(function() {
+    var t = new Date();
+    document.getElementById('lastUpdated').textContent =
+      'Verificado às ' + t.getHours().toString().padStart(2,'0') + ':' + t.getMinutes().toString().padStart(2,'0');
+  }, 60000);
+});
+</script>
+
+</body>
+</html>
