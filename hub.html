@@ -1160,38 +1160,26 @@ function carregarDashboard() {
       document.getElementById('kpiLeadsSub').textContent  = 'sem acesso';
     });
 
-  // 2. Orçamentos (tabela orcamentos ou leads — tenta orcamentos primeiro)
-  sbGet('orcamentos?select=id')
+  // 2. Orçamentos hoje (número principal) + total geral (subtexto)
+  sbGet('orcamentos?created_at=gte.' + hojeIso + '&select=id')
     .then(function(r) {
       if (!r.ok) throw new Error('sem tabela');
       return r.json();
     })
     .then(function(data) {
-      var n = Array.isArray(data) ? data.length : 0;
-      document.getElementById('kpiOrcTotal').textContent = n;
-      // Abertos hoje
-      return sbGet('orcamentos?created_at=gte.' + hojeIso + '&select=id');
+      var hoje = Array.isArray(data) ? data.length : 0;
+      document.getElementById('kpiOrcTotal').textContent = hoje;
+      // Total geral como subtexto
+      return sbGet('orcamentos?select=id');
     })
     .then(function(r) { return r.json(); })
     .then(function(data) {
-      var hoje = Array.isArray(data) ? data.length : 0;
-      document.getElementById('kpiOrcSub').textContent = hoje > 0
-        ? hoje + ' criado' + (hoje > 1 ? 's' : '') + ' hoje'
-        : 'nenhum hoje';
+      var total = Array.isArray(data) ? data.length : 0;
+      document.getElementById('kpiOrcSub').textContent = total + ' no total';
     })
     .catch(function() {
-      // Fallback: conta leads como proxy de orçamentos
-      sbGet('crm_leads?select=id')
-        .then(function(r) { return r.json(); })
-        .then(function(data) {
-          var n = Array.isArray(data) ? data.length : 0;
-          document.getElementById('kpiOrcTotal').textContent = n;
-          document.getElementById('kpiOrcSub').textContent = 'total de leads';
-        })
-        .catch(function() {
-          document.getElementById('kpiOrcTotal').textContent = '—';
-          document.getElementById('kpiOrcSub').textContent  = '';
-        });
+      document.getElementById('kpiOrcTotal').textContent = '—';
+      document.getElementById('kpiOrcSub').textContent  = '';
     });
 
   // 3. Modelos no site (visivel_site=true)
