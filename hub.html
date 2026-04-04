@@ -185,10 +185,10 @@ body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif
 /* ── DASHBOARD KPIs ── */
 .dash-kpis {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 12px;
   width: 100%;
-  max-width: 740px;
+  max-width: 860px;
   margin-bottom: 28px;
 }
 .dash-kpi {
@@ -196,7 +196,6 @@ body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif
   border: 1px solid var(--border);
   border-radius: 12px;
   padding: 16px 18px;
-  cursor: pointer;
   transition: border-color .15s, transform .15s;
   position: relative;
   overflow: hidden;
@@ -213,6 +212,7 @@ body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif
 .dash-kpi.kpi-orc::before     { background: var(--accent); }
 .dash-kpi.kpi-modelos::before { background: var(--green); }
 .dash-kpi.kpi-port::before    { background: #a855f7; }
+.dash-kpi.kpi-rt::before      { background: var(--green); }
 .dash-kpi-label {
   font-size: 10px;
   font-weight: 700;
@@ -513,11 +513,6 @@ body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif
       <span class="nav-label">Instalar App</span>
     </div>
 
-    <div class="nav-item" data-module="analytics" data-tip="Analytics" onclick="navigate('analytics')">
-      <span class="nav-icon">📈</span>
-      <span class="nav-label">Analytics</span>
-    </div>
-
     <div class="nav-item" data-module="orcamento" data-tip="Orçamentos" onclick="navigate('orcamento')">
       <span class="nav-icon">📋</span>
       <span class="nav-label">Orçamentos</span>
@@ -555,6 +550,11 @@ body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif
     <div class="nav-item" data-module="conteudo" data-tip="Conteúdo do Site" onclick="navigate('conteudo')">
       <span class="nav-icon">✏️</span>
       <span class="nav-label">Conteúdo</span>
+    </div>
+
+    <div class="nav-item" data-module="analytics" data-tip="Analytics" onclick="navigate('analytics')">
+      <span class="nav-icon">📈</span>
+      <span class="nav-label">Analytics</span>
     </div>
 
     <div class="nav-item" data-module="custos" data-tip="Gestão de Custos" onclick="navigate('custos')">
@@ -634,6 +634,11 @@ body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif
         <div class="dash-kpi-label">Portfólio</div>
         <div class="dash-kpi-value" id="kpiPortfolio"><span class="dash-kpi-loading"></span></div>
         <div class="dash-kpi-sub" id="kpiPortfolioSub">carregando...</div>
+      </div>
+      <div class="dash-kpi kpi-rt" onclick="navigate('analytics')" title="Ver Analytics" style="cursor:pointer;">
+        <div class="dash-kpi-label">🟢 No site agora</div>
+        <div class="dash-kpi-value" id="kpiRealtime" style="color:var(--green);"><span class="dash-kpi-loading"></span></div>
+        <div class="dash-kpi-sub" id="kpiRealtimeSub">usuários ativos</div>
       </div>
     </div>
     <div class="dash-updated" id="dashUpdated"></div>
@@ -1132,6 +1137,8 @@ window.addEventListener('message', function(e) {
 
 
 // ── DASHBOARD ─────────────────────────────────────────────────
+var GA_WORKER = 'https://alliance-analytics.leandrorocha1995.workers.dev';
+
 function carregarDashboard() {
   var hoje = new Date();
   hoje.setHours(0,0,0,0);
@@ -1244,6 +1251,20 @@ function carregarDashboard() {
     .catch(function() {
       document.getElementById('kpiPortfolio').textContent = '—';
       document.getElementById('kpiPortfolioSub').textContent = '';
+    });
+
+  // GA4 — usuários em tempo real via Worker
+  fetch(GA_WORKER)
+    .then(function(r){ return r.json(); })
+    .then(function(d) {
+      var el = document.getElementById('kpiRealtime');
+      if (el) { el.textContent = d.realtime || 0; }
+      var sub = document.getElementById('kpiRealtimeSub');
+      if (sub) sub.textContent = d.usuarios ? d.usuarios + ' hoje' : 'usuários ativos';
+    })
+    .catch(function(){
+      var el = document.getElementById('kpiRealtime');
+      if (el) el.textContent = '—';
     });
 
   // Horário de atualização
