@@ -1968,6 +1968,115 @@ function loadLojas(callback) {
   });
 }
 
+// ── GA4 EVENT TRACKING ───────────────────────────────────────
+function gaEvent(name, params) {
+  if (typeof gtag !== 'function') return;
+  gtag('event', name, params || {});
+}
+
+// Rastreia seções visíveis (Intersection Observer)
+function initSectionTracking() {
+  var sections = [
+    { id: 'diferenciais', label: 'Diferenciais' },
+    { id: 'modelos',      label: 'Modelos' },
+    { id: 'galeria',      label: 'Portfólio' },
+    { id: 'depoimentos',  label: 'Depoimentos' },
+    { id: 'contato',      label: 'Formulário de Contato' },
+  ];
+  var seen = {};
+  var obs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting && !seen[entry.target.id]) {
+        seen[entry.target.id] = true;
+        var label = sections.find(function(s){ return s.id === entry.target.id; });
+        if (label) gaEvent('section_view', { section_name: label.label });
+      }
+    });
+  }, { threshold: 0.3 });
+  sections.forEach(function(s) {
+    var el = document.getElementById(s.id);
+    if (el) obs.observe(el);
+  });
+}
+
+// Rastreia cliques nos botões de CTA
+function initCTATracking() {
+  // Botão hero "Solicitar Orçamento"
+  document.querySelectorAll('a[href="#contato"].btn-primary, a[href="#contato"].nav-cta, a[href="#contato"].btn-sobre-primary').forEach(function(el) {
+    el.addEventListener('click', function() {
+      gaEvent('cta_click', { button_text: el.textContent.trim(), location: 'hero' });
+    });
+  });
+  // Ver Catálogo
+  document.querySelectorAll('a[href*="catalogo"]').forEach(function(el) {
+    el.addEventListener('click', function() {
+      gaEvent('cta_click', { button_text: 'Ver Catálogo', location: 'modelos' });
+    });
+  });
+  // Ver obras entregues / Portfólio
+  document.querySelectorAll('.galeria-link').forEach(function(el) {
+    el.addEventListener('click', function() {
+      gaEvent('cta_click', { button_text: 'Ver obras entregues', location: 'hero' });
+    });
+  });
+}
+
+// Rastreia abertura do modal do WhatsApp
+var _origOpenWappFloat = null;
+function wrapWappTracking() {
+  _origOpenWappFloat = openWappFloat;
+  openWappFloat = function() {
+    gaEvent('whatsapp_click', { location: 'botao_flutuante' });
+    _origOpenWappFloat();
+  };
+}
+
+// Rastreia envio do formulário
+var _origSubmitLead = null;
+function wrapLeadTracking() {
+  _origSubmitLead = submitLead;
+  submitLead = function(e) {
+    gaEvent('lead_form_submit', {
+      interesse: document.getElementById('leadInteresse')?.value || '',
+      cidade:    document.getElementById('leadCidade')?.value || ''
+    });
+    _origSubmitLead(e);
+  };
+}
+
+// Rastreia clique em modelo específico
+function trackModeloClick(nome) {
+  gaEvent('modelo_click', { modelo_nome: nome });
+}
+
+// Rastreia abertura do lightbox do portfólio
+var _origAbrirLightbox = null;
+function wrapLightboxTracking() {
+  _origAbrirLightbox = abrirLightbox;
+  abrirLightbox = function(el) {
+    var nome = el.dataset.nome || 'sem nome';
+    gaEvent('portfolio_item_click', { item_nome: nome });
+    _origAbrirLightbox(el);
+  };
+}
+
+// Rastreia clique no botão de loja no modal
+function trackLojaWhatsApp(loja) {
+  gaEvent('whatsapp_loja_click', { loja_nome: loja });
+}
+
+// Inicia todos os rastreamentos após carregamento
+window.addEventListener('load', function() {
+  initSectionTracking();
+  initCTATracking();
+  // Wraps com delay para garantir que funções já foram definidas
+  setTimeout(function() {
+    if (typeof openWappFloat === 'function') wrapWappTracking();
+    if (typeof submitLead   === 'function') wrapLeadTracking();
+    if (typeof abrirLightbox=== 'function') wrapLightboxTracking();
+  }, 500);
+});
+
 // ── SUBMIT LEAD — abre modal de lojas ────────────────────────
 function submitLead(e){
   e.preventDefault();
@@ -2636,7 +2745,7 @@ function renderModelosGrid(lista) {
       ? '<span>A partir de</span> ' + brl(c.preco)
       : '<span>Consulte</span>';
 
-    return '<a class="modelo-card' + delay + '" href="https://leandrorocha95.github.io/alliance-orcamento/catalogo.html?modelo=' + c.id + '" target="_blank" style="text-decoration:none;color:inherit;">'
+    return '<a class="modelo-card' + delay + '" href="https://leandrorocha95.github.io/alliance-orcamento/catalogo.html?modelo=' + c.id + '" target="_blank" style="text-decoration:none;color:inherit;" onclick="gaEvent(\'modelo_click\',{modelo_nome:\'' + (c.nome||'').replace(/'/g,'') + '\'})">'
       + '<div class="modelo-card-img-wrap">'
       + (imgUrl
           ? '<img class="modelo-card-img" src="' + imgUrl + '" alt="' + (c.nome||'') + '" loading="lazy" onerror="this.style.display=\'none\'">'
