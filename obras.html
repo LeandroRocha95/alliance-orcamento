@@ -242,6 +242,8 @@ async function carregar() {
                 "n_meros_mkkze5hz"
               ]) {
                 id text value
+                ... on MirrorValue { display_value }
+                ... on BoardRelationValue { display_value }
               }
             }
           }
@@ -270,13 +272,14 @@ async function carregar() {
           m2:       ''
         };
         item.column_values.forEach(function(col) {
-          if (col.id === 'espelho_mkm9fps3') obj.status    = col.text || '';
-          if (col.id === 'lookup_mkpnepap') obj.entrega    = col.text || '';
-          if (col.id === 'espelho_mkm9v782') obj.progresso = col.text || '';
-          if (col.id === 'espelho_1_mkmc2q1b') obj.encarregado = col.text || '';
-          if (col.id === 'texto_mkkznkyv')  obj.local      = col.text || '';
+          var val = col.display_value || col.text || '';
+          if (col.id === 'espelho_mkm9fps3') obj.status       = val;
+          if (col.id === 'lookup_mkpnepap') obj.entrega        = val;
+          if (col.id === 'espelho_mkm9v782') obj.progresso     = val;
+          if (col.id === 'espelho_1_mkmc2q1b') obj.encarregado = val;
+          if (col.id === 'texto_mkkznkyv')  obj.local          = col.text || '';
           if (col.id === 'lista_suspensa_mkkzq8ff') obj.vendedor = col.text || '';
-          if (col.id === 'n_meros_mkkze5hz') obj.m2        = col.text || '';
+          if (col.id === 'n_meros_mkkze5hz') obj.m2            = col.text || '';
         });
         _todosItens.push(obj);
       });
