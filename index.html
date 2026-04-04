@@ -2107,16 +2107,11 @@ function submitLead(e){
   // Salva no Supabase
   saveLead(_pendingLead);
 
-  // Mostra sucesso e tenta abrir modal de lojas
+  // Mostra sucesso após envio
   setTimeout(function() {
     btn.disabled = false;
     txt.textContent = 'Solicitar Orçamento Gratuito';
     showLeadSuccess();
-    try {
-      openLojaModal(_pendingLead);
-    } catch(err) {
-      console.warn('Erro ao abrir modal de lojas:', err);
-    }
   }, 800);
 }
 
