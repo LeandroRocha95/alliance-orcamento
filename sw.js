@@ -1,4 +1,4 @@
-const CACHE = 'alliance-v2';
+const CACHE = 'alliance-v3';
 const ASSETS = [
   '/',
   '/hub',
