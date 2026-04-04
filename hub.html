@@ -781,6 +781,32 @@ body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif
     </div>
     <div class="dash-updated" id="dashUpdated"></div>
 
+    <!-- WIDGET: Obras -->
+    <div class="hub-widget" style="width:100%;max-width:640px;" onclick="navigate('obras')">
+      <div class="hub-widget-head">
+        <div class="hub-widget-title">🏗️ Obras</div>
+        <div style="font-size:10px;color:var(--muted);" id="hubObrasTotal">carregando...</div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:12px 18px;">
+        <div style="text-align:center;">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:#f5a623;" id="hubObrasAnd">—</div>
+          <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;">Andamento</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:#e8841a;" id="hubObrasProg">—</div>
+          <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;">Programado</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:#e74c3c;" id="hubObrasIni">—</div>
+          <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;">Á Iniciar</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:#7a7f9a;" id="hubObrasEsp">—</div>
+          <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;">Em Espera</div>
+        </div>
+      </div>
+    </div>
+
     <!-- WIDGET: Cidades por período -->
     <div class="hub-widget" style="width:100%;max-width:640px;">
       <div class="hub-widget-head">
@@ -1405,6 +1431,47 @@ function carregarDashboard() {
 
   // Cidades (default 15 dias)
   carregarCidades(_cidadesDias || 15);
+
+  // Obras do Monday.com
+  carregarObrasKPIs();
+}
+
+// ── KPIs de Obras (Monday.com) ────────────────────────────────
+var MONDAY_TOK = 'eyJhbGciOiJIUzI1NiJ9.eyJ0aWQiOjY0MTU5OTM4OCwiYWFpIjoxMSwidWlkIjo3MDQwMzEzOCwiaWFkIjoiMjAyNi0wNC0wNFQxNjo0MjoyMC4xMzVaIiwicGVyIjoibWU6d3JpdGUiLCJhY3RpZCI6MjczMDA5MDAsInJnbiI6InVzZTEifQ.-y8koB2eNV4woMPAwacSw1PRXpLdyRS5GSvxTVIq_aw';
+var MONDAY_BOARD = '8182483753';
+var OBRAS_GRUPOS_OCULTOS = ['group_mksa951c', 'group_mksw2e8f', 'group_mkv9n4mz'];
+
+function carregarObrasKPIs() {
+  fetch('https://api.monday.com/v2', {
+    method: 'POST',
+    headers: { 'Authorization': MONDAY_TOK, 'Content-Type': 'application/json', 'API-Version': '2024-01' },
+    body: JSON.stringify({ query: '{ boards(ids:[' + MONDAY_BOARD + ']) { items_page(limit:500) { items { id group { id } column_values(ids:["espelho_mkme6qkw"]) { ... on MirrorValue { display_value } } } } } }' })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(j) {
+    if (j.errors) throw new Error(j.errors[0].message);
+    var items = j.data.boards[0].items_page.items
+      .filter(function(i) { return OBRAS_GRUPOS_OCULTOS.indexOf(i.group.id) === -1; });
+
+    var counts = { andamento: 0, programado: 0, iniciar: 0, espera: 0 };
+    items.forEach(function(i) {
+      var status = (i.column_values[0] && i.column_values[0].display_value || '').split(',')[0].trim().toLowerCase();
+      if (status.includes('andamento')) counts.andamento++;
+      else if (status.includes('programado')) counts.programado++;
+      else if (status.includes('iniciar')) counts.iniciar++;
+      else if (status.includes('espera')) counts.espera++;
+    });
+
+    document.getElementById('hubObrasAnd').textContent = counts.andamento;
+    document.getElementById('hubObrasProg').textContent = counts.programado;
+    document.getElementById('hubObrasIni').textContent = counts.iniciar;
+    document.getElementById('hubObrasEsp').textContent = counts.espera;
+    document.getElementById('hubObrasTotal').textContent = items.length + ' obras total';
+  })
+  .catch(function(e) {
+    console.warn('Obras KPI error:', e.message);
+    document.getElementById('hubObrasTotal').textContent = 'erro ao carregar';
+  });
 }
 
 var _cidadesDias = 15;
