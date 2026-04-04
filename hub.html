@@ -177,7 +177,7 @@ body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif
 /* ── DASHBOARD KPIs ── */
 .dash-kpis {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 12px;
   width: 100%;
   max-width: 640px;
@@ -482,6 +482,83 @@ body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif
   50% { opacity: .6; }
 }
 
+/* ── HUB WIDGETS ── */
+.hub-widget {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+.hub-widget-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+}
+.hub-widget-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 15px;
+  letter-spacing: 1.5px;
+}
+.hub-widget-period { display: flex; gap: 4px; }
+.hub-period-btn {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  border-radius: 14px;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: all .15s;
+}
+.hub-period-btn.active {
+  background: rgba(48,142,238,.15);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.hub-cities-list { padding: 10px 18px; }
+.hub-city-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  font-size: 13px;
+}
+.hub-city-rank {
+  font-size: 10px;
+  color: var(--muted);
+  width: 18px;
+  text-align: right;
+  flex-shrink: 0;
+}
+.hub-city-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hub-city-state { font-size: 10px; color: var(--muted); }
+.hub-city-bar {
+  width: 60px;
+  height: 6px;
+  background: var(--surface2);
+  border-radius: 3px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.hub-city-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--accent2), var(--accent));
+}
+.hub-city-count {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
+  width: 36px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
 /* ── MOBILE RESPONSIVO ── */
 .sidebar-overlay {
   display: none;
@@ -525,7 +602,6 @@ body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif
   .dash-kpis { grid-template-columns: repeat(2, 1fr); gap: 8px; }
   .dash-kpi { padding: 12px 14px; }
   .dash-kpi-value { font-size: 28px; }
-  .dash-kpi:last-child { grid-column: span 2; max-width: 50%; justify-self: center; }
 
   /* Cards */
   .home-cards { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
@@ -697,77 +773,29 @@ body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif
         <div class="dash-kpi-value" id="kpiRealtime" style="color:var(--green);"><span class="dash-kpi-loading"></span></div>
         <div class="dash-kpi-sub" id="kpiRealtimeSub">usuários ativos</div>
       </div>
+      <div class="dash-kpi" onclick="navigate('analytics')" title="Ver Analytics" style="cursor:pointer;">
+        <div class="dash-kpi-label">👥 Usuários hoje</div>
+        <div class="dash-kpi-value" id="kpiUsuariosHoje" style="color:#3498db;"><span class="dash-kpi-loading"></span></div>
+        <div class="dash-kpi-sub" id="kpiUsuariosSub">carregando...</div>
+      </div>
     </div>
     <div class="dash-updated" id="dashUpdated"></div>
-    <div class="home-cards">
-      <div class="home-card" onclick="navigate('obras')">
-        <div class="home-card-icon">🏗️</div>
-        <div class="home-card-title">Gestão de Obras</div>
-        <div class="home-card-desc">Acompanhe obras em andamento, progresso e prazos integrado ao Monday.com.</div>
-        <div class="home-card-btn">Abrir →</div>
+
+    <!-- WIDGET: Cidades por período -->
+    <div class="hub-widget" style="width:100%;max-width:640px;">
+      <div class="hub-widget-head">
+        <div class="hub-widget-title">📍 Cidades — visitantes</div>
+        <div class="hub-widget-period">
+          <button class="hub-period-btn" data-days="7" onclick="carregarCidades(7)">7d</button>
+          <button class="hub-period-btn active" data-days="15" onclick="carregarCidades(15)">15d</button>
+          <button class="hub-period-btn" data-days="30" onclick="carregarCidades(30)">30d</button>
+        </div>
       </div>
-      <div class="home-card" onclick="navigate('analytics')">
-        <div class="home-card-icon">📈</div>
-        <div class="home-card-title">Analytics</div>
-        <div class="home-card-desc">Acompanhe acessos ao site em tempo real via Google Analytics.</div>
-        <div class="home-card-btn">Abrir →</div>
-      </div>
-      <div class="home-card" onclick="navigate('orcamento')">
-        <div class="home-card-icon">📋</div>
-        <div class="home-card-title">Orçamentos</div>
-        <div class="home-card-desc">Crie e gerencie orçamentos, gere PDFs e acompanhe o histórico por vendedor.</div>
-        <div class="home-card-btn">Abrir →</div>
-      </div>
-      <div class="home-card" onclick="navigate('catalogo')">
-        <div class="home-card-icon">🏠</div>
-        <div class="home-card-title">Catálogo de Modelos</div>
-        <div class="home-card-desc">Explore os modelos com especificações, metragens e imagens.</div>
-        <div class="home-card-btn">Abrir →</div>
-      </div>
-      <div class="home-card" onclick="navigate('custos')">
-        <div class="home-card-icon">💰</div>
-        <div class="home-card-title">Gestão de Custos</div>
-        <div class="home-card-desc">Controle custos por categoria e simule cenários de margem.</div>
-        <div class="home-card-btn">Abrir →</div>
-      </div>
-      <div class="home-card" onclick="navigate('crm')">
-        <div class="home-card-badge" id="cardCrmBadge"></div>
-        <div class="home-card-icon">🎯</div>
-        <div class="home-card-title">CRM de Leads</div>
-        <div class="home-card-desc">Gerencie leads da landing page, acompanhe o funil e atribua vendedores.</div>
-        <div class="home-card-btn">Abrir →</div>
-      </div>
-      <div class="home-card" onclick="navigate('campanhas')">
-        <div class="home-card-icon">📣</div>
-        <div class="home-card-title">Campanhas</div>
-        <div class="home-card-desc">Crie e gerencie faixas e banners promocionais que aparecem no site da Alliance.</div>
-        <div class="home-card-btn">Abrir →</div>
-      </div>
-      <div class="home-card" onclick="navigate('portfolio')">
-        <div class="home-card-icon">🖼</div>
-        <div class="home-card-title">Portfólio</div>
-        <div class="home-card-desc">Gerencie fotos e vídeos de obras entregues. Upload direto para o Supabase Storage.</div>
-        <div class="home-card-btn">Abrir →</div>
-      </div>
-      <div class="home-card" onclick="navigate('depoimentos')">
-        <div class="home-card-icon">💬</div>
-        <div class="home-card-title">Depoimentos</div>
-        <div class="home-card-desc">Cadastre depoimentos de clientes com texto e áudio. Aparecem automaticamente no site.</div>
-        <div class="home-card-btn">Abrir →</div>
-      </div>
-      <div class="home-card" onclick="navigate('conteudo')">
-        <div class="home-card-icon">✏️</div>
-        <div class="home-card-title">Conteúdo do Site</div>
-        <div class="home-card-desc">Edite os números em destaque e os diferenciais que aparecem na landing page.</div>
-        <div class="home-card-btn">Abrir →</div>
-      </div>
-      <div class="home-card" onclick="navigate('banco')">
-        <div class="home-card-icon">🗄️</div>
-        <div class="home-card-title">Banco de Dados</div>
-        <div class="home-card-desc">Acesse o Supabase para gerenciar dados e executar consultas SQL.</div>
-        <div class="home-card-btn">Abrir →</div>
+      <div class="hub-cities-list" id="hubCidadesList">
+        <div style="text-align:center;padding:20px;color:var(--muted);font-size:12px;">carregando...</div>
       </div>
     </div>
+
   </div>
 
   <div class="iframe-container" id="module-orcamento">
@@ -1360,6 +1388,61 @@ function carregarDashboard() {
   var now = new Date();
   document.getElementById('dashUpdated').textContent =
     'Atualizado às ' + now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
+
+  // Usuários hoje (do Worker)
+  fetch(GA_WORKER + '?start=today&end=today')
+    .then(function(r){ return r.json(); })
+    .then(function(d) {
+      var el = document.getElementById('kpiUsuariosHoje');
+      if (el) el.textContent = d.usuarios || 0;
+      var sub = document.getElementById('kpiUsuariosSub');
+      if (sub) sub.textContent = (d.sessoes || 0) + ' sessões';
+    })
+    .catch(function(){
+      var el = document.getElementById('kpiUsuariosHoje');
+      if (el) el.textContent = '—';
+    });
+
+  // Cidades (default 15 dias)
+  carregarCidades(_cidadesDias || 15);
+}
+
+var _cidadesDias = 15;
+
+function carregarCidades(dias) {
+  _cidadesDias = dias;
+  // Atualizar botões ativos
+  document.querySelectorAll('.hub-period-btn').forEach(function(b) {
+    b.classList.toggle('active', parseInt(b.dataset.days) === dias);
+  });
+
+  var list = document.getElementById('hubCidadesList');
+  if (!list) return;
+  list.innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted);font-size:12px;">carregando...</div>';
+
+  fetch(GA_WORKER + '?start=' + dias + 'daysAgo&end=today')
+    .then(function(r){ return r.json(); })
+    .then(function(d) {
+      var cidades = (d.cidades || []).filter(function(c){ return c.cidade && c.cidade !== '(not set)'; });
+      if (!cidades.length) {
+        list.innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted);font-size:12px;">Sem dados de cidades</div>';
+        return;
+      }
+      var max = cidades[0].usuarios || 1;
+      list.innerHTML = cidades.slice(0, 10).map(function(c, i) {
+        var pct = Math.round((c.usuarios / max) * 100);
+        var estado = c.regiao ? ' <span class="hub-city-state">' + c.regiao + '</span>' : '';
+        return '<div class="hub-city-row">' +
+          '<span class="hub-city-rank">' + (i+1) + '</span>' +
+          '<span class="hub-city-name">🇧🇷 ' + c.cidade + estado + '</span>' +
+          '<div class="hub-city-bar"><div class="hub-city-bar-fill" style="width:' + pct + '%"></div></div>' +
+          '<span class="hub-city-count">' + c.usuarios + '</span>' +
+        '</div>';
+      }).join('');
+    })
+    .catch(function() {
+      list.innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted);font-size:12px;">Erro ao carregar cidades</div>';
+    });
 }
 
 // ── SISTEMA DE NOTIFICAÇÕES ───────────────────────────────────
