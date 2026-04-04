@@ -75,14 +75,6 @@ h1,h2,h3,.serif{font-family:'Cormorant Garamond',Georgia,serif;}
   transition:background .2s;white-space:nowrap;
 }
 .campanha-faixa-btn:hover{background:rgba(255,255,255,.4);}
-.campanha-faixa-close{
-  position:absolute;right:16px;top:50%;transform:translateY(-50%);
-  background:none;border:none;color:inherit;opacity:.6;
-  font-size:18px;cursor:pointer;line-height:1;padding:4px;
-  transition:opacity .15s;
-}
-.campanha-faixa-close:hover{opacity:1;}
-
 /* Banner de destaque — carrossel */
 .campanha-banner{
   width:100%;
@@ -1204,7 +1196,6 @@ footer{
     <span class="campanha-faixa-sub" id="faixaSub"></span>
   </div>
   <a class="campanha-faixa-btn" id="faixaBtn" href="#" target="_blank"></a>
-  <button class="campanha-faixa-close" onclick="fecharFaixa()" title="Fechar">×</button>
 </div>
 
 <!-- NAV -->
@@ -2120,8 +2111,12 @@ function loadCampanhas() {
 
 function renderFaixa(c) {
   var el = document.getElementById('campanhaFaixa');
-  var fechadas = JSON.parse(localStorage.getItem('campanhas_fechadas') || '[]');
-  if (fechadas.includes(String(c.id))) return;
+  // Verifica se foi fechada nas últimas 24h
+  var fechadas = JSON.parse(localStorage.getItem('campanhas_fechadas_ts') || '{}');
+  var fechadaEm = fechadas[String(c.id)];
+  if (fechadaEm && (Date.now() - fechadaEm) < 24 * 60 * 60 * 1000) return;
+  // Se expirou, remove do registro
+  if (fechadaEm) { delete fechadas[String(c.id)]; localStorage.setItem('campanhas_fechadas_ts', JSON.stringify(fechadas)); }
   el.style.background   = c.cor_fundo    || '#308EEE';
   el.style.color        = c.cor_texto    || '#ffffff';
   document.getElementById('faixaTitulo').textContent = c.titulo  || '';
@@ -2138,7 +2133,6 @@ function renderFaixa(c) {
   if (c.link_destino) {
     el.style.cursor = 'pointer';
     el.onclick = function(e) {
-      if (e.target.closest('.campanha-faixa-close')) return;
       if (c.link_destino.startsWith('#')) {
         var target = document.querySelector(c.link_destino);
         if (target) target.scrollIntoView({ behavior: 'smooth' });
@@ -2326,14 +2320,12 @@ function fecharFaixa() {
   var el = document.getElementById('campanhaFaixa');
   el.classList.remove('ativa');
   if (el._campId) {
-    var fechadas = JSON.parse(localStorage.getItem('campanhas_fechadas') || '[]');
-    if (!fechadas.includes(String(el._campId))) {
-      fechadas.push(String(el._campId));
-      localStorage.setItem('campanhas_fechadas', JSON.stringify(fechadas));
-    }
+    // Salva com timestamp — expira em 24h
+    var fechadas = JSON.parse(localStorage.getItem('campanhas_fechadas_ts') || '{}');
+    fechadas[String(el._campId)] = Date.now();
+    localStorage.setItem('campanhas_fechadas_ts', JSON.stringify(fechadas));
   }
   document.documentElement.style.setProperty('--faixa-h', '0px');
-  // Resetar hero padding
   var hero = document.getElementById('hero');
   if (hero) hero.style.paddingTop = '';
 }
