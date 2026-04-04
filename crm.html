@@ -342,7 +342,7 @@ td{padding:12px 14px;font-size:13px;vertical-align:middle;}
 <body>
 
 <!-- ══ LOCK SCREEN ══ -->
-<div class="lock-screen" id="lockScreen">
+<div class="lock-screen" id="lockScreen" style="display:none;">
   <div class="lock-box">
     <img class="lock-logo" src="https://leandrorocha95.github.io/alliance-orcamento/logo_alliance.jpg" alt="Alliance">
     <div class="lock-icon">🎯</div>
@@ -356,7 +356,7 @@ td{padding:12px 14px;font-size:13px;vertical-align:middle;}
 </div>
 
 <!-- ══ APP ══ -->
-<div id="crmApp" style="display:none;">
+<div id="crmApp" style="display:block;">
 
 <!-- HEADER -->
 <header class="header">
@@ -642,6 +642,7 @@ function checkLockPw() {
   }
 }
 document.getElementById('lockPwInp').addEventListener('keydown', e => { if(e.key==='Enter') checkLockPw(); });
+init();
 
 // ── INIT ─────────────────────────────────────────────────────
 async function init() {
