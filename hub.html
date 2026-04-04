@@ -481,11 +481,81 @@ body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif
   0%,100% { opacity: 1; }
   50% { opacity: .6; }
 }
+
+/* ── MOBILE RESPONSIVO ── */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 9;
+}
+.sidebar-overlay.show { display: block; }
+
+@media (max-width: 768px) {
+  /* Sidebar: colapsada por padrão, sobrepõe conteúdo quando aberta */
+  .sidebar {
+    position: fixed;
+    left: 0; top: 0;
+    width: var(--sidebar-collapsed);
+    z-index: 10;
+  }
+  .sidebar.mobile-open {
+    width: var(--sidebar);
+    box-shadow: 4px 0 24px rgba(0,0,0,0.5);
+  }
+  .sidebar:not(.mobile-open) .nav-label,
+  .sidebar:not(.mobile-open) .nav-section-label,
+  .sidebar:not(.mobile-open) .sidebar-logo-text,
+  .sidebar:not(.mobile-open) .toggle-label,
+  .sidebar:not(.mobile-open) #hubUserEmail { opacity: 0; pointer-events: none; }
+  .sidebar:not(.mobile-open) .toggle-icon { transform: rotate(180deg); }
+  .sidebar:not(.mobile-open) .notif-badge { position: absolute; top: 4px; right: 4px; padding: 1px 4px; font-size: 9px; }
+
+  /* Main: ocupa tela toda com margem para sidebar colapsada */
+  .main { margin-left: var(--sidebar-collapsed); width: calc(100vw - var(--sidebar-collapsed)); }
+
+  /* Home screen */
+  .home-screen { padding: 20px 12px; }
+  .home-logo { height: 44px; margin-bottom: 10px; }
+  .home-title { font-size: 22px; }
+  .home-sub { font-size: 11px; margin-bottom: 18px; }
+
+  /* KPIs: 2 colunas */
+  .dash-kpis { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .dash-kpi { padding: 12px 14px; }
+  .dash-kpi-value { font-size: 28px; }
+  .dash-kpi:last-child { grid-column: span 2; max-width: 50%; justify-self: center; }
+
+  /* Cards */
+  .home-cards { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+  .home-card { padding: 16px 14px; }
+  .home-card-icon { font-size: 22px; }
+  .home-card-title { font-size: 15px; }
+  .home-card-desc { font-size: 11px; }
+
+  /* Notificações: tela cheia */
+  .notif-panel { top: 0; width: 100vw; height: 100vh; }
+  .notif-toast { bottom: 16px; right: 12px; left: 12px; max-width: none; }
+
+  /* Modais */
+  .lock-box, .ext-box { max-width: 90vw; margin: 0 16px; }
+  .lock-input, .lock-btn, .lock-cancel,
+  .ext-btn, .ext-cancel { font-size: 16px; }
+
+  /* Login overlay inputs */
+  .lock-overlay input[type="email"],
+  .lock-overlay input[type="password"] { font-size: 16px; }
+
+  /* Tooltip collapsed: esconder no mobile para não atrapalhar */
+  .sidebar .nav-item:hover::after { display: none; }
+}
 </style>
 </head>
 <body>
 
 <!-- SIDEBAR -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebarMobile()"></div>
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-logo">
     <img src="https://leandrorocha95.github.io/alliance-orcamento/logo_alliance.jpg" alt="Alliance">
@@ -948,6 +1018,7 @@ function doLogout() {
 }
 
 function navigate(module) {
+  if (isMobile()) closeSidebarMobile();
   // Externo
   if (EXTERNAL.indexOf(module) !== -1) {
     if (LOCKED.indexOf(module) !== -1 && !_unlocked[module]) {
@@ -1059,9 +1130,23 @@ function openExternal() {
 }
 
 // SIDEBAR
+function isMobile() { return window.innerWidth <= 768; }
+
 function toggleSidebar() {
-  _collapsed = !_collapsed;
-  document.getElementById('sidebar').classList.toggle('collapsed', _collapsed);
+  var sb = document.getElementById('sidebar');
+  var ov = document.getElementById('sidebarOverlay');
+  if (isMobile()) {
+    var open = sb.classList.toggle('mobile-open');
+    ov.classList.toggle('show', open);
+  } else {
+    _collapsed = !_collapsed;
+    sb.classList.toggle('collapsed', _collapsed);
+  }
+}
+
+function closeSidebarMobile() {
+  document.getElementById('sidebar').classList.remove('mobile-open');
+  document.getElementById('sidebarOverlay').classList.remove('show');
 }
 
 // ESC
