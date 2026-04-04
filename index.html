@@ -2100,20 +2100,19 @@ function submitLead(e){
     created_at: new Date().toISOString()
   };
 
-  // Salva no Supabase
-  saveLead(_pendingLead);
-
-  // Abre modal de lojas — com fallback se falhar
-  try {
-    openLojaModal(_pendingLead);
-  } catch(err) {
-    console.warn('openLojaModal error:', err);
-    showLeadSuccess();
-  }
+  // Salva no Supabase e mostra sucesso
+  saveLead(_pendingLead)
+    .then(function() {
+      showLeadSuccess();
+    })
+    .catch(function() {
+      // Mesmo com erro no save, mostra sucesso para não bloquear o usuário
+      showLeadSuccess();
+    });
 }
 
 function saveLead(lead) {
-  fetch(SB_URL + '/rest/v1/crm_leads', {
+  return fetch(SB_URL + '/rest/v1/crm_leads', {
     method: 'POST',
     headers: {
       'apikey': SB_KEY,
