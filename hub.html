@@ -1123,14 +1123,11 @@ window.addEventListener('message', function(e) {
 var GA_WORKER = 'https://alliance-analytics.leandrorocha1995.workers.dev';
 
 function carregarDashboard() {
-  // Calcula meia-noite no horário de Brasília (GMT-3)
+  // Meia-noite de hoje no horário de Brasília (GMT-3) em UTC
+  // Ex: 04/04/2026 00:00 BRT = 04/04/2026 03:00 UTC
   var agora = new Date();
-  var brasiliaOffset = -3 * 60; // GMT-3 em minutos
-  var localOffset    = agora.getTimezoneOffset(); // offset local em minutos
-  var diffMs = (localOffset - brasiliaOffset) * 60 * 1000;
-  var hojeLocal = new Date(agora.getTime() - diffMs);
-  hojeLocal.setUTCHours(0, 0, 0, 0); // meia-noite UTC equivalente a meia-noite em Brasília
-  var hojeIso = new Date(hojeLocal.getTime() + diffMs).toISOString();
+  var dataStr = agora.toLocaleDateString('en-CA', { timeZone: 'America/Sao_Paulo' }); // "YYYY-MM-DD"
+  var hojeIso = dataStr + 'T03:00:00.000Z'; // meia-noite BRT = 03:00 UTC
 
   function sbGet(path) {
     return fetch(SUPABASE_URL + '/rest/v1/' + path, {
@@ -1161,25 +1158,27 @@ function carregarDashboard() {
     });
 
   // 2. Orçamentos hoje (número principal) + total geral (subtexto)
-  sbGet('orcamentos?created_at=gte.' + hojeIso + '&select=id')
+  sbGet('orcamentos?created_at=gte.' + hojeIso + '&select=id,created_at')
     .then(function(r) {
-      if (!r.ok) throw new Error('sem tabela');
+      if (!r.ok) throw new Error('http_' + r.status);
       return r.json();
     })
     .then(function(data) {
+      console.log('[ORC] hoje hojeIso=', hojeIso, 'data=', data);
       var hoje = Array.isArray(data) ? data.length : 0;
       document.getElementById('kpiOrcTotal').textContent = hoje;
-      // Total geral como subtexto
       return sbGet('orcamentos?select=id');
     })
     .then(function(r) { return r.json(); })
     .then(function(data) {
+      console.log('[ORC] total=', data);
       var total = Array.isArray(data) ? data.length : 0;
       document.getElementById('kpiOrcSub').textContent = total + ' no total';
     })
-    .catch(function() {
+    .catch(function(e) {
+      console.error('[ORC] erro:', e);
       document.getElementById('kpiOrcTotal').textContent = '—';
-      document.getElementById('kpiOrcSub').textContent  = '';
+      document.getElementById('kpiOrcSub').textContent  = 'erro ao carregar';
     });
 
   // 3. Modelos no site (visivel_site=true)
