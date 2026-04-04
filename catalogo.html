@@ -2104,6 +2104,56 @@ function setView(mode) {
   });
 }
 
+// ── GA4 EVENT TRACKING ──────────────────────────────────────────
+function gaEvent(name, params) {
+  if (typeof gtag !== 'function') return;
+  gtag('event', name, params || {});
+}
+
+// Wrapa openDetail para rastrear visualização de modelos
+const _origOpenDetail = openDetail;
+openDetail = function(id) {
+  const c = casas.find(x => x.id === id);
+  if (c) gaEvent('modelo_view', { modelo_nome: c.nome || id, modelo_id: String(id) });
+  _origOpenDetail(id);
+};
+
+// Wrapa solicitarOrcamentoId para rastrear pedidos de orçamento
+const _origSolicitarId = solicitarOrcamentoId;
+solicitarOrcamentoId = function(id) {
+  const c = casas.find(x => x.id === id);
+  if (c) gaEvent('orcamento_solicitar', { modelo_nome: c.nome || id, modelo_id: String(id) });
+  _origSolicitarId(id);
+};
+
+// Rastreia busca no catálogo
+var _searchTimer = null;
+var _searchEl = document.getElementById('searchInp');
+if (_searchEl) {
+  _searchEl.addEventListener('input', function() {
+    clearTimeout(_searchTimer);
+    _searchTimer = setTimeout(function() {
+      var q = _searchEl.value.trim();
+      if (q.length > 2) gaEvent('catalogo_search', { search_term: q });
+    }, 800);
+  });
+}
+
+// Rastreia filtros clicados
+document.querySelectorAll('.filter-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    gaEvent('catalogo_filter', { filter_value: btn.textContent.trim() });
+  });
+});
+
+// Rastreia compartilhamento de link de modelo
+const _origCompartilhar = compartilharLink;
+compartilharLink = function(id) {
+  const c = casas.find(x => x.id === id);
+  if (c) gaEvent('modelo_share', { modelo_nome: c.nome || id });
+  _origCompartilhar(id);
+};
+
 // ── INIT ────────────────────────────────────────────────────────
 document.addEventListener('keydown', e => {
   if (e.key==='Escape') document.querySelectorAll('.overlay.open').forEach(o=>o.classList.remove('open'));
