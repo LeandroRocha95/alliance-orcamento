@@ -20,11 +20,9 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 @keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
 @keyframes sh{0%,100%{opacity:.3;}50%{opacity:1;}}
 .shimmer{display:inline-block;width:48px;height:8px;background:var(--surface2);border-radius:4px;animation:sh 1.2s ease-in-out infinite;}
-.main{max-width:960px;margin:0 auto;padding:28px;}
-
-/* KPIs */
+.main{max-width:1020px;margin:0 auto;padding:28px;}
 .kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px;}
-.kpi{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px;position:relative;overflow:hidden;cursor:default;}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px;position:relative;overflow:hidden;}
 .kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:12px 12px 0 0;}
 .kpi.rt::before{background:var(--green);}
 .kpi.u::before{background:var(--accent);}
@@ -39,21 +37,35 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .kpi.p  .kpi-val{color:var(--purple);}
 .kpi.t  .kpi-val{color:#2ecc9e;}
 .kpi-sub{font-size:11px;color:var(--muted);}
-
-/* Painéis */
 .panels{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
 .panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
 .panel.full{grid-column:1/-1;}
 .panel-head{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
 .panel-title{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:1.5px;}
+.panel-period{font-size:11px;color:var(--muted);}
 .panel-body{padding:16px 18px;}
-
-/* Realtime grande */
 .rt-big{text-align:center;padding:24px;}
 .rt-num{font-family:'Bebas Neue',sans-serif;font-size:80px;letter-spacing:4px;color:var(--green);line-height:1;}
 .rt-label{font-size:13px;color:var(--muted);margin-top:6px;}
 
-/* GA link */
+/* Páginas */
+.page-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);}
+.page-row:last-child{border-bottom:none;}
+.page-rank{font-family:'Bebas Neue',sans-serif;font-size:15px;color:var(--muted);width:18px;flex-shrink:0;}
+.page-info{flex:1;min-width:0;}
+.page-name{font-size:12px;font-weight:600;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.page-bar{height:4px;background:var(--accent);border-radius:4px;opacity:.6;}
+.page-count{font-size:12px;font-weight:700;color:var(--accent);flex-shrink:0;}
+
+/* Eventos */
+.evento-row{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.04);}
+.evento-row:last-child{border-bottom:none;}
+.evento-icone{font-size:18px;flex-shrink:0;width:26px;text-align:center;}
+.evento-info{flex:1;min-width:0;}
+.evento-nome{font-size:12px;font-weight:700;margin-bottom:2px;}
+.evento-desc{font-size:11px;color:var(--muted);line-height:1.4;}
+.evento-count{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;color:var(--accent);flex-shrink:0;}
+
 .ga-btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;background:linear-gradient(135deg,var(--accent2),var(--accent));border-radius:10px;text-decoration:none;color:#fff;font-size:13px;font-weight:700;margin-top:14px;transition:opacity .15s;}
 .ga-btn:hover{opacity:.88;}
 .updated{font-size:10px;color:var(--muted);text-align:right;margin-top:10px;opacity:.6;}
@@ -74,7 +86,6 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 
 <div class="main">
 
-  <!-- KPIs -->
   <div class="kpi-grid">
     <div class="kpi rt">
       <div class="kpi-label">Agora no site</div>
@@ -104,7 +115,6 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
   </div>
 
   <div class="panels">
-    <!-- Tempo real -->
     <div class="panel">
       <div class="panel-head">
         <div class="panel-title">🟢 Usuários agora</div>
@@ -119,27 +129,59 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
       </div>
     </div>
 
-    <!-- Páginas top -->
     <div class="panel">
       <div class="panel-head">
         <div class="panel-title">📄 Páginas mais acessadas</div>
-        <span style="font-size:11px;color:var(--muted);">7 dias</span>
+        <span class="panel-period">7 dias</span>
       </div>
       <div class="panel-body" id="paginas-top">
+        <div style="font-size:12px;color:var(--muted);padding:20px 0;text-align:center;">Carregando...</div>
+      </div>
+    </div>
+
+    <div class="panel full">
+      <div class="panel-head">
+        <div class="panel-title">⚡ Ações dos visitantes</div>
+        <span class="panel-period">7 dias</span>
+      </div>
+      <div class="panel-body" id="eventos-list">
         <div style="font-size:12px;color:var(--muted);padding:20px 0;text-align:center;">Carregando...</div>
       </div>
     </div>
   </div>
 
   <a class="ga-btn" href="https://analytics.google.com" target="_blank">
-    📊 Abrir Google Analytics completo — funis, origens, cidades e mais →
+    📊 Abrir Google Analytics completo →
   </a>
-
   <div class="updated" id="atualizado"></div>
 </div>
 
 <script>
 const WORKER = 'https://alliance-analytics.leandrorocha1995.workers.dev';
+
+// Tradução e descrição de cada evento
+const EVENTOS_MAP = {
+  // Automáticos do GA4
+  'page_view':          { icone:'👁', nome:'Página visualizada',       desc:'Cada vez que alguém abre uma página do site' },
+  'session_start':      { icone:'🚪', nome:'Sessão iniciada',          desc:'Visitante entrou no site' },
+  'first_visit':        { icone:'🌟', nome:'Primeira visita',          desc:'Visitante acessou o site pela primeira vez' },
+  'user_engagement':    { icone:'⏱', nome:'Tempo na página',          desc:'Visitante ficou ativo por pelo menos 10 segundos' },
+  'scroll':             { icone:'📜', nome:'Rolagem da página',        desc:'Visitante rolou até 90% da página' },
+  'click':              { icone:'🖱', nome:'Clique em link',           desc:'Clique em links externos ou internos' },
+  // Personalizados Alliance
+  'section_view':       { icone:'👀', nome:'Seção visualizada',        desc:'Visitante chegou numa seção da landing (modelos, portfólio, contato...)' },
+  'cta_click':          { icone:'🎯', nome:'Botão de orçamento clicado', desc:'Clicou em "Solicitar Orçamento"' },
+  'whatsapp_click':     { icone:'💬', nome:'WhatsApp clicado',         desc:'Clicou no botão flutuante do WhatsApp' },
+  'whatsapp_loja_click':{ icone:'📍', nome:'WhatsApp da loja clicado', desc:'Escolheu uma unidade no modal do WhatsApp' },
+  'lead_form_submit':   { icone:'📋', nome:'Formulário enviado',       desc:'Preencheu e enviou o formulário de contato' },
+  'modelo_click':       { icone:'🏠', nome:'Modelo clicado',           desc:'Clicou num modelo de casa na landing page' },
+  'modelo_view':        { icone:'🔍', nome:'Modelo detalhado',         desc:'Abriu os detalhes de um modelo no catálogo' },
+  'orcamento_solicitar':{ icone:'📝', nome:'Orçamento solicitado',     desc:'Clicou em "Solicitar Orçamento" dentro do catálogo' },
+  'portfolio_item_click':{ icone:'🖼', nome:'Foto do portfólio aberta', desc:'Clicou numa foto ou vídeo do portfólio' },
+  'catalogo_search':    { icone:'🔎', nome:'Busca no catálogo',        desc:'Digitou algo na busca do catálogo de modelos' },
+  'catalogo_filter':    { icone:'🏷', nome:'Filtro aplicado',          desc:'Clicou num filtro do catálogo (quartos, tipo, etc.)' },
+  'modelo_share':       { icone:'🔗', nome:'Link de modelo copiado',   desc:'Compartilhou o link de um modelo específico' },
+};
 
 function set(id, val) {
   var el = document.getElementById(id);
@@ -157,39 +199,63 @@ function carregar() {
       set('kpi-tempo',    d.tempo || '0s');
       set('rt-big',       d.realtime);
 
-      // Páginas top
-      var el = document.getElementById('paginas-top');
-      if (el) {
-        if (d.paginasTop && d.paginasTop.length) {
-          var max = Math.max.apply(null, d.paginasTop.map(function(p){ return parseInt(p.views)||0; })) || 1;
-          el.innerHTML = d.paginasTop.map(function(p, i) {
-            var pct  = Math.round((parseInt(p.views)||0) / max * 100);
-            var nome = p.pagina
-              .replace('/alliance-orcamento/', '')
-              .replace('.html', '')
-              .replace('alliance-landing', 'Landing Page')
-              .replace('catalogo', 'Catálogo')
-              .replace('index', 'Orçamentos')
-              || 'Início';
-            return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);">'
-              + '<span style="font-family:Bebas Neue,sans-serif;font-size:15px;color:var(--muted);width:18px;">' + (i+1) + '</span>'
-              + '<div style="flex:1;min-width:0;">'
-              + '<div style="font-size:12px;font-weight:600;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + nome + '</div>'
-              + '<div style="height:4px;background:var(--accent);border-radius:4px;width:' + pct + '%;opacity:.6;"></div>'
-              + '</div>'
-              + '<span style="font-size:12px;font-weight:700;color:var(--accent);flex-shrink:0;">' + p.views + '</span>'
-              + '</div>';
-          }).join('');
-        } else {
-          el.innerHTML = '<div style="font-size:12px;color:var(--muted);padding:20px 0;text-align:center;">Aguardando dados — adicione a service account no GA4</div>';
-        }
+      // Páginas
+      var pEl = document.getElementById('paginas-top');
+      if (pEl && d.paginasTop && d.paginasTop.length) {
+        var max = Math.max.apply(null, d.paginasTop.map(function(p){ return parseInt(p.views)||0; })) || 1;
+        pEl.innerHTML = d.paginasTop.map(function(p, i) {
+          var pct  = Math.round((parseInt(p.views)||0) / max * 100);
+          var nome = p.pagina
+            .replace('/alliance-orcamento/alliance-landing', 'Landing Page')
+            .replace('/alliance-orcamento/catalogo', 'Catálogo de Modelos')
+            .replace('/alliance-orcamento/', '')
+            .replace('.html', '')
+            .replace('/hub', 'Hub (interno)')
+            .replace('/Analytics', 'Analytics (interno)')
+            .replace('/analytics', 'Analytics (interno)')
+            || 'Início';
+          return '<div class="page-row">'
+            + '<span class="page-rank">' + (i+1) + '</span>'
+            + '<div class="page-info">'
+            + '<div class="page-name">' + nome + '</div>'
+            + '<div class="page-bar" style="width:' + pct + '%;"></div>'
+            + '</div>'
+            + '<span class="page-count">' + p.views + '</span>'
+            + '</div>';
+        }).join('');
+      } else if (pEl) {
+        pEl.innerHTML = '<div style="font-size:12px;color:var(--muted);padding:20px 0;text-align:center;">Aguardando dados...</div>';
       }
 
-      // Horário
+      // Eventos traduzidos
+      var eEl = document.getElementById('eventos-list');
+      if (eEl && d.eventos && d.eventos.length) {
+        // Filtra eventos relevantes (remove os muito genéricos se tiver personalizados)
+        var temPersonalizados = d.eventos.some(function(e) {
+          return EVENTOS_MAP[e.nome] && ['section_view','cta_click','lead_form_submit','modelo_view','whatsapp_click','orcamento_solicitar'].includes(e.nome);
+        });
+
+        eEl.innerHTML = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0;">'
+          + d.eventos.map(function(e) {
+            var info = EVENTOS_MAP[e.nome] || { icone:'📌', nome: e.nome, desc: 'Evento do Google Analytics' };
+            return '<div class="evento-row">'
+              + '<div class="evento-icone">' + info.icone + '</div>'
+              + '<div class="evento-info">'
+              + '<div class="evento-nome">' + info.nome + '</div>'
+              + '<div class="evento-desc">' + info.desc + '</div>'
+              + '</div>'
+              + '<div class="evento-count">' + e.total + '</div>'
+              + '</div>';
+          }).join('')
+          + '</div>';
+      } else if (eEl) {
+        eEl.innerHTML = '<div style="font-size:12px;color:var(--muted);padding:20px 0;text-align:center;">Aguardando eventos...</div>';
+      }
+
       var t = new Date(d.atualizadoEm);
       set('atualizado', 'Atualizado às ' + t.toLocaleTimeString('pt-BR'));
     })
-    .catch(function(e) {
+    .catch(function() {
       ['kpi-rt','kpi-usuarios','kpi-sessoes','kpi-paginas','kpi-tempo','rt-big'].forEach(function(id){ set(id,'—'); });
     });
 }
