@@ -998,7 +998,10 @@ function loadModule(module) {
       var sep = url.indexOf('?') !== -1 ? '&' : '?';
       url += sep + '_sid=' + encodeURIComponent(btoa(JSON.stringify(_session)));
     }
-    if (!iframe.src || iframe.src === 'about:blank' || iframe.src === window.location.href) {
+    // Carrega a URL se ainda não carregou este módulo
+    var expectedUrl = url.split('?')[0]; // compara sem parâmetros
+    var currentUrl  = iframe.src ? iframe.src.split('?')[0] : '';
+    if (!currentUrl || !currentUrl.includes(expectedUrl.split('/').pop().split('.')[0])) {
       iframe.src = url;
     }
     // Também envia via postMessage quando carregar
