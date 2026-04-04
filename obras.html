@@ -365,10 +365,12 @@ async function carregar(){
       });
     });
 
+    console.log('Itens carregados:', _itens.length, _itens.slice(0,3));
     updKPIs();renderObras();
-    document.getElementById('upd').textContent='Atualizado às '+new Date().toLocaleTimeString('pt-BR');
+    document.getElementById('upd').textContent='Atualizado às '+new Date().toLocaleTimeString('pt-BR')+' ('+_itens.length+' obras)';
   }catch(e){
-    document.getElementById('obras-c').innerHTML='<div class="empty">❌ Erro: '+e.message+'</div>';
+    console.error('Erro completo:', e);
+    document.getElementById('obras-c').innerHTML='<div class="empty">❌ Erro: '+e.message+'<br><small>Veja o console (F12) para detalhes</small></div>';
   }
 }
 
