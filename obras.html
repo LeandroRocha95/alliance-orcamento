@@ -263,33 +263,51 @@ const CFG_SB_KEY = 'obras_colunas_config';
 var COLS = [];
 var _cfg = [], _itens = [], _grupos = [], _fGrupo = 'todos', _fStatus = 'todos', _drag = null;
 
-// ── Config (Supabase compartilhada) ─────────────────────────────────────────
+// ── Config (Supabase compartilhada via tabela app_config) ───────────────────
 function sbHeaders() {
   return { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' };
 }
 
 async function loadCfg(cols) {
-  // Tenta carregar do Supabase Storage
+  // Tenta carregar da tabela app_config no Supabase
   try {
-    var r = await fetch(SB_URL + '/storage/v1/object/public/config/obras_colunas.json', { headers: { 'apikey': SB_KEY } });
+    var r = await fetch(SB_URL + '/rest/v1/app_config?key=eq.' + encodeURIComponent(CFG_SB_KEY) + '&select=value', {
+      headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY }
+    });
     if (r.ok) {
-      var data = await r.json();
-      if (Array.isArray(data) && data.length) return data;
+      var rows = await r.json();
+      if (rows.length && rows[0].value) {
+        var data = typeof rows[0].value === 'string' ? JSON.parse(rows[0].value) : rows[0].value;
+        if (Array.isArray(data) && data.length) return data;
+      }
     }
-  } catch(e) { console.warn('Config Supabase falhou, usando padrão:', e.message); }
+  } catch(e) { console.warn('Config Supabase (DB) falhou:', e.message); }
   // Fallback: localStorage ou padrão
   try { var s = localStorage.getItem(CFG_KEY); if (s) return JSON.parse(s); } catch(e) {}
   return cols.map(function(c, i) { return { id: c.id, label: c.label, vis: i < 8, ord: i }; });
 }
 
-function saveCfg() {
+async function saveCfg() {
   localStorage.setItem(CFG_KEY, JSON.stringify(_cfg));
-  // Salva no Supabase Storage (bucket: config)
-  fetch(SB_URL + '/storage/v1/object/config/obras_colunas.json', {
-    method: 'POST',
-    headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Content-Type': 'application/json', 'x-upsert': 'true' },
-    body: JSON.stringify(_cfg)
-  }).catch(function(e) { console.warn('Erro ao salvar config:', e.message); });
+  // Salva na tabela app_config via upsert
+  try {
+    var r = await fetch(SB_URL + '/rest/v1/app_config', {
+      method: 'POST',
+      headers: {
+        'apikey': SB_KEY,
+        'Authorization': 'Bearer ' + SB_KEY,
+        'Content-Type': 'application/json',
+        'Prefer': 'resolution=merge-duplicates,return=minimal'
+      },
+      body: JSON.stringify({ key: CFG_SB_KEY, value: JSON.stringify(_cfg) })
+    });
+    if (!r.ok) {
+      var errText = await r.text();
+      console.warn('Supabase saveCfg erro:', r.status, errText);
+    }
+  } catch(e) {
+    console.warn('Erro ao salvar config no Supabase:', e.message);
+  }
 }
 
 function resetCfg() {
@@ -310,11 +328,16 @@ function renderCfg() {
       +'<span class="ci-n">'+esc(cfg.label)+'</span></div>';
   }).join('');
 }
-function salvarCfg() {
+async function salvarCfg() {
+  var btn = document.querySelector('.cfg-acts .btn.pri');
+  var origText = btn ? btn.textContent : '';
+  if (btn) { btn.textContent = '⏳ Salvando...'; btn.disabled = true; }
   _cfg = Array.from(document.querySelectorAll('.ci')).map(function(el,i){
     return { id: el.dataset.id, label: el.querySelector('.ci-n').textContent, vis: el.querySelector('.ci-cb').checked, ord: i };
   });
-  saveCfg(); toggleCfg(); renderObras();
+  await saveCfg();
+  if (btn) { btn.textContent = '✅ Salvo!'; setTimeout(function(){ btn.textContent = origText; btn.disabled = false; }, 1200); }
+  toggleCfg(); renderObras();
 }
 function dS(e){_drag=e.currentTarget;e.currentTarget.classList.add('drag');e.dataTransfer.effectAllowed='move';}
 function dO(e){e.preventDefault();}
