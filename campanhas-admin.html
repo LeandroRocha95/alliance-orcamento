@@ -215,6 +215,12 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
         </div>
       </div>
 
+      <div class="form-group">
+        <label class="form-label">🔗 Link da campanha <span style="color:var(--accent);font-size:9px;letter-spacing:0;">— toda a área se torna clicável</span></label>
+        <input class="form-inp" id="fLinkDestino" placeholder="Ex: https://... ou #contato ou #modelos">
+        <div class="form-hint">Opcional. Se preenchido, clicar em qualquer parte da campanha abre este link. Útil para banners de imagem.</div>
+      </div>
+
       </div><!-- /fConteudoGrupo -->
 
       <div class="section-divider">Visual</div>
@@ -428,7 +434,7 @@ function closeForm() {
 }
 
 function clearForm() {
-  ['fTitulo','fSub','fBtnTexto','fBtnLink','fImagem','fEyebrow'].forEach(id => {
+  ['fTitulo','fSub','fBtnTexto','fBtnLink','fImagem','fEyebrow','fLinkDestino'].forEach(id => {
     document.getElementById(id).value = '';
   });
   document.getElementById('fTipo').value = 'faixa';
@@ -449,6 +455,7 @@ function fillForm(c) {
   document.getElementById('fEyebrow').value    = c.eyebrow      || '';
   document.getElementById('fBtnTexto').value   = c.btn_texto    || '';
   document.getElementById('fBtnLink').value    = c.btn_link     || '';
+  document.getElementById('fLinkDestino').value = c.link_destino || '';
   document.getElementById('fImagem').value     = c.imagem_desktop|| '';
   document.getElementById('fDataInicio').value = c.data_inicio  || '';
   document.getElementById('fDataFim').value    = c.data_fim     || '';
@@ -547,6 +554,7 @@ async function saveCampanha() {
     eyebrow:        document.getElementById('fEyebrow').value.trim(),
     btn_texto:      document.getElementById('fBtnTexto').value.trim(),
     btn_link:       document.getElementById('fBtnLink').value.trim(),
+    link_destino:   document.getElementById('fLinkDestino').value.trim(),
     cor_fundo:      document.getElementById('fCorFundo').value,
     cor_texto:      document.getElementById('fCorTexto').value,
     imagem_desktop: document.getElementById('fImagem').value.trim(),
