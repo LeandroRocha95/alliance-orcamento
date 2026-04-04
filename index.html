@@ -2100,9 +2100,16 @@ function submitLead(e){
     created_at: new Date().toISOString()
   };
 
-  // Salva no Supabase e abre modal ao mesmo tempo
+  // Salva no Supabase
   saveLead(_pendingLead);
-  openLojaModal(_pendingLead);
+
+  // Abre modal de lojas — com fallback se falhar
+  try {
+    openLojaModal(_pendingLead);
+  } catch(err) {
+    console.warn('openLojaModal error:', err);
+    showLeadSuccess();
+  }
 }
 
 function saveLead(lead) {
@@ -2916,7 +2923,7 @@ loadDiferenciais();
 function openWappFloat() {
   // Reusa o mesmo modal de lojas, mas sem contexto de lead
   var info = document.getElementById('lojaModalLeadInfo');
-  info.textContent = 'Escolha a unidade mais próxima para falar com um consultor.';
+  if (info) info.textContent = 'Escolha a unidade mais próxima para falar com um consultor.';
   // Modo "flutuante" — ao clicar numa loja abre WhatsApp genérico
   _pendingLead = {
     nome: '', telefone: '', cidade: '', interesse: '',
