@@ -1164,21 +1164,18 @@ function carregarDashboard() {
       return r.json();
     })
     .then(function(data) {
-      console.log('[ORC] hoje hojeIso=', hojeIso, 'data=', data);
       var hoje = Array.isArray(data) ? data.length : 0;
       document.getElementById('kpiOrcTotal').textContent = hoje;
       return sbGet('orcamentos?select=id');
     })
     .then(function(r) { return r.json(); })
     .then(function(data) {
-      console.log('[ORC] total=', data);
       var total = Array.isArray(data) ? data.length : 0;
       document.getElementById('kpiOrcSub').textContent = total + ' no total';
     })
     .catch(function(e) {
-      console.error('[ORC] erro:', e);
       document.getElementById('kpiOrcTotal').textContent = '—';
-      document.getElementById('kpiOrcSub').textContent  = 'erro ao carregar';
+      document.getElementById('kpiOrcSub').textContent  = '';
     });
 
   // 3. Modelos no site (visivel_site=true)
