@@ -247,7 +247,7 @@ async function carregar(){
   document.getElementById('obras-c').innerHTML='<div class="loading"><div class="spin"></div><div>Carregando...</div></div>';
   var ids=COLS.filter(function(c){return c.id!=='name';}).map(function(c){return'"'+c.id+'"';}).join(',');
   try{
-    var q=`{boards(ids:[${BID}]){groups(ids:${JSON.stringify(GS)}){id title items_page(limit:100){items{id name column_values(ids:[${ids}]){id text value ... on MirrorValue{display_value} ... on StatusValue{label} ... on DropdownValue{values{label}} ... on DateValue{date} ... on NumbersValue{number} ... on TimelineValue{from to}}}}}}}`;
+    var q=`{boards(ids:[${BID}]){groups(ids:${JSON.stringify(GS)}){id title items_page(limit:100){items{id name column_values(ids:[${ids}]){id text value ... on MirrorValue{display_value} ... on StatusValue{label} ... on DropdownValue{values{label}}}}}}}}}`;
     var data=await mQuery(q);
     var board=data?.data?.boards?.[0];
     if(!board)throw new Error(JSON.stringify(data?.errors||'Erro'));
