@@ -1345,7 +1345,7 @@ footer{
         <div class="gold-line"></div>
 
         <p>
-          Há mais de 10 anos, a Alliance transforma projetos em lares com <strong>qualidade, sofisticação e confiança</strong>.
+          Há mais de 8 anos, a Alliance transforma projetos em lares com <strong>qualidade, sofisticação e confiança</strong>.
         </p>
         <p>
           Somos especializados em casas pré-fabricadas de <strong>madeira nobre</strong> — grápia, itaúba, angelim e peroba — entregando obras completas, do alicerce à chave. Também trabalhamos com <strong>madeira de Pinus autoclave</strong>.
@@ -1639,12 +1639,12 @@ footer{
 <div class="numeros">
   <div class="container">
     <div class="numero-item reveal">
-      <div class="numero-val">+1.100</div>
+      <div class="numero-val">+1.000</div>
       <div class="numero-lbl">Casas construídas</div>
     </div>
     <div class="numero-div"></div>
     <div class="numero-item reveal reveal-delay-1">
-      <div class="numero-val">+40</div>
+      <div class="numero-val">+30</div>
       <div class="numero-lbl">Cidades atendidas</div>
     </div>
     <div class="numero-div"></div>
@@ -1654,7 +1654,7 @@ footer{
     </div>
     <div class="numero-div"></div>
     <div class="numero-item reveal reveal-delay-3">
-      <div class="numero-val">10+</div>
+      <div class="numero-val">8+</div>
       <div class="numero-lbl">Anos de experiência</div>
     </div>
     <div class="numero-div"></div>
@@ -1828,7 +1828,7 @@ footer{
         <div class="footer-logo">
           <img src="https://leandrorocha95.github.io/alliance-orcamento/logo_alliance.jpg" alt="Alliance Casas">
         </div>
-        <p class="footer-tagline">"Nada melhor que um lugar<br>para chamar de seu."</p>
+        <p class="footer-tagline">"Sua ideia encontra o<br>caminho para a realidade."</p>
         <div class="footer-socials">
           <a href="https://www.instagram.com/alliancecasas" target="_blank" class="footer-social" title="Instagram">
             <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
@@ -2134,13 +2134,27 @@ function renderFaixa(c) {
   } else {
     btn.style.display = 'none';
   }
+  // Link na área toda da faixa
+  if (c.link_destino) {
+    el.style.cursor = 'pointer';
+    el.onclick = function(e) {
+      if (e.target.closest('.campanha-faixa-close')) return;
+      if (c.link_destino.startsWith('#')) {
+        var target = document.querySelector(c.link_destino);
+        if (target) target.scrollIntoView({ behavior: 'smooth' });
+      } else {
+        window.open(c.link_destino, '_blank');
+      }
+    };
+  } else {
+    el.style.cursor = '';
+    el.onclick = null;
+  }
   el._campId = c.id;
   el.classList.add('ativa');
-  // Usar requestAnimationFrame para garantir que a faixa já foi renderizada
   requestAnimationFrame(function() {
     var h = el.offsetHeight;
     document.documentElement.style.setProperty('--faixa-h', h + 'px');
-    // Empurra o hero para não ficar atrás da faixa + nav
     var hero = document.getElementById('hero');
     if (hero) {
       var navEl = document.getElementById('mainNav');
@@ -2151,15 +2165,19 @@ function renderFaixa(c) {
 }
 
 function renderBannerImagem(c) {
-  // Banner full sem overlay nem texto
   var el = document.getElementById('campanhaBanner');
   var slides = document.getElementById('bannerSlides');
   if (!c.imagem_desktop) return;
-  slides.innerHTML = '<div class="banner-slide">'
+  var linkDestino = c.link_destino || c.btn_link || '';
+  var wrapTag  = linkDestino ? '<a href="' + linkDestino + '" target="' + (linkDestino.startsWith('#') ? '_self' : '_blank') + '" style="display:block;cursor:pointer;">' : '<div>';
+  var wrapEnd  = linkDestino ? '</a>' : '</div>';
+  slides.innerHTML = wrapTag
+    + '<div class="banner-slide">'
     + '<div class="campanha-banner-bg" style="background-image:url(' + c.imagem_desktop + ');"></div>'
     + '<div style="position:relative;z-index:2;">'
     + (c.btn_texto && c.btn_link ? '<a class="campanha-banner-btn" href="' + c.btn_link + '" target="_blank">' + c.btn_texto + '</a>' : '')
-    + '</div></div>';
+    + '</div></div>'
+    + wrapEnd;
   document.getElementById('bannerDots').innerHTML = '';
   el.classList.add('ativa');
 }
@@ -2197,8 +2215,16 @@ function renderFlutuanteCampanha(c) {
   } else {
     btn.innerHTML = '<span style="font-size:24px;">📣</span>';
   }
-  if (c.btn_link) {
-    btn.onclick = function(){ window.open(c.btn_link, '_blank'); };
+  if (c.link_destino || c.btn_link) {
+    var dest = c.link_destino || c.btn_link;
+    btn.onclick = function(){
+      if (dest.startsWith('#')) {
+        var t = document.querySelector(dest);
+        if (t) t.scrollIntoView({ behavior: 'smooth' });
+      } else {
+        window.open(dest, '_blank');
+      }
+    };
   }
   // Tooltip com título ao passar o mouse (se não for só imagem)
   if (c.titulo) {
@@ -2233,14 +2259,20 @@ function renderBannerCarrossel(banners) {
     var btnHtml = (c.btn_texto && c.btn_link)
       ? '<a class="campanha-banner-btn" href="' + escHtml(c.btn_link) + '" target="_blank">' + escHtml(c.btn_texto) + '</a>'
       : '';
+    // Link na área toda do slide
+    var linkDestino = c.link_destino || '';
+    var slideClick  = linkDestino
+      ? 'style="cursor:pointer;" onclick="' + (linkDestino.startsWith('#')
+          ? 'document.querySelector(\'' + linkDestino + '\')?.scrollIntoView({behavior:\'smooth\'})'
+          : 'window.open(\'' + linkDestino + '\',\'_blank\')') + '"'
+      : '';
     if (soImagem) {
-      // Sem overlay, sem texto — imagem pura com botão opcional
-      return '<div class="banner-slide">'
+      return '<div class="banner-slide" ' + slideClick + '>'
         + '<div class="campanha-banner-bg" style="' + bgStyle + '"></div>'
         + (btnHtml ? '<div class="campanha-banner-content">' + btnHtml + '</div>' : '')
         + '</div>';
     }
-    return '<div class="banner-slide">'
+    return '<div class="banner-slide" ' + slideClick + '>'
       + '<div class="campanha-banner-bg" style="' + bgStyle + '"></div>'
       + '<div class="campanha-banner-overlay"></div>'
       + '<div class="campanha-banner-content">'
