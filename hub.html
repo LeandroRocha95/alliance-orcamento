@@ -549,6 +549,11 @@ body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif
       <span class="nav-label">Analytics</span>
     </div>
 
+    <div class="nav-item" data-module="obras" data-tip="Gestão de Obras" onclick="navigate('obras')">
+      <span class="nav-icon">🏗️</span>
+      <span class="nav-label">Obras</span>
+    </div>
+
     <div class="nav-item" data-module="custos" data-tip="Gestão de Custos" onclick="navigate('custos')">
       <span class="nav-icon">💰</span>
       <span class="nav-label">Gestão de Custos</span>
@@ -625,6 +630,12 @@ body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif
     </div>
     <div class="dash-updated" id="dashUpdated"></div>
     <div class="home-cards">
+      <div class="home-card" onclick="navigate('obras')">
+        <div class="home-card-icon">🏗️</div>
+        <div class="home-card-title">Gestão de Obras</div>
+        <div class="home-card-desc">Acompanhe obras em andamento, progresso e prazos integrado ao Monday.com.</div>
+        <div class="home-card-btn">Abrir →</div>
+      </div>
       <div class="home-card" onclick="navigate('analytics')">
         <div class="home-card-icon">📈</div>
         <div class="home-card-title">Analytics</div>
@@ -721,6 +732,10 @@ body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif
     <iframe class="module-iframe" id="iframe-conteudo" src="" title="Conteúdo"></iframe>
   </div>
 
+  <div class="iframe-container" id="module-obras">
+    <iframe class="module-iframe" id="iframe-obras" src="" title="Obras"></iframe>
+  </div>
+
   <div class="iframe-container" id="module-analytics">
     <iframe class="module-iframe" id="iframe-analytics" src="" title="Analytics"></iframe>
   </div>
@@ -793,10 +808,11 @@ var MODULES = {
   depoimentos: 'https://alliance-orcamento.pages.dev/depoimentos-admin.html',
   conteudo:    'https://alliance-orcamento.pages.dev/conteudo-admin.html',
   analytics:  'https://alliance-orcamento.pages.dev/Analytics.html',
+  obras:      'https://leandrorocha95.github.io/alliance-orcamento/obras.html',
   mapa:       'https://leandrorocha95.github.io/alliance-orcamento/mapa.html',
   banco:      'https://supabase.com/dashboard/project/gzzclbxnohokttujvaqa',
 };
-var LOCKED   = ['custos', 'banco', 'crm', 'campanhas', 'portfolio', 'depoimentos', 'analytics', 'conteudo'];
+var LOCKED   = ['custos', 'banco', 'crm', 'campanhas', 'portfolio', 'depoimentos', 'analytics', 'conteudo', 'obras'];
 var EXTERNAL = ['banco'];
 var _unlocked = {};
 var _current  = 'home';
@@ -923,7 +939,7 @@ function doLogout() {
   _session = null;
   localStorage.removeItem('alliance_session');
   // Limpar iframes
-  ['orcamento','catalogo','custos','crm','campanhas','portfolio','depoimentos','conteudo','analytics'].forEach(function(m) {
+  ['orcamento','catalogo','custos','crm','campanhas','portfolio','depoimentos','conteudo','analytics','obras'].forEach(function(m) {
     var iframe = document.getElementById('iframe-' + m);
     if (iframe) iframe.src = '';
   });
@@ -1010,7 +1026,7 @@ function loadModule(module) {
 
 // LOCK
 function showLock(module) {
-  var titles = { custos:'Gestão de Custos', banco:'Banco de Dados', crm:'CRM de Leads', campanhas:'Campanhas', portfolio:'Portfólio', depoimentos:'Depoimentos', conteudo:'Conteúdo do Site', analytics:'Analytics' };
+  var titles = { custos:'Gestão de Custos', banco:'Banco de Dados', crm:'CRM de Leads', campanhas:'Campanhas', portfolio:'Portfólio', depoimentos:'Depoimentos', conteudo:'Conteúdo do Site', analytics:'Analytics', obras:'Gestão de Obras' };
   document.getElementById('lockTitle').textContent = titles[module] || 'Área Restrita';
   document.getElementById('lockInput').value = '';
   document.getElementById('lockErr').textContent = '';
@@ -1123,11 +1139,14 @@ window.addEventListener('message', function(e) {
 var GA_WORKER = 'https://alliance-analytics.leandrorocha1995.workers.dev';
 
 function carregarDashboard() {
-  // Meia-noite de hoje no horário de Brasília (GMT-3) em UTC
-  // Ex: 04/04/2026 00:00 BRT = 04/04/2026 03:00 UTC
+  // Calcula meia-noite no horário de Brasília (GMT-3)
   var agora = new Date();
-  var dataStr = agora.toLocaleDateString('en-CA', { timeZone: 'America/Sao_Paulo' }); // "YYYY-MM-DD"
-  var hojeIso = dataStr + 'T03:00:00.000Z'; // meia-noite BRT = 03:00 UTC
+  var brasiliaOffset = -3 * 60; // GMT-3 em minutos
+  var localOffset    = agora.getTimezoneOffset(); // offset local em minutos
+  var diffMs = (localOffset - brasiliaOffset) * 60 * 1000;
+  var hojeLocal = new Date(agora.getTime() - diffMs);
+  hojeLocal.setUTCHours(0, 0, 0, 0); // meia-noite UTC equivalente a meia-noite em Brasília
+  var hojeIso = new Date(hojeLocal.getTime() + diffMs).toISOString();
 
   function sbGet(path) {
     return fetch(SUPABASE_URL + '/rest/v1/' + path, {
@@ -1157,25 +1176,38 @@ function carregarDashboard() {
       document.getElementById('kpiLeadsSub').textContent  = 'sem acesso';
     });
 
-  // 2. Orçamentos hoje (número principal) + total geral (subtexto)
-  sbGet('orcamentos?created_at=gte.' + hojeIso + '&select=id,created_at')
+  // 2. Orçamentos (tabela orcamentos ou leads — tenta orcamentos primeiro)
+  sbGet('orcamentos?select=id')
     .then(function(r) {
-      if (!r.ok) throw new Error('http_' + r.status);
+      if (!r.ok) throw new Error('sem tabela');
       return r.json();
     })
     .then(function(data) {
-      var hoje = Array.isArray(data) ? data.length : 0;
-      document.getElementById('kpiOrcTotal').textContent = hoje;
-      return sbGet('orcamentos?select=id');
+      var n = Array.isArray(data) ? data.length : 0;
+      document.getElementById('kpiOrcTotal').textContent = n;
+      // Abertos hoje
+      return sbGet('orcamentos?created_at=gte.' + hojeIso + '&select=id');
     })
     .then(function(r) { return r.json(); })
     .then(function(data) {
-      var total = Array.isArray(data) ? data.length : 0;
-      document.getElementById('kpiOrcSub').textContent = total + ' no total';
+      var hoje = Array.isArray(data) ? data.length : 0;
+      document.getElementById('kpiOrcSub').textContent = hoje > 0
+        ? hoje + ' criado' + (hoje > 1 ? 's' : '') + ' hoje'
+        : 'nenhum hoje';
     })
-    .catch(function(e) {
-      document.getElementById('kpiOrcTotal').textContent = '—';
-      document.getElementById('kpiOrcSub').textContent  = '';
+    .catch(function() {
+      // Fallback: conta leads como proxy de orçamentos
+      sbGet('crm_leads?select=id')
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          var n = Array.isArray(data) ? data.length : 0;
+          document.getElementById('kpiOrcTotal').textContent = n;
+          document.getElementById('kpiOrcSub').textContent = 'total de leads';
+        })
+        .catch(function() {
+          document.getElementById('kpiOrcTotal').textContent = '—';
+          document.getElementById('kpiOrcSub').textContent  = '';
+        });
     });
 
   // 3. Modelos no site (visivel_site=true)
