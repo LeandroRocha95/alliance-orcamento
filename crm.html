@@ -306,6 +306,36 @@ td{padding:12px 14px;font-size:13px;vertical-align:middle;}
 .kanban-card-date{font-size:10px;color:var(--muted);margin-top:8px;}
 .kanban-empty{font-size:12px;color:var(--muted);text-align:center;padding:20px 0;opacity:.6;}
 
+/* ── KANBAN DRAG AND DROP ── */
+.kanban-drop-zone {
+  min-height: 80px;
+  padding: 4px;
+  border-radius: 0 0 8px 8px;
+  transition: background .15s, box-shadow .15s;
+}
+.kanban-drop-zone.drag-over {
+  background: rgba(48,142,238,.1);
+  box-shadow: inset 0 0 0 2px rgba(48,142,238,.5);
+}
+.kanban-card[draggable="true"] {
+  cursor: grab;
+}
+.kanban-card[draggable="true"]:active {
+  cursor: grabbing;
+}
+.kanban-card.dragging {
+  opacity: 0.35;
+  transform: scale(0.97);
+}
+.kanban-empty-drop {
+  font-size: 12px;
+  color: var(--muted);
+  text-align: center;
+  padding: 20px 0;
+  opacity: .6;
+  pointer-events: none;
+}
+
 /* ── CONVERSA / CHAT ── */
 .conv-wrap{display:flex;flex-direction:column;height:100%;}
 .conv-messages{
@@ -936,18 +966,84 @@ function renderKanban(list) {
         ${cfg.label}
         <span class="kanban-col-count">${colLeads.length}</span>
       </div>
-      ${colLeads.length ? colLeads.map(l => `
-        <div class="kanban-card" onclick="openDetail('${l.id}')">
-          <div class="kanban-card-name">${esc(l.nome||'—')}</div>
-          <div class="kanban-card-city">📍 ${esc(l.cidade||'—')}</div>
-          ${l.loja_id   ? `<div class="kanban-card-interest" style="color:var(--accent);font-size:11px;">🏪 ${esc(lojaLabel(l.loja_id))}</div>` : ''}
-          ${l.interesse ? `<div class="kanban-card-interest">🏠 ${esc(l.interesse)}</div>` : ''}
-          ${l.vendedor  ? `<div class="kanban-card-interest">👤 ${esc(l.vendedor)}</div>` : ''}
-          <div class="kanban-card-date">${fmtDate(l.created_at)}</div>
-        </div>`).join('') : '<div class="kanban-empty">Sem leads</div>'}
+      <div class="kanban-drop-zone" data-status="${status}"
+           ondragover="onDragOver(event)"
+           ondragleave="onDragLeave(event)"
+           ondrop="onDrop(event,'${status}')">
+        ${colLeads.length ? colLeads.map(l => `
+          <div class="kanban-card"
+               draggable="true"
+               data-id="${l.id}"
+               ondragstart="onDragStart(event,'${l.id}')"
+               ondragend="onDragEnd(event)"
+               onclick="openDetail('${l.id}')">
+            <div class="kanban-card-name">${esc(l.nome||'—')}</div>
+            <div class="kanban-card-city">📍 ${esc(l.cidade||'—')}</div>
+            ${l.loja_id   ? `<div class="kanban-card-interest" style="color:var(--accent);font-size:11px;">🏪 ${esc(lojaLabel(l.loja_id))}</div>` : ''}
+            ${l.interesse ? `<div class="kanban-card-interest">🏠 ${esc(l.interesse)}</div>` : ''}
+            ${l.vendedor  ? `<div class="kanban-card-interest">👤 ${esc(l.vendedor)}</div>` : ''}
+            <div class="kanban-card-date">${fmtDate(l.created_at)}</div>
+          </div>`).join('') : ''}
+        <div class="kanban-empty-drop" style="${colLeads.length ? 'display:none' : ''}">Sem leads</div>
+      </div>
     </div>`;
   }).join('');
 }
+
+// ── DRAG AND DROP ─────────────────────────────────────────────
+let _dragId = null;
+
+function onDragStart(e, id) {
+  _dragId = id;
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/plain', id);
+  setTimeout(() => e.target.classList.add('dragging'), 0);
+}
+
+function onDragEnd(e) {
+  e.target.classList.remove('dragging');
+  document.querySelectorAll('.kanban-drop-zone').forEach(z => z.classList.remove('drag-over'));
+}
+
+function onDragOver(e) {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  e.currentTarget.classList.add('drag-over');
+}
+
+function onDragLeave(e) {
+  // só remove se sair da zona, não de um filho
+  if (!e.currentTarget.contains(e.relatedTarget)) {
+    e.currentTarget.classList.remove('drag-over');
+  }
+}
+
+async function onDrop(e, newStatus) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag-over');
+  const id = _dragId || e.dataTransfer.getData('text/plain');
+  if (!id) return;
+  const lead = leads.find(l => String(l.id) === String(id));
+  if (!lead || lead.status === newStatus) return;
+
+  // Atualiza localmente primeiro (UI imediata)
+  lead.status = newStatus;
+  renderLeads();
+  renderSidebarCounts();
+
+  // Se for o lead aberto no painel, atualiza o badge também
+  if (_selectedLead && String(_selectedLead.id) === String(id)) {
+    _selectedLead.status = newStatus;
+    document.getElementById('detailStatusSel').value = newStatus;
+    document.getElementById('detailStatusBadge').innerHTML = statusBadge(newStatus);
+  }
+
+  // Persiste no Supabase
+  await patchLead(id, { status: newStatus });
+  toast(`✓ Movido para ${newStatus}`);
+  _dragId = null;
+}
+
 
 function renderSidebarCounts() {
   const all = leads;
