@@ -1008,6 +1008,71 @@ let _sortDir      = 'desc';
 let _selectedLead = null;
 let _deleteId     = null;
 
+// ── SESSÃO / RBAC ─────────────────────────────────────────────
+let _crmSession  = null; // sessão recebida do hub
+let _crmRole     = 'admin'; // 'admin' | 'vendedor'
+let _crmLojaId   = null; // loja do vendedor logado
+
+// Receber sessão do hub via postMessage ou URL
+function initSession() {
+  // Tentar via URL (_sid)
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const sid = params.get('_sid');
+    if (sid) {
+      _crmSession = JSON.parse(atob(sid));
+      aplicarSessaoCRM(_crmSession);
+    }
+  } catch(e) {}
+
+  // Listener para postMessage do hub
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'ALLIANCE_SESSION') {
+      _crmSession = e.data.session;
+      aplicarSessaoCRM(_crmSession);
+    }
+  });
+}
+
+function aplicarSessaoCRM(session) {
+  if (!session) return;
+  const vendedor = session.vendedor;
+  const isAdmin  = session.isAdmin;
+
+  if (isAdmin || !vendedor || vendedor.role === 'admin') {
+    _crmRole   = 'admin';
+    _crmLojaId = null;
+  } else {
+    _crmRole   = 'vendedor';
+    _crmLojaId = vendedor.loja_id || null;
+  }
+
+  // Esconder elementos que vendedor não deve ver
+  aplicarUIRBAC();
+
+  // Recarregar leads com filtro correto
+  loadLeads().then(function() {
+    renderSidebarCounts();
+    renderLeads();
+    renderHeaderStats();
+  });
+}
+
+function aplicarUIRBAC() {
+  if (_crmRole === 'admin') return;
+
+  // Vendedor: esconder filtro de loja (já está filtrado)
+  const lojaFilter = document.getElementById('lojaFilter');
+  if (lojaFilter) lojaFilter.style.display = 'none';
+
+  // Esconder seção de WhatsApp QR no sidebar (só admin gerencia)
+  document.querySelectorAll('[id^="sb-wapp-"]').forEach(el => el.style.display = 'none');
+  document.querySelectorAll('[id^="sb-status-"]').forEach(el => el.style.display = 'none');
+
+  // Esconder botão CSV e outros controles admin
+  // (mantém o + Novo Lead pois vendedor pode cadastrar)
+}
+
 // ── AUTH ─────────────────────────────────────────────────────
 function checkLockPw() {
   const val = document.getElementById('lockPwInp').value;
@@ -1021,6 +1086,9 @@ function checkLockPw() {
   }
 }
 document.getElementById('lockPwInp').addEventListener('keydown', e => { if(e.key==='Enter') checkLockPw(); });
+
+// Inicializar sessão RBAC (recebe do hub via URL ou postMessage)
+initSession();
 
 // Chama init direto (lock screen está hidden por padrão no HTML original)
 init();
@@ -1090,7 +1158,12 @@ function sbFetch(method, url, body) {
 
 async function loadLeads() {
   try {
-    const r = await sbFetch('GET', `${SB_URL}/rest/v1/${LEADS_TABLE}?order=created_at.desc`);
+    let url = `${SB_URL}/rest/v1/${LEADS_TABLE}?order=created_at.desc`;
+    // Filtrar por loja se for vendedor
+    if (_crmRole === 'vendedor' && _crmLojaId) {
+      url += `&loja_id=eq.${_crmLojaId}`;
+    }
+    const r = await sbFetch('GET', url);
     if (r.ok) { leads = await r.json(); if (!Array.isArray(leads)) leads = []; }
   } catch(e) { leads = []; toast('Sem conexão com a nuvem', 'err'); }
 }
@@ -1846,7 +1919,18 @@ async function doDelete() {
 }
 
 // ── NEW LEAD MANUAL ───────────────────────────────────────────
-function openNewLead() { document.getElementById('newLeadOverlay').classList.add('open'); }
+function openNewLead() {
+  document.getElementById('newLeadOverlay').classList.add('open');
+  // Pré-selecionar loja do vendedor
+  if (_crmRole === 'vendedor' && _crmLojaId) {
+    const nlLoja = document.getElementById('nlLoja');
+    if (nlLoja) {
+      nlLoja.value = _crmLojaId;
+      nlLoja.style.pointerEvents = 'none';
+      nlLoja.style.opacity = '0.6';
+    }
+  }
+}
 function closeNewLead() { document.getElementById('newLeadOverlay').classList.remove('open'); }
 
 async function saveNewLead() {
