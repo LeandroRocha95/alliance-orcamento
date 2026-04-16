@@ -922,7 +922,7 @@ body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif
 </div>
 
 <!-- MODAL PERMISSÕES -->
-<div class="ext-overlay" id="permOverlay" style="z-index:500;align-items:flex-start;padding-top:40px;overflow-y:auto;">
+<div class="ext-overlay" id="permOverlay" style="display:none;z-index:500;align-items:flex-start;padding-top:40px;overflow-y:auto;">
   <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;width:100%;max-width:660px;margin:0 auto 40px;overflow:hidden;">
     <div style="padding:20px 24px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
       <div>
@@ -1049,12 +1049,18 @@ var _allUsers = [];
 var _editPerms = {};
 
 function openPermissoes() {
-  document.getElementById('permOverlay').style.display = 'flex';
+  var el = document.getElementById('permOverlay');
+  el.style.display = 'flex';
+  el.style.opacity = '1';
+  el.style.pointerEvents = 'all';
   carregarTodosUsuarios();
 }
 
 function closePermissoes() {
-  document.getElementById('permOverlay').style.display = 'none';
+  var el = document.getElementById('permOverlay');
+  el.style.display = 'none';
+  el.style.opacity = '0';
+  el.style.pointerEvents = 'none';
 }
 
 function carregarTodosUsuarios() {
