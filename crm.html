@@ -835,6 +835,44 @@ async function init() {
   renderLeads();
   renderHeaderStats();
   setView(_viewMode, document.getElementById('view-kanban'));
+  startLeadsRealtime();
+}
+
+// ── REALTIME — novos leads via WhatsApp ───────────────────────
+function startLeadsRealtime() {
+  try {
+    supabaseClient
+      .channel('crm_leads_realtime')
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'crm_leads',
+      }, (payload) => {
+        if (payload.eventType === 'INSERT') {
+          const newLead = payload.new;
+          // Evitar duplicata
+          if (!leads.find(l => String(l.id) === String(newLead.id))) {
+            leads.unshift(newLead);
+            renderLeads();
+            renderSidebarCounts();
+            renderHeaderStats();
+            // Toast de notificação
+            const origem = newLead.origem === 'whatsapp' ? '📱 WhatsApp' : '🌐 Site';
+            toast(`✓ Novo lead: ${newLead.nome || 'Sem nome'} (${origem})`);
+          }
+        } else if (payload.eventType === 'UPDATE') {
+          const idx = leads.findIndex(l => String(l.id) === String(payload.new.id));
+          if (idx >= 0) {
+            leads[idx] = { ...leads[idx], ...payload.new };
+            renderLeads();
+            renderSidebarCounts();
+          }
+        }
+      })
+      .subscribe();
+  } catch(e) {
+    console.warn('Realtime não disponível:', e);
+  }
 }
 
 // ── SUPABASE ─────────────────────────────────────────────────
