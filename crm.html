@@ -1071,7 +1071,7 @@ async function addConvMsg() {
   document.getElementById('convInput').value = '';
 }
 
-
+async function updateStatus() {
   if (!_selectedLead) return;
   const newStatus = document.getElementById('detailStatusSel').value;
   _selectedLead.status = newStatus;
