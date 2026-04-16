@@ -306,6 +306,33 @@ td{padding:12px 14px;font-size:13px;vertical-align:middle;}
 .kanban-card-date{font-size:10px;color:var(--muted);margin-top:8px;}
 .kanban-empty{font-size:12px;color:var(--muted);text-align:center;padding:20px 0;opacity:.6;}
 
+/* ── CONVERSA / CHAT ── */
+.conv-wrap{display:flex;flex-direction:column;height:100%;}
+.conv-messages{
+  flex:1;overflow-y:auto;padding:12px;
+  display:flex;flex-direction:column;gap:8px;
+  min-height:160px;max-height:260px;
+  background:var(--bg);border:1px solid var(--border);
+  border-radius:8px;margin-bottom:10px;
+}
+.conv-msg{max-width:82%;padding:8px 12px;border-radius:10px;font-size:13px;line-height:1.55;}
+.conv-msg-out{align-self:flex-end;background:rgba(48,142,238,.2);border:1px solid rgba(48,142,238,.3);}
+.conv-msg-in {align-self:flex-start;background:var(--surface2);border:1px solid var(--border);}
+.conv-msg-meta{font-size:10px;color:var(--muted);margin-top:3px;}
+.conv-msg-dir{font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;margin-bottom:3px;opacity:.6;}
+.conv-empty{text-align:center;color:var(--muted);font-size:12px;padding:30px 0;}
+.conv-input-row{display:flex;gap:8px;}
+.conv-input-row input{flex:1;}
+.conv-dir-toggle{display:flex;gap:6px;margin-bottom:8px;}
+.conv-dir-btn{
+  font-size:11px;font-weight:600;padding:4px 10px;border-radius:6px;border:1px solid var(--border);
+  background:none;color:var(--muted);cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif;
+}
+.conv-dir-btn.active{background:rgba(48,142,238,.15);border-color:rgba(48,142,238,.4);color:var(--accent);}
+
+/* loja badge na tabela */
+.loja-tag{font-size:10px;padding:2px 7px;border-radius:4px;background:rgba(48,142,238,.12);color:var(--accent);font-weight:600;}
+
 /* ── TOAST ── */
 .toast{
   position:fixed;bottom:24px;right:24px;
@@ -449,6 +476,9 @@ td{padding:12px 14px;font-size:13px;vertical-align:middle;}
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/></svg>
         <input class="search-inp" id="searchInp" placeholder="Buscar por nome, cidade, telefone..." oninput="renderLeads()">
       </div>
+      <select class="filter-sel" id="lojaFilter" onchange="renderLeads()">
+        <option value="">Todas as lojas</option>
+      </select>
       <select class="filter-sel" id="vendorFilter" onchange="renderLeads()">
         <option value="">Todos os vendedores</option>
       </select>
@@ -472,6 +502,7 @@ td{padding:12px 14px;font-size:13px;vertical-align:middle;}
               <th onclick="sortBy('telefone')">Telefone</th>
               <th onclick="sortBy('cidade')">Cidade</th>
               <th onclick="sortBy('interesse')">Interesse</th>
+              <th onclick="sortBy('loja_id')">Loja</th>
               <th onclick="sortBy('vendedor')">Vendedor</th>
               <th onclick="sortBy('status')">Status</th>
               <th onclick="sortBy('created_at')">Data</th>
@@ -503,6 +534,7 @@ td{padding:12px 14px;font-size:13px;vertical-align:middle;}
     </div>
     <div class="detail-section">
       <div class="detail-section-title">Informações de Contato</div>
+      <div class="detail-row"><span class="detail-row-label">Loja</span><span class="detail-row-val" id="detailLoja">—</span></div>
       <div class="detail-row"><span class="detail-row-label">Telefone</span><a class="detail-link" id="detailTelLink" href="#" target="_blank"></a></div>
       <div class="detail-row"><span class="detail-row-label">E-mail</span><span class="detail-row-val" id="detailEmail">—</span></div>
       <div class="detail-row"><span class="detail-row-label">Cidade</span><span class="detail-row-val" id="detailCidade">—</span></div>
@@ -520,6 +552,10 @@ td{padding:12px 14px;font-size:13px;vertical-align:middle;}
     </div>
     <div class="detail-section">
       <div class="detail-section-title">Gestão</div>
+      <div style="margin-bottom:8px;font-size:11px;color:var(--muted);">Loja responsável</div>
+      <select class="detail-vendor-sel" id="detailLojaSel" onchange="updateLoja()" style="margin-bottom:12px;">
+        <option value="">— Sem loja —</option>
+      </select>
       <div style="margin-bottom:8px;font-size:11px;color:var(--muted);">Status</div>
       <select class="detail-status-sel" id="detailStatusSel" onchange="updateStatus()">
         <option value="novo">🆕 Novo</option>
@@ -540,6 +576,18 @@ td{padding:12px 14px;font-size:13px;vertical-align:middle;}
       <textarea class="notes-area" id="newNoteInp" placeholder="Registrar contato, observação..." rows="3"></textarea>
       <button class="btn-primary" style="width:100%;margin-top:8px;justify-content:center;" onclick="addNote()">💾 Salvar Anotação</button>
     </div>
+    <div class="detail-section">
+      <div class="detail-section-title">💬 Conversa / Histórico</div>
+      <div class="conv-dir-toggle">
+        <button class="conv-dir-btn active" id="convDirOut" onclick="setConvDir('out')">↗ Eu enviei</button>
+        <button class="conv-dir-btn" id="convDirIn" onclick="setConvDir('in')">↙ Cliente enviou</button>
+      </div>
+      <div class="conv-messages" id="convMessages"><div class="conv-empty">Nenhuma mensagem ainda.<br>Registre o histórico da conversa.</div></div>
+      <div class="conv-input-row">
+        <input class="search-inp" id="convInput" placeholder="Registrar mensagem..." onkeydown="if(event.key==='Enter')addConvMsg()" style="background:var(--bg);">
+        <button class="btn-primary" onclick="addConvMsg()" style="padding:8px 14px;">Enviar</button>
+      </div>
+    </div>
     <div class="detail-actions">
       <button class="btn-wapp-detail" onclick="openWappFromDetail()">
         <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.122.554 4.118 1.52 5.854L0 24l6.335-1.498A11.94 11.94 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.808 9.808 0 01-5.034-1.387l-.361-.214-3.741.884.939-3.658-.235-.374A9.808 9.808 0 012.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/></svg>
@@ -556,6 +604,12 @@ td{padding:12px 14px;font-size:13px;vertical-align:middle;}
 <div class="confirm-overlay" id="newLeadOverlay" onclick="if(event.target===this)closeNewLead()">
   <div class="confirm-box" style="max-width:480px;text-align:left;">
     <h4 style="margin-bottom:16px;">✏️ Novo Lead Manual</h4>
+    <div style="margin-bottom:12px;">
+      <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;">Loja responsável</div>
+      <select class="filter-sel" id="nlLoja" style="width:100%;">
+        <option value="">— Selecione a loja —</option>
+      </select>
+    </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
       <div>
         <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;">Nome *</div>
@@ -616,11 +670,13 @@ const SB_URL    = 'https://gzzclbxnohokttujvaqa.supabase.co';
 const SB_KEY    = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd6emNsYnhub2hva3R0dWp2YXFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4Njc0NDUsImV4cCI6MjA4OTQ0MzQ0NX0.6XPR0m90k6qd66rLeatapLQ8jZYMn-V1lB9h2YT34hc';
 const CRM_PASS  = '1234';
 const LEADS_TABLE   = 'crm_leads';
-const VENDORS_TABLE = 'obras_vendors_list'; // reusa vendedores do sistema
+const VENDORS_TABLE = 'obras_vendors_list';
+const LOJAS_TABLE   = 'alliance_lojas';
 
 // ── STATE ─────────────────────────────────────────────────────
 let leads         = [];
 let vendors       = [];
+let lojas         = [];
 let _filterStatus = 'todos';
 let _filterOrigem = '';
 let _viewMode     = 'kanban';
@@ -628,6 +684,7 @@ let _sortField    = 'created_at';
 let _sortDir      = 'desc';
 let _selectedLead = null;
 let _deleteId     = null;
+let _convDir      = 'out'; // 'out' = eu enviei, 'in' = cliente
 
 // ── AUTH ─────────────────────────────────────────────────────
 function checkLockPw() {
@@ -646,7 +703,7 @@ init();
 
 // ── INIT ─────────────────────────────────────────────────────
 async function init() {
-  await Promise.all([loadLeads(), loadVendors()]);
+  await Promise.all([loadLeads(), loadVendors(), loadLojas()]);
   renderSidebarCounts();
   renderLeads();
   renderHeaderStats();
@@ -700,7 +757,31 @@ function populateVendorSelects() {
     vendors.map(v => `<option value="${esc(v)}">${esc(v)}</option>`).join('');
 }
 
-// ── HELPERS ──────────────────────────────────────────────────
+async function loadLojas() {
+  try {
+    const r = await sbFetch('GET', `${SB_URL}/rest/v1/${LOJAS_TABLE}?ativo=eq.true&order=nome.asc`);
+    if (r.ok) { lojas = await r.json(); if (!Array.isArray(lojas)) lojas = []; }
+  } catch(e) { lojas = []; }
+  populateLojaSelects();
+}
+
+function populateLojaSelects() {
+  const opts = lojas.map(l => `<option value="${esc(l.id)}">${esc(l.nome)} (${esc(l.cidade)})</option>`).join('');
+  // toolbar filter
+  document.getElementById('lojaFilter').innerHTML = '<option value="">Todas as lojas</option>' + opts;
+  // modal novo lead
+  document.getElementById('nlLoja').innerHTML = '<option value="">— Selecione a loja —</option>' + opts;
+  // detail panel
+  document.getElementById('detailLojaSel').innerHTML = '<option value="">— Sem loja —</option>' + opts;
+}
+
+function lojaLabel(loja_id) {
+  if (!loja_id) return '—';
+  const l = lojas.find(x => x.id === loja_id);
+  return l ? `${l.nome}` : loja_id;
+}
+
+
 function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function fmtDate(s) {
   if (!s) return '—';
@@ -760,6 +841,7 @@ function setView(mode, el) {
 function filterLeads() {
   const q = (document.getElementById('searchInp').value||'').toLowerCase();
   const vendor = document.getElementById('vendorFilter').value;
+  const loja   = document.getElementById('lojaFilter').value;
   const period = parseInt(document.getElementById('periodFilter').value)||0;
   const cutoff = period ? new Date(Date.now() - period*86400000) : null;
 
@@ -767,9 +849,10 @@ function filterLeads() {
     if (_filterStatus !== 'todos' && l.status !== _filterStatus) return false;
     if (_filterOrigem && l.origem !== _filterOrigem) return false;
     if (vendor && l.vendedor !== vendor) return false;
+    if (loja   && l.loja_id  !== loja)   return false;
     if (cutoff && l.created_at && new Date(l.created_at) < cutoff) return false;
     if (q) {
-      const hay = [l.nome,l.telefone,l.cidade,l.email,l.interesse,l.vendedor].join(' ').toLowerCase();
+      const hay = [l.nome,l.telefone,l.cidade,l.email,l.interesse,l.vendedor,lojaLabel(l.loja_id)].join(' ').toLowerCase();
       if (!hay.includes(q)) return false;
     }
     return true;
@@ -815,6 +898,7 @@ function renderList(list) {
       <td><a href="https://wa.me/${(l.telefone||'').replace(/\D/g,'')}" target="_blank" onclick="event.stopPropagation()" style="color:var(--accent);text-decoration:none;">${esc(l.telefone||'—')}</a></td>
       <td class="td-cidade">${esc(l.cidade||'—')}</td>
       <td style="font-size:12px;color:var(--muted);">${esc(l.interesse||'—')}${l.area_m2?`<br><span style="font-size:11px;">${esc(l.area_m2)}</span>`:''}</td>
+      <td>${l.loja_id ? `<span class="loja-tag">${esc(lojaLabel(l.loja_id))}</span>` : '<span style="color:var(--muted);font-size:11px;">—</span>'}</td>
       <td style="font-size:12px;color:var(--muted);">${esc(l.vendedor||'—')}</td>
       <td>${statusBadge(l.status)}</td>
       <td class="td-date">${fmtDate(l.created_at)}</td>
@@ -851,6 +935,7 @@ function renderKanban(list) {
         <div class="kanban-card" onclick="openDetail('${l.id}')">
           <div class="kanban-card-name">${esc(l.nome||'—')}</div>
           <div class="kanban-card-city">📍 ${esc(l.cidade||'—')}</div>
+          ${l.loja_id   ? `<div class="kanban-card-interest" style="color:var(--accent);font-size:11px;">🏪 ${esc(lojaLabel(l.loja_id))}</div>` : ''}
           ${l.interesse ? `<div class="kanban-card-interest">🏠 ${esc(l.interesse)}</div>` : ''}
           ${l.vendedor  ? `<div class="kanban-card-interest">👤 ${esc(l.vendedor)}</div>` : ''}
           <div class="kanban-card-date">${fmtDate(l.created_at)}</div>
@@ -889,6 +974,8 @@ function openDetail(id) {
 
   document.getElementById('detailName').textContent = l.nome || '—';
   document.getElementById('detailStatusBadge').innerHTML = statusBadge(l.status||'novo');
+  document.getElementById('detailLoja').textContent = lojaLabel(l.loja_id);
+  document.getElementById('detailLojaSel').value    = l.loja_id || '';
   const tel = (l.telefone||'').replace(/\D/g,'');
   document.getElementById('detailTelLink').textContent = l.telefone||'—';
   document.getElementById('detailTelLink').href = tel ? `https://wa.me/55${tel}` : '#';
@@ -909,6 +996,12 @@ function openDetail(id) {
   // Notes
   renderNotes(l);
   document.getElementById('newNoteInp').value = '';
+  // Conversa
+  _convDir = 'out';
+  document.getElementById('convDirOut').classList.add('active');
+  document.getElementById('convDirIn').classList.remove('active');
+  renderConv(l);
+  document.getElementById('convInput').value = '';
   document.getElementById('detailPanel').classList.add('open');
 }
 
@@ -928,7 +1021,52 @@ function renderNotes(l) {
     </div>`).join('');
 }
 
-async function updateStatus() {
+async function updateLoja() {
+  if (!_selectedLead) return;
+  const loja_id = document.getElementById('detailLojaSel').value;
+  _selectedLead.loja_id = loja_id;
+  document.getElementById('detailLoja').textContent = lojaLabel(loja_id);
+  await patchLead(_selectedLead.id, { loja_id: loja_id || null });
+  renderLeads();
+  toast('✓ Loja atualizada');
+}
+
+// ── CONVERSA ─────────────────────────────────────────────────
+function setConvDir(dir) {
+  _convDir = dir;
+  document.getElementById('convDirOut').classList.toggle('active', dir==='out');
+  document.getElementById('convDirIn').classList.toggle('active', dir==='in');
+}
+
+function renderConv(l) {
+  const msgs = Array.isArray(l.conversa) ? l.conversa : [];
+  const el = document.getElementById('convMessages');
+  if (!msgs.length) {
+    el.innerHTML = '<div class="conv-empty">Nenhuma mensagem ainda.<br>Registre o histórico da conversa.</div>';
+    return;
+  }
+  el.innerHTML = msgs.map(m => `
+    <div class="conv-msg conv-msg-${m.dir||'out'}">
+      <div class="conv-msg-dir">${m.dir==='in' ? '↙ Cliente' : '↗ Você'}</div>
+      <div>${esc(m.texto)}</div>
+      <div class="conv-msg-meta">${m.data||''}</div>
+    </div>`).join('');
+  el.scrollTop = el.scrollHeight;
+}
+
+async function addConvMsg() {
+  if (!_selectedLead) return;
+  const texto = document.getElementById('convInput').value.trim();
+  if (!texto) return;
+  const conversa = Array.isArray(_selectedLead.conversa) ? [..._selectedLead.conversa] : [];
+  conversa.push({ texto, dir: _convDir, data: new Date().toLocaleString('pt-BR') });
+  _selectedLead.conversa = conversa;
+  await patchLead(_selectedLead.id, { conversa });
+  renderConv(_selectedLead);
+  document.getElementById('convInput').value = '';
+}
+
+
   if (!_selectedLead) return;
   const newStatus = document.getElementById('detailStatusSel').value;
   _selectedLead.status = newStatus;
@@ -1018,6 +1156,7 @@ async function saveNewLead() {
     cidade:    document.getElementById('nlCidade').value.trim(),
     interesse: document.getElementById('nlInteresse').value,
     mensagem:  document.getElementById('nlObs').value.trim(),
+    loja_id:   document.getElementById('nlLoja').value || null,
     origem:    'manual',
     status:    'novo',
     created_at: new Date().toISOString()
@@ -1032,6 +1171,7 @@ async function saveNewLead() {
       toast('✓ Lead criado!');
       ['nlNome','nlTel','nlEmail','nlCidade','nlObs'].forEach(id => document.getElementById(id).value='');
       document.getElementById('nlInteresse').value='';
+      document.getElementById('nlLoja').value='';
     }
   } catch(e) { toast('Erro ao criar lead', 'err'); }
 }
