@@ -636,21 +636,73 @@ td{padding:12px 14px;font-size:13px;vertical-align:middle;}
       <button class="detail-close" onclick="closeDetail()">×</button>
     </div>
     <div class="detail-section">
-      <div class="detail-section-title">Informações de Contato</div>
+      <div class="detail-section-title" style="display:flex;justify-content:space-between;align-items:center;">
+        Informações de Contato
+        <button class="btn-icon" onclick="saveContactInfo()" style="font-size:11px;padding:3px 10px;border-color:rgba(48,142,238,.4);color:var(--accent);">💾 Salvar</button>
+      </div>
       <div class="detail-row"><span class="detail-row-label">Loja</span><span class="detail-row-val" id="detailLoja">—</span></div>
       <div class="detail-row"><span class="detail-row-label">Telefone</span><a class="detail-link" id="detailTelLink" href="#" target="_blank"></a></div>
-      <div class="detail-row"><span class="detail-row-label">E-mail</span><span class="detail-row-val" id="detailEmail">—</span></div>
-      <div class="detail-row"><span class="detail-row-label">Cidade</span><span class="detail-row-val" id="detailCidade">—</span></div>
+      <div style="margin-bottom:8px;">
+        <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Nome</div>
+        <input class="search-inp" id="editNome" style="width:100%;background:var(--bg);" placeholder="Nome completo">
+      </div>
+      <div style="margin-bottom:8px;">
+        <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Telefone</div>
+        <input class="search-inp" id="editTelefone" style="width:100%;background:var(--bg);" placeholder="(47) 99999-9999">
+      </div>
+      <div style="margin-bottom:8px;">
+        <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">E-mail</div>
+        <input class="search-inp" id="editEmail" style="width:100%;background:var(--bg);" placeholder="email@exemplo.com">
+      </div>
+      <div style="margin-bottom:4px;">
+        <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Cidade</div>
+        <input class="search-inp" id="editCidade" style="width:100%;background:var(--bg);" placeholder="Cidade">
+      </div>
     </div>
     <div class="detail-section">
-      <div class="detail-section-title">Interesse</div>
-      <div class="detail-row"><span class="detail-row-label">Tipo</span><span class="detail-row-val" id="detailInteresse">—</span></div>
-      <div class="detail-row"><span class="detail-row-label">Metragem</span><span class="detail-row-val" id="detailArea">—</span></div>
-      <div class="detail-row"><span class="detail-row-label">Origem</span><span class="detail-row-val" id="detailOrigem">—</span></div>
-      <div class="detail-row"><span class="detail-row-label">Data</span><span class="detail-row-val" id="detailData">—</span></div>
-      <div id="detailMsgWrap" class="detail-row" style="flex-direction:column;align-items:flex-start;gap:6px;display:none;">
-        <span class="detail-row-label">Mensagem</span>
-        <span class="detail-row-val" id="detailMsg" style="text-align:left;max-width:100%;white-space:pre-wrap;font-size:12px;"></span>
+      <div class="detail-section-title" style="display:flex;justify-content:space-between;align-items:center;">
+        Interesse
+        <button class="btn-icon" onclick="saveInterestInfo()" style="font-size:11px;padding:3px 10px;border-color:rgba(48,142,238,.4);color:var(--accent);">💾 Salvar</button>
+      </div>
+      <div style="margin-bottom:8px;">
+        <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Tipo</div>
+        <select class="filter-sel" id="editInteresse" style="width:100%;background:var(--bg);">
+          <option value="">— Selecione —</option>
+          <option>Casa de campo / sítio</option>
+          <option>Residência principal</option>
+          <option>Casa de praia</option>
+          <option>Casa para locação</option>
+          <option>Outro</option>
+        </select>
+      </div>
+      <div style="margin-bottom:8px;">
+        <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Metragem</div>
+        <select class="filter-sel" id="editArea" style="width:100%;background:var(--bg);">
+          <option value="">— Selecione —</option>
+          <option>Até 50 m²</option>
+          <option>50 a 80 m²</option>
+          <option>80 a 120 m²</option>
+          <option>Acima de 120 m²</option>
+        </select>
+      </div>
+      <div style="margin-bottom:8px;">
+        <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Origem</div>
+        <select class="filter-sel" id="editOrigem" style="width:100%;background:var(--bg);">
+          <option value="">— Selecione —</option>
+          <option value="landing_page">Landing Page</option>
+          <option value="whatsapp">WhatsApp</option>
+          <option value="indicacao">Indicação</option>
+          <option value="instagram">Instagram</option>
+          <option value="manual">Manual</option>
+        </select>
+      </div>
+      <div style="margin-bottom:4px;">
+        <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Data</div>
+        <span class="detail-row-val" id="detailData" style="font-size:12px;color:var(--muted);">—</span>
+      </div>
+      <div id="detailMsgWrap" style="flex-direction:column;align-items:flex-start;gap:6px;display:none;margin-top:8px;">
+        <span style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;">Mensagem original</span>
+        <span id="detailMsg" style="text-align:left;max-width:100%;white-space:pre-wrap;font-size:12px;color:var(--muted);"></span>
       </div>
     </div>
     <div class="detail-section">
@@ -1242,12 +1294,18 @@ function openDetail(id) {
   const tel = (l.telefone||'').replace(/\D/g,'');
   document.getElementById('detailTelLink').textContent = l.telefone||'—';
   document.getElementById('detailTelLink').href = tel ? `https://wa.me/55${tel}` : '#';
-  document.getElementById('detailEmail').textContent   = l.email      ||'—';
-  document.getElementById('detailCidade').textContent  = l.cidade     ||'—';
-  document.getElementById('detailInteresse').textContent = l.interesse ||'—';
-  document.getElementById('detailArea').textContent    = l.area_m2    ||'—';
-  document.getElementById('detailOrigem').textContent  = l.origem     ||'—';
-  document.getElementById('detailData').textContent    = fmtDate(l.created_at);
+
+  // Campos editáveis — contato
+  document.getElementById('editNome').value     = l.nome     || '';
+  document.getElementById('editTelefone').value = l.telefone || '';
+  document.getElementById('editEmail').value    = l.email    || '';
+  document.getElementById('editCidade').value   = l.cidade   || '';
+
+  // Campos editáveis — interesse
+  document.getElementById('editInteresse').value = l.interesse || '';
+  document.getElementById('editArea').value      = l.area_m2   || '';
+  document.getElementById('editOrigem').value    = l.origem    || '';
+  document.getElementById('detailData').textContent = fmtDate(l.created_at);
 
   const msgWrap = document.getElementById('detailMsgWrap');
   if (l.mensagem) { document.getElementById('detailMsg').textContent = l.mensagem; msgWrap.style.display='flex'; }
@@ -1264,6 +1322,35 @@ function openDetail(id) {
   document.getElementById('convInput').value = '';
   loadConversation(l);
   document.getElementById('detailPanel').classList.add('open');
+}
+
+async function saveContactInfo() {
+  if (!_selectedLead) return;
+  const nome     = document.getElementById('editNome').value.trim();
+  const telefone = document.getElementById('editTelefone').value.trim();
+  const email    = document.getElementById('editEmail').value.trim();
+  const cidade   = document.getElementById('editCidade').value.trim();
+  const updates  = { nome, telefone, email, cidade };
+  Object.assign(_selectedLead, updates);
+  document.getElementById('detailName').textContent = nome || '—';
+  const tel = telefone.replace(/\D/g,'');
+  document.getElementById('detailTelLink').textContent = telefone || '—';
+  document.getElementById('detailTelLink').href = tel ? `https://wa.me/55${tel}` : '#';
+  await patchLead(_selectedLead.id, updates);
+  renderLeads();
+  toast('✓ Contato atualizado');
+}
+
+async function saveInterestInfo() {
+  if (!_selectedLead) return;
+  const interesse = document.getElementById('editInteresse').value;
+  const area_m2   = document.getElementById('editArea').value;
+  const origem    = document.getElementById('editOrigem').value;
+  const updates   = { interesse, area_m2, origem };
+  Object.assign(_selectedLead, updates);
+  await patchLead(_selectedLead.id, updates);
+  renderLeads();
+  toast('✓ Interesse atualizado');
 }
 
 function closeDetail() {
