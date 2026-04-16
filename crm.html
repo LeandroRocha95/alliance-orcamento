@@ -699,6 +699,8 @@ function checkLockPw() {
   }
 }
 document.getElementById('lockPwInp').addEventListener('keydown', e => { if(e.key==='Enter') checkLockPw(); });
+
+// Chama init direto (lock screen está hidden por padrão no HTML original)
 init();
 
 // ── INIT ─────────────────────────────────────────────────────
@@ -759,20 +761,23 @@ function populateVendorSelects() {
 
 async function loadLojas() {
   try {
-    const r = await sbFetch('GET', `${SB_URL}/rest/v1/${LOJAS_TABLE}?ativo=eq.true&order=nome.asc`);
-    if (r.ok) { lojas = await r.json(); if (!Array.isArray(lojas)) lojas = []; }
+    const r = await sbFetch('GET', `${SB_URL}/rest/v1/${LOJAS_TABLE}?order=nome.asc`);
+    if (r.ok) {
+      const data = await r.json();
+      lojas = Array.isArray(data) ? data.filter(l => l.ativo !== false) : [];
+    }
   } catch(e) { lojas = []; }
   populateLojaSelects();
 }
 
 function populateLojaSelects() {
   const opts = lojas.map(l => `<option value="${esc(l.id)}">${esc(l.nome)} (${esc(l.cidade)})</option>`).join('');
-  // toolbar filter
-  document.getElementById('lojaFilter').innerHTML = '<option value="">Todas as lojas</option>' + opts;
-  // modal novo lead
-  document.getElementById('nlLoja').innerHTML = '<option value="">— Selecione a loja —</option>' + opts;
-  // detail panel
-  document.getElementById('detailLojaSel').innerHTML = '<option value="">— Sem loja —</option>' + opts;
+  const elFilter = document.getElementById('lojaFilter');
+  const elNl     = document.getElementById('nlLoja');
+  const elDetail = document.getElementById('detailLojaSel');
+  if (elFilter) elFilter.innerHTML = '<option value="">Todas as lojas</option>' + opts;
+  if (elNl)     elNl.innerHTML     = '<option value="">— Selecione a loja —</option>' + opts;
+  if (elDetail) elDetail.innerHTML = '<option value="">— Sem loja —</option>' + opts;
 }
 
 function lojaLabel(loja_id) {
