@@ -742,6 +742,24 @@
     </div>
   </div>
 
+  <!-- Acréscimo aprovado: histórico 6 meses + por vendedor -->
+  <div class="dash-card" style="margin-bottom:14px;background:linear-gradient(135deg,rgba(46,204,113,0.06),rgba(46,204,113,0.01));border-color:rgba(46,204,113,0.25);">
+    <div class="dash-card-title" style="color:#2ecc71;">
+      💰 Margem de Acréscimo Aprovado
+      <span id="dashAcrescimoSub" style="font-size:10px;color:var(--muted);font-weight:600;text-transform:none;letter-spacing:0;"></span>
+    </div>
+    <div class="dash-row" style="margin:0;">
+      <div>
+        <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-weight:700;margin-bottom:6px;">Histórico (últimos 6 meses)</div>
+        <div id="dashAcrescimoHist"></div>
+      </div>
+      <div>
+        <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-weight:700;margin-bottom:6px;">Por Vendedor (período)</div>
+        <div id="dashAcrescimoVendedor"></div>
+      </div>
+    </div>
+  </div>
+
   <!-- Atividade diária + Madeira -->
   <div class="dash-row" style="margin-bottom:14px;">
     <div class="dash-card">
@@ -2821,12 +2839,28 @@ function _buildDash(allData) {
   var volAprov  = data.filter(function(e){ return e.status==='aprovado'; })
                     .reduce(function(a,e){ return a+_parseMoney(e.total);},0);
 
+  // ── ACRÉSCIMO APROVADO DO MÊS CORRENTE (sempre mês atual, ignora filtro) ─
+  var hoje = new Date();
+  var mesAtualKey = hoje.getFullYear() + '-' + String(hoje.getMonth()+1).padStart(2,'0');
+  var acrescimoMesAtual = (allData||[]).reduce(function(acc, e){
+    if (e.status !== 'aprovado') return acc;
+    if (!e.saved_at) return acc;
+    var parts = e.saved_at.split(/[\/,\s:]+/);
+    if (parts.length < 3) return acc;
+    var key = parts[2] + '-' + String(parts[1]).padStart(2,'0');
+    if (key !== mesAtualKey) return acc;
+    return acc + _parseMoney(e.acrescimo_val);
+  }, 0);
+  var nomeMes = hoje.toLocaleDateString('pt-BR',{month:'long'});
+  nomeMes = nomeMes.charAt(0).toUpperCase() + nomeMes.slice(1);
+
   // ── KPIs ──────────────────────────────────────────────────────
   document.getElementById('dashKpis').innerHTML =
     _kpi('Total de Orçamentos', total,                '',                         '📋') +
     _kpi('Volume Total',        'R$ '+_fmt(totalVal), '',                          '💰') +
     _kpi('Volume Aprovado',     'R$ '+_fmt(volAprov), taxaAp+'% de aprovação',    '✅') +
     _kpi('Ticket Médio Aprov.', 'R$ '+_fmt(ticketMed),'por orçamento aprovado',   '🎯') +
+    _kpiAcrescimo('Acréscimo Aprovado', 'R$ '+_fmt(acrescimoMesAtual), nomeMes+' (mês atual)') +
     (_isAdmin ? _kpi('Vendedores Ativos', _countUniq(data,'vendor'), 'no período', '👥') : '') +
     _kpi('Em Negociação',       negoc, '',                                         '💬');
 
@@ -2898,6 +2932,15 @@ function _buildDash(allData) {
   // ── EVOLUÇÃO MENSAL ────────────────────────────────────────────
   _renderMensal('dashMensal', allData); // usa todos os dados, não filtrado por período
 
+  // ── ACRÉSCIMO APROVADO: HISTÓRICO + POR VENDEDOR ───────────────
+  _renderAcrescimoHist('dashAcrescimoHist', allData);
+  _renderAcrescimoVendedor('dashAcrescimoVendedor', data);
+  var acSubEl = document.getElementById('dashAcrescimoSub');
+  if (acSubEl) {
+    var periodoTxt = _dashPeriod ? ('últimos '+_dashPeriod+' dias') : 'todo o histórico';
+    acSubEl.textContent = 'Quebra por vendedor: '+periodoTxt;
+  }
+
   // ── ATIVIDADE DIÁRIA ───────────────────────────────────────────
   _renderSparkline('dashSparkline', data);
 
@@ -2946,6 +2989,89 @@ function _kpi(label, val, sub, icon) {
     '<div class="dash-kpi-val">' + val + '</div>' +
     (sub ? '<div class="dash-kpi-sub">' + sub + '</div>' : '') +
     '</div>';
+}
+
+// KPI destacado em verde — usado para acréscimo aprovado
+function _kpiAcrescimo(label, val, sub) {
+  return '<div class="dash-kpi" style="background:linear-gradient(135deg,rgba(46,204,113,0.12),rgba(46,204,113,0.03));border-color:rgba(46,204,113,0.35);">' +
+    '<div class="dash-kpi-icon" style="opacity:.4;">💰</div>' +
+    '<div class="dash-kpi-label" style="color:#2ecc71;">' + label + '</div>' +
+    '<div class="dash-kpi-val" style="color:#2ecc71;">' + val + '</div>' +
+    (sub ? '<div class="dash-kpi-sub">' + sub + '</div>' : '') +
+    '</div>';
+}
+
+// Histórico de acréscimo aprovado — últimos 6 meses (soma R$ por mês)
+function _renderAcrescimoHist(elId, allData) {
+  var el = document.getElementById(elId);
+  if (!el) return;
+  var months = {};
+  var today = new Date();
+  var monthLabels = [];
+  for (var i = 5; i >= 0; i--) {
+    var d = new Date(today.getFullYear(), today.getMonth() - i, 1);
+    var key = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
+    var label = d.toLocaleDateString('pt-BR', { month:'short' }).replace('.','');
+    months[key] = 0;
+    monthLabels.push({ key: key, label: label });
+  }
+  (allData||[]).forEach(function(e){
+    if (e.status !== 'aprovado') return;
+    if (!e.saved_at) return;
+    var parts = e.saved_at.split(/[\/,\s:]+/);
+    if (parts.length < 3) return;
+    var key = parts[2] + '-' + String(parts[1]).padStart(2,'0');
+    if (key in months) months[key] += _parseMoney(e.acrescimo_val);
+  });
+  var vals = monthLabels.map(function(m){ return months[m.key]; });
+  var maxV = Math.max.apply(null, vals) || 1;
+  var mesAtualKey = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0');
+  var totalPeriodo = vals.reduce(function(a,b){ return a+b; }, 0);
+  if (totalPeriodo === 0) {
+    el.innerHTML = '<div class="dash-empty" style="padding:20px 0;font-size:12px;">Nenhum acréscimo aprovado nos últimos 6 meses</div>';
+    return;
+  }
+  el.innerHTML = monthLabels.map(function(m, i){
+    var pct = maxV ? Math.round(vals[i]/maxV*100) : 0;
+    var isCurrent = m.key === mesAtualKey;
+    var valTxt = vals[i] > 0 ? 'R$ '+_fmt(vals[i]) : '—';
+    return '<div class="dash-bar-row">' +
+      '<div class="dash-bar-label" style="width:48px;text-transform:capitalize;' + (isCurrent ? 'color:#2ecc71;font-weight:700;' : '') + '">' +
+        m.label + (isCurrent ? ' •' : '') +
+      '</div>' +
+      '<div class="dash-bar-track"><div class="dash-bar-fill green" style="width:' + pct + '%"></div></div>' +
+      '<div class="dash-bar-val" style="width:90px;' + (isCurrent ? 'color:#2ecc71;font-weight:700;' : '') + '">' + valTxt + '</div>' +
+    '</div>';
+  }).join('');
+}
+
+// Acréscimo aprovado por vendedor no período selecionado
+function _renderAcrescimoVendedor(elId, data) {
+  var el = document.getElementById(elId);
+  if (!el) return;
+  var map = {};
+  (data||[]).forEach(function(e){
+    if (e.status !== 'aprovado') return;
+    var v = e.vendor || '—';
+    map[v] = (map[v]||0) + _parseMoney(e.acrescimo_val);
+  });
+  var items = Object.keys(map)
+    .filter(function(k){ return map[k] > 0; })
+    .sort(function(a,b){ return map[b]-map[a]; })
+    .map(function(k){ return { label: k, val: map[k] }; });
+  if (!items.length) {
+    el.innerHTML = '<div class="dash-empty" style="padding:20px 0;font-size:12px;">Nenhum vendedor com acréscimo aprovado no período</div>';
+    return;
+  }
+  var max = Math.max.apply(null, items.map(function(i){ return i.val; }));
+  el.innerHTML = items.map(function(item){
+    var pct = max ? Math.round(item.val/max*100) : 0;
+    return '<div class="dash-bar-row">' +
+      '<div class="dash-bar-label" title="' + escHtml(item.label) + '">' + escHtml(item.label) + '</div>' +
+      '<div class="dash-bar-track"><div class="dash-bar-fill green" style="width:' + pct + '%"></div></div>' +
+      '<div class="dash-bar-val" style="width:90px;color:#2ecc71;font-weight:600;">R$ ' + _fmt(item.val) + '</div>' +
+    '</div>';
+  }).join('');
 }
 
 function _fmt(n) {
