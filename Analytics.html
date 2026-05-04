@@ -113,6 +113,29 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .popup-c-row{display:flex;justify-content:space-between;gap:14px;font-size:11px;color:var(--muted);margin-bottom:2px;}
 .popup-c-val{font-weight:700;color:var(--text);}
 .updated{font-size:10px;color:var(--muted);text-align:right;margin-top:10px;opacity:.6;}
+
+/* Dispositivos */
+.dev-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.04);}
+.dev-row:last-child{border-bottom:none;}
+.dev-icone{font-size:22px;flex-shrink:0;width:32px;text-align:center;}
+.dev-info{flex:1;min-width:0;}
+.dev-nome{font-size:12px;font-weight:700;margin-bottom:5px;}
+.dev-bar{height:5px;background:var(--surface2);border-radius:4px;overflow:hidden;}
+.dev-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent2),var(--accent));border-radius:4px;}
+.dev-stats{display:flex;flex-direction:column;align-items:flex-end;flex-shrink:0;min-width:54px;}
+.dev-pct{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;color:var(--accent);line-height:1;}
+.dev-num{font-size:10px;color:var(--muted);margin-top:2px;}
+
+/* Origens de tráfego */
+.origem-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.04);}
+.origem-row:last-child{border-bottom:none;}
+.origem-icone{font-size:18px;flex-shrink:0;width:30px;height:30px;display:flex;align-items:center;justify-content:center;border-radius:8px;background:var(--surface2);}
+.origem-info{flex:1;min-width:0;}
+.origem-nome{font-size:12px;font-weight:700;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.origem-meio{font-size:10px;color:var(--muted);}
+.origem-stats{display:flex;flex-direction:column;align-items:flex-end;flex-shrink:0;min-width:54px;}
+.origem-pct{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;color:var(--purple);line-height:1;}
+.origem-num{font-size:10px;color:var(--muted);margin-top:2px;}
 </style>
 </head>
 <body>
@@ -223,6 +246,28 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
         <div class="dot"></div>
       </div>
       <div class="panel-body" id="cidades-agora">
+        <div style="font-size:12px;color:var(--muted);padding:20px 0;text-align:center;">Carregando...</div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="panels" style="margin-top:14px;">
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">📱 Dispositivos</div>
+        <span class="panel-period" id="period-dispositivos">7 dias</span>
+      </div>
+      <div class="panel-body" id="dispositivos-list">
+        <div style="font-size:12px;color:var(--muted);padding:20px 0;text-align:center;">Carregando...</div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">🌐 Origem do tráfego</div>
+        <span class="panel-period" id="period-origens">7 dias</span>
+      </div>
+      <div class="panel-body" id="origens-list">
         <div style="font-size:12px;color:var(--muted);padding:20px 0;text-align:center;">Carregando...</div>
       </div>
     </div>
@@ -434,6 +479,94 @@ function carregar() {
         } else {
           aEl.innerHTML = '<div style="font-size:12px;color:var(--muted);padding:20px 0;text-align:center;">Ninguém online no momento</div>';
         }
+      }
+
+      // ── Dispositivos ──────────────────────────────────────────
+      var pDev = document.getElementById('period-dispositivos');
+      if (pDev) pDev.textContent = _periodoLabel;
+
+      var dEl = document.getElementById('dispositivos-list');
+      if (dEl && d.dispositivos && d.dispositivos.length) {
+        var totalDev = d.dispositivos.reduce(function(s,x){ return s + (x.usuarios||0); }, 0) || 1;
+        var ICONES_DEV = { mobile:'📱', desktop:'💻', tablet:'📲', smart_tv:'📺' };
+        var NOMES_DEV  = { mobile:'Mobile', desktop:'Desktop', tablet:'Tablet', smart_tv:'Smart TV' };
+        dEl.innerHTML = d.dispositivos.map(function(x) {
+          var pct = Math.round((x.usuarios||0) / totalDev * 100);
+          var key = (x.dispositivo||'').toLowerCase();
+          var icone = ICONES_DEV[key] || '📟';
+          var nome  = NOMES_DEV[key] || (x.dispositivo || 'Outro');
+          return '<div class="dev-row">'
+            + '<div class="dev-icone">' + icone + '</div>'
+            + '<div class="dev-info">'
+            + '<div class="dev-nome">' + nome + '</div>'
+            + '<div class="dev-bar"><div class="dev-bar-fill" style="width:' + pct + '%;"></div></div>'
+            + '</div>'
+            + '<div class="dev-stats">'
+            + '<div class="dev-pct">' + pct + '%</div>'
+            + '<div class="dev-num">' + x.usuarios + ' usuário' + (x.usuarios!==1?'s':'') + '</div>'
+            + '</div>'
+            + '</div>';
+        }).join('');
+      } else if (dEl) {
+        dEl.innerHTML = '<div style="font-size:12px;color:var(--muted);padding:20px 0;text-align:center;">Aguardando dados...</div>';
+      }
+
+      // ── Origem do tráfego ─────────────────────────────────────
+      var pOri = document.getElementById('period-origens');
+      if (pOri) pOri.textContent = _periodoLabel;
+
+      var oEl = document.getElementById('origens-list');
+      if (oEl && d.origens && d.origens.length) {
+        var totalOri = d.origens.reduce(function(s,x){ return s + (x.usuarios||0); }, 0) || 1;
+
+        // Mapeia source/medium para nome bonito + ícone
+        function classificarOrigem(source, medium) {
+          var s = (source||'').toLowerCase();
+          var m = (medium||'').toLowerCase();
+          if (s.indexOf('instagram') >= 0 || s === 'ig' || s === 'l.instagram.com')
+            return { icone:'📷', nome:'Instagram', meio:'Rede social' };
+          if (s.indexOf('facebook') >= 0 || s === 'fb' || s === 'l.facebook.com' || s === 'm.facebook.com')
+            return { icone:'📘', nome:'Facebook', meio:'Rede social' };
+          if (s.indexOf('whatsapp') >= 0 || s === 'wa' || s.indexOf('wa.me') >= 0)
+            return { icone:'💬', nome:'WhatsApp', meio:'Mensagem' };
+          if (s.indexOf('google') >= 0 && (m === 'organic' || m === ''))
+            return { icone:'🔍', nome:'Google', meio:'Busca orgânica' };
+          if (s.indexOf('google') >= 0 && (m === 'cpc' || m === 'paid'))
+            return { icone:'💰', nome:'Google Ads', meio:'Tráfego pago' };
+          if (s.indexOf('bing') >= 0)
+            return { icone:'🔍', nome:'Bing', meio:'Busca orgânica' };
+          if (s.indexOf('youtube') >= 0)
+            return { icone:'▶️', nome:'YouTube', meio:'Vídeo' };
+          if (s.indexOf('tiktok') >= 0)
+            return { icone:'🎵', nome:'TikTok', meio:'Rede social' };
+          if (s.indexOf('linkedin') >= 0)
+            return { icone:'💼', nome:'LinkedIn', meio:'Rede social' };
+          if (s === '(direct)' || s === 'direct' || (m === '(none)' && s === '(direct)'))
+            return { icone:'🔗', nome:'Acesso direto', meio:'Digitou ou favoritos' };
+          if (s === '(not set)' || !s)
+            return { icone:'❓', nome:'Não identificado', meio:'Origem desconhecida' };
+          // Genérico
+          var nomeFmt = source.charAt(0).toUpperCase() + source.slice(1);
+          return { icone:'🌐', nome:nomeFmt, meio: m || 'Referência' };
+        }
+
+        oEl.innerHTML = d.origens.slice(0,8).map(function(x) {
+          var info = classificarOrigem(x.source, x.medium);
+          var pct = Math.round((x.usuarios||0) / totalOri * 100);
+          return '<div class="origem-row">'
+            + '<div class="origem-icone">' + info.icone + '</div>'
+            + '<div class="origem-info">'
+            + '<div class="origem-nome">' + info.nome + '</div>'
+            + '<div class="origem-meio">' + info.meio + '</div>'
+            + '</div>'
+            + '<div class="origem-stats">'
+            + '<div class="origem-pct">' + pct + '%</div>'
+            + '<div class="origem-num">' + x.usuarios + ' usuário' + (x.usuarios!==1?'s':'') + '</div>'
+            + '</div>'
+            + '</div>';
+        }).join('');
+      } else if (oEl) {
+        oEl.innerHTML = '<div style="font-size:12px;color:var(--muted);padding:20px 0;text-align:center;">Aguardando dados...</div>';
       }
 
       // Mapa
