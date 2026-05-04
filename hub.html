@@ -700,6 +700,11 @@ body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif
       <span class="nav-label">Obras</span>
     </div>
 
+    <div class="nav-item" data-module="equipe" data-tip="Gestão de Equipe" onclick="navigate('equipe')">
+      <span class="nav-icon">👥</span>
+      <span class="nav-label">Equipe</span>
+    </div>
+
     <div class="nav-item" data-module="custos" data-tip="Gestão de Custos" onclick="navigate('custos')">
       <span class="nav-icon">💰</span>
       <span class="nav-label">Gestão de Custos</span>
@@ -865,6 +870,10 @@ body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif
     <iframe class="module-iframe" id="iframe-obras" src="" title="Obras"></iframe>
   </div>
 
+  <div class="iframe-container" id="module-equipe">
+    <iframe class="module-iframe" id="iframe-equipe" src="" title="Equipe"></iframe>
+  </div>
+
   <div class="iframe-container" id="module-analytics">
     <iframe class="module-iframe" id="iframe-analytics" src="" title="Analytics"></iframe>
   </div>
@@ -990,6 +999,7 @@ var MODULOS_LABEL = {
   analytics:  { label: '📈 Analytics',       key: 'analytics'   },
   obras:      { label: '🏗️ Obras',           key: 'obras'       },
   custos:     { label: '💰 Gestão de Custos',key: 'custos'      },
+  equipe:     { label: '👥 Gestão de Equipe',key: 'equipe'      },
   banco_dados:{ label: '🗄️ Banco de Dados',  key: 'banco'       },
 };
 
@@ -1034,7 +1044,7 @@ function aplicarPermissoesSidebar() {
       orcamento: 'orcamentos', catalogo: 'catalogo', crm: 'crm',
       campanhas: 'campanhas', portfolio: 'portfolio', depoimentos: 'depoimentos',
       conteudo: 'conteudo', analytics: 'analytics', obras: 'obras',
-      custos: 'custos', banco: 'banco_dados'
+      custos: 'custos', banco: 'banco_dados', equipe: 'equipe'
     };
     var permKey = keyMap[mod] || mod;
     // Se não tem permissão explícita ou está false, esconde
@@ -1167,6 +1177,7 @@ var MODULES = {
   conteudo:    'https://alliance-orcamento.pages.dev/conteudo-admin.html',
   analytics:  'https://alliance-orcamento.pages.dev/Analytics.html',
   obras:      'https://leandrorocha95.github.io/alliance-orcamento/obras.html',
+  equipe:     'https://alliance-orcamento.pages.dev/equipe.html',
   mapa:       'https://leandrorocha95.github.io/alliance-orcamento/mapa.html',
   banco:      'https://supabase.com/dashboard/project/gzzclbxnohokttujvaqa',
 };
@@ -1307,7 +1318,7 @@ function doLogout() {
   _session = null;
   localStorage.removeItem('alliance_session');
   // Limpar iframes
-  ['orcamento','catalogo','custos','crm','campanhas','portfolio','depoimentos','conteudo','analytics','obras'].forEach(function(m) {
+  ['orcamento','catalogo','custos','crm','campanhas','portfolio','depoimentos','conteudo','analytics','obras','equipe'].forEach(function(m) {
     var iframe = document.getElementById('iframe-' + m);
     if (iframe) iframe.src = '';
   });
