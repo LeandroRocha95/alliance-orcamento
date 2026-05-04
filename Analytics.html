@@ -114,16 +114,24 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .popup-c-val{font-weight:700;color:var(--text);}
 .updated{font-size:10px;color:var(--muted);text-align:right;margin-top:10px;opacity:.6;}
 
-/* Dispositivos */
+/* Dispositivos — cores específicas */
 .dev-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.04);}
 .dev-row:last-child{border-bottom:none;}
 .dev-icone{font-size:22px;flex-shrink:0;width:32px;text-align:center;}
 .dev-info{flex:1;min-width:0;}
 .dev-nome{font-size:12px;font-weight:700;margin-bottom:5px;}
 .dev-bar{height:5px;background:var(--surface2);border-radius:4px;overflow:hidden;}
-.dev-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent2),var(--accent));border-radius:4px;}
+.dev-bar-fill{height:100%;border-radius:4px;}
+.dev-bar-fill.mobile {background:linear-gradient(90deg,#27ae60,var(--green));}
+.dev-bar-fill.desktop{background:linear-gradient(90deg,var(--accent2),var(--accent));}
+.dev-bar-fill.tablet {background:linear-gradient(90deg,#f5a623,#e67e22);}
+.dev-bar-fill.outro  {background:linear-gradient(90deg,#7a7f9a,#5e637a);}
 .dev-stats{display:flex;flex-direction:column;align-items:flex-end;flex-shrink:0;min-width:54px;}
-.dev-pct{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;color:var(--accent);line-height:1;}
+.dev-pct{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;line-height:1;}
+.dev-pct.mobile {color:var(--green);}
+.dev-pct.desktop{color:var(--accent);}
+.dev-pct.tablet {color:var(--yellow);}
+.dev-pct.outro  {color:var(--muted);}
 .dev-num{font-size:10px;color:var(--muted);margin-top:2px;}
 
 /* Origens de tráfego */
@@ -136,6 +144,39 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .origem-stats{display:flex;flex-direction:column;align-items:flex-end;flex-shrink:0;min-width:54px;}
 .origem-pct{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;color:var(--purple);line-height:1;}
 .origem-num{font-size:10px;color:var(--muted);margin-top:2px;}
+
+/* Evolução nos KPIs (setas de comparação) */
+.kpi-evo{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:700;padding:2px 6px;border-radius:6px;margin-top:2px;}
+.kpi-evo.up   {color:var(--green); background:rgba(46,204,113,.12);}
+.kpi-evo.down {color:var(--red);   background:rgba(231,76,60,.12);}
+.kpi-evo.flat {color:var(--muted); background:rgba(122,127,154,.12);}
+.kpi-evo-arrow{font-size:11px;line-height:1;}
+
+/* Conversões */
+.conv-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+.conv-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px;position:relative;overflow:hidden;}
+.conv-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#2ecc71,#27ae60);border-radius:12px 12px 0 0;}
+.conv-card.taxa::before{background:linear-gradient(90deg,#a855f7,#7c3aed);}
+.conv-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+.conv-val{font-family:'Bebas Neue',sans-serif;font-size:38px;letter-spacing:2px;line-height:1;color:var(--green);margin-bottom:4px;}
+.conv-card.taxa .conv-val{color:var(--purple);}
+.conv-sub{font-size:11px;color:var(--muted);}
+
+.conv-tipo-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);}
+.conv-tipo-row:last-child{border-bottom:none;}
+.conv-tipo-icone{font-size:16px;flex-shrink:0;width:24px;text-align:center;}
+.conv-tipo-info{flex:1;min-width:0;}
+.conv-tipo-nome{font-size:12px;font-weight:700;margin-bottom:2px;}
+.conv-tipo-desc{font-size:10px;color:var(--muted);}
+.conv-tipo-num{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;color:var(--green);flex-shrink:0;}
+
+.conv-origem-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);}
+.conv-origem-row:last-child{border-bottom:none;}
+.conv-origem-icone{font-size:16px;flex-shrink:0;width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:7px;background:var(--surface2);}
+.conv-origem-info{flex:1;min-width:0;}
+.conv-origem-nome{font-size:12px;font-weight:700;}
+.conv-origem-meio{font-size:10px;color:var(--muted);}
+.conv-origem-num{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;color:var(--green);flex-shrink:0;}
 </style>
 </head>
 <body>
@@ -175,21 +216,25 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
       <div class="kpi-label">Usuários hoje</div>
       <div class="kpi-val" id="kpi-usuarios"><span class="shimmer"></span></div>
       <div class="kpi-sub" id="kpi-sub-u">hoje</div>
+      <div id="kpi-evo-u"></div>
     </div>
     <div class="kpi s">
       <div class="kpi-label">Sessões hoje</div>
       <div class="kpi-val" id="kpi-sessoes"><span class="shimmer"></span></div>
       <div class="kpi-sub" id="kpi-sub-s">hoje</div>
+      <div id="kpi-evo-s"></div>
     </div>
     <div class="kpi p">
       <div class="kpi-label">Páginas vistas</div>
       <div class="kpi-val" id="kpi-paginas"><span class="shimmer"></span></div>
       <div class="kpi-sub" id="kpi-sub-p">hoje</div>
+      <div id="kpi-evo-p"></div>
     </div>
     <div class="kpi t">
       <div class="kpi-label">Tempo médio</div>
       <div class="kpi-val" id="kpi-tempo"><span class="shimmer"></span></div>
       <div class="kpi-sub">por sessão</div>
+      <div id="kpi-evo-t"></div>
     </div>
   </div>
 
@@ -252,6 +297,45 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
   </div>
 
 
+  <!-- ── CONVERSÕES ───────────────────────────────────────── -->
+  <div class="conv-grid" style="margin-top:14px;">
+    <div class="conv-card">
+      <div class="conv-label">🎯 Leads gerados</div>
+      <div class="conv-val" id="conv-total"><span class="shimmer"></span></div>
+      <div class="conv-sub" id="conv-sub-total">orçamentos + WhatsApp</div>
+      <div id="conv-evo-total"></div>
+    </div>
+    <div class="conv-card taxa">
+      <div class="conv-label">📈 Taxa de conversão</div>
+      <div class="conv-val" id="conv-taxa"><span class="shimmer"></span></div>
+      <div class="conv-sub">visitantes → leads</div>
+      <div id="conv-evo-taxa"></div>
+    </div>
+  </div>
+
+  <div class="panels" style="margin-top:0;">
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">🎯 Conversões por tipo</div>
+        <span class="panel-period" id="period-conv-tipo">7 dias</span>
+      </div>
+      <div class="panel-body" id="conv-tipo-list">
+        <div style="font-size:12px;color:var(--muted);padding:20px 0;text-align:center;">Carregando...</div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">🚀 Canais que mais convertem</div>
+        <span class="panel-period" id="period-conv-origem">7 dias</span>
+      </div>
+      <div class="panel-body" id="conv-origem-list">
+        <div style="font-size:12px;color:var(--muted);padding:20px 0;text-align:center;">Carregando...</div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ── DISPOSITIVOS + ORIGEM DO TRÁFEGO ─────────────────── -->
   <div class="panels" style="margin-top:14px;">
     <div class="panel">
       <div class="panel-head">
@@ -352,6 +436,91 @@ const EVENTOS_MAP = {
   'modelo_share':       { icone:'🔗', nome:'Link de modelo copiado',   desc:'Compartilhou o link de um modelo específico' },
 };
 
+// Domínios antigos/internos a serem filtrados das origens
+const DOMINIOS_FILTRADOS = [
+  'leandrorocha95.github.io',
+  'alliance-orcamento.pages.dev'
+];
+
+// Tipos de conversão e como mostrar
+const CONVERSAO_MAP = {
+  'cta_click':           { icone:'🎯', nome:'Clique em CTA',         desc:'Clicou em "Solicitar Orçamento"' },
+  'lead_form_submit':    { icone:'📋', nome:'Formulário enviado',    desc:'Preencheu e enviou o formulário' },
+  'orcamento_solicitar': { icone:'📝', nome:'Orçamento solicitado',  desc:'Clicou em solicitar dentro do catálogo' },
+  'whatsapp_click':      { icone:'💬', nome:'WhatsApp (geral)',      desc:'Clicou no botão flutuante do WhatsApp' },
+  'whatsapp_loja_click': { icone:'📍', nome:'WhatsApp da loja',      desc:'Escolheu uma unidade no WhatsApp' }
+};
+
+// Calcula evolução vs período anterior e devolve HTML da seta
+function renderEvolucao(atual, anterior) {
+  if (anterior === 0) {
+    if (atual === 0) return '<span class="kpi-evo flat"><span class="kpi-evo-arrow">—</span> sem comparação</span>';
+    return '<span class="kpi-evo up"><span class="kpi-evo-arrow">↑</span> novo</span>';
+  }
+  var diff = atual - anterior;
+  var pct  = Math.round((diff / anterior) * 100);
+  if (pct === 0) {
+    return '<span class="kpi-evo flat"><span class="kpi-evo-arrow">→</span> estável</span>';
+  }
+  var classe = pct > 0 ? 'up' : 'down';
+  var seta   = pct > 0 ? '↑' : '↓';
+  return '<span class="kpi-evo ' + classe + '"><span class="kpi-evo-arrow">' + seta + '</span> '
+    + (pct > 0 ? '+' : '') + pct + '%</span>';
+}
+
+// Classifica origem (source + medium) → ícone, nome, meio
+function classificarOrigem(source, medium) {
+  var s = (source||'').toLowerCase();
+  var m = (medium||'').toLowerCase();
+  if (s.indexOf('instagram') >= 0 || s === 'ig' || s === 'l.instagram.com')
+    return { icone:'📷', nome:'Instagram', meio: m === 'cpc' || m === 'paid_social' ? 'Instagram Ads' : 'Rede social' };
+  if (s.indexOf('facebook') >= 0 || s === 'fb' || s === 'l.facebook.com' || s === 'm.facebook.com')
+    return { icone:'📘', nome:'Facebook', meio: m === 'cpc' || m === 'paid_social' ? 'Facebook Ads' : 'Rede social' };
+  if (s.indexOf('whatsapp') >= 0 || s === 'wa' || s.indexOf('wa.me') >= 0)
+    return { icone:'💬', nome:'WhatsApp', meio:'Mensagem' };
+  if (s.indexOf('linktr') >= 0 || s.indexOf('linktree') >= 0)
+    return { icone:'🌳', nome:'Linktree', meio:'Bio link' };
+  if (s.indexOf('chatgpt') >= 0 || s.indexOf('openai') >= 0)
+    return { icone:'🤖', nome:'ChatGPT', meio:'IA / Chat' };
+  if (s.indexOf('claude.ai') >= 0)
+    return { icone:'🤖', nome:'Claude', meio:'IA / Chat' };
+  if (s.indexOf('perplexity') >= 0)
+    return { icone:'🤖', nome:'Perplexity', meio:'IA / Chat' };
+  if (s.indexOf('google') >= 0 && (m === 'cpc' || m === 'paid' || m.indexOf('paid') >= 0))
+    return { icone:'💰', nome:'Google Ads', meio:'Tráfego pago' };
+  if (s.indexOf('google') >= 0)
+    return { icone:'🔍', nome:'Google', meio:'Busca orgânica' };
+  if (s.indexOf('bing') >= 0)
+    return { icone:'🔍', nome:'Bing', meio:'Busca orgânica' };
+  if (s.indexOf('yahoo') >= 0)
+    return { icone:'🔍', nome:'Yahoo', meio:'Busca orgânica' };
+  if (s.indexOf('duckduckgo') >= 0)
+    return { icone:'🦆', nome:'DuckDuckGo', meio:'Busca orgânica' };
+  if (s.indexOf('youtube') >= 0)
+    return { icone:'▶️', nome:'YouTube', meio:'Vídeo' };
+  if (s.indexOf('tiktok') >= 0)
+    return { icone:'🎵', nome:'TikTok', meio:'Rede social' };
+  if (s.indexOf('linkedin') >= 0)
+    return { icone:'💼', nome:'LinkedIn', meio:'Rede social' };
+  if (s === '(direct)' || s === 'direct')
+    return { icone:'🔗', nome:'Acesso direto', meio:'Digitou ou favoritos' };
+  if (s.indexOf('alliancecasas') >= 0)
+    return { icone:'🏠', nome:'Alliance Casas', meio:'Navegação interna' };
+  if (s === '(not set)' || !s)
+    return { icone:'❓', nome:'Não identificado', meio:'Origem desconhecida' };
+  // Genérico
+  var nomeFmt = source.charAt(0).toUpperCase() + source.slice(1);
+  return { icone:'🌐', nome:nomeFmt, meio: m || 'Referência' };
+}
+
+// Filtra origens removendo domínios antigos/internos
+function filtrarOrigens(origens) {
+  return (origens||[]).filter(function(o) {
+    var s = (o.source||'').toLowerCase();
+    return !DOMINIOS_FILTRADOS.some(function(d){ return s.indexOf(d) >= 0; });
+  });
+}
+
 function set(id, val) {
   var el = document.getElementById(id);
   if (el) el.textContent = val;
@@ -376,6 +545,27 @@ function carregar() {
       var subU = document.getElementById('kpi-sub-u'); if(subU) subU.textContent = periodoLabel;
       var subS = document.getElementById('kpi-sub-s'); if(subS) subS.textContent = periodoLabel;
       var subP = document.getElementById('kpi-sub-p'); if(subP) subP.textContent = periodoLabel;
+
+      // ── Evolução vs período anterior nos KPIs ──────────────
+      var ant = d.anterior || {};
+      var evoU = document.getElementById('kpi-evo-u');
+      var evoS = document.getElementById('kpi-evo-s');
+      var evoP = document.getElementById('kpi-evo-p');
+      var evoT = document.getElementById('kpi-evo-t');
+      if (evoU) evoU.innerHTML = renderEvolucao(d.usuarios||0, ant.usuarios||0);
+      if (evoS) evoS.innerHTML = renderEvolucao(d.sessoes ||0, ant.sessoes ||0);
+      if (evoP) evoP.innerHTML = renderEvolucao(d.paginas ||0, ant.paginas ||0);
+      // Tempo médio: comparar segundos
+      if (evoT) {
+        var tempoSegAtual = parseInt(String(d.tempo).replace(/[^0-9]/g,'')) || 0;
+        // Aproximação: como d.tempo é formatado, comparamos só se temos ant.tempoSeg
+        if (typeof ant.tempoSeg === 'number') {
+          // Reconstroi segundos a partir do d.tempo (mais confiável)
+          var match = String(d.tempo).match(/(?:(\d+)m\s*)?(\d+)s/);
+          var atualSeg = match ? (parseInt(match[1]||'0')*60 + parseInt(match[2]||'0')) : 0;
+          evoT.innerHTML = renderEvolucao(atualSeg, Math.round(ant.tempoSeg));
+        }
+      }
 
       // Páginas
       var pEl = document.getElementById('paginas-top');
@@ -481,7 +671,73 @@ function carregar() {
         }
       }
 
-      // ── Dispositivos ──────────────────────────────────────────
+      // ── Conversões (cards principais) ─────────────────────
+      var conv = d.conversoes || { total:0, taxaConversao:0, porTipo:[], porOrigem:[] };
+      set('conv-total', conv.total);
+      set('conv-taxa',  conv.taxaConversao + '%');
+
+      var subT = document.getElementById('conv-sub-total');
+      if (subT) subT.textContent = 'orçamentos + WhatsApp · ' + periodoLabel;
+
+      var convEvoT = document.getElementById('conv-evo-total');
+      if (convEvoT) convEvoT.innerHTML = renderEvolucao(conv.total||0, ant.conversoes||0);
+
+      var convEvoTaxa = document.getElementById('conv-evo-taxa');
+      if (convEvoTaxa) {
+        // Taxa: comparamos pontos percentuais
+        var taxaA = conv.taxaConversao || 0;
+        var taxaP = ant.taxaConversao || 0;
+        var diffP = taxaA - taxaP;
+        var clazz = Math.abs(diffP) < 0.1 ? 'flat' : (diffP > 0 ? 'up' : 'down');
+        var setaC = clazz === 'flat' ? '→' : (diffP > 0 ? '↑' : '↓');
+        var txt   = clazz === 'flat' ? 'estável' : (diffP > 0 ? '+' : '') + diffP.toFixed(1) + 'pp';
+        convEvoTaxa.innerHTML = '<span class="kpi-evo ' + clazz + '"><span class="kpi-evo-arrow">' + setaC + '</span> ' + txt + '</span>';
+      }
+
+      // ── Conversões por tipo ────────────────────────────────
+      var pCT = document.getElementById('period-conv-tipo');
+      if (pCT) pCT.textContent = _periodoLabel;
+
+      var ctEl = document.getElementById('conv-tipo-list');
+      if (ctEl && conv.porTipo && conv.porTipo.length) {
+        ctEl.innerHTML = conv.porTipo.map(function(c) {
+          var info = CONVERSAO_MAP[c.evento] || { icone:'📌', nome:c.evento, desc:'Evento de conversão' };
+          return '<div class="conv-tipo-row">'
+            + '<div class="conv-tipo-icone">' + info.icone + '</div>'
+            + '<div class="conv-tipo-info">'
+            + '<div class="conv-tipo-nome">' + info.nome + '</div>'
+            + '<div class="conv-tipo-desc">' + info.desc + '</div>'
+            + '</div>'
+            + '<div class="conv-tipo-num">' + c.total + '</div>'
+            + '</div>';
+        }).join('');
+      } else if (ctEl) {
+        ctEl.innerHTML = '<div style="font-size:12px;color:var(--muted);padding:20px 0;text-align:center;">Nenhuma conversão no período</div>';
+      }
+
+      // ── Canais que mais convertem ──────────────────────────
+      var pCO = document.getElementById('period-conv-origem');
+      if (pCO) pCO.textContent = _periodoLabel;
+
+      var coEl = document.getElementById('conv-origem-list');
+      var origensConvFiltradas = filtrarOrigens(conv.porOrigem || []);
+      if (coEl && origensConvFiltradas.length) {
+        coEl.innerHTML = origensConvFiltradas.slice(0,7).map(function(c) {
+          var info = classificarOrigem(c.source, c.medium);
+          return '<div class="conv-origem-row">'
+            + '<div class="conv-origem-icone">' + info.icone + '</div>'
+            + '<div class="conv-origem-info">'
+            + '<div class="conv-origem-nome">' + info.nome + '</div>'
+            + '<div class="conv-origem-meio">' + info.meio + '</div>'
+            + '</div>'
+            + '<div class="conv-origem-num">' + c.total + '</div>'
+            + '</div>';
+        }).join('');
+      } else if (coEl) {
+        coEl.innerHTML = '<div style="font-size:12px;color:var(--muted);padding:20px 0;text-align:center;">Aguardando conversões com origem identificada</div>';
+      }
+
+      // ── Dispositivos ──────────────────────────────────────
       var pDev = document.getElementById('period-dispositivos');
       if (pDev) pDev.textContent = _periodoLabel;
 
@@ -495,14 +751,16 @@ function carregar() {
           var key = (x.dispositivo||'').toLowerCase();
           var icone = ICONES_DEV[key] || '📟';
           var nome  = NOMES_DEV[key] || (x.dispositivo || 'Outro');
+          // Determina classe de cor pra aplicar
+          var classeCor = (key === 'mobile' || key === 'desktop' || key === 'tablet') ? key : 'outro';
           return '<div class="dev-row">'
             + '<div class="dev-icone">' + icone + '</div>'
             + '<div class="dev-info">'
             + '<div class="dev-nome">' + nome + '</div>'
-            + '<div class="dev-bar"><div class="dev-bar-fill" style="width:' + pct + '%;"></div></div>'
+            + '<div class="dev-bar"><div class="dev-bar-fill ' + classeCor + '" style="width:' + pct + '%;"></div></div>'
             + '</div>'
             + '<div class="dev-stats">'
-            + '<div class="dev-pct">' + pct + '%</div>'
+            + '<div class="dev-pct ' + classeCor + '">' + pct + '%</div>'
             + '<div class="dev-num">' + x.usuarios + ' usuário' + (x.usuarios!==1?'s':'') + '</div>'
             + '</div>'
             + '</div>';
@@ -511,46 +769,15 @@ function carregar() {
         dEl.innerHTML = '<div style="font-size:12px;color:var(--muted);padding:20px 0;text-align:center;">Aguardando dados...</div>';
       }
 
-      // ── Origem do tráfego ─────────────────────────────────────
+      // ── Origem do tráfego ─────────────────────────────────
       var pOri = document.getElementById('period-origens');
       if (pOri) pOri.textContent = _periodoLabel;
 
       var oEl = document.getElementById('origens-list');
-      if (oEl && d.origens && d.origens.length) {
-        var totalOri = d.origens.reduce(function(s,x){ return s + (x.usuarios||0); }, 0) || 1;
-
-        // Mapeia source/medium para nome bonito + ícone
-        function classificarOrigem(source, medium) {
-          var s = (source||'').toLowerCase();
-          var m = (medium||'').toLowerCase();
-          if (s.indexOf('instagram') >= 0 || s === 'ig' || s === 'l.instagram.com')
-            return { icone:'📷', nome:'Instagram', meio:'Rede social' };
-          if (s.indexOf('facebook') >= 0 || s === 'fb' || s === 'l.facebook.com' || s === 'm.facebook.com')
-            return { icone:'📘', nome:'Facebook', meio:'Rede social' };
-          if (s.indexOf('whatsapp') >= 0 || s === 'wa' || s.indexOf('wa.me') >= 0)
-            return { icone:'💬', nome:'WhatsApp', meio:'Mensagem' };
-          if (s.indexOf('google') >= 0 && (m === 'organic' || m === ''))
-            return { icone:'🔍', nome:'Google', meio:'Busca orgânica' };
-          if (s.indexOf('google') >= 0 && (m === 'cpc' || m === 'paid'))
-            return { icone:'💰', nome:'Google Ads', meio:'Tráfego pago' };
-          if (s.indexOf('bing') >= 0)
-            return { icone:'🔍', nome:'Bing', meio:'Busca orgânica' };
-          if (s.indexOf('youtube') >= 0)
-            return { icone:'▶️', nome:'YouTube', meio:'Vídeo' };
-          if (s.indexOf('tiktok') >= 0)
-            return { icone:'🎵', nome:'TikTok', meio:'Rede social' };
-          if (s.indexOf('linkedin') >= 0)
-            return { icone:'💼', nome:'LinkedIn', meio:'Rede social' };
-          if (s === '(direct)' || s === 'direct' || (m === '(none)' && s === '(direct)'))
-            return { icone:'🔗', nome:'Acesso direto', meio:'Digitou ou favoritos' };
-          if (s === '(not set)' || !s)
-            return { icone:'❓', nome:'Não identificado', meio:'Origem desconhecida' };
-          // Genérico
-          var nomeFmt = source.charAt(0).toUpperCase() + source.slice(1);
-          return { icone:'🌐', nome:nomeFmt, meio: m || 'Referência' };
-        }
-
-        oEl.innerHTML = d.origens.slice(0,8).map(function(x) {
+      var origensFiltradas = filtrarOrigens(d.origens || []);
+      if (oEl && origensFiltradas.length) {
+        var totalOri = origensFiltradas.reduce(function(s,x){ return s + (x.usuarios||0); }, 0) || 1;
+        oEl.innerHTML = origensFiltradas.slice(0,8).map(function(x) {
           var info = classificarOrigem(x.source, x.medium);
           var pct = Math.round((x.usuarios||0) / totalOri * 100);
           return '<div class="origem-row">'
