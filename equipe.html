@@ -6,443 +6,149 @@
 <title>Equipe — Alliance Casas</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg:      #0f1117;
-  --surface: #1a1d27;
-  --surface2:#22263a;
-  --surface3:#2a2f47;
-  --border:  #2e334d;
-  --accent:  #f5a623;
-  --accent2: #e8541a;
-  --text:    #e8eaf0;
-  --muted:   #7a7f9a;
-  --green:   #27ae60;
-  --red:     #e74c3c;
-  --blue:    #308EEE;
-}
-* { margin:0; padding:0; box-sizing:border-box; }
-body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; min-height:100vh; }
-
-/* ── HEADER ── */
-.page-header {
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
-  padding: 0 24px;
-  height: 58px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  position: sticky;
-  top: 0;
-  z-index: 50;
-}
-.page-header-title {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 20px;
-  letter-spacing: 2.5px;
-  color: var(--accent);
-}
-.page-header-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
-.header-tabs {
-  display: flex;
-  gap: 4px;
-}
-.htab {
-  padding: 7px 16px;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  border: 1px solid transparent;
-  color: var(--muted);
-  background: none;
-  font-family: 'DM Sans', sans-serif;
-  transition: all 0.15s;
-}
-.htab:hover { background: var(--surface2); color: var(--text); }
-.htab.on { background: rgba(245,166,35,0.12); border-color: rgba(245,166,35,0.3); color: var(--accent); }
-
-/* ── LAYOUT ── */
-.page-body { padding: 24px; max-width: 1200px; margin: 0 auto; }
-.sec { display: none; }
-.sec.on { display: block; }
-
-/* ── CARDS E SUPERFÍCIES ── */
-.card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 20px 22px;
-}
-.card-title {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 14px;
-  letter-spacing: 1.5px;
-  color: var(--muted);
-  margin-bottom: 14px;
-}
-.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
-.grid4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 20px; }
-
-/* ── KPIs ── */
-.kpi {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 16px 18px;
-  position: relative;
-  overflow: hidden;
-}
-.kpi::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 3px;
-  border-radius: 12px 12px 0 0;
-}
-.kpi.blue::before  { background: var(--blue); }
-.kpi.amber::before { background: var(--accent); }
-.kpi.red::before   { background: var(--red); }
-.kpi.green::before { background: var(--green); }
-.kpi-label { font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
-.kpi-value { font-family: 'Bebas Neue', sans-serif; font-size: 38px; letter-spacing: 2px; line-height: 1; margin-bottom: 4px; }
-.kpi.blue .kpi-value  { color: var(--blue); }
-.kpi.amber .kpi-value { color: var(--accent); }
-.kpi.red .kpi-value   { color: var(--red); }
-.kpi.green .kpi-value { color: var(--green); }
-.kpi-sub { font-size: 11px; color: var(--muted); }
-
-/* ── BAR ROWS ── */
-.br { display:flex; align-items:center; gap:10px; margin-bottom:8px; }
-.br-l { font-size:12px; color:var(--muted); width:100px; flex-shrink:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.br-track { flex:1; height:5px; background:var(--surface2); border-radius:3px; overflow:hidden; }
-.br-fill { height:100%; border-radius:3px; transition: width 0.6s ease; }
-.br-n { font-size:12px; font-weight:600; color:var(--text); width:20px; text-align:right; }
-
-/* ── PRAZO ITEMS ── */
-.pi { display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid var(--border); }
-.pi:last-child { border:none; }
-.pi-t { font-size:13px; color:var(--text); }
-.pi-m { font-size:11px; color:var(--muted); margin-top:2px; }
-.badge { font-size:11px; padding:3px 10px; border-radius:20px; font-weight:600; white-space:nowrap; }
-.b-red   { background:rgba(231,76,60,0.15);  color:#e74c3c; border:1px solid rgba(231,76,60,0.2); }
-.b-amber { background:rgba(245,166,35,0.12); color:#f5a623; border:1px solid rgba(245,166,35,0.2); }
-.b-green { background:rgba(39,174,96,0.12);  color:#27ae60; border:1px solid rgba(39,174,96,0.2); }
-.b-blue  { background:rgba(48,142,238,0.12); color:#308EEE; border:1px solid rgba(48,142,238,0.2); }
-
-/* ── EQUIPE GRID ── */
-.dept-filters { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:18px; }
-.df-btn {
-  padding: 5px 14px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 500;
-  cursor: pointer;
-  border: 1px solid var(--border);
-  background: var(--surface);
-  color: var(--muted);
-  font-family: 'DM Sans', sans-serif;
-  transition: all 0.15s;
-}
-.df-btn:hover { border-color: var(--accent); color: var(--text); }
-.df-btn.on { background: rgba(245,166,35,0.12); border-color: rgba(245,166,35,0.3); color: var(--accent); }
-
-.member-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(190px,1fr)); gap:12px; }
-.mc {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 16px;
-  cursor: pointer;
-  transition: border-color 0.15s, transform 0.15s;
-}
-.mc:hover { border-color: var(--accent); transform: translateY(-2px); }
-.mc-avatar {
-  width: 42px; height: 42px;
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 15px; font-weight: 700;
-  margin-bottom: 10px;
-}
-.mc-name { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
-.mc-role { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
-.mc-dept { font-size: 10px; padding: 2px 8px; border-radius: 20px; display: inline-block; margin-bottom: 10px; font-weight: 600; }
-.mc-tasks { font-size: 11px; color: var(--muted); display: flex; gap: 10px; }
-.tdot { display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:3px; }
-
-/* ── KANBAN ── */
-.kb-toolbar {
-  display: flex; justify-content: space-between; align-items: center;
-  margin-bottom: 16px; flex-wrap: wrap; gap: 10px;
-}
-.kb-dept-tabs { display:flex; gap:6px; flex-wrap:wrap; }
-.kdt {
-  padding: 5px 14px; border-radius: 20px; font-size: 12px; font-weight: 500;
-  cursor: pointer; border: 1px solid var(--border); background: var(--surface);
-  color: var(--muted); font-family: 'DM Sans', sans-serif; transition: all 0.15s;
-}
-.kdt:hover { border-color: var(--accent); color: var(--text); }
-.btn-add {
-  padding: 8px 16px; border: none; border-radius: 9px; font-size: 13px;
-  cursor: pointer; font-weight: 600; color: #fff; font-family: 'DM Sans', sans-serif;
-  background: linear-gradient(135deg, var(--accent2), var(--accent));
-  transition: opacity 0.15s;
-}
-.btn-add:hover { opacity: 0.88; }
-.kb-cols { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
-.kb-col {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 10px;
-  min-height: 300px;
-}
-.kb-col-h {
-  display: flex; justify-content: space-between; align-items: center;
-  margin-bottom: 10px; padding-bottom: 8px;
-  border-bottom: 1px solid var(--border);
-}
-.kb-col-name {
-  font-size: 10px; font-weight: 700; text-transform: uppercase;
-  letter-spacing: 1px; color: var(--muted);
-}
-.kb-count {
-  font-size: 11px; background: var(--surface2); border: 1px solid var(--border);
-  border-radius: 20px; padding: 1px 8px; color: var(--muted);
-}
-.kc {
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 9px;
-  padding: 10px;
-  margin-bottom: 8px;
-  cursor: pointer;
-  transition: border-color 0.15s;
-}
-.kc:hover { border-color: var(--accent); }
-.kc-title { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 6px; line-height: 1.4; }
-.kc-meta { display:flex; justify-content:space-between; align-items:center; }
-.kc-tag { font-size: 10px; padding: 1px 7px; border-radius: 20px; margin-bottom: 6px; display:inline-block; font-weight: 600; }
-.pdot { width:6px; height:6px; border-radius:50%; display:inline-block; margin-right:3px; }
-.kc-due { font-size: 11px; color: var(--muted); }
-.av-sm {
-  width: 22px; height: 22px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 9px; font-weight: 700;
-}
-
-/* ── FLUXOGRAMAS ── */
-.flows-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; }
-.flows-grid { display:grid; gap:10px; }
-.fc {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 16px 20px;
-  cursor: pointer;
-  transition: border-color 0.15s, transform 0.15s;
-}
-.fc:hover { border-color: var(--accent); transform: translateY(-1px); }
-.fc-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px; }
-.fc-name { font-size: 14px; font-weight: 600; color: var(--text); }
-.fc-desc { font-size: 12px; color: var(--muted); margin-bottom: 10px; }
-.fc-preview { display:flex; align-items:center; gap:5px; flex-wrap:wrap; }
-.step-pill { font-size: 11px; padding: 2px 10px; border-radius: 20px; font-weight: 600; }
-.arrow-s { font-size: 12px; color: var(--muted); }
-.fc-actions { display:flex; gap:6px; }
-.btn-sm {
-  padding: 5px 12px; border: 1px solid var(--border); border-radius: 8px;
-  background: none; font-size: 12px; cursor: pointer; color: var(--muted);
-  font-family: 'DM Sans', sans-serif; transition: all 0.15s;
-}
-.btn-sm:hover { border-color: var(--text); color: var(--text); }
-.btn-sm.danger:hover { border-color: var(--red); color: var(--red); }
-.empty-state {
-  text-align: center; padding: 60px 20px;
-  color: var(--muted); font-size: 14px;
-}
-.empty-icon { font-size: 40px; margin-bottom: 12px; }
-
-/* ── EDITOR DE FLUXO ── */
-.editor-wrap { display:grid; grid-template-columns:1fr 300px; gap:16px; }
-.editor-main {}
-.editor-side {
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 16px;
-  height: fit-content;
-  position: sticky;
-  top: 80px;
-}
-.back-row {
-  display: flex; align-items: center; gap: 12px; margin-bottom: 20px;
-}
-.back-btn {
-  padding: 6px 14px; border: 1px solid var(--border); border-radius: 8px;
-  background: none; font-size: 12px; cursor: pointer; color: var(--muted);
-  font-family: 'DM Sans', sans-serif;
-}
-.back-btn:hover { border-color: var(--text); color: var(--text); }
-.flow-name-inp {
-  flex: 1; background: none; border: none; border-bottom: 1px solid var(--border);
-  color: var(--text); font-family: 'Bebas Neue', sans-serif; font-size: 22px;
-  letter-spacing: 2px; outline: none; padding: 4px 0;
-}
-.flow-name-inp:focus { border-bottom-color: var(--accent); }
-.flow-desc-inp {
-  width: 100%; background: var(--surface2); border: 1px solid var(--border);
-  border-radius: 8px; color: var(--muted); font-family: 'DM Sans', sans-serif;
-  font-size: 13px; padding: 8px 12px; outline: none; margin-bottom: 18px;
-}
-.flow-desc-inp:focus { border-color: var(--accent); color: var(--text); }
-
-.step-row {
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 12px;
-  margin-bottom: 8px;
-  display: flex; gap: 12px; align-items: flex-start;
-}
-.step-num {
-  width: 26px; height: 26px; border-radius: 50%;
-  background: rgba(245,166,35,0.12); color: var(--accent);
-  font-size: 12px; font-weight: 700;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0; margin-top: 2px;
-}
-.step-content { flex: 1; }
-.step-action { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
-.step-who { font-size: 12px; color: var(--muted); display:flex; align-items:center; gap:6px; }
-.step-obs { font-size: 11px; color: var(--muted); margin-top:4px; font-style: italic; }
-.step-btns { display:flex; gap:3px; flex-shrink:0; }
-.step-btn {
-  width: 26px; height: 26px; border: none; background: none;
-  cursor: pointer; border-radius: 5px; color: var(--muted);
-  font-size: 14px; display:flex; align-items:center; justify-content:center;
-}
-.step-btn:hover { background: var(--surface3); color: var(--text); }
-.step-btn.del:hover { background: rgba(231,76,60,0.15); color: var(--red); }
-
-.add-step-box {
-  border: 1px dashed var(--border);
-  border-radius: 10px;
-  padding: 14px;
-}
-.add-step-box label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); font-weight: 700; display:block; margin-bottom:6px; }
-.fi-group { margin-bottom:10px; }
-.fi-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); font-weight: 700; display:block; margin-bottom:4px; }
-input[type=text], select, textarea {
-  width: 100%;
-  background: var(--surface3);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  color: var(--text);
-  font-family: 'DM Sans', sans-serif;
-  font-size: 13px;
-  padding: 8px 10px;
-  outline: none;
-  transition: border-color 0.15s;
-}
-input[type=text]:focus, select:focus, textarea:focus { border-color: var(--accent); }
-select option { background: var(--surface2); }
-textarea { resize: vertical; min-height: 52px; }
-
-.member-side-list { display:flex; flex-direction:column; gap:2px; max-height: 420px; overflow-y: auto; }
-.ms-group { margin-bottom:10px; }
-.ms-group-label { font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); font-weight: 700; margin-bottom: 5px; padding-left: 4px; }
-.ms-item {
-  display: flex; align-items: center; gap: 8px;
-  padding: 6px 8px; border-radius: 8px; cursor: pointer;
-  transition: background 0.15s;
-}
-.ms-item:hover { background: var(--surface3); }
-.ms-avatar { width: 28px; height: 28px; border-radius: 50%; display:flex; align-items:center; justify-content:center; font-size: 10px; font-weight: 700; flex-shrink: 0; }
-.ms-name { font-size: 12px; font-weight: 600; color: var(--text); }
-.ms-role { font-size: 10px; color: var(--muted); }
-
-/* ── VISUALIZAÇÃO DE FLUXO ── */
-.viz-scroll { overflow-x: auto; padding: 16px 0; margin-bottom: 24px; }
-.viz-flow { display:flex; align-items:flex-start; gap:0; min-width: max-content; }
-.viz-node { display:flex; flex-direction:column; align-items:center; width: 140px; }
-.viz-box {
-  border-radius: 12px;
-  padding: 12px 14px;
-  width: 130px;
-  text-align: center;
-  border: 1px solid transparent;
-}
-.viz-step-n { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; opacity: 0.7; }
-.viz-action { font-size: 12px; font-weight: 600; line-height: 1.4; margin-bottom: 7px; }
-.viz-who { display:flex; align-items:center; justify-content:center; gap:5px; margin-bottom: 5px; }
-.viz-dept-tag { font-size: 9px; padding: 2px 7px; border-radius: 20px; display: inline-block; font-weight: 700; }
-.viz-arrow { display:flex; align-items:center; padding-top: 36px; color: var(--muted); font-size: 22px; }
-.viz-obs { font-size: 10px; color: var(--muted); text-align:center; margin-top: 6px; max-width: 125px; line-height: 1.4; font-style: italic; }
-
-.detail-table { width: 100%; border-collapse: collapse; }
-.detail-table tr { border-bottom: 1px solid var(--border); }
-.detail-table tr:last-child { border: none; }
-.detail-table td { padding: 12px 14px; vertical-align: top; }
-.dt-num { width: 36px; }
-.dt-circle {
-  width: 28px; height: 28px; border-radius: 50%;
-  background: rgba(245,166,35,0.12); color: var(--accent);
-  font-family: 'Bebas Neue', sans-serif; font-size: 14px; letter-spacing: 1px;
-  display: flex; align-items: center; justify-content: center;
-}
-.dt-action { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
-.dt-who { display:flex; align-items:center; gap:7px; flex-wrap:wrap; }
-.dt-name { font-size: 12px; font-weight: 700; }
-.dt-role { font-size: 11px; color: var(--muted); }
-.dt-obs { font-size: 12px; color: var(--muted); margin-top: 5px; font-style: italic; }
-
-/* ── MODAL ── */
-.overlay {
-  display: none; position: fixed; inset: 0;
-  background: rgba(0,0,0,0.6); z-index: 200;
-  align-items: center; justify-content: center;
-  backdrop-filter: blur(4px);
-}
-.overlay.open { display: flex; }
-.modal {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 24px;
-  width: 440px; max-width: 95vw;
-  max-height: 85vh; overflow-y: auto;
-}
-.modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom: 18px; }
-.modal-title { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 1.5px; color: var(--accent); }
-.modal-x { background:none; border:none; color:var(--muted); font-size:22px; cursor:pointer; line-height:1; }
-.modal-x:hover { color: var(--text); }
-.mfooter { display:flex; gap:8px; justify-content:flex-end; margin-top: 16px; }
-.btn-cancel {
-  padding: 8px 18px; border: 1px solid var(--border); border-radius: 9px;
-  background: none; font-size: 13px; cursor: pointer; color: var(--muted);
-  font-family: 'DM Sans', sans-serif;
-}
-.btn-cancel:hover { border-color: var(--text); color: var(--text); }
-.btn-save {
-  padding: 8px 20px; border: none; border-radius: 9px; font-size: 13px;
-  cursor: pointer; font-weight: 700; color: #fff; font-family: 'DM Sans', sans-serif;
-  background: linear-gradient(135deg, var(--accent2), var(--accent));
-}
-.btn-save:hover { opacity: 0.88; }
-
-@media (max-width: 768px) {
-  .grid2, .grid4, .kb-cols { grid-template-columns: 1fr; }
-  .editor-wrap { grid-template-columns: 1fr; }
-  .page-body { padding: 14px; }
-  .header-tabs { gap: 2px; }
-  .htab { padding: 6px 10px; font-size: 12px; }
-}
+:root{--bg:#0f1117;--surface:#1a1d27;--surface2:#22263a;--surface3:#2a2f47;--border:#2e334d;--accent:#f5a623;--accent2:#e8541a;--text:#e8eaf0;--muted:#7a7f9a;--green:#27ae60;--red:#e74c3c;--blue:#308EEE}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh}
+.loading-bar{position:fixed;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent2),var(--accent));z-index:999;display:none}
+.loading-bar.show{display:block;animation:lpulse 1s ease-in-out infinite}
+@keyframes lpulse{0%,100%{opacity:.5}50%{opacity:1}}
+.page-header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;height:58px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.page-header-title{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2.5px;color:var(--accent)}
+.page-header-sub{font-size:11px;color:var(--muted);margin-top:1px}
+.header-tabs{display:flex;gap:4px}
+.htab{padding:7px 16px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid transparent;color:var(--muted);background:none;font-family:'DM Sans',sans-serif;transition:all .15s}
+.htab:hover{background:var(--surface2);color:var(--text)}
+.htab.on{background:rgba(245,166,35,.12);border-color:rgba(245,166,35,.3);color:var(--accent)}
+.page-body{padding:24px;max-width:1200px;margin:0 auto}
+.sec{display:none}.sec.on{display:block}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px 22px}
+.card-title{font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:1.5px;color:var(--muted);margin-bottom:14px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px;position:relative;overflow:hidden}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:12px 12px 0 0}
+.kpi.blue::before{background:var(--blue)}.kpi.amber::before{background:var(--accent)}.kpi.red::before{background:var(--red)}.kpi.green::before{background:var(--green)}
+.kpi-label{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.kpi-value{font-family:'Bebas Neue',sans-serif;font-size:38px;letter-spacing:2px;line-height:1;margin-bottom:4px}
+.kpi.blue .kpi-value{color:var(--blue)}.kpi.amber .kpi-value{color:var(--accent)}.kpi.red .kpi-value{color:var(--red)}.kpi.green .kpi-value{color:var(--green)}
+.kpi-sub{font-size:11px;color:var(--muted)}
+.br{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.br-l{font-size:12px;color:var(--muted);width:100px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.br-track{flex:1;height:5px;background:var(--surface2);border-radius:3px;overflow:hidden}
+.br-fill{height:100%;border-radius:3px}
+.br-n{font-size:12px;font-weight:600;color:var(--text);width:20px;text-align:right}
+.pi{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)}
+.pi:last-child{border:none}.pi-t{font-size:13px;color:var(--text)}.pi-m{font-size:11px;color:var(--muted);margin-top:2px}
+.badge{font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600;white-space:nowrap}
+.b-red{background:rgba(231,76,60,.15);color:#e74c3c;border:1px solid rgba(231,76,60,.2)}
+.b-amber{background:rgba(245,166,35,.12);color:#f5a623;border:1px solid rgba(245,166,35,.2)}
+.b-green{background:rgba(39,174,96,.12);color:#27ae60;border:1px solid rgba(39,174,96,.2)}
+.dept-filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px}
+.df-btn{padding:5px 14px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--muted);font-family:'DM Sans',sans-serif;transition:all .15s}
+.df-btn:hover{border-color:var(--accent);color:var(--text)}.df-btn.on{background:rgba(245,166,35,.12);border-color:rgba(245,166,35,.3);color:var(--accent)}
+.member-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px}
+.mc{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;transition:border-color .15s,transform .15s}
+.mc:hover{border-color:var(--accent);transform:translateY(-2px)}
+.mc-avatar{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;margin-bottom:10px}
+.mc-name{font-size:14px;font-weight:600;color:var(--text);margin-bottom:2px}.mc-role{font-size:12px;color:var(--muted);margin-bottom:8px}
+.mc-dept{font-size:10px;padding:2px 8px;border-radius:20px;display:inline-block;margin-bottom:10px;font-weight:600}
+.mc-tasks{font-size:11px;color:var(--muted);display:flex;gap:10px}
+.tdot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:3px}
+.kb-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px}
+.kb-dept-tabs{display:flex;gap:6px;flex-wrap:wrap}
+.kdt{padding:5px 14px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--muted);font-family:'DM Sans',sans-serif;transition:all .15s}
+.kdt:hover{border-color:var(--accent);color:var(--text)}
+.btn-add{padding:8px 16px;border:none;border-radius:9px;font-size:13px;cursor:pointer;font-weight:600;color:#fff;font-family:'DM Sans',sans-serif;background:linear-gradient(135deg,var(--accent2),var(--accent));transition:opacity .15s}
+.btn-add:hover{opacity:.88}.btn-add:disabled{opacity:.5;cursor:not-allowed}
+.kb-cols{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.kb-col{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:10px;min-height:300px}
+.kb-col-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.kb-col-name{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}
+.kb-count{font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:1px 8px;color:var(--muted)}
+.kc{background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:10px;margin-bottom:8px;cursor:pointer;transition:border-color .15s}
+.kc:hover{border-color:var(--accent)}.kc-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:6px;line-height:1.4}
+.kc-meta{display:flex;justify-content:space-between;align-items:center}
+.kc-tag{font-size:10px;padding:1px 7px;border-radius:20px;margin-bottom:6px;display:inline-block;font-weight:600}
+.pdot{width:6px;height:6px;border-radius:50%;display:inline-block;margin-right:3px}.kc-due{font-size:11px;color:var(--muted)}
+.av-sm{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700}
+.flows-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.flows-grid{display:grid;gap:10px}
+.fc{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 20px;cursor:pointer;transition:border-color .15s,transform .15s}
+.fc:hover{border-color:var(--accent);transform:translateY(-1px)}
+.fc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.fc-name{font-size:14px;font-weight:600;color:var(--text)}.fc-desc{font-size:12px;color:var(--muted);margin-bottom:10px}
+.fc-preview{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.step-pill{font-size:11px;padding:2px 10px;border-radius:20px;font-weight:600}.arrow-s{font-size:12px;color:var(--muted)}
+.fc-actions{display:flex;gap:6px}
+.btn-sm{padding:5px 12px;border:1px solid var(--border);border-radius:8px;background:none;font-size:12px;cursor:pointer;color:var(--muted);font-family:'DM Sans',sans-serif;transition:all .15s}
+.btn-sm:hover{border-color:var(--text);color:var(--text)}.btn-sm.danger:hover{border-color:var(--red);color:var(--red)}
+.empty-state{text-align:center;padding:60px 20px;color:var(--muted);font-size:14px}.empty-icon{font-size:40px;margin-bottom:12px}
+.editor-wrap{display:grid;grid-template-columns:1fr 300px;gap:16px}
+.editor-side{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:16px;height:fit-content;position:sticky;top:80px}
+.back-row{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.back-btn{padding:6px 14px;border:1px solid var(--border);border-radius:8px;background:none;font-size:12px;cursor:pointer;color:var(--muted);font-family:'DM Sans',sans-serif}
+.back-btn:hover{border-color:var(--text);color:var(--text)}
+.flow-name-inp{flex:1;background:none;border:none;border-bottom:1px solid var(--border);color:var(--text);font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;outline:none;padding:4px 0}
+.flow-name-inp:focus{border-bottom-color:var(--accent)}
+.flow-desc-inp{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:13px;padding:8px 12px;outline:none;margin-bottom:18px}
+.flow-desc-inp:focus{border-color:var(--accent);color:var(--text)}
+.step-row{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:8px;display:flex;gap:12px;align-items:flex-start}
+.step-num{width:26px;height:26px;border-radius:50%;background:rgba(245,166,35,.12);color:var(--accent);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+.step-content{flex:1}.step-action{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px}
+.step-who{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.step-obs{font-size:11px;color:var(--muted);margin-top:4px;font-style:italic}
+.step-btns{display:flex;gap:3px;flex-shrink:0}
+.step-btn{width:26px;height:26px;border:none;background:none;cursor:pointer;border-radius:5px;color:var(--muted);font-size:14px;display:flex;align-items:center;justify-content:center}
+.step-btn:hover{background:var(--surface3);color:var(--text)}.step-btn.del:hover{background:rgba(231,76,60,.15);color:var(--red)}
+.add-step-box{border:1px dashed var(--border);border-radius:10px;padding:14px}
+.add-step-box label{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:700;display:block;margin-bottom:6px}
+.fi-group{margin-bottom:10px}
+.fi-label{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:700;display:block;margin-bottom:4px}
+input[type=text],select,textarea{width:100%;background:var(--surface3);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;padding:8px 10px;outline:none;transition:border-color .15s}
+input[type=text]:focus,select:focus,textarea:focus{border-color:var(--accent)}
+select option{background:var(--surface2)}textarea{resize:vertical;min-height:52px}
+.member-side-list{display:flex;flex-direction:column;gap:2px;max-height:420px;overflow-y:auto}
+.ms-group{margin-bottom:10px}
+.ms-group-label{font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-weight:700;margin-bottom:5px;padding-left:4px}
+.ms-item{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:8px;cursor:pointer;transition:background .15s}
+.ms-item:hover{background:var(--surface3)}
+.ms-avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0}
+.ms-name{font-size:12px;font-weight:600;color:var(--text)}.ms-role{font-size:10px;color:var(--muted)}
+.viz-scroll{overflow-x:auto;padding:16px 0;margin-bottom:24px}
+.viz-flow{display:flex;align-items:flex-start;gap:0;min-width:max-content}
+.viz-node{display:flex;flex-direction:column;align-items:center;width:140px}
+.viz-box{border-radius:12px;padding:12px 14px;width:130px;text-align:center;border:1px solid transparent}
+.viz-step-n{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;opacity:.7}
+.viz-action{font-size:12px;font-weight:600;line-height:1.4;margin-bottom:7px}
+.viz-who{display:flex;align-items:center;justify-content:center;gap:5px;margin-bottom:5px}
+.viz-dept-tag{font-size:9px;padding:2px 7px;border-radius:20px;display:inline-block;font-weight:700}
+.viz-arrow{display:flex;align-items:center;padding-top:36px;color:var(--muted);font-size:22px}
+.viz-obs{font-size:10px;color:var(--muted);text-align:center;margin-top:6px;max-width:125px;line-height:1.4;font-style:italic}
+.detail-table{width:100%;border-collapse:collapse}.detail-table tr{border-bottom:1px solid var(--border)}.detail-table tr:last-child{border:none}.detail-table td{padding:12px 14px;vertical-align:top}
+.dt-num{width:36px}
+.dt-circle{width:28px;height:28px;border-radius:50%;background:rgba(245,166,35,.12);color:var(--accent);font-family:'Bebas Neue',sans-serif;font-size:14px;display:flex;align-items:center;justify-content:center}
+.dt-action{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px}
+.dt-who{display:flex;align-items:center;gap:7px;flex-wrap:wrap}.dt-role{font-size:11px;color:var(--muted)}.dt-obs{font-size:12px;color:var(--muted);margin-top:5px;font-style:italic}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.overlay.open{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;width:440px;max-width:95vw;max-height:85vh;overflow-y:auto}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.modal-title{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1.5px;color:var(--accent)}
+.modal-x{background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer;line-height:1}
+.modal-x:hover{color:var(--text)}.mfooter{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+.btn-cancel{padding:8px 18px;border:1px solid var(--border);border-radius:9px;background:none;font-size:13px;cursor:pointer;color:var(--muted);font-family:'DM Sans',sans-serif}
+.btn-cancel:hover{border-color:var(--text);color:var(--text)}
+.btn-save{padding:8px 20px;border:none;border-radius:9px;font-size:13px;cursor:pointer;font-weight:700;color:#fff;font-family:'DM Sans',sans-serif;background:linear-gradient(135deg,var(--accent2),var(--accent))}
+.btn-save:hover{opacity:.88}.btn-save:disabled{opacity:.5;cursor:not-allowed}
+.toast{position:fixed;bottom:24px;right:24px;z-index:500;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 18px;font-size:13px;display:none;gap:10px;align-items:center;box-shadow:0 8px 32px rgba(0,0,0,.4)}
+.toast.show{display:flex}.toast.ok{border-left:4px solid var(--green)}.toast.err{border-left:4px solid var(--red)}
+@media(max-width:768px){.grid2,.grid4,.kb-cols{grid-template-columns:1fr}.editor-wrap{grid-template-columns:1fr}.page-body{padding:14px}.htab{padding:6px 10px;font-size:12px}}
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
+<div class="loading-bar" id="lb"></div>
+
 <header class="page-header">
   <div>
     <div class="page-header-title">👥 Gestão de Equipe</div>
@@ -458,59 +164,31 @@ textarea { resize: vertical; min-height: 52px; }
 
 <div class="page-body">
 
-  <!-- ════════════════ DASHBOARD ════════════════ -->
+  <!-- DASHBOARD -->
   <div class="sec on" id="sec-dash">
     <div class="grid4">
-      <div class="kpi blue">
-        <div class="kpi-label">Funcionários</div>
-        <div class="kpi-value" id="kpi-total">14</div>
-        <div class="kpi-sub">na equipe</div>
-      </div>
-      <div class="kpi amber">
-        <div class="kpi-label">Tarefas abertas</div>
-        <div class="kpi-value" id="kpi-open">—</div>
-        <div class="kpi-sub">pendentes</div>
-      </div>
-      <div class="kpi red">
-        <div class="kpi-label">Atrasadas</div>
-        <div class="kpi-value" id="kpi-late">—</div>
-        <div class="kpi-sub">requer ação</div>
-      </div>
-      <div class="kpi green">
-        <div class="kpi-label">Concluídas</div>
-        <div class="kpi-value" id="kpi-done">—</div>
-        <div class="kpi-sub">este mês</div>
-      </div>
+      <div class="kpi blue"><div class="kpi-label">Funcionários</div><div class="kpi-value" id="k-total">—</div><div class="kpi-sub">ativos</div></div>
+      <div class="kpi amber"><div class="kpi-label">Tarefas abertas</div><div class="kpi-value" id="k-open">—</div><div class="kpi-sub">pendentes</div></div>
+      <div class="kpi red"><div class="kpi-label">Atrasadas</div><div class="kpi-value" id="k-late">—</div><div class="kpi-sub">requer ação</div></div>
+      <div class="kpi green"><div class="kpi-label">Concluídas</div><div class="kpi-value" id="k-done">—</div><div class="kpi-sub">este mês</div></div>
     </div>
     <div class="grid2">
-      <div class="card">
-        <div class="card-title">Status por departamento</div>
-        <div id="dept-bars"></div>
-      </div>
-      <div class="card">
-        <div class="card-title">Próximos prazos</div>
-        <div id="prazos"></div>
-      </div>
+      <div class="card"><div class="card-title">Status por departamento</div><div id="dept-bars"><span style="color:var(--muted);font-size:13px">Carregando...</span></div></div>
+      <div class="card"><div class="card-title">Próximos prazos</div><div id="prazos"><span style="color:var(--muted);font-size:13px">Carregando...</span></div></div>
     </div>
     <div class="grid2">
-      <div class="card">
-        <div class="card-title">Carga por pessoa</div>
-        <div id="pessoa-bars"></div>
-      </div>
-      <div class="card">
-        <div class="card-title">Tarefas atrasadas</div>
-        <div id="atrasadas"></div>
-      </div>
+      <div class="card"><div class="card-title">Carga por pessoa</div><div id="pessoa-bars"><span style="color:var(--muted);font-size:13px">Carregando...</span></div></div>
+      <div class="card"><div class="card-title">Tarefas atrasadas</div><div id="atrasadas"><span style="color:var(--muted);font-size:13px">Carregando...</span></div></div>
     </div>
   </div>
 
-  <!-- ════════════════ EQUIPE ════════════════ -->
+  <!-- EQUIPE -->
   <div class="sec" id="sec-equipe">
     <div class="dept-filters" id="dept-filters"></div>
-    <div class="member-grid" id="member-grid"></div>
+    <div class="member-grid" id="member-grid"><span style="color:var(--muted);font-size:13px">Carregando...</span></div>
   </div>
 
-  <!-- ════════════════ TAREFAS / KANBAN ════════════════ -->
+  <!-- TAREFAS -->
   <div class="sec" id="sec-tarefas">
     <div class="kb-toolbar">
       <div class="kb-dept-tabs" id="kb-dept-tabs"></div>
@@ -519,559 +197,461 @@ textarea { resize: vertical; min-height: 52px; }
     <div class="kb-cols" id="kb-board"></div>
   </div>
 
-  <!-- ════════════════ FLUXOGRAMAS ════════════════ -->
+  <!-- FLUXOGRAMAS -->
   <div class="sec" id="sec-fluxos">
-
-    <!-- LISTA DE FLUXOS -->
-    <div id="view-list">
+    <div id="vw-list">
       <div class="flows-header">
         <div>
           <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;color:var(--accent)">Fluxogramas de Processo</div>
-          <div style="font-size:12px;color:var(--muted);margin-top:2px">Crie fluxos de trabalho com sua equipe</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:2px">Defina quem faz o quê em cada situação</div>
         </div>
         <button class="btn-add" onclick="newFlow()">+ Novo Fluxo</button>
       </div>
       <div class="flows-grid" id="flow-list-el"></div>
     </div>
 
-    <!-- EDITOR DE FLUXO -->
-    <div id="view-editor" style="display:none">
+    <div id="vw-editor" style="display:none">
       <div class="back-row">
-        <button class="back-btn" onclick="showFlowList()">← Voltar</button>
-        <input class="flow-name-inp" id="flow-name-inp" type="text" placeholder="NOME DO FLUXO (EX: CONTRATO FECHADO)">
-        <button class="btn-add" onclick="saveAndView()">Salvar e visualizar →</button>
+        <button class="back-btn" onclick="showList()">← Voltar</button>
+        <input class="flow-name-inp" id="fn-name" type="text" placeholder="NOME DO FLUXO">
+        <button class="btn-add" id="btn-sf" onclick="saveFlow()">Salvar →</button>
       </div>
-      <input class="flow-desc-inp" id="flow-desc-inp" type="text" placeholder="Descrição breve do processo...">
+      <input class="flow-desc-inp" id="fn-desc" type="text" placeholder="Descrição breve do processo...">
       <div class="editor-wrap">
-        <div class="editor-main">
-          <div id="steps-list-el"></div>
+        <div>
+          <div id="steps-el"></div>
           <div class="add-step-box">
-            <label>Adicionar Etapa</label>
-            <div class="fi-group">
-              <span class="fi-label">Ação / Descrição</span>
-              <input type="text" id="ns-action" placeholder="Ex: Lança o contrato no sistema">
-            </div>
-            <div class="fi-group">
-              <span class="fi-label">Responsável</span>
-              <select id="ns-resp"></select>
-            </div>
-            <div class="fi-group">
-              <span class="fi-label">Observação (opcional)</span>
-              <textarea id="ns-obs" placeholder="Ex: Deve anexar PDF assinado e checar dados do cliente..."></textarea>
-            </div>
-            <div style="text-align:right">
-              <button class="btn-add" onclick="addStep()" style="padding:7px 16px;font-size:12px;">+ Adicionar etapa</button>
-            </div>
+            <label>Nova Etapa</label>
+            <div class="fi-group"><span class="fi-label">Ação</span><input type="text" id="ns-ac" placeholder="Ex: Lança o contrato no sistema"></div>
+            <div class="fi-group"><span class="fi-label">Responsável</span><select id="ns-re"></select></div>
+            <div class="fi-group"><span class="fi-label">Observação (opcional)</span><textarea id="ns-ob" placeholder="Detalhes..." style="min-height:50px"></textarea></div>
+            <div style="text-align:right"><button class="btn-add" onclick="addStep()" style="padding:7px 16px;font-size:12px">+ Adicionar</button></div>
           </div>
         </div>
         <div class="editor-side">
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:1.5px;color:var(--muted);margin-bottom:12px">Equipe Disponível</div>
-          <div class="member-side-list" id="member-side"></div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:1.5px;color:var(--muted);margin-bottom:10px">Clique para selecionar</div>
+          <div class="member-side-list" id="m-side"></div>
         </div>
       </div>
     </div>
 
-    <!-- VISUALIZAÇÃO DO FLUXO -->
-    <div id="view-flow" style="display:none">
+    <div id="vw-flow" style="display:none">
       <div class="back-row">
-        <button class="back-btn" onclick="showFlowList()">← Todos os fluxos</button>
+        <button class="back-btn" onclick="showList()">← Todos os fluxos</button>
         <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:var(--accent)" id="vf-title"></div>
-        <button class="btn-sm" onclick="editCurrentFlow()">✏️ Editar</button>
+        <button class="btn-sm" onclick="editCurrent()">✏️ Editar</button>
       </div>
       <div style="font-size:12px;color:var(--muted);margin-bottom:20px" id="vf-desc"></div>
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:1.5px;color:var(--muted);margin-bottom:10px">FLUXO DE TRABALHO</div>
-      <div class="viz-scroll">
-        <div class="viz-flow" id="vf-flow"></div>
-      </div>
-      <div class="card" style="margin-top:8px">
-        <div class="card-title">Detalhamento das Etapas</div>
-        <table class="detail-table" id="vf-detail"></table>
-      </div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:11px;letter-spacing:1.5px;color:var(--muted);margin-bottom:10px">FLUXO DE TRABALHO</div>
+      <div class="viz-scroll"><div class="viz-flow" id="vf-flow"></div></div>
+      <div class="card" style="margin-top:8px"><div class="card-title">Detalhamento</div><table class="detail-table" id="vf-detail"></table></div>
     </div>
+  </div>
 
-  </div><!-- fim sec-fluxos -->
+</div>
 
-</div><!-- fim page-body -->
-
-<!-- MODAL NOVA TAREFA -->
-<div class="overlay" id="task-overlay" onclick="closeTaskModal(event)">
+<!-- MODAL TAREFA -->
+<div class="overlay" id="task-ov" onclick="closeTaskModal(event)">
   <div class="modal">
-    <div class="modal-header">
-      <span class="modal-title">Nova Tarefa</span>
-      <button class="modal-x" onclick="closeTaskModal()">×</button>
-    </div>
-    <div class="fi-group"><span class="fi-label">Título</span><input type="text" id="nt-title" placeholder="Ex: Revisar projeto executivo..."></div>
+    <div class="modal-header"><span class="modal-title">Nova Tarefa</span><button class="modal-x" onclick="closeTaskModal()">×</button></div>
+    <div class="fi-group"><span class="fi-label">Título</span><input type="text" id="nt-ti" placeholder="Ex: Revisar projeto executivo..."></div>
     <div class="fi-group"><span class="fi-label">Departamento</span>
-      <select id="nt-dept" onchange="populateRespSel('nt-resp','nt-dept')">
+      <select id="nt-de" onchange="popResp()">
         <option>Direção</option><option>Arquitetura</option><option>Engenharia</option>
         <option>Logística</option><option>Obra</option><option>Financeiro</option><option>Comercial</option>
       </select>
     </div>
-    <div class="fi-group"><span class="fi-label">Responsável</span><select id="nt-resp"></select></div>
+    <div class="fi-group"><span class="fi-label">Responsável</span><select id="nt-re"></select></div>
     <div class="fi-group"><span class="fi-label">Prioridade</span>
-      <select id="nt-prior"><option>Alta</option><option>Média</option><option>Baixa</option></select>
+      <select id="nt-pr"><option>Alta</option><option>Média</option><option>Baixa</option></select>
     </div>
-    <div class="fi-group"><span class="fi-label">Prazo</span><input type="text" id="nt-due" placeholder="Ex: 15/05"></div>
+    <div class="fi-group"><span class="fi-label">Prazo (dd/mm/aaaa)</span><input type="text" id="nt-du" placeholder="Ex: 20/05/2025"></div>
+    <div class="fi-group"><span class="fi-label">Observação</span><textarea id="nt-ob" style="min-height:55px" placeholder="Opcional..."></textarea></div>
     <div class="mfooter">
       <button class="btn-cancel" onclick="closeTaskModal()">Cancelar</button>
-      <button class="btn-save" onclick="saveTask()">Criar Tarefa</button>
+      <button class="btn-save" id="btn-st" onclick="saveTask()">Criar Tarefa</button>
     </div>
   </div>
 </div>
 
+<div class="toast" id="toast"><span id="t-ico">✓</span><span id="t-msg"></span></div>
+
 <script>
-// ─────────────── DADOS ───────────────
-var DEPT_STYLE = {
-  'Direção':    { fill:'rgba(127,119,221,0.15)', text:'#9d97e8', bar:'#7F77DD' },
-  'Arquitetura':{ fill:'rgba(48,142,238,0.12)',  text:'#308EEE', bar:'#308EEE' },
-  'Engenharia': { fill:'rgba(29,158,117,0.12)',  text:'#1D9E75', bar:'#1D9E75' },
-  'Logística':  { fill:'rgba(239,159,39,0.12)',  text:'#EF9F27', bar:'#EF9F27' },
-  'Obra':       { fill:'rgba(216,90,48,0.12)',   text:'#D85A30', bar:'#D85A30' },
-  'Financeiro': { fill:'rgba(99,153,34,0.12)',   text:'#639922', bar:'#639922' },
-  'Comercial':  { fill:'rgba(245,166,35,0.12)',  text:'#f5a623', bar:'#f5a623' },
+var SB_URL = 'https://gzzclbxnohokttujvaqa.supabase.co';
+var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd6emNsYnhub2hva3R0dWp2YXFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4Njc0NDUsImV4cCI6MjA4OTQ0MzQ0NX0.6XPR0m90k6qd66rLeatapLQ8jZYMn-V1lB9h2YT34hc';
+var _tk = SB_KEY;
+try { var _s=JSON.parse(localStorage.getItem('alliance_session')||'{}'); if(_s&&_s.user&&_s.user.access_token) _tk=_s.user.access_token; } catch(e){}
+window.addEventListener('message',function(e){ if(e.data&&e.data.type==='AUTH'&&e.data.token) _tk=e.data.token; });
+
+var MEMBERS=[], TASKS=[], FLOWS=[], BY_DEPT={};
+var currentKbDept='Arquitetura', currentDF='todos', currentFId=null, editSteps=[];
+
+var DS={
+  'Direção':    {fill:'rgba(127,119,221,.15)',text:'#9d97e8',bar:'#7F77DD'},
+  'Arquitetura':{fill:'rgba(48,142,238,.12)', text:'#308EEE',bar:'#308EEE'},
+  'Engenharia': {fill:'rgba(29,158,117,.12)', text:'#1D9E75',bar:'#1D9E75'},
+  'Logística':  {fill:'rgba(239,159,39,.12)', text:'#EF9F27',bar:'#EF9F27'},
+  'Obra':       {fill:'rgba(216,90,48,.12)',  text:'#D85A30',bar:'#D85A30'},
+  'Financeiro': {fill:'rgba(99,153,34,.12)',  text:'#639922',bar:'#639922'},
+  'Comercial':  {fill:'rgba(245,166,35,.12)', text:'#f5a623',bar:'#f5a623'},
 };
+var PC={Alta:'#e74c3c',Média:'#f5a623',Baixa:'#27ae60'};
+var KC=['A fazer','Em andamento','Atrasado','Concluído'];
 
-var MEMBERS = [
-  {name:'Leandro',   initials:'LE', role:'Diretor / Engenheiro',     dept:'Direção'},
-  {name:'Carlos M.', initials:'CM', role:'Arquiteto Sênior',         dept:'Arquitetura'},
-  {name:'Eduardo',   initials:'ED', role:'Projetista',               dept:'Arquitetura'},
-  {name:'Ana F.',    initials:'AF', role:'Arquiteta',                dept:'Arquitetura'},
-  {name:'Pedro H.',  initials:'PH', role:'Engenheiro Civil',         dept:'Engenharia'},
-  {name:'Lucas S.',  initials:'LS', role:'Eng. Estrutural',          dept:'Engenharia'},
-  {name:'Rodrigo T.',initials:'RT', role:'Coord. Logística',         dept:'Logística'},
-  {name:'Camila B.', initials:'CB', role:'Aux. Logística',           dept:'Logística'},
-  {name:'Fábio N.',  initials:'FN', role:'Encarregado Joinville',    dept:'Obra'},
-  {name:'Eder K.',   initials:'EK', role:'Encarregado Tijucas',      dept:'Obra'},
-  {name:'Marcelo J.',initials:'MJ', role:'Enc. Guaramirim',          dept:'Obra'},
-  {name:'Juliana R.',initials:'JR', role:'Analista Financeiro',      dept:'Financeiro'},
-  {name:'Fernanda C.',initials:'FC',role:'Controller',               dept:'Financeiro'},
-  {name:'Marcos V.', initials:'MV', role:'Vendedor Sênior',         dept:'Comercial'},
-  {name:'Patrícia L.',initials:'PL',role:'Consultora Comercial',     dept:'Comercial'},
-];
+function hdr(){ return {'apikey':SB_KEY,'Authorization':'Bearer '+_tk,'Content-Type':'application/json','Prefer':'return=representation'}; }
+function GET(p){ return fetch(SB_URL+'/rest/v1/'+p,{headers:hdr()}).then(function(r){return r.json();}); }
+function POST(p,b){ return fetch(SB_URL+'/rest/v1/'+p,{method:'POST',headers:hdr(),body:JSON.stringify(b)}).then(function(r){return r.json();}); }
+function PATCH(p,b){ return fetch(SB_URL+'/rest/v1/'+p,{method:'PATCH',headers:hdr(),body:JSON.stringify(b)}).then(function(r){return r.json();}); }
+function DEL(p){ return fetch(SB_URL+'/rest/v1/'+p,{method:'DELETE',headers:hdr()}).then(function(r){return r.ok;}); }
 
-var BY_DEPT = {};
-MEMBERS.forEach(function(m){ if(!BY_DEPT[m.dept]) BY_DEPT[m.dept]=[]; BY_DEPT[m.dept].push(m); });
+function spin(on){ document.getElementById('lb').classList.toggle('show',on); }
+var _tt;
+function toast(msg,type){
+  var el=document.getElementById('toast');
+  el.className='toast show '+(type||'ok');
+  document.getElementById('t-ico').textContent=type==='err'?'✕':'✓';
+  document.getElementById('t-msg').textContent=msg;
+  clearTimeout(_tt); _tt=setTimeout(function(){ el.classList.remove('show'); },3500);
+}
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function fmtDate(d){ if(!d) return '—'; try{ return new Date(d+'T00:00:00').toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'}); }catch(e){return d;} }
+function parseDate(s){
+  if(!s) return null;
+  var p=s.split('/');
+  if(p.length===3) return p[2]+'-'+p[1].padStart(2,'0')+'-'+p[0].padStart(2,'0');
+  if(p.length===2) return new Date().getFullYear()+'-'+p[1].padStart(2,'0')+'-'+p[0].padStart(2,'0');
+  return null;
+}
 
-var TASKS = [
-  {id:1,  title:'Projeto executivo Lote 7',       dept:'Arquitetura', resp:'Carlos M.', prior:'Alta',  due:'05/05', status:'Em andamento'},
-  {id:2,  title:'Revisão memorial descritivo',    dept:'Engenharia',  resp:'Pedro H.',  prior:'Alta',  due:'03/05', status:'Atrasado'},
-  {id:3,  title:'Entrega módulos Tijucas',        dept:'Logística',   resp:'Rodrigo T.',prior:'Alta',  due:'06/05', status:'Em andamento'},
-  {id:4,  title:'Vistoria fundações Guaramirim',  dept:'Obra',        resp:'Marcelo J.',prior:'Média', due:'02/05', status:'Atrasado'},
-  {id:5,  title:'Fechamento contas abril',        dept:'Financeiro',  resp:'Juliana R.',prior:'Alta',  due:'04/05', status:'Atrasado'},
-  {id:6,  title:'Proposta cliente Silva',         dept:'Comercial',   resp:'Marcos V.', prior:'Média', due:'07/05', status:'A fazer'},
-  {id:7,  title:'Detalhamento cobertura Angelo',  dept:'Arquitetura', resp:'Eduardo',   prior:'Baixa', due:'12/05', status:'A fazer'},
-  {id:8,  title:'Cálculo estrutural bloco B',     dept:'Engenharia',  resp:'Lucas S.',  prior:'Média', due:'10/05', status:'Em andamento'},
-  {id:9,  title:'Agendamento transporte semana',  dept:'Logística',   resp:'Camila B.', prior:'Baixa', due:'08/05', status:'A fazer'},
-  {id:10, title:'Treinamento equipe obra',        dept:'Obra',        resp:'Fábio N.',  prior:'Baixa', due:'15/05', status:'A fazer'},
-  {id:11, title:'Relatório DRE mensal',           dept:'Financeiro',  resp:'Fernanda C.',prior:'Média',due:'09/05', status:'Concluído'},
-  {id:12, title:'Follow-up leads semana',         dept:'Comercial',   resp:'Patrícia L.',prior:'Alta', due:'05/05', status:'Em andamento'},
-];
-var nextTaskId = 13;
+// CARREGA TUDO
+function loadAll(){
+  spin(true);
+  Promise.all([
+    GET('employees?ativo=eq.true&order=departamento.asc,nome.asc'),
+    GET('tasks?order=created_at.desc')
+  ]).then(function(r){
+    MEMBERS=Array.isArray(r[0])?r[0]:[];
+    TASKS  =Array.isArray(r[1])?r[1]:[];
+    BY_DEPT={};
+    MEMBERS.forEach(function(m){ if(!BY_DEPT[m.departamento])BY_DEPT[m.departamento]=[]; BY_DEPT[m.departamento].push(m); });
+    spin(false); renderDash();
+  }).catch(function(){ spin(false); toast('Erro ao carregar dados','err'); });
+}
 
-var FLOWS = [
-  {
-    id:1, name:'CONTRATO FECHADO',
-    desc:'Processo desde o fechamento até o início da obra',
-    steps:[
-      {action:'Lança o contrato no sistema',         resp:'Leandro',    obs:'Preencher todos os dados do cliente e valor final'},
-      {action:'Recebe briefing e inicia os projetos', resp:'Eduardo',   obs:'Prazo máximo 5 dias úteis após contrato'},
-      {action:'Valida e assina os projetos',          resp:'Pedro H.',  obs:'Verificar conformidade com normas ABNT'},
-      {action:'Emite ART e documentação',             resp:'Pedro H.',  obs:''},
-      {action:'Agenda entrega dos módulos',           resp:'Rodrigo T.',obs:'Confirmar endereço da obra com o cliente'},
-      {action:'Inicia montagem na obra',              resp:'Fábio N.',  obs:'Receber kit completo e conferir peças'},
-      {action:'Emite NF e cobranças',                 resp:'Juliana R.',obs:'Gerar parcelas conforme contrato'},
-    ]
-  },
-  {
-    id:2, name:'NOVO LEAD RECEBIDO',
-    desc:'Do primeiro contato ao fechamento do contrato',
-    steps:[
-      {action:'Registra o lead no sistema',           resp:'Patrícia L.',obs:'Via WhatsApp, Instagram ou indicação'},
-      {action:'Faz o primeiro contato em até 30min',  resp:'Patrícia L.',obs:''},
-      {action:'Agenda visita ou reunião online',       resp:'Marcos V.', obs:''},
-      {action:'Apresenta catálogo e faz orçamento',   resp:'Marcos V.', obs:'Usar sistema de orçamentos do Hub'},
-      {action:'Aprova proposta final',                resp:'Leandro',   obs:'Contratos acima de R$150k precisam de aprovação'},
-      {action:'Assina contrato',                      resp:'Leandro',   obs:''},
-    ]
-  }
-];
-var nextFlowId = 3;
-var currentFlowId = null;
-var editingSteps = [];
+function loadFlows(cb){
+  spin(true);
+  GET('workflows?order=created_at.desc').then(function(flows){
+    if(!Array.isArray(flows)||!flows.length){ FLOWS=[]; spin(false); if(cb)cb(); return; }
+    var ids=flows.map(function(f){return f.id;});
+    GET('workflow_steps?workflow_id=in.('+ids.join(',')+')'+'&order=workflow_id.asc,ordem.asc').then(function(steps){
+      FLOWS=flows.map(function(f){
+        return Object.assign({},f,{steps:(Array.isArray(steps)?steps:[]).filter(function(s){return s.workflow_id===f.id;})});
+      });
+      spin(false); if(cb)cb();
+    });
+  }).catch(function(){ spin(false); toast('Erro ao carregar fluxos','err'); });
+}
 
-var PRIO_COLOR = {Alta:'#e74c3c', Média:'#f5a623', Baixa:'#27ae60'};
-var KB_COLS = ['A fazer','Em andamento','Atrasado','Concluído'];
-var currentKbDept = 'Arquitetura';
-var currentDeptFilter = 'todos';
-
-// ─────────────── NAV ───────────────
-function goTab(id, btn) {
-  document.querySelectorAll('.htab').forEach(function(b){ b.classList.remove('on'); });
-  document.querySelectorAll('.sec').forEach(function(s){ s.classList.remove('on'); });
+// NAV
+function goTab(id,btn){
+  document.querySelectorAll('.htab').forEach(function(b){b.classList.remove('on');});
+  document.querySelectorAll('.sec').forEach(function(s){s.classList.remove('on');});
   btn.classList.add('on');
   document.getElementById('sec-'+id).classList.add('on');
   if(id==='dash')    renderDash();
   if(id==='equipe')  renderEquipe();
   if(id==='tarefas') renderKanban();
-  if(id==='fluxos')  renderFlowList();
+  if(id==='fluxos')  loadFlows(function(){ showList(); });
 }
 
-// ─────────────── DASHBOARD ───────────────
-function renderDash() {
-  var open = TASKS.filter(function(t){ return t.status!=='Concluído'; }).length;
-  var late = TASKS.filter(function(t){ return t.status==='Atrasado'; }).length;
-  var done = TASKS.filter(function(t){ return t.status==='Concluído'; }).length;
-  document.getElementById('kpi-open').textContent = open;
-  document.getElementById('kpi-late').textContent = late;
-  document.getElementById('kpi-done').textContent = done;
+// DASHBOARD
+function renderDash(){
+  var open=TASKS.filter(function(t){return t.status!=='Concluído';}).length;
+  var late=TASKS.filter(function(t){return t.status==='Atrasado';}).length;
+  var done=TASKS.filter(function(t){return t.status==='Concluído';}).length;
+  document.getElementById('k-total').textContent=MEMBERS.length;
+  document.getElementById('k-open').textContent=open;
+  document.getElementById('k-late').textContent=late;
+  document.getElementById('k-done').textContent=done;
 
-  var depts = Object.keys(DEPT_STYLE).filter(function(d){ return d!=='Direção'; });
-  var counts = {};
-  depts.forEach(function(d){ counts[d]=TASKS.filter(function(t){ return t.dept===d && t.status!=='Concluído'; }).length; });
-  var mx = Math.max.apply(null, Object.values(counts).concat([1]));
-  document.getElementById('dept-bars').innerHTML = depts.map(function(d){
-    var st = DEPT_STYLE[d];
-    return '<div class="br"><span class="br-l">'+d+'</span>'
-      +'<div class="br-track"><div class="br-fill" style="width:'+Math.round(counts[d]/mx*100)+'%;background:'+st.bar+'"></div></div>'
-      +'<span class="br-n">'+counts[d]+'</span></div>';
+  var depts=Object.keys(DS).filter(function(d){return d!=='Direção';});
+  var cnt={};
+  depts.forEach(function(d){cnt[d]=TASKS.filter(function(t){return t.departamento===d&&t.status!=='Concluído';}).length;});
+  var mx=Math.max.apply(null,Object.values(cnt).concat([1]));
+  document.getElementById('dept-bars').innerHTML=depts.map(function(d){
+    return '<div class="br"><span class="br-l">'+d+'</span><div class="br-track"><div class="br-fill" style="width:'+Math.round(cnt[d]/mx*100)+'%;background:'+DS[d].bar+'"></div></div><span class="br-n">'+cnt[d]+'</span></div>';
   }).join('');
 
-  var upcoming = TASKS.filter(function(t){ return t.status!=='Concluído'; }).slice(0,5);
-  document.getElementById('prazos').innerHTML = upcoming.map(function(t){
-    var cls = t.status==='Atrasado'?'b-red':t.prior==='Alta'?'b-amber':'b-green';
-    return '<div class="pi"><div><div class="pi-t">'+t.title+'</div><div class="pi-m">'+t.resp+' · '+t.dept+'</div></div>'
-      +'<span class="badge '+cls+'">'+(t.status==='Atrasado'?'Atrasado':t.due)+'</span></div>';
+  var up=TASKS.filter(function(t){return t.status!=='Concluído';}).slice(0,5);
+  document.getElementById('prazos').innerHTML=up.length?up.map(function(t){
+    var cls=t.status==='Atrasado'?'b-red':t.prioridade==='Alta'?'b-amber':'b-green';
+    return '<div class="pi"><div><div class="pi-t">'+esc(t.titulo)+'</div><div class="pi-m">'+esc(t.responsavel)+' · '+esc(t.departamento)+'</div></div><span class="badge '+cls+'">'+(t.status==='Atrasado'?'Atrasado':fmtDate(t.prazo))+'</span></div>';
+  }).join(''):'<div style="color:var(--muted);font-size:13px;padding:8px 0">Nenhuma tarefa pendente</div>';
+
+  var pc={};
+  MEMBERS.forEach(function(m){pc[m.nome]=TASKS.filter(function(t){return t.responsavel===m.nome&&t.status!=='Concluído';}).length;});
+  var top=Object.entries(pc).sort(function(a,b){return b[1]-a[1];}).slice(0,7);
+  var mxp=Math.max.apply(null,top.map(function(p){return p[1];}).concat([1]));
+  document.getElementById('pessoa-bars').innerHTML=top.map(function(p){
+    return '<div class="br"><span class="br-l">'+esc(p[0])+'</span><div class="br-track"><div class="br-fill" style="width:'+Math.round(p[1]/mxp*100)+'%;background:#308EEE"></div></div><span class="br-n">'+p[1]+'</span></div>';
   }).join('');
 
-  var pc = {};
-  MEMBERS.forEach(function(m){ pc[m.name]=TASKS.filter(function(t){ return t.resp===m.name&&t.status!=='Concluído'; }).length; });
-  var top = Object.entries(pc).sort(function(a,b){ return b[1]-a[1]; }).slice(0,7);
-  var mxp = Math.max.apply(null, top.map(function(p){ return p[1]; }).concat([1]));
-  document.getElementById('pessoa-bars').innerHTML = top.map(function(p){
-    return '<div class="br"><span class="br-l">'+p[0]+'</span>'
-      +'<div class="br-track"><div class="br-fill" style="width:'+Math.round(p[1]/mxp*100)+'%;background:#308EEE"></div></div>'
-      +'<span class="br-n">'+p[1]+'</span></div>';
-  }).join('');
-
-  var at = TASKS.filter(function(t){ return t.status==='Atrasado'; });
-  document.getElementById('atrasadas').innerHTML = at.length
-    ? at.map(function(t){
-        return '<div class="pi"><div><div class="pi-t">'+t.title+'</div><div class="pi-m">'+t.resp+' · prazo '+t.due+'</div></div>'
-          +'<span class="badge b-red">Atrasado</span></div>';
-      }).join('')
-    : '<div style="text-align:center;padding:20px;color:var(--muted);font-size:13px">Nenhuma tarefa atrasada 🎉</div>';
+  var at=TASKS.filter(function(t){return t.status==='Atrasado';});
+  document.getElementById('atrasadas').innerHTML=at.length?at.map(function(t){
+    return '<div class="pi"><div><div class="pi-t">'+esc(t.titulo)+'</div><div class="pi-m">'+esc(t.responsavel)+' · prazo '+fmtDate(t.prazo)+'</div></div><span class="badge b-red">Atrasado</span></div>';
+  }).join(''):'<div style="text-align:center;padding:20px;color:var(--muted);font-size:13px">Nenhuma tarefa atrasada 🎉</div>';
 }
 
-// ─────────────── EQUIPE ───────────────
-function renderEquipe() {
-  var filtersEl = document.getElementById('dept-filters');
-  var depts = ['todos'].concat(Object.keys(DEPT_STYLE));
-  filtersEl.innerHTML = depts.map(function(d){
-    var label = d==='todos'?'Todos':d;
-    return '<button class="df-btn'+(d===currentDeptFilter?' on':'')+'" onclick="setDeptFilter(\''+d+'\',this)">'+label+'</button>';
+// EQUIPE
+function renderEquipe(){
+  var depts=['todos'].concat(Object.keys(DS));
+  document.getElementById('dept-filters').innerHTML=depts.map(function(d){
+    return '<button class="df-btn'+(d===currentDF?' on':'')+'" onclick="setDF(\''+d+'\',this)">'+(d==='todos'?'Todos':d)+'</button>';
   }).join('');
-  renderMemberGrid();
+  renderMG();
 }
-
-function setDeptFilter(d, btn) {
-  currentDeptFilter = d;
-  document.querySelectorAll('.df-btn').forEach(function(b){ b.classList.remove('on'); });
-  btn.classList.add('on');
-  renderMemberGrid();
-}
-
-function renderMemberGrid() {
-  var filtered = currentDeptFilter==='todos' ? MEMBERS : MEMBERS.filter(function(m){ return m.dept===currentDeptFilter; });
-  document.getElementById('member-grid').innerHTML = filtered.map(function(m){
-    var st = DEPT_STYLE[m.dept]||DEPT_STYLE['Direção'];
-    var pend = TASKS.filter(function(t){ return t.resp===m.name&&t.status!=='Concluído'; }).length;
-    var late = TASKS.filter(function(t){ return t.resp===m.name&&t.status==='Atrasado'; }).length;
-    return '<div class="mc">'
-      +'<div class="mc-avatar" style="background:'+st.fill+';color:'+st.text+'">'+m.initials+'</div>'
-      +'<div class="mc-name">'+m.name+'</div>'
-      +'<div class="mc-role">'+m.role+'</div>'
-      +'<span class="mc-dept" style="background:'+st.fill+';color:'+st.text+'">'+m.dept+'</span>'
-      +'<div class="mc-tasks">'
-      +'<span><span class="tdot" style="background:#308EEE"></span>'+pend+' abertas</span>'
+function setDF(d,btn){ currentDF=d; document.querySelectorAll('.df-btn').forEach(function(b){b.classList.remove('on');}); btn.classList.add('on'); renderMG(); }
+function renderMG(){
+  var fl=currentDF==='todos'?MEMBERS:MEMBERS.filter(function(m){return m.departamento===currentDF;});
+  if(!fl.length){document.getElementById('member-grid').innerHTML='<div style="color:var(--muted);font-size:13px">Nenhum funcionário neste departamento.</div>';return;}
+  document.getElementById('member-grid').innerHTML=fl.map(function(m){
+    var st=DS[m.departamento]||DS['Direção'];
+    var pend=TASKS.filter(function(t){return t.responsavel===m.nome&&t.status!=='Concluído';}).length;
+    var late=TASKS.filter(function(t){return t.responsavel===m.nome&&t.status==='Atrasado';}).length;
+    return '<div class="mc"><div class="mc-avatar" style="background:'+st.fill+';color:'+st.text+'">'+esc(m.iniciais)+'</div>'
+      +'<div class="mc-name">'+esc(m.nome)+'</div><div class="mc-role">'+esc(m.cargo)+'</div>'
+      +'<span class="mc-dept" style="background:'+st.fill+';color:'+st.text+'">'+esc(m.departamento)+'</span>'
+      +'<div class="mc-tasks"><span><span class="tdot" style="background:#308EEE"></span>'+pend+' abertas</span>'
       +(late>0?'<span style="color:#e74c3c"><span class="tdot" style="background:#e74c3c"></span>'+late+' atrasada'+(late>1?'s':'')+'</span>':'')
       +'</div></div>';
   }).join('');
 }
 
-// ─────────────── KANBAN ───────────────
-function renderKanban() {
-  var depts = Object.keys(DEPT_STYLE).filter(function(d){ return d!=='Direção'; });
-  document.getElementById('kb-dept-tabs').innerHTML = depts.map(function(d){
-    var st = DEPT_STYLE[d];
-    var on = d===currentKbDept;
-    return '<button class="kdt'+(on?' on':'')+'" style="'+(on?'background:'+st.fill+';border-color:'+st.text+'40;color:'+st.text+';':'')+'" onclick="setKbDept(\''+d+'\',this)">'+d+'</button>';
+// KANBAN
+function renderKanban(){
+  var depts=Object.keys(DS).filter(function(d){return d!=='Direção';});
+  document.getElementById('kb-dept-tabs').innerHTML=depts.map(function(d){
+    var st=DS[d],on=d===currentKbDept;
+    return '<button class="kdt'+(on?' on':'')+'" style="'+(on?'background:'+st.fill+';border-color:'+st.text+'40;color:'+st.text+';':'')+'" onclick="setKbD(\''+d+'\')">'+d+'</button>';
   }).join('');
-
-  var filtered = TASKS.filter(function(t){ return t.dept===currentKbDept; });
-  var st = DEPT_STYLE[currentKbDept]||DEPT_STYLE['Arquitetura'];
-  document.getElementById('kb-board').innerHTML = KB_COLS.map(function(col){
-    var cards = filtered.filter(function(t){ return t.status===col; });
-    return '<div class="kb-col">'
-      +'<div class="kb-col-h"><span class="kb-col-name">'+col+'</span><span class="kb-count">'+cards.length+'</span></div>'
+  var fl=TASKS.filter(function(t){return t.departamento===currentKbDept;});
+  var st=DS[currentKbDept]||DS['Arquitetura'];
+  document.getElementById('kb-board').innerHTML=KC.map(function(col){
+    var cards=fl.filter(function(t){return t.status===col;});
+    return '<div class="kb-col"><div class="kb-col-h"><span class="kb-col-name">'+col+'</span><span class="kb-count">'+cards.length+'</span></div>'
       +cards.map(function(t){
-        var m = MEMBERS.find(function(x){ return x.name===t.resp; }) || {initials:t.resp.slice(0,2)};
-        return '<div class="kc" onclick="advTask('+t.id+')">'
-          +'<span class="kc-tag" style="background:'+st.fill+';color:'+st.text+'">'+t.dept+'</span>'
-          +'<div class="kc-title">'+t.title+'</div>'
-          +'<div class="kc-meta">'
-          +'<span class="kc-due"><span class="pdot" style="background:'+PRIO_COLOR[t.prior]+'"></span>'+t.prior+' · '+t.due+'</span>'
-          +'<div class="av-sm" style="background:'+st.fill+';color:'+st.text+'">'+m.initials+'</div>'
-          +'</div></div>';
-      }).join('')
-      +'</div>';
+        var m=MEMBERS.find(function(x){return x.nome===t.responsavel;})||{iniciais:(t.responsavel||'?').slice(0,2)};
+        return '<div class="kc" onclick="advTask(\''+t.id+'\')">'
+          +'<span class="kc-tag" style="background:'+st.fill+';color:'+st.text+'">'+esc(t.departamento)+'</span>'
+          +'<div class="kc-title">'+esc(t.titulo)+'</div>'
+          +'<div class="kc-meta"><span class="kc-due"><span class="pdot" style="background:'+(PC[t.prioridade]||'#aaa')+'"></span>'+esc(t.prioridade)+' · '+fmtDate(t.prazo)+'</span>'
+          +'<div class="av-sm" style="background:'+st.fill+';color:'+st.text+'">'+esc(m.iniciais)+'</div></div></div>';
+      }).join('')+'</div>';
   }).join('');
 }
-
-function setKbDept(d) { currentKbDept=d; renderKanban(); }
-
-function advTask(id) {
-  var t = TASKS.find(function(x){ return x.id===id; });
-  if(!t) return;
-  var i = KB_COLS.indexOf(t.status);
-  if(i<KB_COLS.length-1){ t.status=KB_COLS[i+1]; renderKanban(); renderDash(); }
+function setKbD(d){ currentKbDept=d; renderKanban(); }
+function advTask(id){
+  var t=TASKS.find(function(x){return x.id===id;}); if(!t) return;
+  var i=KC.indexOf(t.status); if(i>=KC.length-1) return;
+  var ns=KC[i+1]; t.status=ns; renderKanban(); renderDash();
+  PATCH('tasks?id=eq.'+id,{status:ns}).then(function(){toast('Movido para "'+ns+'"');}).catch(function(){toast('Erro ao salvar','err');});
 }
 
-// Modal tarefa
-function openTaskModal() {
-  populateRespSel('nt-resp','nt-dept');
-  document.getElementById('task-overlay').classList.add('open');
-}
-function closeTaskModal(e) {
-  if(!e || e.target===document.getElementById('task-overlay'))
-    document.getElementById('task-overlay').classList.remove('open');
-}
-function populateRespSel(respId, deptId) {
-  var dept = document.getElementById(deptId).value;
-  var members = BY_DEPT[dept]||[];
-  document.getElementById(respId).innerHTML = members.map(function(m){
-    return '<option value="'+m.name+'">'+m.name+' — '+m.role+'</option>';
+// MODAL TAREFA
+function openTaskModal(){ popResp(); document.getElementById('task-ov').classList.add('open'); }
+function closeTaskModal(e){ if(!e||e.target===document.getElementById('task-ov')) document.getElementById('task-ov').classList.remove('open'); }
+function popResp(){
+  var dept=document.getElementById('nt-de').value;
+  document.getElementById('nt-re').innerHTML=(BY_DEPT[dept]||[]).map(function(m){
+    return '<option value="'+esc(m.nome)+'">'+esc(m.nome)+' — '+esc(m.cargo)+'</option>';
   }).join('');
 }
-function saveTask() {
-  var title = document.getElementById('nt-title').value.trim();
-  if(!title) return;
-  TASKS.push({
-    id: nextTaskId++,
-    title: title,
-    dept: document.getElementById('nt-dept').value,
-    resp: document.getElementById('nt-resp').value,
-    prior: document.getElementById('nt-prior').value,
-    due: document.getElementById('nt-due').value||'—',
-    status: 'A fazer'
-  });
-  document.getElementById('nt-title').value='';
-  document.getElementById('nt-due').value='';
-  closeTaskModal();
-  renderKanban();
-  renderDash();
+function saveTask(){
+  var titulo=document.getElementById('nt-ti').value.trim(); if(!titulo) return;
+  var btn=document.getElementById('btn-st'); btn.disabled=true; btn.textContent='Salvando...';
+  POST('tasks',{
+    titulo:titulo,
+    departamento:document.getElementById('nt-de').value,
+    responsavel: document.getElementById('nt-re').value,
+    prioridade:  document.getElementById('nt-pr').value,
+    prazo:       parseDate(document.getElementById('nt-du').value),
+    observacao:  document.getElementById('nt-ob').value.trim(),
+    status:'A fazer'
+  }).then(function(data){
+    btn.disabled=false; btn.textContent='Criar Tarefa';
+    if(Array.isArray(data)&&data[0]) TASKS.unshift(data[0]);
+    document.getElementById('nt-ti').value='';
+    document.getElementById('nt-du').value='';
+    document.getElementById('nt-ob').value='';
+    closeTaskModal(); renderKanban(); renderDash();
+    toast('Tarefa criada!');
+  }).catch(function(){ btn.disabled=false; btn.textContent='Criar Tarefa'; toast('Erro ao criar tarefa','err'); });
 }
 
-// ─────────────── FLUXOGRAMAS ───────────────
-function renderFlowList() {
-  showFlowList();
-  var el = document.getElementById('flow-list-el');
-  if(!FLOWS.length){
-    el.innerHTML = '<div class="empty-state"><div class="empty-icon">🗂️</div><p>Nenhum fluxo criado ainda.</p><p style="margin-top:8px;font-size:12px">Clique em "+ Novo Fluxo" para começar.</p></div>';
-    return;
-  }
-  el.innerHTML = FLOWS.map(function(f){
-    var preview = f.steps.slice(0,4).map(function(s,i){
-      var m = MEMBERS.find(function(x){ return x.name===s.resp; })||{dept:'Direção'};
-      var st = DEPT_STYLE[m.dept]||DEPT_STYLE['Direção'];
-      return '<span class="step-pill" style="background:'+st.fill+';color:'+st.text+'">'+s.resp+'</span>'
-        +(i<Math.min(f.steps.length,4)-1?'<span class="arrow-s">→</span>':'');
+// FLUXOS — VIEWS
+function showList(){
+  document.getElementById('vw-list').style.display='';
+  document.getElementById('vw-editor').style.display='none';
+  document.getElementById('vw-flow').style.display='none';
+  renderFList();
+}
+function showEditor(){
+  document.getElementById('vw-list').style.display='none';
+  document.getElementById('vw-editor').style.display='';
+  document.getElementById('vw-flow').style.display='none';
+  renderMSide(); renderRespSel(); renderSteps();
+}
+function showViz(){
+  document.getElementById('vw-list').style.display='none';
+  document.getElementById('vw-editor').style.display='none';
+  document.getElementById('vw-flow').style.display='';
+}
+
+function renderFList(){
+  var el=document.getElementById('flow-list-el');
+  if(!FLOWS.length){ el.innerHTML='<div class="empty-state"><div class="empty-icon">🗂️</div><p>Nenhum fluxo criado ainda.</p><p style="margin-top:8px;font-size:12px">Clique em "+ Novo Fluxo" para começar.</p></div>'; return; }
+  el.innerHTML=FLOWS.map(function(f){
+    var steps=f.steps||[];
+    var prev=steps.slice(0,4).map(function(s,i){
+      var m=MEMBERS.find(function(x){return x.nome===s.responsavel;})||{departamento:'Direção'};
+      var st=DS[m.departamento]||DS['Direção'];
+      return '<span class="step-pill" style="background:'+st.fill+';color:'+st.text+'">'+esc(s.responsavel)+'</span>'+(i<Math.min(steps.length,4)-1?'<span class="arrow-s">→</span>':'');
     }).join('');
-    var more = f.steps.length>4?'<span class="arrow-s">→ +' + (f.steps.length-4)+'</span>':'';
-    return '<div class="fc" onclick="viewFlow('+f.id+')">'
-      +'<div class="fc-top"><div><div class="fc-name">'+f.name+'</div><div class="fc-desc">'+f.desc+'</div></div>'
+    var more=steps.length>4?'<span class="arrow-s">→ +'+(steps.length-4)+'</span>':'';
+    return '<div class="fc" onclick="viewFlow(\''+f.id+'\')">'
+      +'<div class="fc-top"><div><div class="fc-name">'+esc(f.nome)+'</div><div class="fc-desc">'+esc(f.descricao||'')+'</div></div>'
       +'<div class="fc-actions" onclick="event.stopPropagation()">'
-      +'<button class="btn-sm" onclick="startEditFlow('+f.id+')">Editar</button>'
-      +'<button class="btn-sm danger" onclick="deleteFlow('+f.id+')">Excluir</button>'
+      +'<button class="btn-sm" onclick="startEdit(\''+f.id+'\')">Editar</button>'
+      +'<button class="btn-sm danger" onclick="delFlow(\''+f.id+'\')">Excluir</button>'
       +'</div></div>'
-      +'<div class="fc-preview">'+preview+more+'</div>'
-      +'<div style="font-size:10px;color:var(--muted);margin-top:8px">'+f.steps.length+' etapas</div>'
+      +'<div class="fc-preview">'+prev+more+'</div>'
+      +'<div style="font-size:10px;color:var(--muted);margin-top:8px">'+steps.length+' etapas</div>'
       +'</div>';
   }).join('');
 }
 
-function showFlowList() {
-  document.getElementById('view-list').style.display='';
-  document.getElementById('view-editor').style.display='none';
-  document.getElementById('view-flow').style.display='none';
+function newFlow(){ currentFId=null; editSteps=[]; document.getElementById('fn-name').value=''; document.getElementById('fn-desc').value=''; showEditor(); }
+function startEdit(id){
+  var f=FLOWS.find(function(x){return x.id===id;}); if(!f) return;
+  currentFId=id; editSteps=(f.steps||[]).map(function(s){return Object.assign({},s);});
+  document.getElementById('fn-name').value=f.nome; document.getElementById('fn-desc').value=f.descricao||'';
+  showEditor();
 }
-function showFlowEditor() {
-  document.getElementById('view-list').style.display='none';
-  document.getElementById('view-editor').style.display='';
-  document.getElementById('view-flow').style.display='none';
-  renderMemberSide();
-  populateRespFlowSel();
-  renderStepsList();
-}
-function showFlowView() {
-  document.getElementById('view-list').style.display='none';
-  document.getElementById('view-editor').style.display='none';
-  document.getElementById('view-flow').style.display='';
-}
-
-function newFlow() {
-  currentFlowId=null; editingSteps=[];
-  document.getElementById('flow-name-inp').value='';
-  document.getElementById('flow-desc-inp').value='';
-  showFlowEditor();
-}
-function startEditFlow(id) {
-  var f=FLOWS.find(function(x){ return x.id===id; }); if(!f) return;
-  currentFlowId=id;
-  editingSteps=f.steps.map(function(s){ return Object.assign({},s); });
-  document.getElementById('flow-name-inp').value=f.name;
-  document.getElementById('flow-desc-inp').value=f.desc||'';
-  showFlowEditor();
-}
-function editCurrentFlow() { if(currentFlowId) startEditFlow(currentFlowId); }
-function deleteFlow(id) {
+function editCurrent(){ if(currentFId) startEdit(currentFId); }
+function delFlow(id){
   if(!confirm('Excluir este fluxo?')) return;
-  FLOWS = FLOWS.filter(function(f){ return f.id!==id; });
-  renderFlowList();
+  spin(true);
+  DEL('workflows?id=eq.'+id).then(function(){
+    FLOWS=FLOWS.filter(function(f){return f.id!==id;}); spin(false); toast('Fluxo excluído'); renderFList();
+  }).catch(function(){ spin(false); toast('Erro ao excluir','err'); });
 }
 
-function populateRespFlowSel() {
-  document.getElementById('ns-resp').innerHTML = MEMBERS.map(function(m){
-    return '<option value="'+m.name+'">'+m.name+' — '+m.role+' ('+m.dept+')</option>';
+function renderRespSel(){
+  document.getElementById('ns-re').innerHTML=MEMBERS.map(function(m){
+    return '<option value="'+esc(m.nome)+'">'+esc(m.nome)+' — '+esc(m.cargo)+' ('+esc(m.departamento)+')</option>';
   }).join('');
 }
-
-function renderMemberSide() {
-  document.getElementById('member-side').innerHTML = Object.entries(BY_DEPT).map(function(entry){
-    var dept=entry[0], members=entry[1];
-    var st=DEPT_STYLE[dept]||DEPT_STYLE['Direção'];
-    return '<div class="ms-group">'
-      +'<div class="ms-group-label">'+dept+'</div>'
+function renderMSide(){
+  document.getElementById('m-side').innerHTML=Object.entries(BY_DEPT).map(function(e){
+    var dept=e[0],members=e[1],st=DS[dept]||DS['Direção'];
+    return '<div class="ms-group"><div class="ms-group-label">'+dept+'</div>'
       +members.map(function(m){
-        return '<div class="ms-item" onclick="quickSetResp(\''+m.name+'\')">'
-          +'<div class="ms-avatar" style="background:'+st.fill+';color:'+st.text+'">'+m.initials+'</div>'
-          +'<div><div class="ms-name">'+m.name+'</div><div class="ms-role">'+m.role+'</div></div>'
-          +'</div>';
-      }).join('')
-      +'</div>';
+        return '<div class="ms-item" onclick="qResp(\''+esc(m.nome)+'\')">'
+          +'<div class="ms-avatar" style="background:'+st.fill+';color:'+st.text+'">'+esc(m.iniciais)+'</div>'
+          +'<div><div class="ms-name">'+esc(m.nome)+'</div><div class="ms-role">'+esc(m.cargo)+'</div></div></div>';
+      }).join('')+'</div>';
   }).join('');
 }
+function qResp(n){ document.getElementById('ns-re').value=n; document.getElementById('ns-ac').focus(); }
 
-function quickSetResp(name) {
-  document.getElementById('ns-resp').value=name;
-  document.getElementById('ns-action').focus();
-}
-
-function renderStepsList() {
-  var el=document.getElementById('steps-list-el');
-  if(!editingSteps.length){
-    el.innerHTML='<div style="font-size:13px;color:var(--muted);padding:12px 0 16px">Nenhuma etapa ainda. Adicione a primeira abaixo.</div>';
-    return;
-  }
-  el.innerHTML = editingSteps.map(function(s,i){
-    var m=MEMBERS.find(function(x){ return x.name===s.resp; })||{dept:'Direção',initials:'?',role:''};
-    var st=DEPT_STYLE[m.dept]||DEPT_STYLE['Direção'];
-    return '<div class="step-row">'
-      +'<div class="step-num">'+(i+1)+'</div>'
-      +'<div class="step-content">'
-      +'<div class="step-action">'+s.action+'</div>'
-      +'<div class="step-who">'
-      +'<span style="width:20px;height:20px;border-radius:50%;background:'+st.fill+';color:'+st.text+';display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:700">'+m.initials+'</span>'
-      +'<span style="color:'+st.text+';font-weight:600">'+s.resp+'</span>'
-      +'<span style="color:var(--muted)">· '+m.role+'</span>'
-      +'</div>'
-      +(s.obs?'<div class="step-obs">'+s.obs+'</div>':'')
+function renderSteps(){
+  var el=document.getElementById('steps-el');
+  if(!editSteps.length){ el.innerHTML='<div style="font-size:13px;color:var(--muted);padding:12px 0 16px">Nenhuma etapa. Adicione abaixo.</div>'; return; }
+  el.innerHTML=editSteps.map(function(s,i){
+    var m=MEMBERS.find(function(x){return x.nome===s.responsavel;})||{departamento:'Direção',iniciais:(s.responsavel||'?').slice(0,2),cargo:''};
+    var st=DS[m.departamento]||DS['Direção'];
+    return '<div class="step-row"><div class="step-num">'+(i+1)+'</div>'
+      +'<div class="step-content"><div class="step-action">'+esc(s.acao||'')+'</div>'
+      +'<div class="step-who"><span style="width:20px;height:20px;border-radius:50%;background:'+st.fill+';color:'+st.text+';display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:700">'+esc(m.iniciais)+'</span>'
+      +'<span style="color:'+st.text+';font-weight:600">'+esc(s.responsavel)+'</span><span style="color:var(--muted)">· '+esc(m.cargo)+'</span></div>'
+      +(s.observacao?'<div class="step-obs">'+esc(s.observacao)+'</div>':'')
       +'</div>'
       +'<div class="step-btns">'
-      +(i>0?'<button class="step-btn" onclick="moveStep('+i+',-1)">↑</button>':'<span style="width:26px"></span>')
-      +(i<editingSteps.length-1?'<button class="step-btn" onclick="moveStep('+i+',1)">↓</button>':'<span style="width:26px"></span>')
-      +'<button class="step-btn del" onclick="removeStep('+i+')">×</button>'
-      +'</div></div>';
+      +(i>0?'<button class="step-btn" onclick="mvStep('+i+',-1)">↑</button>':'<span style="width:26px"></span>')
+      +(i<editSteps.length-1?'<button class="step-btn" onclick="mvStep('+i+',1)">↓</button>':'<span style="width:26px"></span>')
+      +'<button class="step-btn del" onclick="rmStep('+i+')">×</button></div></div>';
   }).join('');
 }
-
-function addStep() {
-  var action=document.getElementById('ns-action').value.trim();
-  var resp=document.getElementById('ns-resp').value;
-  var obs=document.getElementById('ns-obs').value.trim();
-  if(!action||!resp) return;
-  editingSteps.push({action:action,resp:resp,obs:obs});
-  document.getElementById('ns-action').value='';
-  document.getElementById('ns-obs').value='';
-  renderStepsList();
+function addStep(){
+  var ac=document.getElementById('ns-ac').value.trim(); if(!ac) return;
+  editSteps.push({acao:ac,responsavel:document.getElementById('ns-re').value,observacao:document.getElementById('ns-ob').value.trim()});
+  document.getElementById('ns-ac').value=''; document.getElementById('ns-ob').value='';
+  renderSteps();
 }
-function removeStep(i){ editingSteps.splice(i,1); renderStepsList(); }
-function moveStep(i,dir){
-  var j=i+dir;
-  if(j<0||j>=editingSteps.length) return;
-  var tmp=editingSteps[i]; editingSteps[i]=editingSteps[j]; editingSteps[j]=tmp;
-  renderStepsList();
-}
+function rmStep(i){ editSteps.splice(i,1); renderSteps(); }
+function mvStep(i,d){ var j=i+d; if(j<0||j>=editSteps.length) return; var t=editSteps[i]; editSteps[i]=editSteps[j]; editSteps[j]=t; renderSteps(); }
 
-function saveAndView() {
-  var name=document.getElementById('flow-name-inp').value.trim();
-  if(!name){ document.getElementById('flow-name-inp').focus(); return; }
-  if(!editingSteps.length){ alert('Adicione ao menos uma etapa.'); return; }
-  var desc=document.getElementById('flow-desc-inp').value.trim();
-  if(currentFlowId){
-    var f=FLOWS.find(function(x){ return x.id===currentFlowId; });
-    f.name=name; f.desc=desc; f.steps=editingSteps.map(function(s){ return Object.assign({},s); });
+function saveFlow(){
+  var nome=document.getElementById('fn-name').value.trim(); if(!nome){document.getElementById('fn-name').focus();return;}
+  if(!editSteps.length){toast('Adicione ao menos uma etapa.','err');return;}
+  var desc=document.getElementById('fn-desc').value.trim();
+  var btn=document.getElementById('btn-sf'); btn.disabled=true; btn.textContent='Salvando...';
+  spin(true);
+  var p;
+  if(currentFId){
+    p=PATCH('workflows?id=eq.'+currentFId,{nome:nome,descricao:desc})
+      .then(function(){return DEL('workflow_steps?workflow_id=eq.'+currentFId);})
+      .then(function(){return currentFId;});
   } else {
-    FLOWS.push({id:nextFlowId++, name:name, desc:desc, steps:editingSteps.map(function(s){ return Object.assign({},s); })});
-    currentFlowId=nextFlowId-1;
+    p=POST('workflows',{nome:nome,descricao:desc}).then(function(d){return d[0].id;});
   }
-  viewFlow(currentFlowId);
+  p.then(function(fid){
+    currentFId=fid;
+    var rows=editSteps.map(function(s,i){return{workflow_id:fid,ordem:i+1,acao:s.acao,responsavel:s.responsavel,observacao:s.observacao||''};});
+    return POST('workflow_steps',rows).then(function(saved){
+      var flow={id:fid,nome:nome,descricao:desc,steps:Array.isArray(saved)?saved:rows};
+      var idx=FLOWS.findIndex(function(f){return f.id===fid;});
+      if(idx>=0) FLOWS[idx]=flow; else FLOWS.unshift(flow);
+      spin(false); btn.disabled=false; btn.textContent='Salvar →';
+      toast('Fluxo salvo!'); viewFlow(fid);
+    });
+  }).catch(function(e){ spin(false); btn.disabled=false; btn.textContent='Salvar →'; toast('Erro ao salvar','err'); console.error(e); });
 }
 
-function viewFlow(id) {
-  var f=FLOWS.find(function(x){ return x.id===id; }); if(!f) return;
-  currentFlowId=id;
-  document.getElementById('vf-title').textContent=f.name;
-  document.getElementById('vf-desc').textContent=f.desc||'';
-
-  document.getElementById('vf-flow').innerHTML = f.steps.map(function(s,i){
-    var m=MEMBERS.find(function(x){ return x.name===s.resp; })||{dept:'Direção',initials:'?',role:''};
-    var st=DEPT_STYLE[m.dept]||DEPT_STYLE['Direção'];
-    var arrow=i<f.steps.length-1?'<div class="viz-arrow">→</div>':'';
-    return '<div class="viz-node">'
-      +'<div class="viz-box" style="background:'+st.fill+';border-color:'+st.text+'30">'
+function viewFlow(id){
+  var f=FLOWS.find(function(x){return x.id===id;}); if(!f) return;
+  currentFId=id;
+  document.getElementById('vf-title').textContent=f.nome;
+  document.getElementById('vf-desc').textContent=f.descricao||'';
+  var steps=f.steps||[];
+  document.getElementById('vf-flow').innerHTML=steps.map(function(s,i){
+    var m=MEMBERS.find(function(x){return x.nome===s.responsavel;})||{departamento:'Direção',iniciais:(s.responsavel||'?').slice(0,2)};
+    var st=DS[m.departamento]||DS['Direção'];
+    return '<div class="viz-node"><div class="viz-box" style="background:'+st.fill+';border-color:'+st.text+'30">'
       +'<div class="viz-step-n" style="color:'+st.text+'">ETAPA '+(i+1)+'</div>'
-      +'<div class="viz-action" style="color:'+st.text+'">'+s.action+'</div>'
-      +'<div class="viz-who">'
-      +'<span style="width:20px;height:20px;border-radius:50%;background:'+st.text+'20;color:'+st.text+';display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:700">'+m.initials+'</span>'
-      +'<span style="font-size:11px;font-weight:700;color:'+st.text+'">'+s.resp+'</span>'
-      +'</div>'
-      +'<span class="viz-dept-tag" style="background:'+st.text+'15;color:'+st.text+'">'+m.dept+'</span>'
-      +'</div>'
-      +(s.obs?'<div class="viz-obs">'+s.obs+'</div>':'')
-      +'</div>'+arrow;
+      +'<div class="viz-action" style="color:'+st.text+'">'+esc(s.acao||'')+'</div>'
+      +'<div class="viz-who"><span style="width:20px;height:20px;border-radius:50%;background:'+st.text+'20;color:'+st.text+';display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:700">'+esc(m.iniciais)+'</span>'
+      +'<span style="font-size:11px;font-weight:700;color:'+st.text+'">'+esc(s.responsavel)+'</span></div>'
+      +'<span class="viz-dept-tag" style="background:'+st.text+'15;color:'+st.text+'">'+esc(m.departamento)+'</span>'
+      +'</div>'+(s.observacao?'<div class="viz-obs">'+esc(s.observacao)+'</div>':'')+'</div>'
+      +(i<steps.length-1?'<div class="viz-arrow">→</div>':'');
   }).join('');
-
-  document.getElementById('vf-detail').innerHTML = f.steps.map(function(s,i){
-    var m=MEMBERS.find(function(x){ return x.name===s.resp; })||{dept:'Direção',initials:'?',role:''};
-    var st=DEPT_STYLE[m.dept]||DEPT_STYLE['Direção'];
-    return '<tr>'
-      +'<td class="dt-num"><div class="dt-circle">'+(i+1)+'</div></td>'
-      +'<td><div class="dt-action">'+s.action+'</div>'
-      +'<div class="dt-who">'
-      +'<span style="width:24px;height:24px;border-radius:50%;background:'+st.fill+';color:'+st.text+';display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:700">'+m.initials+'</span>'
-      +'<span class="dt-name" style="color:'+st.text+'">'+s.resp+'</span>'
-      +'<span class="dt-role">'+m.role+'</span>'
-      +'<span style="font-size:10px;padding:2px 8px;border-radius:20px;background:'+st.fill+';color:'+st.text+';font-weight:700">'+m.dept+'</span>'
-      +'</div>'
-      +(s.obs?'<div class="dt-obs">'+s.obs+'</div>':'')
+  document.getElementById('vf-detail').innerHTML=steps.map(function(s,i){
+    var m=MEMBERS.find(function(x){return x.nome===s.responsavel;})||{departamento:'Direção',iniciais:(s.responsavel||'?').slice(0,2),cargo:''};
+    var st=DS[m.departamento]||DS['Direção'];
+    return '<tr><td class="dt-num"><div class="dt-circle">'+(i+1)+'</div></td>'
+      +'<td><div class="dt-action">'+esc(s.acao||'')+'</div>'
+      +'<div class="dt-who"><span style="width:24px;height:24px;border-radius:50%;background:'+st.fill+';color:'+st.text+';display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:700">'+esc(m.iniciais)+'</span>'
+      +'<span style="color:'+st.text+';font-weight:700">'+esc(s.responsavel)+'</span>'
+      +'<span class="dt-role">'+esc(m.cargo)+'</span>'
+      +'<span style="font-size:10px;padding:2px 8px;border-radius:20px;background:'+st.fill+';color:'+st.text+';font-weight:700">'+esc(m.departamento)+'</span></div>'
+      +(s.observacao?'<div class="dt-obs">'+esc(s.observacao)+'</div>':'')
       +'</td></tr>';
   }).join('');
-
-  showFlowView();
+  showViz();
 }
 
-// ─────────────── INIT ───────────────
-renderDash();
+loadAll();
 </script>
 </body>
 </html>
