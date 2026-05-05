@@ -231,6 +231,32 @@ textarea{resize:vertical;min-height:52px}
       <div class="card"><div class="ct">Carga por pessoa</div><div id="d-pessoa"><span style="color:var(--mu);font-size:13px">Carregando...</span></div></div>
       <div class="card"><div class="ct">Tarefas atrasadas</div><div id="d-atras"><span style="color:var(--mu);font-size:13px">Carregando...</span></div></div>
     </div>
+    <!-- PAINEL PESSOAL -->
+    <div id="my-panel" style="display:none">
+      <div class="card" style="border:1px solid rgba(245,166,35,.25);background:linear-gradient(135deg,var(--s1) 0%,rgba(245,166,35,.04) 100%)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+          <div>
+            <div class="ct" style="margin-bottom:4px;color:var(--ac)">📋 Minhas Tarefas</div>
+            <div id="my-panel-name" style="font-size:12px;color:var(--mu)"></div>
+          </div>
+          <div style="display:flex;gap:8px">
+            <div style="text-align:center;background:var(--s2);border:1px solid var(--bd);border-radius:10px;padding:8px 14px">
+              <div id="my-kpi-open" style="font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--ac)">—</div>
+              <div style="font-size:9px;color:var(--mu);text-transform:uppercase;letter-spacing:1px">Abertas</div>
+            </div>
+            <div style="text-align:center;background:var(--s2);border:1px solid var(--bd);border-radius:10px;padding:8px 14px">
+              <div id="my-kpi-late" style="font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--rd)">—</div>
+              <div style="font-size:9px;color:var(--mu);text-transform:uppercase;letter-spacing:1px">Atrasadas</div>
+            </div>
+            <div style="text-align:center;background:var(--s2);border:1px solid var(--bd);border-radius:10px;padding:8px 14px">
+              <div id="my-kpi-done" style="font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--gr)">—</div>
+              <div style="font-size:9px;color:var(--mu);text-transform:uppercase;letter-spacing:1px">Concluídas</div>
+            </div>
+          </div>
+        </div>
+        <div id="my-tasks-list"></div>
+      </div>
+    </div>
   </div>
   <!-- EQUIPE -->
   <div class="sec" id="sec-equipe">
@@ -397,8 +423,27 @@ textarea{resize:vertical;min-height:52px}
 var SB='https://gzzclbxnohokttujvaqa.supabase.co';
 var AK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd6emNsYnhub2hva3R0dWp2YXFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4Njc0NDUsImV4cCI6MjA4OTQ0MzQ0NX0.6XPR0m90k6qd66rLeatapLQ8jZYMn-V1lB9h2YT34hc';
 var TK=AK;
-try{var _ss=JSON.parse(localStorage.getItem('alliance_session')||'{}');if(_ss&&_ss.user&&_ss.user.access_token)TK=_ss.user.access_token;}catch(e){}
-window.addEventListener('message',function(e){if(e.data&&e.data.type==='AUTH'&&e.data.token)TK=e.data.token;});
+var _authUserId=null; // UUID do usuário logado
+var _myEmployee=null; // employee vinculado ao usuário logado
+try{
+  var _ss=JSON.parse(localStorage.getItem('alliance_session')||'{}');
+  if(_ss&&_ss.user){
+    if(_ss.user.access_token)TK=_ss.user.access_token;
+    if(_ss.user.id)_authUserId=_ss.user.id;
+  }
+}catch(e){}
+window.addEventListener('message',function(e){
+  if(!e.data)return;
+  if(e.data.type==='AUTH'&&e.data.token)TK=e.data.token;
+  if(e.data.type==='ALLIANCE_SESSION'&&e.data.session){
+    var s=e.data.session;
+    if(s.user&&s.user.access_token)TK=s.user.access_token;
+    if(s.user&&s.user.id)_authUserId=s.user.id;
+    // Re-resolver myEmployee se dados já carregados
+    resolveMyEmployee();
+    renderDash();
+  }
+});
 
 var MEM=[],TASKS=[],FLOWS=[],CATS=[],DEPTS=[],SUBTASKS=[],BY_DEPT={};
 var kbDept='todos',dfil='todos',curFlowId=null,editSteps=[];
@@ -440,6 +485,10 @@ function hexAlpha(hex,a){
 }
 var PC={Alta:'#e74c3c',Média:'#f5a623',Baixa:'#27ae60'};
 
+function resolveMyEmployee(){
+  if(!_authUserId||!MEM.length){_myEmployee=null;return;}
+  _myEmployee=MEM.find(function(m){return m.auth_user_id===_authUserId;})||null;
+}
 function loadAll(){
   spin(true);
   Promise.all([
@@ -456,7 +505,7 @@ function loadAll(){
     SUBTASKS=Array.isArray(r[4])?r[4]:[];
     BY_DEPT={};
     MEM.forEach(function(m){if(!BY_DEPT[m.departamento])BY_DEPT[m.departamento]=[];BY_DEPT[m.departamento].push(m);});
-    spin(false);renderDash();
+    spin(false);resolveMyEmployee();renderDash();
   }).catch(function(e){spin(false);toast('Erro: '+e.message,'er');console.error(e);});
 }
 function loadFlows(cb){
@@ -516,6 +565,57 @@ function renderDash(){
   document.getElementById('d-atras').innerHTML=at.length?at.map(function(t){
     return '<div class="li"><div><div class="li-t">'+esc(t.titulo)+'</div><div class="li-s">'+esc(t.responsavel)+' · prazo '+fmtD(t.prazo)+'</div></div><span class="badge b-rd">Atrasado</span></div>';
   }).join(''):'<div style="text-align:center;padding:20px;color:var(--mu);font-size:13px">Nenhuma tarefa atrasada 🎉</div>';
+
+  // ── PAINEL PESSOAL ──────────────────────────────────────────
+  var myPanel=document.getElementById('my-panel');
+  if(_myEmployee){
+    myPanel.style.display='';
+    document.getElementById('my-panel-name').textContent=_myEmployee.nome+' · '+_myEmployee.cargo+' · '+_myEmployee.departamento;
+    var myTasks=TASKS.filter(function(t){return t.responsavel===_myEmployee.nome;});
+    var myOpen=myTasks.filter(function(t){return t.status!=='Concluído';}).length;
+    var myLate=myTasks.filter(function(t){return t.status==='Atrasado';}).length;
+    var myDone=myTasks.filter(function(t){return t.status==='Concluído';}).length;
+    document.getElementById('my-kpi-open').textContent=myOpen;
+    document.getElementById('my-kpi-late').textContent=myLate;
+    document.getElementById('my-kpi-done').textContent=myDone;
+    var listEl=document.getElementById('my-tasks-list');
+    if(!myTasks.length){
+      listEl.innerHTML='<div style="text-align:center;padding:20px;color:var(--mu);font-size:13px">Nenhuma tarefa atribuída a você ainda.</div>';
+    }else{
+      // Agrupar por categoria/status
+      var catNames=CATS.length?CATS.map(function(c){return c.nome;}):[...new Set(myTasks.map(function(t){return t.status;}))];
+      listEl.innerHTML=catNames.map(function(catNome){
+        var cat=CATS.find(function(c){return c.nome===catNome;});
+        var hc=cat?cat.cor:'#7a7f9a';
+        var items=myTasks.filter(function(t){return t.status===catNome||(t.categoria_nome===catNome);});
+        if(!items.length)return'';
+        return '<div style="margin-bottom:14px">'
+          +'<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:'+hc+';margin-bottom:8px">'+esc(catNome)+' ('+items.length+')</div>'
+          +items.map(function(t){
+            var subs=SUBTASKS.filter(function(s){return s.task_id===t.id;});
+            var subsDone=subs.filter(function(s){return s.concluida;}).length;
+            var isLate=t.status==='Atrasado';
+            return '<div style="display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--s2);border:1px solid '+(isLate?'rgba(231,76,60,.3)':'var(--bd)')+';border-radius:8px;margin-bottom:6px;cursor:pointer" onclick="goTab(\'tarefas\',document.querySelectorAll(\'.tab\')[2])">'
+              +'<span class="pd" style="background:'+(PC[t.prioridade]||'#aaa')+';width:8px;height:8px;flex-shrink:0"></span>'
+              +'<div style="flex:1">'
+              +'<div style="font-size:13px;font-weight:500;color:var(--tx)">'+esc(t.titulo)+'</div>'
+              +(subs.length?'<div style="font-size:10px;color:var(--mu);margin-top:2px">Subtarefas: '+subsDone+'/'+subs.length+'</div>':'')
+              +'</div>'
+              +'<div style="text-align:right;flex-shrink:0">'
+              +(t.prazo?'<div style="font-size:11px;color:'+(isLate?'#e74c3c':'var(--mu)')+'">'+fmtD(t.prazo)+'</div>':'')
+              +(isLate?'<span class="badge b-rd" style="font-size:10px;padding:1px 7px">Atrasado</span>':'')
+              +'</div>'
+              +'</div>';
+          }).join('')
+          +'</div>';
+      }).filter(Boolean).join('');
+      if(!listEl.innerHTML.trim()){
+        listEl.innerHTML='<div style="text-align:center;padding:20px;color:var(--mu);font-size:13px">Nenhuma tarefa atribuída a você ainda.</div>';
+      }
+    }
+  }else{
+    myPanel.style.display='none';
+  }
 }
 
 /* ── EQUIPE ── */
