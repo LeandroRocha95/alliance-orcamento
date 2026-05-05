@@ -691,14 +691,18 @@ function resolveMyEmployee(){
 
 /* Retorna tarefas visíveis para o usuário atual:
    - Admin → todas
-   - Usuário comum → só as que ele é responsável OU aparece em subtarefa */
+   - Usuário com employee vinculado → só as que ele é responsável OU aparece em subtarefa
+   - Usuário sem employee vinculado → nenhuma (não deve ver dados alheios) */
 function visibleTasks(){
-  if(_isAdmin)return TASKS;
-  if(!_myEmployee)return TASKS; // fallback seguro enquanto não resolve
+  if(_isAdmin) return TASKS;
+  // Enquanto não chegou a sessão, mostra vazio
+  if(!_authUserId) return [];
+  // Se não encontrou employee vinculado a este login, retorna vazio
+  if(!_myEmployee) return [];
   var nome=_myEmployee.nome;
   var tasksComSub=SUBTASKS.filter(function(s){return s.responsavel===nome;}).map(function(s){return s.task_id;});
   return TASKS.filter(function(t){
-    return t.responsavel===nome||tasksComSub.indexOf(t.id)>=0;
+    return t.responsavel===nome || tasksComSub.indexOf(t.id)>=0;
   });
 }
 
@@ -975,14 +979,22 @@ function delDept(id,nome){
 function renderKanban(){
   var allDepts=DEPTS.filter(function(d){return d.ativo;}).map(function(d){return d.nome;});
   var kdeptsEl=document.getElementById('kb-depts');
-  var btns=[{nome:'todos',label:'Todos'}].concat(allDepts.map(function(n){return{nome:n,label:n};}));
-  kdeptsEl.innerHTML=btns.map(function(b){
-    var on=b.nome===kbDept;
-    var st=b.nome==='todos'?{fill:'rgba(245,166,35,.12)',text:'#f5a623'}:deptStyle(b.nome);
-    return '<button class="kdt'+(on?' on':'')+'" style="'+(on?'background:'+st.fill+';border-color:'+st.text+'40;color:'+st.text+';':'')+'" onclick="setKbDept(\''+esc(b.nome)+'\')">'+esc(b.label)+'</button>';
-  }).join('');
+  if(_isAdmin){
+    var btns=[{nome:'todos',label:'Todos'}].concat(allDepts.map(function(n){return{nome:n,label:n};}));
+    kdeptsEl.innerHTML=btns.map(function(b){
+      var on=b.nome===kbDept;
+      var st=b.nome==='todos'?{fill:'rgba(245,166,35,.12)',text:'#f5a623'}:deptStyle(b.nome);
+      return '<button class="kdt'+(on?' on':'')+'" style="'+(on?'background:'+st.fill+';border-color:'+st.text+'40;color:'+st.text+';':'')+'" onclick="setKbDept(\''+esc(b.nome)+'\')">'+esc(b.label)+'</button>';
+    }).join('');
+  } else {
+    kdeptsEl.innerHTML='';
+  }
   var board=document.getElementById('kb-cols');
   if(!CATS.length){board.innerHTML='<div style="color:var(--mu);font-size:13px;padding:24px;text-align:center">Nenhuma categoria. Clique em <strong>⚙️ Categorias</strong>.</div>';return;}
+  if(!_isAdmin&&!_myEmployee&&_authUserId){
+    board.innerHTML='<div style="color:var(--mu);font-size:13px;padding:40px 24px;text-align:center"><div style="font-size:28px;margin-bottom:12px">🔗</div><div style="font-weight:600;color:var(--tx);margin-bottom:6px">Seu perfil não está vinculado</div><div style="font-size:12px">Peça ao administrador para vincular o seu login ao funcionário correspondente.<br>Enquanto isso, tarefas não serão exibidas.</div></div>';
+    return;
+  }
   var fl=kbDept==='todos'?visibleTasks():visibleTasks().filter(function(t){return t.departamento===kbDept;});
   board.innerHTML=CATS.map(function(cat){
     var hc=cat.cor||'#308EEE';
