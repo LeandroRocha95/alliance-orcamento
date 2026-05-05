@@ -920,20 +920,6 @@ body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif
   </div>
 </div>
 
-<!-- LOCK MODAL -->
-<div class="lock-overlay" id="lockOverlay">
-  <div class="lock-box">
-    <div class="lock-icon">🔒</div>
-    <div class="lock-title" id="lockTitle">Área Restrita</div>
-    <div class="lock-sub" id="lockSub">Digite a senha para acessar</div>
-    <input class="lock-input" type="password" id="lockInput" placeholder="••••" maxlength="20"
-      onkeydown="if(event.key==='Enter')checkLock()">
-    <div class="lock-err" id="lockErr"></div>
-    <button class="lock-btn" onclick="checkLock()">Acessar</button>
-    <button class="lock-cancel" onclick="closeLock()">Cancelar</button>
-  </div>
-</div>
-
 <!-- EXTERNAL MODAL -->
 <div class="ext-overlay" id="extOverlay">
   <div class="ext-box">
@@ -993,7 +979,6 @@ body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif
 </style>
 
 <script>
-var LOCK_PASS = '1234';
 var SUPABASE_URL = 'https://gzzclbxnohokttujvaqa.supabase.co';
 var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd6emNsYnhub2hva3R0dWp2YXFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4Njc0NDUsImV4cCI6MjA4OTQ0MzQ0NX0.6XPR0m90k6qd66rLeatapLQ8jZYMn-V1lB9h2YT34hc';
 var AUTH_URL = SUPABASE_URL + '/auth/v1';
@@ -1196,11 +1181,9 @@ var MODULES = {
   mapa:       'https://leandrorocha95.github.io/alliance-orcamento/mapa.html',
   banco:      'https://supabase.com/dashboard/project/gzzclbxnohokttujvaqa',
 };
-var LOCKED   = ['custos', 'banco', 'crm', 'campanhas', 'portfolio', 'depoimentos', 'analytics', 'conteudo', 'obras'];
+var LOCKED   = [];
 var EXTERNAL = ['banco'];
-var _unlocked = {};
 var _current  = 'home';
-var _pending  = null;
 var _collapsed = false;
 var _session  = null; // { user, isAdmin }
 
@@ -1345,18 +1328,7 @@ function navigate(module) {
   if (isMobile()) closeSidebarMobile();
   // Externo
   if (EXTERNAL.indexOf(module) !== -1) {
-    if (LOCKED.indexOf(module) !== -1 && !_unlocked[module]) {
-      _pending = module;
-      showLock(module);
-      return;
-    }
     showExt();
-    return;
-  }
-  // Senha
-  if (LOCKED.indexOf(module) !== -1 && !_unlocked[module]) {
-    _pending = module;
-    showLock(module);
     return;
   }
   loadModule(module);
@@ -1419,32 +1391,6 @@ function loadModule(module) {
   _current = module;
 }
 
-// LOCK
-function showLock(module) {
-  var titles = { custos:'Gestão de Custos', banco:'Banco de Dados', crm:'CRM de Leads', campanhas:'Campanhas', portfolio:'Portfólio', depoimentos:'Depoimentos', conteudo:'Conteúdo do Site', analytics:'Analytics', obras:'Gestão de Obras' };
-  document.getElementById('lockTitle').textContent = titles[module] || 'Área Restrita';
-  document.getElementById('lockInput').value = '';
-  document.getElementById('lockErr').textContent = '';
-  document.getElementById('lockOverlay').classList.add('show');
-  setTimeout(function(){ document.getElementById('lockInput').focus(); }, 80);
-}
-function closeLock() {
-  document.getElementById('lockOverlay').classList.remove('show');
-  _pending = null;
-}
-function checkLock() {
-  if (document.getElementById('lockInput').value === LOCK_PASS) {
-    _unlocked[_pending] = true;
-    document.getElementById('lockOverlay').classList.remove('show');
-    var mod = _pending; _pending = null;
-    navigate(mod);
-  } else {
-    document.getElementById('lockErr').textContent = 'Senha incorreta.';
-    document.getElementById('lockInput').value = '';
-    document.getElementById('lockInput').focus();
-  }
-}
-
 // EXTERNAL
 function showExt() { document.getElementById('extOverlay').classList.add('show'); }
 function closeExt() { document.getElementById('extOverlay').classList.remove('show'); }
@@ -1475,10 +1421,7 @@ function closeSidebarMobile() {
 
 // ESC
 document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') { closeLock(); closeExt(); }
-});
-document.getElementById('lockOverlay').addEventListener('click', function(e) {
-  if (e.target === this) closeLock();
+  if (e.key === 'Escape') { closeExt(); }
 });
 document.getElementById('extOverlay').addEventListener('click', function(e) {
   if (e.target === this) closeExt();
