@@ -336,27 +336,28 @@ textarea.field-inp{resize:vertical;min-height:76px;white-space:pre-wrap;}
   .modal-detail-img{height:220px;}
 
   /* ── FILTROS MOBILE ─────────────────────────── */
-  /* Esconde pills e sort desktop */
-  .filters-bar{ display:none; }
+  /* Esconde pills (filter-btn) e sort desktop individualmente */
+  .filter-btn{ display:none !important; }
   .sort-row-desktop{ display:none !important; }
 
-  /* Linha de filtros avançados */
+  /* Linha fbar-top: mantém funcional mas reorganiza */
   .fbar-top{
-    flex-wrap:nowrap;overflow-x:auto;gap:8px;
+    flex-wrap:wrap;gap:8px;
     padding:8px 14px 0;
-    scrollbar-width:none;-ms-overflow-style:none;
   }
-  .fbar-top::-webkit-scrollbar{display:none;}
   .btn-filter-toggle{flex-shrink:0;font-size:12px;}
+
+  /* Selects de modelo e tag: encolhem */
+  .fbar-top .filter-select{flex:1;min-width:120px;font-size:12px;}
 
   /* Search: linha separada, largura total */
   .search-wrap{
-    order:10;width:100%;margin:0;
+    order:10;width:100%;
     box-sizing:border-box;flex-shrink:0;
     margin-left:0 !important;
   }
   .search-input{width:100% !important;}
-  .view-toggle-group{flex-shrink:0;}
+  .view-toggle-group{flex-shrink:0;margin-left:auto;}
 
   /* Selects mobile de tipo + ordenar */
   .fbar-mobile-selects{
