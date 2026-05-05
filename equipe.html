@@ -224,6 +224,61 @@ textarea{resize:vertical;min-height:52px}
 .gantt-month-label{position:absolute;top:2px;font-size:11px;font-weight:700;color:var(--mu);letter-spacing:.5px;text-transform:uppercase;pointer-events:none}
 .gantt-empty{text-align:center;padding:48px 20px;color:var(--mu);font-size:13px}
 @media(max-width:768px){.gz-btn{padding:4px 8px;font-size:11px}#gantt-sidebar{width:180px}}
+/* CURVA ABC */
+.abc-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px}
+.abc-seg{display:flex;background:var(--s2);border:1px solid var(--bd);border-radius:8px;overflow:hidden}
+.abc-seg button{padding:5px 13px;border:none;background:none;font-size:12px;font-weight:500;cursor:pointer;color:var(--mu);font-family:'DM Sans',sans-serif;border-right:1px solid var(--bd);transition:all .15s}
+.abc-seg button:last-child{border-right:none}
+.abc-seg button.aon{background:var(--s1);color:var(--ac)}
+.abc-seg button:hover:not(.aon){color:var(--tx)}
+.abc-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.abc-kpi{border-radius:10px;padding:12px 14px;border-left:3px solid transparent}
+.abc-kpi.a{background:rgba(231,76,60,.08);border-left-color:#e74c3c}
+.abc-kpi.b{background:rgba(239,159,39,.08);border-left-color:#EF9F27}
+.abc-kpi.c{background:rgba(39,174,96,.08);border-left-color:#27ae60}
+.abc-badge{display:inline-block;font-size:9px;font-weight:700;padding:2px 8px;border-radius:20px;margin-bottom:5px;letter-spacing:.6px}
+.abc-kpi.a .abc-badge{background:rgba(231,76,60,.15);color:#c0392b}
+.abc-kpi.b .abc-badge{background:rgba(239,159,39,.15);color:#854F0B}
+.abc-kpi.c .abc-badge{background:rgba(39,174,96,.15);color:#1e8449}
+.abc-kpi-v{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--tx);line-height:1;margin-bottom:2px}
+.abc-kpi-s{font-size:11px;color:var(--mu)}
+.abc-body{display:grid;grid-template-columns:1fr 270px;gap:14px}
+.abc-bars{display:flex;flex-direction:column;gap:2px}
+.abc-bar-row{display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:7px;cursor:pointer;transition:background .12s}
+.abc-bar-row:hover,.abc-bar-row.sel{background:var(--s2)}
+.abc-dot{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0}
+.abc-dot.a{background:rgba(231,76,60,.2);color:#c0392b}
+.abc-dot.b{background:rgba(239,159,39,.2);color:#854F0B}
+.abc-dot.c{background:rgba(39,174,96,.2);color:#1e8449}
+.abc-name{font-size:12px;color:var(--tx);width:88px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.abc-track{flex:1;height:8px;background:var(--s3);border-radius:4px;overflow:hidden}
+.abc-fill{height:100%;border-radius:4px;transition:width .45s ease}
+.abc-num{font-size:12px;font-weight:600;color:var(--tx);width:22px;text-align:right;flex-shrink:0}
+.abc-pct-val{font-size:11px;color:#9d97e8;width:36px;text-align:right;flex-shrink:0}
+.abc-acum-row{display:flex;align-items:center;gap:8px;padding:0 8px 2px;margin-top:-1px}
+.abc-acum-lbl{font-size:9px;color:var(--mu);width:88px;flex-shrink:0;padding-left:28px}
+.abc-acum-bar{flex:1;height:2px;border-radius:1px}
+.abc-acum-num{font-size:10px;color:#9d97e8;width:36px;text-align:right;flex-shrink:0}
+.abc-detail{background:var(--s2);border:1px solid var(--bd);border-radius:12px;padding:14px;height:fit-content;max-height:480px;overflow-y:auto}
+.abc-detail-name{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:1px;color:var(--ac);margin-bottom:10px}
+.abc-mini-kpis{display:flex;gap:6px;margin-bottom:12px}
+.abc-mk{flex:1;background:var(--s1);border:1px solid var(--bd);border-radius:8px;padding:7px 6px;text-align:center}
+.abc-mk-v{font-family:'Bebas Neue',sans-serif;font-size:20px;line-height:1;margin-bottom:2px}
+.abc-mk-l{font-size:9px;color:var(--mu);text-transform:uppercase;letter-spacing:.5px}
+.abc-task-item{padding:7px 0;border-bottom:1px solid var(--bd)}
+.abc-task-item:last-child{border:none}
+.abc-task-name{font-size:12px;color:var(--tx);margin-bottom:3px;line-height:1.3}
+.abc-task-tags{display:flex;gap:4px;flex-wrap:wrap}
+.atag{font-size:9px;font-weight:700;padding:1px 6px;border-radius:20px}
+.atag-alta{background:rgba(231,76,60,.15);color:#c0392b}
+.atag-media{background:rgba(239,159,39,.15);color:#854F0B}
+.atag-baixa{background:rgba(39,174,96,.15);color:#1e8449}
+.atag-dept{background:var(--s3);color:var(--mu)}
+.atag-late{color:#c0392b}.atag-wip{color:#308EEE}.atag-todo{color:var(--mu)}.atag-done{color:#1e8449}
+.abc-legend{display:flex;gap:14px;margin-top:12px;padding-top:10px;border-top:1px solid var(--bd);flex-wrap:wrap}
+.abc-leg-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--mu)}
+.abc-leg-sq{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+/* FIM ABC */
 .toast{position:fixed;bottom:24px;right:24px;z-index:500;background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:12px 18px;font-size:13px;display:none;gap:10px;align-items:center;box-shadow:0 8px 32px rgba(0,0,0,.4)}
 .toast.on{display:flex}.toast.ok{border-left:4px solid var(--gr)}.toast.er{border-left:4px solid var(--rd)}
 @media(max-width:768px){.kpi-row,.g2,.kb-cols{grid-template-columns:1fr}.ew{grid-template-columns:1fr}.body{padding:14px}.tab{padding:5px 10px;font-size:12px}}
@@ -283,8 +338,46 @@ textarea{resize:vertical;min-height:52px}
         <div id="my-tasks-list"></div>
       </div>
     </div>
+    <!-- CURVA ABC -->
+    <div class="card" style="margin-top:14px" id="abc-section">
+      <div class="abc-top">
+        <div class="ct" style="margin-bottom:0">Curva ABC — Carga de Trabalho</div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <div style="font-size:11px;color:var(--mu)">Métrica:</div>
+          <div class="abc-seg">
+            <button class="aon" onclick="setAbcMetric('abertas',this)">Abertas</button>
+            <button onclick="setAbcMetric('atrasadas',this)">Atrasadas</button>
+            <button onclick="setAbcMetric('total',this)">Total</button>
+          </div>
+          <div style="font-size:11px;color:var(--mu);margin-left:4px">Corte A:</div>
+          <div class="abc-seg">
+            <button onclick="setAbcCut(70,this)">70%</button>
+            <button class="aon" onclick="setAbcCut(80,this)">80%</button>
+            <button onclick="setAbcCut(90,this)">90%</button>
+          </div>
+        </div>
+      </div>
+      <div class="abc-kpis">
+        <div class="abc-kpi a"><span class="abc-badge">CLASSE A</span><div class="abc-kpi-v" id="abc-ka">—</div><div class="abc-kpi-s">Sobrecarga crítica</div></div>
+        <div class="abc-kpi b"><span class="abc-badge">CLASSE B</span><div class="abc-kpi-v" id="abc-kb">—</div><div class="abc-kpi-s">Carga moderada</div></div>
+        <div class="abc-kpi c"><span class="abc-badge">CLASSE C</span><div class="abc-kpi-v" id="abc-kc">—</div><div class="abc-kpi-s">Baixa utilização</div></div>
+      </div>
+      <div class="abc-body">
+        <div>
+          <div class="abc-bars" id="abc-bars"></div>
+          <div class="abc-legend">
+            <div class="abc-leg-item"><div class="abc-leg-sq" style="background:#e74c3c"></div>Classe A</div>
+            <div class="abc-leg-item"><div class="abc-leg-sq" style="background:#EF9F27"></div>Classe B</div>
+            <div class="abc-leg-item"><div class="abc-leg-sq" style="background:#27ae60"></div>Classe C</div>
+            <div class="abc-leg-item" style="margin-left:auto"><div class="abc-leg-sq" style="background:#9d97e8;border-radius:50%"></div>% acumulado</div>
+          </div>
+        </div>
+        <div class="abc-detail" id="abc-detail">
+          <div style="color:var(--mu);font-size:13px;text-align:center;padding:24px 0">Clique em um nome<br>para ver as tarefas</div>
+        </div>
+      </div>
+    </div>
   </div>
-  <!-- EQUIPE -->
   <div class="sec" id="sec-equipe">
     <div class="toolbar">
       <div class="df-row" id="df-row"></div>
@@ -715,6 +808,8 @@ function renderDash(){
   }else{
     myPanel.style.display='none';
   }
+  // Curva ABC
+  renderABC();
 }
 
 /* ── EQUIPE ── */
@@ -1609,6 +1704,132 @@ function ganttBarUp(e){
   document.removeEventListener('mousemove',ganttBarMove);
   document.removeEventListener('mouseup',ganttBarUp);
   _ganttDrag=null;
+}
+
+/* ── CURVA ABC ── */
+var abcMetric='abertas', abcCutA=80, abcCutB=95, abcSelected=null;
+
+function setAbcMetric(m,btn){
+  abcMetric=m;
+  btn.parentNode.querySelectorAll('button').forEach(function(b){b.classList.remove('aon');});
+  btn.classList.add('aon');
+  renderABC();
+}
+function setAbcCut(v,btn){
+  abcCutA=v;
+  btn.parentNode.querySelectorAll('button').forEach(function(b){b.classList.remove('aon');});
+  btn.classList.add('aon');
+  renderABC();
+}
+function abcVal(nome){
+  var t=TASKS.filter(function(x){return x.responsavel===nome;});
+  if(abcMetric==='abertas')  return t.filter(function(x){return x.status!=='Concluído';}).length;
+  if(abcMetric==='atrasadas')return t.filter(function(x){return x.status==='Atrasado';}).length;
+  return t.length;
+}
+function abcClass(cumPctPrev){
+  if(cumPctPrev<abcCutA) return 'a';
+  if(cumPctPrev<abcCutB) return 'b';
+  return 'c';
+}
+function renderABC(){
+  if(!MEM.length) return;
+  var people=MEM.map(function(m){
+    return{id:m.id,nome:m.nome,cargo:m.cargo,dept:m.departamento,val:abcVal(m.nome)};
+  }).filter(function(p){return p.val>0;}).sort(function(a,b){return b.val-a.val;});
+
+  if(!people.length){
+    document.getElementById('abc-bars').innerHTML='<div style="color:var(--mu);font-size:13px;padding:16px 0;text-align:center">Nenhuma tarefa para classificar</div>';
+    return;
+  }
+
+  var total=people.reduce(function(s,p){return s+p.val;},0)||1;
+  var cumul=0;
+  var cntA=0,cntB=0,cntC=0;
+  var maxVal=people[0].val;
+  var colMap={a:'#e74c3c',b:'#EF9F27',c:'#27ae60'};
+
+  people.forEach(function(p){
+    var prevPct=Math.round(cumul/total*100);
+    cumul+=p.val;
+    p.cumPct=Math.round(cumul/total*100);
+    p.cls=abcClass(prevPct);
+    if(p.cls==='a')cntA++;else if(p.cls==='b')cntB++;else cntC++;
+  });
+
+  document.getElementById('abc-ka').textContent=cntA+' pessoa'+(cntA!==1?'s':'');
+  document.getElementById('abc-kb').textContent=cntB+' pessoa'+(cntB!==1?'s':'');
+  document.getElementById('abc-kc').textContent=cntC+' pessoa'+(cntC!==1?'s':'');
+
+  var html='';
+  people.forEach(function(p){
+    var barW=Math.round(p.val/maxVal*100);
+    var acumW=p.cumPct;
+    var isSel=abcSelected===p.nome;
+    var col=colMap[p.cls];
+    html+='<div class="abc-bar-row'+(isSel?' sel':'')+'" onclick="abcSelect(\''+esc(p.nome)+'\')">'
+      +'<div class="abc-dot '+p.cls+'">'+p.cls.toUpperCase()+'</div>'
+      +'<div class="abc-name" title="'+esc(p.nome)+'">'+esc(p.nome.split(' ')[0])+'</div>'
+      +'<div class="abc-track"><div class="abc-fill" style="width:'+barW+'%;background:'+col+'"></div></div>'
+      +'<div class="abc-num">'+p.val+'</div>'
+      +'<div class="abc-pct-val">'+p.cumPct+'%</div>'
+      +'</div>'
+      +'<div class="abc-acum-row">'
+      +'<div class="abc-acum-lbl">acumulado</div>'
+      +'<div class="abc-acum-bar" style="background:linear-gradient(90deg,#9d97e8 '+acumW+'%,rgba(157,151,232,.1) '+acumW+'%)"></div>'
+      +'<div class="abc-acum-num">'+p.cumPct+'%</div>'
+      +'</div>';
+  });
+  document.getElementById('abc-bars').innerHTML=html;
+  if(abcSelected) abcRenderDetail(abcSelected);
+}
+
+function abcSelect(nome){
+  abcSelected=nome;
+  renderABC();
+  abcRenderDetail(nome);
+}
+function abcRenderDetail(nome){
+  var m=MEM.find(function(x){return x.nome===nome;})||{cargo:'',departamento:''};
+  var myT=TASKS.filter(function(t){return t.responsavel===nome;});
+  var open=myT.filter(function(t){return t.status!=='Concluído';}).length;
+  var late=myT.filter(function(t){return t.status==='Atrasado';}).length;
+  var done=myT.filter(function(t){return t.status==='Concluído';}).length;
+  var subs=SUBTASKS.filter(function(s){
+    var t=myT.find(function(x){return x.id===s.task_id;});
+    return !!t;
+  }).length;
+
+  var html='<div class="abc-detail-name">'+esc(nome.split(' ')[0])+'</div>';
+  html+='<div style="font-size:10px;color:var(--mu);margin-bottom:10px">'+esc(m.cargo)+' · '+esc(m.departamento)+'</div>';
+  html+='<div class="abc-mini-kpis">'
+    +'<div class="abc-mk"><div class="abc-mk-v" style="color:var(--ac)">'+open+'</div><div class="abc-mk-l">Abertas</div></div>'
+    +'<div class="abc-mk"><div class="abc-mk-v" style="color:#e74c3c">'+late+'</div><div class="abc-mk-l">Atrasadas</div></div>'
+    +'<div class="abc-mk"><div class="abc-mk-v" style="color:#27ae60">'+done+'</div><div class="abc-mk-l">Concluídas</div></div>'
+    +'<div class="abc-mk"><div class="abc-mk-v" style="color:#9d97e8">'+subs+'</div><div class="abc-mk-l">Subtarefas</div></div>'
+    +'</div>';
+
+  if(!myT.length){
+    html+='<div style="color:var(--mu);font-size:12px;text-align:center;padding:12px 0">Sem tarefas atribuídas</div>';
+  } else {
+    var statusOrder={Atrasado:0,'Em andamento':1,'A fazer':2,Concluído:3};
+    var sorted=myT.slice().sort(function(a,b){return (statusOrder[a.status]||2)-(statusOrder[b.status]||2);});
+    html+=sorted.map(function(t){
+      var pc='atag-'+(t.prioridade==='Alta'?'alta':t.prioridade==='Média'?'media':'baixa');
+      var sc=t.status==='Atrasado'?'atag-late':t.status==='Em andamento'?'atag-wip':t.status==='Concluído'?'atag-done':'atag-todo';
+      var taskSubs=SUBTASKS.filter(function(s){return s.task_id===t.id;});
+      var taskSubsDone=taskSubs.filter(function(s){return s.concluida;}).length;
+      return '<div class="abc-task-item">'
+        +'<div class="abc-task-name">'+esc(t.titulo)+'</div>'
+        +'<div class="abc-task-tags">'
+        +'<span class="atag '+pc+'">'+esc(t.prioridade)+'</span>'
+        +'<span class="atag atag-dept">'+esc(t.departamento)+'</span>'
+        +'<span class="atag '+sc+'">'+esc(t.status)+'</span>'
+        +(taskSubs.length?'<span class="atag atag-dept">✓'+taskSubsDone+'/'+taskSubs.length+'</span>':'')
+        +'</div></div>';
+    }).join('');
+  }
+  document.getElementById('abc-detail').innerHTML=html;
 }
 
 loadAll();
