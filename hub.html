@@ -85,6 +85,7 @@ body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif
   white-space: nowrap;
   transition: opacity 0.2s;
 }
+.nav-divider + .nav-section-label { padding-top: 10px; }
 .sidebar.collapsed .nav-section-label { opacity: 0; }
 
 .nav-item {
@@ -639,7 +640,8 @@ body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif
   </div>
 
   <nav class="sidebar-nav">
-    <div class="nav-section-label">Principal</div>
+    <!-- 📌 PRINCIPAL -->
+    <div class="nav-section-label">📌 Principal</div>
 
     <div class="nav-item active" data-module="home" data-tip="Início" onclick="navigate('home')">
       <span class="nav-icon">⊞</span>
@@ -649,6 +651,16 @@ body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif
     <div class="nav-item" id="installNavItem" data-tip="Instalar App" onclick="installApp()" style="display:none;">
       <span class="nav-icon">📲</span>
       <span class="nav-label">Instalar App</span>
+    </div>
+
+    <!-- 💼 COMERCIAL -->
+    <div class="nav-divider"></div>
+    <div class="nav-section-label">💼 Comercial</div>
+
+    <div class="nav-item" data-module="crm" data-tip="CRM de Leads" onclick="navigate('crm')">
+      <span class="nav-icon">🎯</span>
+      <span class="nav-label">CRM de Leads</span>
+      <span class="notif-badge" id="navCrmBadge"></span>
     </div>
 
     <div class="nav-item" data-module="orcamento" data-tip="Orçamentos" onclick="navigate('orcamento')">
@@ -661,18 +673,13 @@ body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif
       <span class="nav-label">Catálogo de Modelos</span>
     </div>
 
+    <!-- 🌐 SITE & MARKETING -->
     <div class="nav-divider"></div>
-    <div class="nav-section-label">Restrito</div>
+    <div class="nav-section-label">🌐 Site & Marketing</div>
 
-    <div class="nav-item" data-module="crm" data-tip="CRM de Leads" onclick="navigate('crm')">
-      <span class="nav-icon">🎯</span>
-      <span class="nav-label">CRM de Leads</span>
-      <span class="notif-badge" id="navCrmBadge"></span>
-    </div>
-
-    <div class="nav-item" data-module="campanhas" data-tip="Campanhas" onclick="navigate('campanhas')">
-      <span class="nav-icon">📣</span>
-      <span class="nav-label">Campanhas</span>
+    <div class="nav-item" data-module="conteudo" data-tip="Conteúdo do Site" onclick="navigate('conteudo')">
+      <span class="nav-icon">✏️</span>
+      <span class="nav-label">Conteúdo</span>
     </div>
 
     <div class="nav-item" data-module="portfolio" data-tip="Portfólio" onclick="navigate('portfolio')">
@@ -685,15 +692,19 @@ body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif
       <span class="nav-label">Depoimentos</span>
     </div>
 
-    <div class="nav-item" data-module="conteudo" data-tip="Conteúdo do Site" onclick="navigate('conteudo')">
-      <span class="nav-icon">✏️</span>
-      <span class="nav-label">Conteúdo</span>
+    <div class="nav-item" data-module="campanhas" data-tip="Campanhas" onclick="navigate('campanhas')">
+      <span class="nav-icon">📣</span>
+      <span class="nav-label">Campanhas</span>
     </div>
 
     <div class="nav-item" data-module="analytics" data-tip="Analytics" onclick="navigate('analytics')">
       <span class="nav-icon">📈</span>
       <span class="nav-label">Analytics</span>
     </div>
+
+    <!-- 🏗️ OPERAÇÃO -->
+    <div class="nav-divider"></div>
+    <div class="nav-section-label">🏗️ Operação</div>
 
     <div class="nav-item" data-module="obras" data-tip="Gestão de Obras" onclick="navigate('obras')">
       <span class="nav-icon">🏗️</span>
@@ -704,6 +715,10 @@ body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif
       <span class="nav-icon">👥</span>
       <span class="nav-label">Equipe</span>
     </div>
+
+    <!-- ⚙️ ADMINISTRAÇÃO -->
+    <div class="nav-divider"></div>
+    <div class="nav-section-label">⚙️ Administração</div>
 
     <div class="nav-item" data-module="custos" data-tip="Gestão de Custos" onclick="navigate('custos')">
       <span class="nav-icon">💰</span>
