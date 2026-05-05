@@ -197,7 +197,33 @@ textarea{resize:vertical;min-height:52px}
 .dept-item{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--s2);border:1px solid var(--bd);border-radius:8px;margin-bottom:6px}
 /* STEP EDIT */
 .step-edit-box{background:var(--s3);border:1px solid var(--ac);border-radius:8px;padding:10px;margin-top:6px}
-/* TOAST */
+/* GANTT */
+.gz-btn{padding:5px 12px;border:none;background:none;color:var(--mu);font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s}
+.gz-btn:hover{color:var(--tx)}
+.gz-btn.gz-on{background:var(--s1);color:var(--ac);border-radius:6px}
+.gantt-row{display:flex;align-items:center;height:44px;border-bottom:1px solid var(--bd);position:relative}
+.gantt-row:hover{background:rgba(255,255,255,.02)}
+.gantt-label{height:44px;display:flex;align-items:center;padding:0 14px;border-bottom:1px solid var(--bd);gap:8px;cursor:pointer}
+.gantt-label:hover{background:rgba(255,255,255,.03)}
+.gantt-label-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.gantt-label-text{font-size:12px;color:var(--tx);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:170px}
+.gantt-label-sub{font-size:10px;color:var(--mu)}
+.gantt-col-header{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;border-right:1px solid var(--bd);padding:0 2px 4px;font-size:10px;color:var(--mu);flex-shrink:0;height:100%}
+.gantt-col-header.today{background:rgba(245,166,35,.08);color:var(--ac)}
+.gantt-col-header.weekend{background:rgba(255,255,255,.02);color:var(--mu)}
+.gantt-bar{position:absolute;height:26px;border-radius:5px;top:9px;cursor:grab;transition:box-shadow .15s;display:flex;align-items:center;overflow:hidden;min-width:4px;z-index:2}
+.gantt-bar:hover{box-shadow:0 0 0 2px rgba(255,255,255,.2);z-index:5}
+.gantt-bar.dragging{opacity:.85;box-shadow:0 4px 16px rgba(0,0,0,.4);z-index:10;cursor:grabbing}
+.gantt-bar-label{font-size:10px;font-weight:600;color:#fff;padding:0 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none;flex:1}
+.gantt-bar-resize{width:6px;height:100%;background:rgba(0,0,0,.25);cursor:ew-resize;flex-shrink:0;border-radius:0 5px 5px 0;display:flex;align-items:center;justify-content:center}
+.gantt-bar-resize::after{content:'⋮';color:rgba(255,255,255,.6);font-size:10px}
+.gantt-today-line{position:absolute;top:0;bottom:0;width:2px;background:var(--ac);opacity:.8;pointer-events:none;z-index:3}
+.gantt-today-line::before{content:'▼';position:absolute;top:-1px;left:50%;transform:translateX(-50%);color:var(--ac);font-size:8px}
+.gantt-grid-line{position:absolute;top:0;bottom:0;width:1px;background:var(--bd);pointer-events:none;opacity:.5}
+.gantt-weekend-bg{position:absolute;top:0;bottom:0;background:rgba(255,255,255,.015);pointer-events:none}
+.gantt-month-label{position:absolute;top:2px;font-size:11px;font-weight:700;color:var(--mu);letter-spacing:.5px;text-transform:uppercase;pointer-events:none}
+.gantt-empty{text-align:center;padding:48px 20px;color:var(--mu);font-size:13px}
+@media(max-width:768px){.gz-btn{padding:4px 8px;font-size:11px}#gantt-sidebar{width:180px}}
 .toast{position:fixed;bottom:24px;right:24px;z-index:500;background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:12px 18px;font-size:13px;display:none;gap:10px;align-items:center;box-shadow:0 8px 32px rgba(0,0,0,.4)}
 .toast.on{display:flex}.toast.ok{border-left:4px solid var(--gr)}.toast.er{border-left:4px solid var(--rd)}
 @media(max-width:768px){.kpi-row,.g2,.kb-cols{grid-template-columns:1fr}.ew{grid-template-columns:1fr}.body{padding:14px}.tab{padding:5px 10px;font-size:12px}}
@@ -273,12 +299,73 @@ textarea{resize:vertical;min-height:52px}
   <div class="sec" id="sec-tarefas">
     <div class="kb-top">
       <div class="kb-depts" id="kb-depts"></div>
-      <div style="display:flex;gap:8px">
+      <div style="display:flex;gap:8px;align-items:center">
+        <!-- VIEW SWITCHER -->
+        <div style="display:flex;background:var(--s2);border:1px solid var(--bd);border-radius:9px;padding:2px;gap:2px">
+          <button id="vbtn-kanban" onclick="setTaskView('kanban')" style="padding:5px 12px;border-radius:7px;border:none;font-size:12px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;background:var(--s1);color:var(--ac);border:1px solid rgba(245,166,35,.3)">⊞ Kanban</button>
+          <button id="vbtn-gantt"  onclick="setTaskView('gantt')"  style="padding:5px 12px;border-radius:7px;border:none;font-size:12px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;background:none;color:var(--mu)">▦ Gantt</button>
+        </div>
         <button class="btn-s" onclick="openCatModal()" style="padding:7px 14px">⚙️ Categorias</button>
         <button class="btn-p" onclick="openTaskModal(null)">+ Nova Tarefa</button>
       </div>
     </div>
-    <div class="kb-scroll"><div class="kb-cols" id="kb-cols"></div></div>
+    <!-- KANBAN VIEW -->
+    <div id="view-kanban">
+      <div class="kb-scroll"><div class="kb-cols" id="kb-cols"></div></div>
+    </div>
+    <!-- GANTT VIEW -->
+    <div id="view-gantt" style="display:none">
+      <!-- GANTT TOOLBAR -->
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="font-size:12px;color:var(--mu);font-weight:500">Zoom:</span>
+          <div style="display:flex;background:var(--s2);border:1px solid var(--bd);border-radius:8px;overflow:hidden">
+            <button onclick="setGanttZoom('day')"   id="gz-day"   class="gz-btn">Dia</button>
+            <button onclick="setGanttZoom('week')"  id="gz-week"  class="gz-btn gz-on">Semana</button>
+            <button onclick="setGanttZoom('month')" id="gz-month" class="gz-btn">Mês</button>
+          </div>
+          <button onclick="ganttToday()" class="btn-s" style="padding:5px 12px;font-size:12px">📅 Hoje</button>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:12px;color:var(--mu)">Filtrar:</span>
+          <select id="gantt-dept-filter" onchange="renderGantt()" style="font-size:12px;padding:5px 10px;border-radius:8px;background:var(--s2);border:1px solid var(--bd);color:var(--tx);font-family:'DM Sans',sans-serif">
+            <option value="">Todos departamentos</option>
+          </select>
+          <select id="gantt-resp-filter" onchange="renderGantt()" style="font-size:12px;padding:5px 10px;border-radius:8px;background:var(--s2);border:1px solid var(--bd);color:var(--tx);font-family:'DM Sans',sans-serif">
+            <option value="">Todos responsáveis</option>
+          </select>
+        </div>
+      </div>
+      <!-- GANTT CONTAINER -->
+      <div style="background:var(--s1);border:1px solid var(--bd);border-radius:14px;overflow:hidden">
+        <div style="display:flex">
+          <!-- SIDEBAR TAREFAS -->
+          <div id="gantt-sidebar" style="width:260px;flex-shrink:0;border-right:1px solid var(--bd);overflow:hidden">
+            <!-- Header sidebar -->
+            <div style="height:52px;display:flex;align-items:center;padding:0 14px;border-bottom:1px solid var(--bd);background:var(--s2)">
+              <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--mu)">Tarefa</span>
+            </div>
+            <div id="gantt-task-labels" style="overflow-y:auto"></div>
+          </div>
+          <!-- GRID PRINCIPAL -->
+          <div id="gantt-scroll-wrap" style="flex:1;overflow-x:auto;overflow-y:hidden;cursor:grab">
+            <div id="gantt-inner" style="position:relative;min-width:100%">
+              <!-- Header datas -->
+              <div id="gantt-header" style="height:52px;border-bottom:1px solid var(--bd);background:var(--s2);position:sticky;top:0;z-index:10;display:flex;align-items:flex-end"></div>
+              <!-- Grid rows -->
+              <div id="gantt-rows" style="position:relative"></div>
+            </div>
+          </div>
+        </div>
+        <!-- Rodapé legenda -->
+        <div style="padding:8px 16px;border-top:1px solid var(--bd);display:flex;gap:16px;flex-wrap:wrap">
+          <span style="font-size:11px;color:var(--mu)"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#e74c3c;margin-right:4px;vertical-align:middle"></span>Alta</span>
+          <span style="font-size:11px;color:var(--mu)"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#f5a623;margin-right:4px;vertical-align:middle"></span>Média</span>
+          <span style="font-size:11px;color:var(--mu)"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#27ae60;margin-right:4px;vertical-align:middle"></span>Baixa</span>
+          <span style="font-size:11px;color:var(--mu);margin-left:auto">💡 Arraste a barra para mover · Arraste a borda direita para ajustar prazo</span>
+        </div>
+      </div>
+    </div>
   </div>
   <!-- FLUXOGRAMAS -->
   <div class="sec" id="sec-fluxos">
@@ -494,7 +581,7 @@ function loadAll(){
   Promise.all([
     GET('departments?ativo=eq.true&order=ordem.asc'),
     GET('employees?ativo=eq.true&order=departamento.asc,nome.asc'),
-    GET('tasks?order=ordem.asc,created_at.desc'),
+    GET('tasks?order=ordem.asc,created_at.desc&select=*'),
     GET('task_categories?order=ordem.asc'),
     GET('subtasks?order=task_id.asc,ordem.asc'),
   ]).then(function(r){
@@ -529,7 +616,7 @@ function goTab(id,btn){
   document.getElementById('sec-'+id).classList.add('on');
   if(id==='dash')    renderDash();
   if(id==='equipe')  renderEquipe();
-  if(id==='tarefas') renderKanban();
+  if(id==='tarefas') {renderKanban();if(taskView==='gantt')renderGantt();}
   if(id==='fluxos')  loadFlows(function(){showFlList();});
 }
 
@@ -1146,6 +1233,330 @@ function viewFlow(id){
       +'</td></tr>';
   }).join('');
   showFlViz();
+}
+
+/* ── VIEW SWITCHER TAREFAS ── */
+var taskView='kanban';
+function setTaskView(v){
+  taskView=v;
+  var kb=document.getElementById('view-kanban');
+  var gt=document.getElementById('view-gantt');
+  var bk=document.getElementById('vbtn-kanban');
+  var bg=document.getElementById('vbtn-gantt');
+  if(v==='kanban'){
+    kb.style.display='';gt.style.display='none';
+    bk.style.background='var(--s1)';bk.style.color='var(--ac)';bk.style.border='1px solid rgba(245,166,35,.3)';
+    bg.style.background='none';bg.style.color='var(--mu)';bg.style.border='none';
+  }else{
+    kb.style.display='none';gt.style.display='';
+    bg.style.background='var(--s1)';bg.style.color='var(--ac)';bg.style.border='1px solid rgba(245,166,35,.3)';
+    bk.style.background='none';bk.style.color='var(--mu)';bk.style.border='none';
+    renderGantt();
+  }
+}
+
+/* ── GANTT ── */
+var ganttZoom='week'; // day | week | month
+var ganttOffset=0;    // px offset do scroll
+var COL_W={day:28,week:20,month:14}; // px por unidade
+
+var _ganttDrag=null; // {taskId, type:'move'|'resize', startX, origLeft, origWidth, origStart, origEnd}
+
+function setGanttZoom(z){
+  ganttZoom=z;
+  document.querySelectorAll('.gz-btn').forEach(function(b){b.classList.remove('gz-on');});
+  document.getElementById('gz-'+z).classList.add('gz-on');
+  renderGantt();
+  ganttToday();
+}
+
+function ganttToday(){
+  var wrap=document.getElementById('gantt-scroll-wrap');
+  var inner=document.getElementById('gantt-inner');
+  if(!wrap||!inner)return;
+  var todayPx=ganttDateToPx(new Date());
+  var center=todayPx - wrap.clientWidth/2;
+  wrap.scrollLeft=Math.max(0,center);
+}
+
+// Retorna data de início/fim do gantt (janela de 6 meses ao redor de hoje)
+function ganttWindow(){
+  var now=new Date();
+  var start=new Date(now);start.setMonth(start.getMonth()-2);start.setDate(1);
+  var end=new Date(now);end.setMonth(end.getMonth()+4);end.setDate(0);
+  return{start:start,end:end};
+}
+
+function daysBetween(a,b){
+  return Math.round((b-a)/(1000*60*60*24));
+}
+function ganttDateToPx(date){
+  var w=ganttWindow();
+  var days=daysBetween(w.start,date);
+  var cw=COL_W[ganttZoom];
+  return days*cw;
+}
+function ganttPxToDate(px){
+  var w=ganttWindow();
+  var cw=COL_W[ganttZoom];
+  var days=Math.round(px/cw);
+  var d=new Date(w.start);d.setDate(d.getDate()+days);
+  return d;
+}
+function dateToISO(d){
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+
+function renderGantt(){
+  var deptF=document.getElementById('gantt-dept-filter').value;
+  var respF=document.getElementById('gantt-resp-filter').value;
+  // popular selects filtros
+  var deptSel=document.getElementById('gantt-dept-filter');
+  var curDept=deptSel.value;
+  deptSel.innerHTML='<option value="">Todos departamentos</option>'+DEPTS.map(function(d){return'<option value="'+esc(d.nome)+'">'+esc(d.nome)+'</option>';}).join('');
+  deptSel.value=curDept;
+  var respSel=document.getElementById('gantt-resp-filter');
+  var curResp=respSel.value;
+  respSel.innerHTML='<option value="">Todos responsáveis</option>'+MEM.map(function(m){return'<option value="'+esc(m.nome)+'">'+esc(m.nome)+'</option>';}).join('');
+  respSel.value=curResp;
+  deptF=deptSel.value;respF=respSel.value;
+
+  // Filtrar tarefas que têm prazo
+  var tasks=TASKS.filter(function(t){
+    if(!t.prazo)return false;
+    if(deptF&&t.departamento!==deptF)return false;
+    if(respF&&t.responsavel!==respF)return false;
+    return true;
+  });
+
+  var w=ganttWindow();
+  var totalDays=daysBetween(w.start,w.end)+1;
+  var cw=COL_W[ganttZoom];
+  var totalW=totalDays*cw;
+  var ROW_H=44;
+
+  // ── HEADER ──
+  var header=document.getElementById('gantt-header');
+  header.style.width=totalW+'px';
+  var headerHtml='';
+  var today=new Date();today.setHours(0,0,0,0);
+
+  if(ganttZoom==='day'){
+    // Linha superior: meses; linha inferior: dias
+    var months={};
+    for(var di=0;di<totalDays;di++){
+      var dd=new Date(w.start);dd.setDate(dd.getDate()+di);
+      var mk=dd.getFullYear()+'-'+dd.getMonth();
+      if(!months[mk])months[mk]={label:dd.toLocaleDateString('pt-BR',{month:'short',year:'numeric'}),start:di};
+    }
+    // dia por dia
+    for(var di=0;di<totalDays;di++){
+      var dd=new Date(w.start);dd.setDate(dd.getDate()+di);
+      var isToday=dd.getTime()===today.getTime();
+      var isWE=dd.getDay()===0||dd.getDay()===6;
+      var cls='gantt-col-header'+(isToday?' today':isWE?' weekend':'');
+      headerHtml+='<div class="'+cls+'" style="width:'+cw+'px;min-width:'+cw+'px">'
+        +(di%7===0||di===0?'<div style="font-size:9px;color:var(--mu);margin-bottom:2px">'+dd.toLocaleDateString('pt-BR',{month:'short'})+'</div>':'')
+        +'<div>'+dd.getDate()+'</div>'
+        +'</div>';
+    }
+  } else if(ganttZoom==='week'){
+    // Semanas
+    for(var di=0;di<totalDays;di++){
+      var dd=new Date(w.start);dd.setDate(dd.getDate()+di);
+      var isToday=dd.getTime()===today.getTime();
+      var isWE=dd.getDay()===0||dd.getDay()===6;
+      var isMon=dd.getDay()===1;
+      var cls='gantt-col-header'+(isToday?' today':isWE?' weekend':'');
+      var label='';
+      if(isMon||di===0)label='<div style="font-size:9px;margin-bottom:2px">'+dd.toLocaleDateString('pt-BR',{month:'short',day:'numeric'})+'</div>';
+      headerHtml+='<div class="'+cls+'" style="width:'+cw+'px;min-width:'+cw+'px">'+label+'<div>'+(isToday?'●':'')+'</div></div>';
+    }
+  } else {
+    // Month: mostrar por dia mas label só no 1
+    for(var di=0;di<totalDays;di++){
+      var dd=new Date(w.start);dd.setDate(dd.getDate()+di);
+      var isToday=dd.getTime()===today.getTime();
+      var isWE=dd.getDay()===0||dd.getDay()===6;
+      var cls='gantt-col-header'+(isToday?' today':isWE?' weekend':'');
+      var label=dd.getDate()===1?'<div style="font-size:9px;margin-bottom:1px">'+dd.toLocaleDateString('pt-BR',{month:'short'})+'</div>':'';
+      headerHtml+='<div class="'+cls+'" style="width:'+cw+'px;min-width:'+cw+'px">'+label+'</div>';
+    }
+  }
+  header.innerHTML=headerHtml;
+
+  // ── SIDEBAR LABELS ──
+  var sidebar=document.getElementById('gantt-task-labels');
+  sidebar.style.maxHeight=(ROW_H*Math.max(tasks.length,3)+20)+'px';
+  if(!tasks.length){
+    sidebar.innerHTML='<div class="gantt-empty" style="padding:20px 14px;font-size:12px;text-align:left;color:var(--mu)">Nenhuma tarefa<br>com prazo definido</div>';
+  }else{
+    sidebar.innerHTML=tasks.map(function(t,i){
+      var st=deptStyle(t.departamento);
+      var pcolor=PC[t.prioridade]||'#7a7f9a';
+      var subs=SUBTASKS.filter(function(s){return s.task_id===t.id;});
+      var subsDone=subs.filter(function(s){return s.concluida;}).length;
+      return '<div class="gantt-label" onclick="openTaskModal(\''+t.id+'\')" title="'+esc(t.titulo)+'">'
+        +'<span class="gantt-label-dot" style="background:'+pcolor+'"></span>'
+        +'<div style="min-width:0">'
+        +'<div class="gantt-label-text">'+esc(t.titulo)+'</div>'
+        +'<div class="gantt-label-sub">'+esc(t.responsavel)+(subs.length?' · ✓'+subsDone+'/'+subs.length:'')+'</div>'
+        +'</div>'
+        +'</div>';
+    }).join('');
+  }
+
+  // ── ROWS + BARS ──
+  var rowsEl=document.getElementById('gantt-rows');
+  var inner=document.getElementById('gantt-inner');
+  inner.style.width=totalW+'px';
+
+  if(!tasks.length){
+    rowsEl.innerHTML='<div class="gantt-empty">Crie tarefas com prazo definido para visualizar no Gantt.</div>';
+    // sync scroll
+    setupGanttSync();
+    return;
+  }
+
+  var gridLines='';
+  var weekendBgs='';
+  // linhas de grid e fins de semana
+  for(var di=0;di<totalDays;di++){
+    var dd=new Date(w.start);dd.setDate(dd.getDate()+di);
+    var xPos=di*cw;
+    var isWE=dd.getDay()===0||dd.getDay()===6;
+    if(isWE) weekendBgs+='<div class="gantt-weekend-bg" style="left:'+xPos+'px;width:'+cw+'px;bottom:0;top:0"></div>';
+    if(ganttZoom!=='month'||(dd.getDay()===1||di===0))
+      gridLines+='<div class="gantt-grid-line" style="left:'+xPos+'px;bottom:0;top:0"></div>';
+  }
+
+  // Linha de hoje
+  var todayX=ganttDateToPx(today);
+  var todayLine='<div class="gantt-today-line" style="left:'+todayX+'px;top:0;bottom:0"></div>';
+
+  var rowsHtml='<div style="position:relative;height:'+(ROW_H*tasks.length)+'px">'
+    +weekendBgs+gridLines+todayLine;
+
+  tasks.forEach(function(t,i){
+    var pcolor=PC[t.prioridade]||'#7a7f9a';
+    var st=deptStyle(t.departamento);
+    // prazo como data de término; início = criado_at ou prazo-7d
+    var endDate=new Date(t.prazo+'T12:00:00');
+    var startDate;
+    if(t.gantt_start){startDate=new Date(t.gantt_start+'T12:00:00');}
+    else{startDate=new Date(endDate);startDate.setDate(startDate.getDate()-7);}
+
+    var x1=ganttDateToPx(startDate);
+    var x2=ganttDateToPx(endDate)+cw;
+    var barW=Math.max(x2-x1,cw);
+    var yTop=i*ROW_H;
+
+    // Row background alternado
+    rowsHtml+='<div class="gantt-row" style="position:absolute;left:0;right:0;top:'+yTop+'px;height:'+ROW_H+'px"></div>';
+
+    // Barra
+    var cat=CATS.find(function(c){return c.id===t.categoria_id;});
+    var barColor=cat?cat.cor:pcolor;
+    rowsHtml+='<div class="gantt-bar" id="gbar-'+t.id+'" data-tid="'+t.id+'" data-idx="'+i+'"'
+      +' style="left:'+x1+'px;width:'+barW+'px;top:'+(yTop+9)+'px;background:'+barColor+';border:1px solid rgba(255,255,255,.12)"'
+      +' onmousedown="ganttBarMouseDown(event,\''+t.id+'\',\'move\')">'
+      +'<div class="gantt-bar-label">'+esc(t.titulo)+'</div>'
+      +'<div class="gantt-bar-resize" onmousedown="ganttBarMouseDown(event,\''+t.id+'\',\'resize\')"></div>'
+      +'</div>';
+  });
+
+  rowsHtml+='</div>';
+  rowsEl.innerHTML=rowsHtml;
+  setupGanttSync();
+}
+
+function setupGanttSync(){
+  // Sincronizar scroll vertical sidebar e rows
+  var sidebar=document.getElementById('gantt-task-labels');
+  var rows=document.getElementById('gantt-rows');
+  var wrap=document.getElementById('gantt-scroll-wrap');
+  if(!sidebar||!rows||!wrap)return;
+  // cursor grab no scroll
+  wrap.onmousedown=function(e){
+    if(e.target.closest('.gantt-bar'))return;
+    var startX=e.pageX,sl=wrap.scrollLeft;
+    wrap.style.cursor='grabbing';
+    function mm(ev){wrap.scrollLeft=sl-(ev.pageX-startX);}
+    function mu(){wrap.style.cursor='grab';document.removeEventListener('mousemove',mm);document.removeEventListener('mouseup',mu);}
+    document.addEventListener('mousemove',mm);document.addEventListener('mouseup',mu);
+  };
+}
+
+/* ── DRAG & RESIZE BARRAS GANTT ── */
+function ganttBarMouseDown(e,taskId,type){
+  e.stopPropagation();e.preventDefault();
+  var bar=document.getElementById('gbar-'+taskId);
+  if(!bar)return;
+  var t=TASKS.find(function(x){return x.id===taskId;});if(!t)return;
+  bar.classList.add('dragging');
+
+  var startX=e.clientX;
+  var origLeft=parseInt(bar.style.left)||0;
+  var origW=parseInt(bar.style.width)||100;
+
+  var endDate=new Date(t.prazo+'T12:00:00');
+  var startDate=t.gantt_start?new Date(t.gantt_start+'T12:00:00'):new Date(endDate.getTime()-7*86400000);
+
+  _ganttDrag={taskId:taskId,type:type,startX:startX,origLeft:origLeft,origW:origW,startDate:startDate,endDate:endDate};
+
+  document.addEventListener('mousemove',ganttBarMouseMove);
+  document.addEventListener('mouseup',ganttBarMouseUp);
+}
+function ganttBarMouseMove(e){
+  if(!_ganttDrag)return;
+  var dx=e.clientX-_ganttDrag.startX;
+  var bar=document.getElementById('gbar-'+_ganttDrag.taskId);if(!bar)return;
+  var cw=COL_W[ganttZoom];
+  var snapDx=Math.round(dx/cw)*cw; // snap por unidade
+
+  if(_ganttDrag.type==='move'){
+    bar.style.left=Math.max(0,_ganttDrag.origLeft+snapDx)+'px';
+  }else{
+    var newW=Math.max(cw,_ganttDrag.origW+snapDx);
+    bar.style.width=newW+'px';
+  }
+}
+function ganttBarMouseUp(e){
+  if(!_ganttDrag)return;
+  var bar=document.getElementById('gbar-'+_ganttDrag.taskId);
+  if(bar)bar.classList.remove('dragging');
+
+  var t=TASKS.find(function(x){return x.id===_ganttDrag.taskId;});
+  if(t&&bar){
+    var newLeft=parseInt(bar.style.left)||0;
+    var newW=parseInt(bar.style.width)||100;
+    var cw=COL_W[ganttZoom];
+
+    if(_ganttDrag.type==='move'){
+      var dx=newLeft-_ganttDrag.origLeft;
+      var daysDx=Math.round(dx/cw);
+      var newStart=new Date(_ganttDrag.startDate.getTime()+daysDx*86400000);
+      var newEnd=new Date(_ganttDrag.endDate.getTime()+daysDx*86400000);
+      t.gantt_start=dateToISO(newStart);
+      t.prazo=dateToISO(newEnd);
+      // Salvar no Supabase
+      PATCH('tasks?id=eq.'+t.id,{prazo:t.prazo,gantt_start:t.gantt_start})
+        .then(function(){toast('Prazo atualizado: '+fmtD(t.prazo));})
+        .catch(function(){toast('Erro ao salvar','er');});
+    }else{
+      var totalDays=Math.max(1,Math.round(newW/cw));
+      var newEnd=new Date(_ganttDrag.startDate.getTime()+totalDays*86400000);
+      t.prazo=dateToISO(newEnd);
+      PATCH('tasks?id=eq.'+t.id,{prazo:t.prazo})
+        .then(function(){toast('Prazo: '+fmtD(t.prazo));})
+        .catch(function(){toast('Erro ao salvar','er');});
+    }
+    renderDash();
+  }
+
+  document.removeEventListener('mousemove',ganttBarMouseMove);
+  document.removeEventListener('mouseup',ganttBarMouseUp);
+  _ganttDrag=null;
 }
 
 loadAll();
