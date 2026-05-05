@@ -61,6 +61,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 
 /* ── FILTROS AVANÇADOS ── */
 .fbar-top{display:flex;align-items:center;gap:8px;padding:16px 28px 0;flex-wrap:wrap;}
+.fbar-mobile-selects{display:none;}
 .fbar-adv{padding:0 28px;overflow:hidden;max-height:0;transition:max-height .35s ease;}
 .fbar-adv.open{max-height:320px;}
 .fbar-adv-inner{display:flex;gap:10px;flex-wrap:wrap;padding:14px 0;border-bottom:1px solid var(--border);}
@@ -331,9 +332,42 @@ textarea.field-inp{resize:vertical;min-height:76px;white-space:pre-wrap;}
 @media(max-width:600px){
   .modal-specs{grid-template-columns:repeat(2,1fr);}
   .field-row,.field-row3,.field-row4{grid-template-columns:1fr;}
-  .grid{padding:14px;}
-  .filters-bar{padding:14px;}
+  .grid{padding:10px;}
   .modal-detail-img{height:220px;}
+
+  /* ── FILTROS MOBILE ─────────────────────────── */
+  /* Esconde pills e sort desktop */
+  .filters-bar{ display:none; }
+  .sort-row-desktop{ display:none !important; }
+
+  /* Linha de filtros avançados */
+  .fbar-top{
+    flex-wrap:nowrap;overflow-x:auto;gap:8px;
+    padding:8px 14px 0;
+    scrollbar-width:none;-ms-overflow-style:none;
+  }
+  .fbar-top::-webkit-scrollbar{display:none;}
+  .btn-filter-toggle{flex-shrink:0;font-size:12px;}
+
+  /* Search: linha separada, largura total */
+  .search-wrap{
+    order:10;width:100%;margin:0;
+    box-sizing:border-box;flex-shrink:0;
+    margin-left:0 !important;
+  }
+  .search-input{width:100% !important;}
+  .view-toggle-group{flex-shrink:0;}
+
+  /* Selects mobile de tipo + ordenar */
+  .fbar-mobile-selects{
+    display:flex;gap:8px;padding:8px 14px 0;
+    align-items:center;
+  }
+  .fbar-mobile-selects .filter-select{
+    flex:1;font-size:12px;
+  }
+
+  .results-count{padding:4px 14px;}
 }
 
 /* Visível no site toggle */
@@ -471,13 +505,29 @@ textarea.field-inp{resize:vertical;min-height:76px;white-space:pre-wrap;}
 
 <!-- CHIPS DE FILTROS ATIVOS -->
 <div class="fbar-chips" id="fbarChips"></div>
-<div style="display:flex;align-items:center;gap:8px;padding:6px 28px 0;flex-wrap:wrap;">
-  <span style="font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);font-weight:700;">Ordenar:</span>
+
+<!-- SORT DESKTOP -->
+<div class="sort-row-desktop" style="display:flex;align-items:center;gap:8px;padding:6px 28px 0;flex-wrap:wrap;">
+  <span style="font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);font-weight:700;flex-shrink:0;">Ordenar:</span>
   <button class="sort-btn active" data-sort="created_at" onclick="setSort('created_at')">Recentes<span class="sort-arrow"> ↓</span></button>
   <button class="sort-btn" data-sort="nome" onclick="setSort('nome')">Nome<span class="sort-arrow"></span></button>
   <button class="sort-btn" data-sort="area" onclick="setSort('area')">Metragem<span class="sort-arrow"></span></button>
   <button class="sort-btn" data-sort="preco" onclick="setSort('preco')">Preço<span class="sort-arrow"></span></button>
   <button class="sort-btn" data-sort="quartos" onclick="setSort('quartos')">Quartos<span class="sort-arrow"></span></button>
+</div>
+
+<!-- FILTROS MOBILE: select de tipo + select de ordenar -->
+<div class="fbar-mobile-selects" id="fbarMobileSelects">
+  <select class="filter-select" id="filterTipoMobile" onchange="onFilterTipoMobile(this)">
+    <option value="todos">🏠 Todos os tipos</option>
+  </select>
+  <select class="filter-select" id="sortSelectMobile" onchange="onSortMobile(this)">
+    <option value="created_at">📅 Recentes</option>
+    <option value="nome">🔤 Nome</option>
+    <option value="area">📐 Metragem</option>
+    <option value="preco">💰 Preço</option>
+    <option value="quartos">🛏️ Quartos</option>
+  </select>
 </div>
 <div class="results-count" id="resultsCount"></div>
 
@@ -1313,7 +1363,7 @@ function renderFilters() {
   // Remove old tipo btns
   bar.querySelectorAll('.filter-btn').forEach(b => b.remove());
 
-  // Tipo pills
+  // Tipo pills (desktop)
   ['todos', ..._opts.tipo].forEach(v => {
     const b = document.createElement('button');
     b.className = 'filter-btn' + (v===_activeFilter&&!_activeTag&&!_activeModelo&&!hasAdvFilters()?' active':'');
@@ -1321,6 +1371,14 @@ function renderFilters() {
     b.onclick = () => { _activeFilter=v; _activeTag=''; _activeModelo=''; clearAdvFilters(); syncSelects(); setFilterBtn(b); renderCatalogo(); };
     bar.insertBefore(b, modeloSel);
   });
+
+  // Tipo select (mobile)
+  const tipoMob = document.getElementById('filterTipoMobile');
+  if (tipoMob) {
+    tipoMob.innerHTML = '<option value="todos">🏠 Todos os tipos</option>' +
+      _opts.tipo.map(v => `<option value="${esc(v)}" ${v===_activeFilter?'selected':''}>${v}</option>`).join('');
+    if (_activeFilter === 'todos' || _activeTag || _activeModelo) tipoMob.value = 'todos';
+  }
 
   // Select Modelos
   modeloSel.innerHTML = '<option value="">🏠 Todos os Modelos</option>' +
@@ -2140,6 +2198,16 @@ if (_searchEl) {
 }
 
 // Rastreia filtros clicados
+// ── MOBILE SELECTS ──────────────────────────────────────────
+function onFilterTipoMobile(sel) {
+  _activeFilter = sel.value || 'todos';
+  _activeTag = ''; _activeModelo = '';
+  clearAdvFilters(); syncSelects(); renderCatalogo();
+}
+function onSortMobile(sel) {
+  setSort(sel.value);
+}
+
 document.querySelectorAll('.filter-btn').forEach(function(btn) {
   btn.addEventListener('click', function() {
     gaEvent('catalogo_filter', { filter_value: btn.textContent.trim() });
