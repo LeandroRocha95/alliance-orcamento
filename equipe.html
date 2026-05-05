@@ -324,10 +324,13 @@ textarea{resize:vertical;min-height:52px}
             <button onclick="setGanttZoom('week')"  id="gz-week"  class="gz-btn gz-on">Semana</button>
             <button onclick="setGanttZoom('month')" id="gz-month" class="gz-btn">Mês</button>
           </div>
+          <button onclick="ganttZoomIn()" class="btn-s" style="padding:5px 10px;font-size:14px" title="Ampliar (ou Ctrl+Scroll)">+</button>
+          <button onclick="ganttZoomOut()" class="btn-s" style="padding:5px 10px;font-size:14px" title="Reduzir (ou Ctrl+Scroll)">−</button>
           <button onclick="ganttToday()" class="btn-s" style="padding:5px 12px;font-size:12px">📅 Hoje</button>
         </div>
-        <div style="display:flex;align-items:center;gap:8px">
-          <span style="font-size:12px;color:var(--mu)">Filtrar:</span>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <button id="btn-toggle-subs" onclick="toggleGanttSubs()" class="btn-s" style="padding:5px 12px;font-size:12px">▶ Mostrar subtarefas</button>
+          <button onclick="toggleGanttExpand()" id="btn-gantt-expand" class="btn-s" style="padding:5px 12px;font-size:12px">⛶ Expandir</button>
           <select id="gantt-dept-filter" onchange="renderGantt()" style="font-size:12px;padding:5px 10px;border-radius:8px;background:var(--s2);border:1px solid var(--bd);color:var(--tx);font-family:'DM Sans',sans-serif">
             <option value="">Todos departamentos</option>
           </select>
@@ -337,32 +340,33 @@ textarea{resize:vertical;min-height:52px}
         </div>
       </div>
       <!-- GANTT CONTAINER -->
-      <div style="background:var(--s1);border:1px solid var(--bd);border-radius:14px;overflow:hidden">
-        <div style="display:flex">
-          <!-- SIDEBAR TAREFAS -->
-          <div id="gantt-sidebar" style="width:260px;flex-shrink:0;border-right:1px solid var(--bd);overflow:hidden">
-            <!-- Header sidebar -->
-            <div style="height:52px;display:flex;align-items:center;padding:0 14px;border-bottom:1px solid var(--bd);background:var(--s2)">
-              <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--mu)">Tarefa</span>
+      <div id="gantt-container" style="background:var(--s1);border:1px solid var(--bd);border-radius:14px;overflow:hidden;transition:height .3s">
+        <div style="display:flex;height:100%">
+          <!-- SIDEBAR -->
+          <div id="gantt-sidebar" style="width:280px;flex-shrink:0;border-right:1px solid var(--bd);display:flex;flex-direction:column">
+            <div style="height:52px;display:flex;align-items:center;padding:0 14px;border-bottom:1px solid var(--bd);background:var(--s2);flex-shrink:0">
+              <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--mu)">Tarefa / Responsável</span>
             </div>
-            <div id="gantt-task-labels" style="overflow-y:auto"></div>
+            <div id="gantt-task-labels" style="overflow-y:auto;flex:1"></div>
           </div>
-          <!-- GRID PRINCIPAL -->
-          <div id="gantt-scroll-wrap" style="flex:1;overflow-x:auto;overflow-y:hidden;cursor:grab">
-            <div id="gantt-inner" style="position:relative;min-width:100%">
-              <!-- Header datas -->
-              <div id="gantt-header" style="height:52px;border-bottom:1px solid var(--bd);background:var(--s2);position:sticky;top:0;z-index:10;display:flex;align-items:flex-end"></div>
-              <!-- Grid rows -->
-              <div id="gantt-rows" style="position:relative"></div>
+          <!-- GRID -->
+          <div style="flex:1;display:flex;flex-direction:column;overflow:hidden">
+            <div id="gantt-scroll-wrap" style="flex:1;overflow-x:auto;overflow-y:auto;cursor:grab;position:relative">
+              <div id="gantt-inner" style="position:relative;min-width:100%;min-height:100%">
+                <div id="gantt-header" style="height:52px;border-bottom:1px solid var(--bd);background:var(--s2);position:sticky;top:0;z-index:10;display:flex;align-items:flex-end"></div>
+                <div id="gantt-rows" style="position:relative"></div>
+              </div>
             </div>
           </div>
         </div>
-        <!-- Rodapé legenda -->
-        <div style="padding:8px 16px;border-top:1px solid var(--bd);display:flex;gap:16px;flex-wrap:wrap">
+        <!-- LEGENDA -->
+        <div style="padding:8px 16px;border-top:1px solid var(--bd);display:flex;gap:16px;flex-wrap:wrap;align-items:center">
           <span style="font-size:11px;color:var(--mu)"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#e74c3c;margin-right:4px;vertical-align:middle"></span>Alta</span>
           <span style="font-size:11px;color:var(--mu)"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#f5a623;margin-right:4px;vertical-align:middle"></span>Média</span>
           <span style="font-size:11px;color:var(--mu)"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#27ae60;margin-right:4px;vertical-align:middle"></span>Baixa</span>
-          <span style="font-size:11px;color:var(--mu);margin-left:auto">💡 Arraste a barra para mover · Arraste a borda direita para ajustar prazo</span>
+          <span style="font-size:11px;color:var(--mu);opacity:.6">┄</span>
+          <span style="font-size:11px;color:var(--mu)"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:rgba(255,255,255,.15);border:1px solid var(--bd);margin-right:4px;vertical-align:middle"></span>Subtarefa</span>
+          <span style="font-size:11px;color:var(--mu);margin-left:auto">💡 Arraste barra para mover · Borda direita para ajustar prazo · Ctrl+Scroll para zoom</span>
         </div>
       </div>
     </div>
@@ -463,9 +467,17 @@ textarea{resize:vertical;min-height:52px}
       <div class="fg"><span class="fl">Responsável</span><select id="t-re"></select></div>
       <div class="fg"><span class="fl">Categoria</span><select id="t-ca"></select></div>
       <div class="fg"><span class="fl">Prioridade</span><select id="t-pr"><option>Alta</option><option>Média</option><option>Baixa</option></select></div>
-      <div class="fg fc1"><span class="fl">Prazo (dd/mm/aaaa)</span><input type="text" id="t-du" placeholder="Ex: 20/05/2025"></div>
     </div>
-    <div class="fg"><span class="fl">Observação</span><textarea id="t-ob" style="min-height:55px" placeholder="Detalhes opcionais..."></textarea></div>
+    <!-- CRONOGRAMA -->
+    <div style="background:var(--s2);border:1px solid var(--bd);border-radius:10px;padding:12px;margin-bottom:10px">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:1.5px;color:var(--ac);margin-bottom:10px">📅 CRONOGRAMA (GANTT)</div>
+      <div class="g2m">
+        <div class="fg" style="margin-bottom:0"><span class="fl">Data de Início</span><input type="text" id="t-gs" placeholder="dd/mm/aaaa"></div>
+        <div class="fg" style="margin-bottom:0"><span class="fl">Data de Término / Prazo</span><input type="text" id="t-du" placeholder="dd/mm/aaaa"></div>
+      </div>
+      <div style="font-size:11px;color:var(--mu);margin-top:8px">💡 Define a posição e duração da barra no Gantt. Arraste as barras diretamente no Gantt para ajustar.</div>
+    </div>
+    <div class="fg"><span class="fl">Observação</span><textarea id="t-ob" style="min-height:52px" placeholder="Detalhes opcionais..."></textarea></div>
     <!-- SUBTAREFAS -->
     <div class="sub-list" id="sub-section" style="display:none">
       <div style="font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:1.5px;color:var(--mu);margin-bottom:10px">SUBTAREFAS</div>
@@ -961,12 +973,14 @@ function openTaskModal(id){
     document.getElementById('t-re').value=t.responsavel||'';
     document.getElementById('t-pr').value=t.prioridade||'Média';
     document.getElementById('t-du').value=t.prazo?fmtD(t.prazo):'';
+    document.getElementById('t-gs').value=t.gantt_start?fmtD(t.gantt_start):'';
     document.getElementById('t-ob').value=t.observacao||'';
     popTCat(t.categoria_id);
     renderSubList();
   }else{
     document.getElementById('t-ti').value='';
     document.getElementById('t-du').value='';
+    document.getElementById('t-gs').value='';
     document.getElementById('t-ob').value='';
     document.getElementById('t-de').value=kbDept!=='todos'?kbDept:(DEPTS[0]?DEPTS[0].nome:'');
     popTResp();popTCat(null);
@@ -981,6 +995,7 @@ function saveTask(){
   var cat=CATS.find(function(c){return c.id===catId;});
   var body={titulo:titulo,departamento:document.getElementById('t-de').value,responsavel:document.getElementById('t-re').value,
     prioridade:document.getElementById('t-pr').value,prazo:parseD(document.getElementById('t-du').value),
+    gantt_start:parseD(document.getElementById('t-gs').value),
     observacao:document.getElementById('t-ob').value.trim(),categoria_id:catId||null,
     categoria_nome:cat?cat.nome:'',status:cat?cat.nome:'A fazer'};
   var btn=document.getElementById('btn-save-task');btn.disabled=true;btn.textContent='Salvando...';spin(true);
@@ -1256,61 +1271,79 @@ function setTaskView(v){
 }
 
 /* ── GANTT ── */
-var ganttZoom='week'; // day | week | month
-var ganttOffset=0;    // px offset do scroll
-var COL_W={day:28,week:20,month:14}; // px por unidade
+var ganttZoom='week';
+var ganttColW=20; // px por dia (ajustável)
+var ganttShowSubs=false;
+var ganttExpanded=false;
+var _ganttDrag=null;
 
-var _ganttDrag=null; // {taskId, type:'move'|'resize', startX, origLeft, origWidth, origStart, origEnd}
+var GANTT_PRESETS={day:38,week:20,month:10};
 
 function setGanttZoom(z){
   ganttZoom=z;
+  ganttColW=GANTT_PRESETS[z];
   document.querySelectorAll('.gz-btn').forEach(function(b){b.classList.remove('gz-on');});
   document.getElementById('gz-'+z).classList.add('gz-on');
+  renderGantt();ganttToday();
+}
+function ganttZoomIn(){
+  ganttColW=Math.min(ganttColW+4,80);
   renderGantt();
-  ganttToday();
+}
+function ganttZoomOut(){
+  ganttColW=Math.max(ganttColW-4,4);
+  renderGantt();
+}
+function toggleGanttSubs(){
+  ganttShowSubs=!ganttShowSubs;
+  var btn=document.getElementById('btn-toggle-subs');
+  btn.textContent=(ganttShowSubs?'▼ Ocultar':'▶ Mostrar')+' subtarefas';
+  renderGantt();
+}
+function toggleGanttExpand(){
+  ganttExpanded=!ganttExpanded;
+  var cont=document.getElementById('gantt-container');
+  var btn=document.getElementById('btn-gantt-expand');
+  if(ganttExpanded){
+    cont.style.position='fixed';cont.style.inset='60px 0 0 0';cont.style.zIndex='100';
+    cont.style.borderRadius='0';cont.style.margin='0';
+    btn.textContent='⛶ Fechar';
+    document.body.style.overflow='hidden';
+  }else{
+    cont.style.position='';cont.style.inset='';cont.style.zIndex='';
+    cont.style.borderRadius='14px';cont.style.margin='';
+    btn.textContent='⛶ Expandir';
+    document.body.style.overflow='';
+  }
+  renderGantt();
 }
 
-function ganttToday(){
-  var wrap=document.getElementById('gantt-scroll-wrap');
-  var inner=document.getElementById('gantt-inner');
-  if(!wrap||!inner)return;
-  var todayPx=ganttDateToPx(new Date());
-  var center=todayPx - wrap.clientWidth/2;
-  wrap.scrollLeft=Math.max(0,center);
-}
-
-// Retorna data de início/fim do gantt (janela de 6 meses ao redor de hoje)
 function ganttWindow(){
   var now=new Date();
   var start=new Date(now);start.setMonth(start.getMonth()-2);start.setDate(1);
-  var end=new Date(now);end.setMonth(end.getMonth()+4);end.setDate(0);
+  var end=new Date(now);end.setMonth(end.getMonth()+5);end.setDate(0);
   return{start:start,end:end};
 }
-
-function daysBetween(a,b){
-  return Math.round((b-a)/(1000*60*60*24));
-}
+function daysBetween(a,b){return Math.round((b-a)/(1000*60*60*24));}
 function ganttDateToPx(date){
   var w=ganttWindow();
-  var days=daysBetween(w.start,date);
-  var cw=COL_W[ganttZoom];
-  return days*cw;
+  return daysBetween(w.start,date)*ganttColW;
 }
 function ganttPxToDate(px){
   var w=ganttWindow();
-  var cw=COL_W[ganttZoom];
-  var days=Math.round(px/cw);
-  var d=new Date(w.start);d.setDate(d.getDate()+days);
+  var d=new Date(w.start);d.setDate(d.getDate()+Math.round(px/ganttColW));
   return d;
 }
-function dateToISO(d){
-  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+function dateToISO(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+
+function ganttToday(){
+  var wrap=document.getElementById('gantt-scroll-wrap');if(!wrap)return;
+  var todayPx=ganttDateToPx(new Date());
+  wrap.scrollLeft=Math.max(0,todayPx-wrap.clientWidth/2);
 }
 
 function renderGantt(){
-  var deptF=document.getElementById('gantt-dept-filter').value;
-  var respF=document.getElementById('gantt-resp-filter').value;
-  // popular selects filtros
+  /* populate filtros */
   var deptSel=document.getElementById('gantt-dept-filter');
   var curDept=deptSel.value;
   deptSel.innerHTML='<option value="">Todos departamentos</option>'+DEPTS.map(function(d){return'<option value="'+esc(d.nome)+'">'+esc(d.nome)+'</option>';}).join('');
@@ -1319,9 +1352,8 @@ function renderGantt(){
   var curResp=respSel.value;
   respSel.innerHTML='<option value="">Todos responsáveis</option>'+MEM.map(function(m){return'<option value="'+esc(m.nome)+'">'+esc(m.nome)+'</option>';}).join('');
   respSel.value=curResp;
-  deptF=deptSel.value;respF=respSel.value;
+  var deptF=deptSel.value,respF=respSel.value;
 
-  // Filtrar tarefas que têm prazo
   var tasks=TASKS.filter(function(t){
     if(!t.prazo)return false;
     if(deptF&&t.departamento!==deptF)return false;
@@ -1331,231 +1363,251 @@ function renderGantt(){
 
   var w=ganttWindow();
   var totalDays=daysBetween(w.start,w.end)+1;
-  var cw=COL_W[ganttZoom];
-  var totalW=totalDays*cw;
+  var totalW=totalDays*ganttColW;
   var ROW_H=44;
-
-  // ── HEADER ──
-  var header=document.getElementById('gantt-header');
-  header.style.width=totalW+'px';
-  var headerHtml='';
+  var SUB_ROW_H=32;
   var today=new Date();today.setHours(0,0,0,0);
 
-  if(ganttZoom==='day'){
-    // Linha superior: meses; linha inferior: dias
-    var months={};
-    for(var di=0;di<totalDays;di++){
-      var dd=new Date(w.start);dd.setDate(dd.getDate()+di);
-      var mk=dd.getFullYear()+'-'+dd.getMonth();
-      if(!months[mk])months[mk]={label:dd.toLocaleDateString('pt-BR',{month:'short',year:'numeric'}),start:di};
-    }
-    // dia por dia
-    for(var di=0;di<totalDays;di++){
-      var dd=new Date(w.start);dd.setDate(dd.getDate()+di);
-      var isToday=dd.getTime()===today.getTime();
-      var isWE=dd.getDay()===0||dd.getDay()===6;
-      var cls='gantt-col-header'+(isToday?' today':isWE?' weekend':'');
-      headerHtml+='<div class="'+cls+'" style="width:'+cw+'px;min-width:'+cw+'px">'
-        +(di%7===0||di===0?'<div style="font-size:9px;color:var(--mu);margin-bottom:2px">'+dd.toLocaleDateString('pt-BR',{month:'short'})+'</div>':'')
-        +'<div>'+dd.getDate()+'</div>'
-        +'</div>';
-    }
-  } else if(ganttZoom==='week'){
-    // Semanas
-    for(var di=0;di<totalDays;di++){
-      var dd=new Date(w.start);dd.setDate(dd.getDate()+di);
-      var isToday=dd.getTime()===today.getTime();
-      var isWE=dd.getDay()===0||dd.getDay()===6;
-      var isMon=dd.getDay()===1;
-      var cls='gantt-col-header'+(isToday?' today':isWE?' weekend':'');
-      var label='';
-      if(isMon||di===0)label='<div style="font-size:9px;margin-bottom:2px">'+dd.toLocaleDateString('pt-BR',{month:'short',day:'numeric'})+'</div>';
-      headerHtml+='<div class="'+cls+'" style="width:'+cw+'px;min-width:'+cw+'px">'+label+'<div>'+(isToday?'●':'')+'</div></div>';
-    }
-  } else {
-    // Month: mostrar por dia mas label só no 1
-    for(var di=0;di<totalDays;di++){
-      var dd=new Date(w.start);dd.setDate(dd.getDate()+di);
-      var isToday=dd.getTime()===today.getTime();
-      var isWE=dd.getDay()===0||dd.getDay()===6;
-      var cls='gantt-col-header'+(isToday?' today':isWE?' weekend':'');
-      var label=dd.getDate()===1?'<div style="font-size:9px;margin-bottom:1px">'+dd.toLocaleDateString('pt-BR',{month:'short'})+'</div>':'';
-      headerHtml+='<div class="'+cls+'" style="width:'+cw+'px;min-width:'+cw+'px">'+label+'</div>';
-    }
-  }
-  header.innerHTML=headerHtml;
-
-  // ── SIDEBAR LABELS ──
-  var sidebar=document.getElementById('gantt-task-labels');
-  sidebar.style.maxHeight=(ROW_H*Math.max(tasks.length,3)+20)+'px';
-  if(!tasks.length){
-    sidebar.innerHTML='<div class="gantt-empty" style="padding:20px 14px;font-size:12px;text-align:left;color:var(--mu)">Nenhuma tarefa<br>com prazo definido</div>';
-  }else{
-    sidebar.innerHTML=tasks.map(function(t,i){
-      var st=deptStyle(t.departamento);
-      var pcolor=PC[t.prioridade]||'#7a7f9a';
-      var subs=SUBTASKS.filter(function(s){return s.task_id===t.id;});
-      var subsDone=subs.filter(function(s){return s.concluida;}).length;
-      return '<div class="gantt-label" onclick="openTaskModal(\''+t.id+'\')" title="'+esc(t.titulo)+'">'
-        +'<span class="gantt-label-dot" style="background:'+pcolor+'"></span>'
-        +'<div style="min-width:0">'
-        +'<div class="gantt-label-text">'+esc(t.titulo)+'</div>'
-        +'<div class="gantt-label-sub">'+esc(t.responsavel)+(subs.length?' · ✓'+subsDone+'/'+subs.length:'')+'</div>'
-        +'</div>'
-        +'</div>';
-    }).join('');
-  }
-
-  // ── ROWS + BARS ──
-  var rowsEl=document.getElementById('gantt-rows');
-  var inner=document.getElementById('gantt-inner');
-  inner.style.width=totalW+'px';
-
-  if(!tasks.length){
-    rowsEl.innerHTML='<div class="gantt-empty">Crie tarefas com prazo definido para visualizar no Gantt.</div>';
-    // sync scroll
-    setupGanttSync();
-    return;
-  }
-
-  var gridLines='';
-  var weekendBgs='';
-  // linhas de grid e fins de semana
-  for(var di=0;di<totalDays;di++){
-    var dd=new Date(w.start);dd.setDate(dd.getDate()+di);
-    var xPos=di*cw;
-    var isWE=dd.getDay()===0||dd.getDay()===6;
-    if(isWE) weekendBgs+='<div class="gantt-weekend-bg" style="left:'+xPos+'px;width:'+cw+'px;bottom:0;top:0"></div>';
-    if(ganttZoom!=='month'||(dd.getDay()===1||di===0))
-      gridLines+='<div class="gantt-grid-line" style="left:'+xPos+'px;bottom:0;top:0"></div>';
-  }
-
-  // Linha de hoje
-  var todayX=ganttDateToPx(today);
-  var todayLine='<div class="gantt-today-line" style="left:'+todayX+'px;top:0;bottom:0"></div>';
-
-  var rowsHtml='<div style="position:relative;height:'+(ROW_H*tasks.length)+'px">'
-    +weekendBgs+gridLines+todayLine;
-
-  tasks.forEach(function(t,i){
-    var pcolor=PC[t.prioridade]||'#7a7f9a';
-    var st=deptStyle(t.departamento);
-    // prazo como data de término; início = criado_at ou prazo-7d
-    var endDate=new Date(t.prazo+'T12:00:00');
-    var startDate;
-    if(t.gantt_start){startDate=new Date(t.gantt_start+'T12:00:00');}
-    else{startDate=new Date(endDate);startDate.setDate(startDate.getDate()-7);}
-
-    var x1=ganttDateToPx(startDate);
-    var x2=ganttDateToPx(endDate)+cw;
-    var barW=Math.max(x2-x1,cw);
-    var yTop=i*ROW_H;
-
-    // Row background alternado
-    rowsHtml+='<div class="gantt-row" style="position:absolute;left:0;right:0;top:'+yTop+'px;height:'+ROW_H+'px"></div>';
-
-    // Barra
-    var cat=CATS.find(function(c){return c.id===t.categoria_id;});
-    var barColor=cat?cat.cor:pcolor;
-    rowsHtml+='<div class="gantt-bar" id="gbar-'+t.id+'" data-tid="'+t.id+'" data-idx="'+i+'"'
-      +' style="left:'+x1+'px;width:'+barW+'px;top:'+(yTop+9)+'px;background:'+barColor+';border:1px solid rgba(255,255,255,.12)"'
-      +' onmousedown="ganttBarMouseDown(event,\''+t.id+'\',\'move\')">'
-      +'<div class="gantt-bar-label">'+esc(t.titulo)+'</div>'
-      +'<div class="gantt-bar-resize" onmousedown="ganttBarMouseDown(event,\''+t.id+'\',\'resize\')"></div>'
-      +'</div>';
+  /* ── Construir lista de linhas (tasks + subtarefas se expandido) ── */
+  var rows=[];
+  tasks.forEach(function(t){
+    var subs=ganttShowSubs?SUBTASKS.filter(function(s){return s.task_id===t.id&&(s.prazo||s.gantt_start);}):[];
+    rows.push({type:'task',data:t,subCount:SUBTASKS.filter(function(s){return s.task_id===t.id;}).length,subDone:SUBTASKS.filter(function(s){return s.task_id===t.id&&s.concluida;}).length});
+    subs.forEach(function(s){rows.push({type:'sub',data:s,parentId:t.id,parentColor:t.categoria_id});});
   });
 
-  rowsHtml+='</div>';
-  rowsEl.innerHTML=rowsHtml;
+  var totalH=rows.reduce(function(h,r){return h+(r.type==='task'?ROW_H:SUB_ROW_H);},0);
+
+  /* ── HEADER ── */
+  var header=document.getElementById('gantt-header');
+  header.style.width=totalW+'px';
+  var headerHtml='<div style="position:relative;display:flex;width:'+totalW+'px;height:52px">';
+  /* linha de meses por cima */
+  var monthStart=new Date(w.start);monthStart.setDate(1);
+  var monthPos=0;
+  for(var mi=0;mi<8;mi++){
+    var ms=new Date(monthStart);ms.setMonth(ms.getMonth()+mi);
+    var me=new Date(ms);me.setMonth(me.getMonth()+1);
+    var mDays=Math.min(daysBetween(ms,me),totalDays-Math.max(0,daysBetween(w.start,ms)));
+    if(mDays<=0)continue;
+    var mx=Math.max(0,daysBetween(w.start,ms))*ganttColW;
+    var mw=mDays*ganttColW;
+    headerHtml+='<div style="position:absolute;left:'+mx+'px;width:'+mw+'px;top:0;height:24px;display:flex;align-items:center;padding:0 6px;border-right:1px solid var(--bd);font-size:10px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.5px;overflow:hidden">'+ms.toLocaleDateString('pt-BR',{month:'short',year:'numeric'})+'</div>';
+  }
+  /* dias */
+  for(var di=0;di<totalDays;di++){
+    var dd=new Date(w.start);dd.setDate(dd.getDate()+di);
+    var isToday=dd.getTime()===today.getTime();
+    var isWE=dd.getDay()===0||dd.getDay()===6;
+    var isMon=dd.getDay()===1;
+    var xPos=di*ganttColW;
+    var showLabel=(ganttColW>=16)||(ganttColW>=8&&(di%2===0))||(ganttColW<8&&isMon);
+    var bg=isToday?'rgba(245,166,35,.1)':isWE?'rgba(255,255,255,.02)':'transparent';
+    headerHtml+='<div style="position:absolute;left:'+xPos+'px;width:'+ganttColW+'px;height:28px;bottom:0;background:'+bg+';border-right:1px solid rgba(46,51,77,.4);display:flex;align-items:center;justify-content:center;font-size:9px;color:'+(isToday?'var(--ac)':'var(--mu)')+(isToday?';font-weight:700':'')+'">'
+      +(showLabel?dd.getDate():'')+'</div>';
+  }
+  headerHtml+='</div>';
+  header.innerHTML=headerHtml;
+
+  /* ── SIDEBAR LABELS ── */
+  var sidebar=document.getElementById('gantt-task-labels');
+  var labelsHtml='';
+  var yOff=0;
+  rows.forEach(function(row,ri){
+    var rh=row.type==='task'?ROW_H:SUB_ROW_H;
+    if(row.type==='task'){
+      var t=row.data;
+      var st=deptStyle(t.departamento);
+      var pcolor=PC[t.prioridade]||'#7a7f9a';
+      labelsHtml+='<div class="gantt-label" style="height:'+rh+'px" onclick="openTaskModal(\''+t.id+'\')" title="'+esc(t.titulo)+'">'
+        +'<span class="gantt-label-dot" style="background:'+pcolor+'"></span>'
+        +'<div style="min-width:0"><div class="gantt-label-text">'+esc(t.titulo)+'</div>'
+        +'<div class="gantt-label-sub">'+esc(t.responsavel)+(row.subCount?' · ✓'+row.subDone+'/'+row.subCount:'')+'</div></div>'
+        +'</div>';
+    }else{
+      var s=row.data;
+      var pcolor=s.concluida?'#27ae60':'#7a7f9a';
+      labelsHtml+='<div class="gantt-label" style="height:'+rh+'px;padding-left:28px;opacity:.8" title="'+esc(s.titulo)+'">'
+        +'<span style="width:6px;height:6px;border-radius:50%;background:'+pcolor+';flex-shrink:0"></span>'
+        +'<div style="min-width:0"><div class="gantt-label-text" style="font-size:11px;'+(s.concluida?'text-decoration:line-through;':'')+'">'+esc(s.titulo)+'</div>'
+        +'<div class="gantt-label-sub">'+esc(s.responsavel||'')+'</div></div>'
+        +'</div>';
+    }
+    yOff+=rh;
+  });
+  sidebar.innerHTML=labelsHtml;
+  sidebar.style.height=Math.max(totalH,120)+'px';
+
+  /* ── ROWS + BARS ── */
+  var inner=document.getElementById('gantt-inner');
+  var rowsEl=document.getElementById('gantt-rows');
+  inner.style.width=totalW+'px';
+  inner.style.height=(totalH+52)+'px';
+
+  if(!tasks.length){
+    rowsEl.innerHTML='<div class="gantt-empty">Crie tarefas com data de início e prazo para visualizar no Gantt.<br><span style="font-size:12px;opacity:.7">Acesse ✏️ Editar em qualquer tarefa e preencha o Cronograma.</span></div>';
+    setupGanttSync();return;
+  }
+
+  /* backgrounds e linhas */
+  var bgHtml='<div style="position:absolute;inset:0;pointer-events:none">';
+  for(var di=0;di<totalDays;di++){
+    var dd=new Date(w.start);dd.setDate(dd.getDate()+di);
+    var xPos=di*ganttColW;
+    var isWE=dd.getDay()===0||dd.getDay()===6;
+    var isToday2=dd.getTime()===today.getTime();
+    if(isWE)bgHtml+='<div style="position:absolute;left:'+xPos+'px;width:'+ganttColW+'px;top:0;bottom:0;background:rgba(255,255,255,.015)"></div>';
+    bgHtml+='<div style="position:absolute;left:'+xPos+'px;width:1px;top:0;bottom:0;background:var(--bd);opacity:.3"></div>';
+    if(isToday2)bgHtml+='<div style="position:absolute;left:'+xPos+'px;width:2px;top:0;bottom:0;background:var(--ac);opacity:.8;z-index:3"><div style="position:absolute;top:-1px;left:50%;transform:translateX(-50%);color:var(--ac);font-size:7px">▼</div></div>';
+  }
+  bgHtml+='</div>';
+
+  var barsHtml='';
+  var yPos=0;
+  rows.forEach(function(row,ri){
+    var rh=row.type==='task'?ROW_H:SUB_ROW_H;
+    /* row bg alternado */
+    barsHtml+='<div style="position:absolute;left:0;right:0;top:'+yPos+'px;height:'+rh+'px;'+(ri%2?'background:rgba(255,255,255,.01)':'')+';border-bottom:1px solid rgba(46,51,77,.3)"></div>';
+
+    var barTop=row.type==='task'?(yPos+9):(yPos+8);
+    var barH=row.type==='task'?26:16;
+
+    if(row.type==='task'){
+      var t=row.data;
+      var endDate=new Date(t.prazo+'T12:00:00');
+      var startDate=t.gantt_start?new Date(t.gantt_start+'T12:00:00'):new Date(endDate.getTime()-7*86400000);
+      var x1=ganttDateToPx(startDate);
+      var x2=ganttDateToPx(endDate)+ganttColW;
+      var barW=Math.max(x2-x1,ganttColW);
+      var cat=CATS.find(function(c){return c.id===t.categoria_id;});
+      var barColor=cat?cat.cor:(PC[t.prioridade]||'#308EEE');
+      barsHtml+='<div class="gantt-bar" id="gbar-'+t.id+'" data-tid="'+t.id+'"'
+        +' style="left:'+x1+'px;width:'+barW+'px;top:'+barTop+'px;height:'+barH+'px;background:'+barColor+';border:1px solid rgba(255,255,255,.12)"'
+        +' onmousedown="ganttBarMouseDown(event,\''+t.id+'\',\'task\',\'move\')">'
+        +'<div class="gantt-bar-label">'+esc(t.titulo)+'</div>'
+        +'<div class="gantt-bar-resize" onmousedown="ganttBarMouseDown(event,\''+t.id+'\',\'task\',\'resize\')"></div>'
+        +'</div>';
+    }else{
+      var s=row.data;
+      if(s.prazo){
+        var endDate=new Date(s.prazo+'T12:00:00');
+        var startDate=s.gantt_start?new Date(s.gantt_start+'T12:00:00'):new Date(endDate.getTime()-1*86400000);
+        var x1=ganttDateToPx(startDate);
+        var x2=ganttDateToPx(endDate)+ganttColW;
+        var barW=Math.max(x2-x1,ganttColW);
+        var barColor=s.concluida?'#27ae60':'rgba(255,255,255,.2)';
+        barsHtml+='<div class="gantt-bar" id="gbar-sub-'+s.id+'" data-tid="'+s.id+'"'
+          +' style="left:'+x1+'px;width:'+barW+'px;top:'+barTop+'px;height:'+barH+'px;background:'+barColor+';border:1px solid rgba(255,255,255,.15)"'
+          +' onmousedown="ganttBarMouseDown(event,\''+s.id+'\',\'sub\',\'move\')">'
+          +'<div class="gantt-bar-label" style="font-size:9px">'+esc(s.titulo)+'</div>'
+          +'<div class="gantt-bar-resize" onmousedown="ganttBarMouseDown(event,\''+s.id+'\',\'sub\',\'resize\')"></div>'
+          +'</div>';
+      }
+    }
+    yPos+=rh;
+  });
+
+  rowsEl.innerHTML=bgHtml+barsHtml;
+  rowsEl.style.height=totalH+'px';
   setupGanttSync();
 }
 
 function setupGanttSync(){
-  // Sincronizar scroll vertical sidebar e rows
-  var sidebar=document.getElementById('gantt-task-labels');
-  var rows=document.getElementById('gantt-rows');
   var wrap=document.getElementById('gantt-scroll-wrap');
-  if(!sidebar||!rows||!wrap)return;
-  // cursor grab no scroll
+  var labels=document.getElementById('gantt-task-labels');
+  if(!wrap||!labels)return;
+  /* sincronizar scroll vertical */
+  var syncing=false;
+  wrap.onscroll=function(){if(syncing)return;syncing=true;labels.scrollTop=wrap.scrollTop;syncing=false;};
+  labels.onscroll=function(){if(syncing)return;syncing=true;wrap.scrollTop=labels.scrollTop;syncing=false;};
+  /* ctrl+scroll para zoom */
+  wrap.onwheel=function(e){
+    if(e.ctrlKey){
+      e.preventDefault();
+      if(e.deltaY<0)ganttZoomIn();else ganttZoomOut();
+    }
+  };
+  /* grab to pan */
+  var isPanning=false,panX=0,panSL=0;
   wrap.onmousedown=function(e){
     if(e.target.closest('.gantt-bar'))return;
-    var startX=e.pageX,sl=wrap.scrollLeft;
+    isPanning=true;panX=e.pageX;panSL=wrap.scrollLeft;
     wrap.style.cursor='grabbing';
-    function mm(ev){wrap.scrollLeft=sl-(ev.pageX-startX);}
-    function mu(){wrap.style.cursor='grab';document.removeEventListener('mousemove',mm);document.removeEventListener('mouseup',mu);}
-    document.addEventListener('mousemove',mm);document.addEventListener('mouseup',mu);
   };
+  document.addEventListener('mousemove',function(e){if(!isPanning)return;wrap.scrollLeft=panSL-(e.pageX-panX);});
+  document.addEventListener('mouseup',function(){if(isPanning){isPanning=false;if(wrap)wrap.style.cursor='grab';}});
 }
 
 /* ── DRAG & RESIZE BARRAS GANTT ── */
-function ganttBarMouseDown(e,taskId,type){
+function ganttBarMouseDown(e,itemId,itemType,action){
   e.stopPropagation();e.preventDefault();
-  var bar=document.getElementById('gbar-'+taskId);
-  if(!bar)return;
-  var t=TASKS.find(function(x){return x.id===taskId;});if(!t)return;
-  bar.classList.add('dragging');
+  var barEl=document.getElementById((itemType==='sub'?'gbar-sub-':'gbar-')+itemId);
+  if(!barEl)return;
+  var item=itemType==='task'?TASKS.find(function(x){return x.id===itemId;}):SUBTASKS.find(function(x){return x.id===itemId;});
+  if(!item)return;
+  barEl.classList.add('dragging');
 
   var startX=e.clientX;
-  var origLeft=parseInt(bar.style.left)||0;
-  var origW=parseInt(bar.style.width)||100;
+  var origLeft=parseInt(barEl.style.left)||0;
+  var origW=parseInt(barEl.style.width)||ganttColW;
+  var endDate=new Date((item.prazo||item.prazo)+'T12:00:00');
+  var startDate=item.gantt_start?new Date(item.gantt_start+'T12:00:00'):new Date(endDate.getTime()-7*86400000);
 
-  var endDate=new Date(t.prazo+'T12:00:00');
-  var startDate=t.gantt_start?new Date(t.gantt_start+'T12:00:00'):new Date(endDate.getTime()-7*86400000);
-
-  _ganttDrag={taskId:taskId,type:type,startX:startX,origLeft:origLeft,origW:origW,startDate:startDate,endDate:endDate};
-
-  document.addEventListener('mousemove',ganttBarMouseMove);
-  document.addEventListener('mouseup',ganttBarMouseUp);
+  _ganttDrag={itemId:itemId,itemType:itemType,action:action,startX:startX,origLeft:origLeft,origW:origW,startDate:startDate,endDate:endDate,barEl:barEl};
+  document.addEventListener('mousemove',ganttBarMove);
+  document.addEventListener('mouseup',ganttBarUp);
 }
-function ganttBarMouseMove(e){
+function ganttBarMove(e){
   if(!_ganttDrag)return;
   var dx=e.clientX-_ganttDrag.startX;
-  var bar=document.getElementById('gbar-'+_ganttDrag.taskId);if(!bar)return;
-  var cw=COL_W[ganttZoom];
-  var snapDx=Math.round(dx/cw)*cw; // snap por unidade
-
-  if(_ganttDrag.type==='move'){
-    bar.style.left=Math.max(0,_ganttDrag.origLeft+snapDx)+'px';
+  var snap=Math.round(dx/ganttColW)*ganttColW;
+  if(_ganttDrag.action==='move'){
+    _ganttDrag.barEl.style.left=Math.max(0,_ganttDrag.origLeft+snap)+'px';
   }else{
-    var newW=Math.max(cw,_ganttDrag.origW+snapDx);
-    bar.style.width=newW+'px';
+    _ganttDrag.barEl.style.width=Math.max(ganttColW,_ganttDrag.origW+snap)+'px';
   }
 }
-function ganttBarMouseUp(e){
+function ganttBarUp(e){
   if(!_ganttDrag)return;
-  var bar=document.getElementById('gbar-'+_ganttDrag.taskId);
-  if(bar)bar.classList.remove('dragging');
+  var d=_ganttDrag;
+  d.barEl.classList.remove('dragging');
+  var newLeft=parseInt(d.barEl.style.left)||0;
+  var newW=parseInt(d.barEl.style.width)||ganttColW;
+  var daysDx=Math.round((newLeft-d.origLeft)/ganttColW);
+  var daysW=Math.max(1,Math.round(newW/ganttColW));
 
-  var t=TASKS.find(function(x){return x.id===_ganttDrag.taskId;});
-  if(t&&bar){
-    var newLeft=parseInt(bar.style.left)||0;
-    var newW=parseInt(bar.style.width)||100;
-    var cw=COL_W[ganttZoom];
-
-    if(_ganttDrag.type==='move'){
-      var dx=newLeft-_ganttDrag.origLeft;
-      var daysDx=Math.round(dx/cw);
-      var newStart=new Date(_ganttDrag.startDate.getTime()+daysDx*86400000);
-      var newEnd=new Date(_ganttDrag.endDate.getTime()+daysDx*86400000);
-      t.gantt_start=dateToISO(newStart);
-      t.prazo=dateToISO(newEnd);
-      // Salvar no Supabase
-      PATCH('tasks?id=eq.'+t.id,{prazo:t.prazo,gantt_start:t.gantt_start})
-        .then(function(){toast('Prazo atualizado: '+fmtD(t.prazo));})
-        .catch(function(){toast('Erro ao salvar','er');});
-    }else{
-      var totalDays=Math.max(1,Math.round(newW/cw));
-      var newEnd=new Date(_ganttDrag.startDate.getTime()+totalDays*86400000);
-      t.prazo=dateToISO(newEnd);
-      PATCH('tasks?id=eq.'+t.id,{prazo:t.prazo})
-        .then(function(){toast('Prazo: '+fmtD(t.prazo));})
-        .catch(function(){toast('Erro ao salvar','er');});
+  if(d.itemType==='task'){
+    var t=TASKS.find(function(x){return x.id===d.itemId;});
+    if(t){
+      if(d.action==='move'){
+        var ns=new Date(d.startDate.getTime()+daysDx*86400000);
+        var ne=new Date(d.endDate.getTime()+daysDx*86400000);
+        t.gantt_start=dateToISO(ns);t.prazo=dateToISO(ne);
+        PATCH('tasks?id=eq.'+t.id,{gantt_start:t.gantt_start,prazo:t.prazo}).then(function(){toast('Movido: '+fmtD(t.gantt_start)+' → '+fmtD(t.prazo));}).catch(function(){toast('Erro','er');});
+      }else{
+        var ne=new Date(d.startDate.getTime()+daysW*86400000);
+        t.prazo=dateToISO(ne);
+        PATCH('tasks?id=eq.'+t.id,{prazo:t.prazo}).then(function(){toast('Prazo: '+fmtD(t.prazo));}).catch(function(){toast('Erro','er');});
+      }
     }
-    renderDash();
+  }else{
+    var s=SUBTASKS.find(function(x){return x.id===d.itemId;});
+    if(s){
+      if(d.action==='move'){
+        var ns=new Date(d.startDate.getTime()+daysDx*86400000);
+        var ne=new Date(d.endDate.getTime()+daysDx*86400000);
+        s.gantt_start=dateToISO(ns);s.prazo=dateToISO(ne);
+        PATCH('subtasks?id=eq.'+s.id,{prazo:s.prazo}).then(function(){toast('Subtarefa movida.');}).catch(function(){toast('Erro','er');});
+      }else{
+        var ne=new Date(d.startDate.getTime()+daysW*86400000);
+        s.prazo=dateToISO(ne);
+        PATCH('subtasks?id=eq.'+s.id,{prazo:s.prazo}).then(function(){toast('Subtarefa: '+fmtD(s.prazo));}).catch(function(){toast('Erro','er');});
+      }
+    }
   }
-
-  document.removeEventListener('mousemove',ganttBarMouseMove);
-  document.removeEventListener('mouseup',ganttBarMouseUp);
+  renderDash();
+  document.removeEventListener('mousemove',ganttBarMove);
+  document.removeEventListener('mouseup',ganttBarUp);
   _ganttDrag=null;
 }
 
