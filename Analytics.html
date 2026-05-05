@@ -437,9 +437,12 @@ const EVENTOS_MAP = {
 };
 
 // Domínios antigos/internos a serem filtrados das origens
+// (até o GA4 propagar o "Unwanted referrals" — leva ~24-48h)
 const DOMINIOS_FILTRADOS = [
   'leandrorocha95.github.io',
-  'alliance-orcamento.pages.dev'
+  'alliance-orcamento.pages.dev',
+  'alliancecasas.com.br',
+  'www.alliancecasas.com.br'
 ];
 
 // Tipos de conversão e como mostrar
@@ -519,6 +522,30 @@ function filtrarOrigens(origens) {
     var s = (o.source||'').toLowerCase();
     return !DOMINIOS_FILTRADOS.some(function(d){ return s.indexOf(d) >= 0; });
   });
+}
+
+// Agrupa entradas duplicadas que classificam pro mesmo nome
+// Ex: chatgpt.com + chat.openai.com → ambos viram "ChatGPT", soma os valores
+function agruparOrigens(origens, campoValor) {
+  campoValor = campoValor || 'usuarios';
+  var grupos = {};
+  (origens||[]).forEach(function(o) {
+    var info = classificarOrigem(o.source, o.medium);
+    var chave = info.nome + '|' + info.icone + '|' + info.meio;
+    if (!grupos[chave]) {
+      grupos[chave] = {
+        info: info,
+        source: o.source,
+        medium: o.medium,
+        usuarios: 0,
+        total: 0
+      };
+    }
+    grupos[chave].usuarios += (o.usuarios||0);
+    grupos[chave].total    += (o.total   ||0);
+  });
+  // Ordena pelo campo correto (usuarios pra origem geral, total pra conversões)
+  return Object.values(grupos).sort(function(a,b){ return (b[campoValor]||0) - (a[campoValor]||0); });
 }
 
 function set(id, val) {
@@ -720,10 +747,10 @@ function carregar() {
       if (pCO) pCO.textContent = _periodoLabel;
 
       var coEl = document.getElementById('conv-origem-list');
-      var origensConvFiltradas = filtrarOrigens(conv.porOrigem || []);
+      var origensConvFiltradas = agruparOrigens(filtrarOrigens(conv.porOrigem || []), 'total');
       if (coEl && origensConvFiltradas.length) {
         coEl.innerHTML = origensConvFiltradas.slice(0,7).map(function(c) {
-          var info = classificarOrigem(c.source, c.medium);
+          var info = c.info;
           return '<div class="conv-origem-row">'
             + '<div class="conv-origem-icone">' + info.icone + '</div>'
             + '<div class="conv-origem-info">'
@@ -774,11 +801,11 @@ function carregar() {
       if (pOri) pOri.textContent = _periodoLabel;
 
       var oEl = document.getElementById('origens-list');
-      var origensFiltradas = filtrarOrigens(d.origens || []);
+      var origensFiltradas = agruparOrigens(filtrarOrigens(d.origens || []), 'usuarios');
       if (oEl && origensFiltradas.length) {
         var totalOri = origensFiltradas.reduce(function(s,x){ return s + (x.usuarios||0); }, 0) || 1;
         oEl.innerHTML = origensFiltradas.slice(0,8).map(function(x) {
-          var info = classificarOrigem(x.source, x.medium);
+          var info = x.info;
           var pct = Math.round((x.usuarios||0) / totalOri * 100);
           return '<div class="origem-row">'
             + '<div class="origem-icone">' + info.icone + '</div>'
