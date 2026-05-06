@@ -278,7 +278,44 @@ textarea{resize:vertical;min-height:52px}
 .abc-legend{display:flex;gap:14px;margin-top:12px;padding-top:10px;border-top:1px solid var(--bd);flex-wrap:wrap}
 .abc-leg-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--mu)}
 .abc-leg-sq{width:10px;height:10px;border-radius:2px;flex-shrink:0}
-/* DATE PICKER */
+/* ORGANOGRAMA */
+.org-level{display:flex;justify-content:center;align-items:flex-start;gap:0;position:relative;margin-bottom:0}
+.org-node-wrap{display:flex;flex-direction:column;align-items:center;position:relative;padding:0 8px}
+.org-card{background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:12px 16px;min-width:140px;max-width:180px;text-align:center;cursor:pointer;transition:border-color .15s,transform .15s;position:relative}
+.org-card:hover{border-color:var(--ac);transform:translateY(-2px)}
+.org-card.root{border-color:var(--ac);background:rgba(245,166,35,.06);min-width:170px}
+.org-card.dept-head{border-top:3px solid transparent}
+.org-av{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;margin:0 auto 8px}
+.org-av-sm{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;margin:0 auto 6px}
+.org-name{font-size:13px;font-weight:600;color:var(--tx);margin-bottom:2px;line-height:1.2}
+.org-role{font-size:11px;color:var(--mu);margin-bottom:6px}
+.org-badge{font-size:9px;font-weight:700;padding:2px 8px;border-radius:20px;display:inline-block;letter-spacing:.5px}
+.org-connector{width:2px;height:24px;background:var(--bd);margin:0 auto}
+.org-children-row{display:flex;justify-content:center;align-items:flex-start;position:relative}
+.org-children-row::before{content:'';position:absolute;top:0;left:50%;right:50%;height:2px;background:var(--bd)}
+.org-child-wrap{display:flex;flex-direction:column;align-items:center;padding:0 10px;position:relative}
+.org-child-wrap::before{content:'';position:absolute;top:0;left:50%;width:2px;height:24px;background:var(--bd)}
+.org-h-line{height:2px;background:var(--bd);position:absolute;top:0}
+/* Dept view */
+.org-dept-card{background:var(--s1);border:1px solid var(--bd);border-radius:14px;margin-bottom:16px;overflow:hidden}
+.org-dept-header{padding:14px 18px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:12px}
+.org-dept-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.org-dept-name{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1.5px}
+.org-dept-count{font-size:12px;color:var(--mu);margin-left:auto}
+.org-members-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;padding:14px 18px}
+.org-mem-card{background:var(--s2);border:1px solid var(--bd);border-radius:10px;padding:12px;text-align:center;transition:border-color .15s}
+.org-mem-card:hover{border-color:var(--ac)}
+/* Flows */
+.org-flow-card{background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:16px 18px}
+.org-flow-name{font-size:14px;font-weight:600;color:var(--tx);margin-bottom:4px}
+.org-flow-desc{font-size:12px;color:var(--mu);margin-bottom:12px}
+.org-flow-steps{display:flex;flex-direction:column;gap:6px}
+.org-step{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--bd)}
+.org-step:last-child{border:none}
+.org-step-n{width:20px;height:20px;border-radius:50%;background:rgba(245,166,35,.12);color:var(--ac);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.org-step-a{font-size:12px;color:var(--tx);flex:1}
+.org-step-r{font-size:10px;color:var(--mu);white-space:nowrap}
+/* FIM ORGANOGRAMA */
 input[type=date]{color-scheme:dark;cursor:pointer}
 input[type=date]::-webkit-calendar-picker-indicator{filter:invert(.6);cursor:pointer;opacity:.7}
 input[type=date]::-webkit-calendar-picker-indicator:hover{opacity:1}
@@ -297,6 +334,7 @@ input[type=date]::-webkit-calendar-picker-indicator:hover{opacity:1}
     <button class="tab"     onclick="goTab('equipe',this)">Equipe</button>
     <button class="tab"     onclick="goTab('tarefas',this)">Tarefas</button>
     <button class="tab"     onclick="goTab('fluxos',this)">Fluxogramas</button>
+    <button class="tab"     onclick="goTab('org',this)">Organograma</button>
   </div>
 </header>
 <div class="body">
@@ -520,10 +558,33 @@ input[type=date]::-webkit-calendar-picker-indicator:hover{opacity:1}
       <div class="vz-sc"><div class="vz-fl" id="vz-flow"></div></div>
       <div class="card" style="margin-top:8px"><div class="ct">Detalhamento</div><table class="dt" id="vz-table"></table></div>
     </div>
-  </div>
-</div>
+  </div><!-- /sec-fluxos -->
 
-<!-- ══ MODAL DEPARTAMENTOS ══ -->
+  <!-- ORGANOGRAMA -->
+  <div class="sec" id="sec-org">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px">
+      <div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;color:var(--ac)">Organograma</div>
+        <div style="font-size:12px;color:var(--mu);margin-top:2px">Estrutura hierárquica da equipe Alliance Casas</div>
+      </div>
+      <div class="abc-seg">
+        <button class="aon" id="org-view-tree" onclick="setOrgView('tree',this)">🌳 Hierarquia</button>
+        <button id="org-view-dept" onclick="setOrgView('dept',this)">🏢 Departamentos</button>
+      </div>
+    </div>
+    <div id="org-tree-view">
+      <div id="org-tree" style="overflow-x:auto;padding-bottom:16px;text-align:center"></div>
+    </div>
+    <div id="org-dept-view" style="display:none">
+      <div id="org-dept-grid"></div>
+    </div>
+    <div id="org-flows-section" style="margin-top:32px">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:1.5px;color:var(--mu);margin-bottom:14px;border-top:1px solid var(--bd);padding-top:20px">PROCESSOS DOCUMENTADOS</div>
+      <div id="org-flows-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:12px"></div>
+    </div>
+  </div>
+
+</div><!-- /body-wrap -->
 <div class="ov" id="ov-dept" onclick="closeDeptModal(event)">
   <div class="modal wide">
     <div class="mh"><span class="mtt">⚙️ Departamentos</span><button class="mx" onclick="closeDeptModal()">×</button></div>
@@ -760,6 +821,7 @@ function goTab(id,btn){
   if(id==='equipe')  renderEquipe();
   if(id==='tarefas') {renderKanban();if(taskView==='gantt')renderGantt();}
   if(id==='fluxos')  loadFlows(function(){showFlList();});
+  if(id==='org')     {loadFlows(function(){renderOrg();});}
 }
 
 /* ── DASHBOARD ── */
@@ -1880,6 +1942,188 @@ function abcRenderDetail(nome){
     }).join('');
   }
   document.getElementById('abc-detail').innerHTML=html;
+}
+
+/* ── ORGANOGRAMA ── */
+var orgView='tree';
+
+function setOrgView(v,btn){
+  orgView=v;
+  document.querySelectorAll('#org-view-tree,#org-view-dept').forEach(function(b){b.classList.remove('aon');});
+  btn.classList.add('aon');
+  document.getElementById('org-tree-view').style.display=v==='tree'?'':'none';
+  document.getElementById('org-dept-view').style.display=v==='dept'?'':'none';
+  if(v==='tree') renderOrgTree();
+  else renderOrgDept();
+}
+
+function renderOrg(){
+  if(orgView==='tree') renderOrgTree();
+  else renderOrgDept();
+  renderOrgFlows();
+}
+
+/* ── VIEW HIERARQUIA ── */
+function renderOrgTree(){
+  var el=document.getElementById('org-tree');
+  if(!MEM.length){el.innerHTML='<div style="color:var(--mu);font-size:13px;padding:40px">Nenhum funcionário cadastrado.</div>';return;}
+
+  // Definir ordem de destaque: Direção > depois demais depts
+  var deptOrder=['Direção','Comercial','Engenharia','Arquitetura','Logística','Financeiro','Obra'];
+  var sortedDepts=DEPTS.slice().sort(function(a,b){
+    var ai=deptOrder.indexOf(a.nome);var bi=deptOrder.indexOf(b.nome);
+    ai=ai<0?99:ai;bi=bi<0?99:bi;
+    return ai-bi||a.ordem-b.ordem;
+  });
+
+  var html='<div style="display:inline-block;min-width:100%">';
+
+  // Topo: Direção
+  var dirDept=sortedDepts.find(function(d){return d.nome==='Direção';})||sortedDepts[0];
+  var dirMembers=BY_DEPT[dirDept?dirDept.nome:'']||[];
+  var dirSt=deptStyle(dirDept?dirDept.nome:'Direção');
+
+  html+='<div style="display:flex;justify-content:center;margin-bottom:0">';
+  if(dirMembers.length){
+    dirMembers.forEach(function(m,i){
+      if(i>0) return; // só o primeiro da direção no topo
+      html+='<div style="display:flex;flex-direction:column;align-items:center">';
+      html+=orgCardHTML(m,dirSt,true);
+      html+='<div class="org-connector"></div>';
+      html+='</div>';
+    });
+  } else {
+    html+='<div style="display:flex;flex-direction:column;align-items:center">';
+    html+='<div class="org-card root"><div class="org-av" style="background:'+dirSt.fill+';color:'+dirSt.text+'">A</div><div class="org-name">Alliance Casas</div><span class="org-badge" style="background:'+dirSt.fill+';color:'+dirSt.text+'">DIREÇÃO</span></div>';
+    html+='<div class="org-connector"></div>';
+    html+='</div>';
+  }
+  html+='</div>';
+
+  // Linha horizontal entre colunas de dept
+  var otherDepts=sortedDepts.filter(function(d){return d.nome!==dirDept.nome&&(BY_DEPT[d.nome]||[]).length>0;});
+
+  if(otherDepts.length){
+    // Linha de conexão
+    html+='<div style="display:flex;justify-content:center;position:relative;margin-bottom:0">';
+    html+='<div style="height:2px;background:var(--bd);width:'+(Math.min(otherDepts.length,6)*200)+'px;max-width:90vw;position:relative"></div>';
+    html+='</div>';
+
+    // Colunas de departamentos
+    html+='<div style="display:flex;justify-content:center;align-items:flex-start;gap:0;flex-wrap:wrap">';
+    otherDepts.forEach(function(dept){
+      var members=BY_DEPT[dept.nome]||[];
+      var st=deptStyle(dept.nome);
+      html+='<div style="display:flex;flex-direction:column;align-items:center;padding:0 10px">';
+      // linha vertical de cima
+      html+='<div style="width:2px;height:24px;background:var(--bd)"></div>';
+      // card do departamento
+      html+='<div style="background:'+st.fill+';border:1px solid '+st.text+'40;border-top:3px solid '+st.text+';border-radius:10px;padding:8px 14px;text-align:center;margin-bottom:0;min-width:130px">';
+      html+='<div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:'+st.text+'">'+esc(dept.nome)+'</div>';
+      html+='<div style="font-size:11px;color:var(--mu);margin-top:2px">'+members.length+' pessoa'+(members.length!==1?'s':'')+'</div>';
+      html+='</div>';
+      // membros
+      html+='<div style="display:flex;flex-direction:column;align-items:center;gap:0">';
+      members.forEach(function(m){
+        html+='<div style="width:2px;height:16px;background:var(--bd)"></div>';
+        html+=orgCardSmHTML(m,st);
+      });
+      html+='</div>';
+      html+='</div>';
+    });
+    html+='</div>';
+  }
+  html+='</div>';
+  el.innerHTML=html;
+}
+
+function orgCardHTML(m,st,isRoot){
+  var pend=visibleTasks().filter(function(t){return t.responsavel===m.nome&&t.status!=='Concluído';}).length;
+  return '<div class="org-card'+(isRoot?' root':'')+'" onclick="abcSelect(\''+esc(m.nome)+'\')" style="border-top:3px solid '+st.text+'">'
+    +'<div class="org-av" style="background:'+st.fill+';color:'+st.text+'">'+esc(m.iniciais)+'</div>'
+    +'<div class="org-name">'+esc(m.nome)+'</div>'
+    +'<div class="org-role">'+esc(m.cargo)+'</div>'
+    +'<span class="org-badge" style="background:'+st.fill+';color:'+st.text+'">'+esc(m.departamento)+'</span>'
+    +(pend>0?'<div style="font-size:10px;color:var(--ac);margin-top:6px">'+pend+' tarefa'+(pend!==1?'s':'')+'</div>':'')
+    +(m.loja&&m.loja!=='Todas'?'<div style="font-size:9px;color:var(--mu);margin-top:3px">📍 '+esc(m.loja)+'</div>':'')
+    +'</div>';
+}
+
+function orgCardSmHTML(m,st){
+  var pend=visibleTasks().filter(function(t){return t.responsavel===m.nome&&t.status!=='Concluído';}).length;
+  var late=visibleTasks().filter(function(t){return t.responsavel===m.nome&&t.status==='Atrasado';}).length;
+  return '<div class="org-card" onclick="abcSelect(\''+esc(m.nome)+'\')" style="min-width:130px;max-width:160px">'
+    +'<div class="org-av-sm" style="background:'+st.fill+';color:'+st.text+'">'+esc(m.iniciais)+'</div>'
+    +'<div class="org-name" style="font-size:12px">'+esc(m.nome)+'</div>'
+    +'<div class="org-role" style="font-size:10px">'+esc(m.cargo)+'</div>'
+    +(late>0?'<div style="font-size:10px;color:#e74c3c;margin-top:4px">⚠ '+late+' atrasada'+(late!==1?'s':'')+'</div>'
+      :pend>0?'<div style="font-size:10px;color:var(--ac);margin-top:4px">'+pend+' tarefa'+(pend!==1?'s':'')+'</div>':'')
+    +(m.loja&&m.loja!=='Todas'?'<div style="font-size:9px;color:var(--mu);margin-top:2px">📍 '+esc(m.loja)+'</div>':'')
+    +'</div>';
+}
+
+/* ── VIEW POR DEPARTAMENTO ── */
+function renderOrgDept(){
+  var el=document.getElementById('org-dept-grid');
+  var html='';
+  DEPTS.filter(function(d){return d.ativo;}).forEach(function(dept){
+    var members=BY_DEPT[dept.nome]||[];
+    if(!members.length)return;
+    var st=deptStyle(dept.nome);
+    var deptTasks=visibleTasks().filter(function(t){return t.departamento===dept.nome&&t.status!=='Concluído';}).length;
+    var deptLate=visibleTasks().filter(function(t){return t.departamento===dept.nome&&t.status==='Atrasado';}).length;
+    html+='<div class="org-dept-card">';
+    html+='<div class="org-dept-header" style="border-left:4px solid '+dept.cor+'">'
+      +'<span class="org-dept-dot" style="background:'+dept.cor+'"></span>'
+      +'<span class="org-dept-name" style="color:'+dept.cor+'">'+esc(dept.nome)+'</span>'
+      +'<span class="org-dept-count">'+members.length+' pessoa'+(members.length!==1?'s':'')
+      +(deptTasks?'<span style="margin-left:8px;color:var(--ac)">·'+deptTasks+' tarefa'+(deptTasks!==1?'s':'')+'</span>':'')
+      +(deptLate?'<span style="margin-left:6px;color:#e74c3c">⚠ '+deptLate+' atrasada'+(deptLate!==1?'s':'')+'</span>':'')
+      +'</span>'
+      +'</div>';
+    html+='<div class="org-members-grid">';
+    members.forEach(function(m){
+      var pend=visibleTasks().filter(function(t){return t.responsavel===m.nome&&t.status!=='Concluído';}).length;
+      var late=visibleTasks().filter(function(t){return t.responsavel===m.nome&&t.status==='Atrasado';}).length;
+      html+='<div class="org-mem-card" onclick="abcSelect(\''+esc(m.nome)+'\')">'
+        +'<div class="org-av-sm" style="background:'+st.fill+';color:'+st.text+'">'+esc(m.iniciais)+'</div>'
+        +'<div class="org-name" style="font-size:13px">'+esc(m.nome)+'</div>'
+        +'<div class="org-role">'+esc(m.cargo)+'</div>'
+        +(m.loja&&m.loja!=='Todas'?'<div style="font-size:10px;color:var(--mu);margin-top:4px">📍 '+esc(m.loja)+'</div>':'')
+        +'<div style="margin-top:8px;display:flex;gap:6px;justify-content:center;flex-wrap:wrap">'
+        +(pend>0?'<span style="font-size:10px;padding:2px 7px;border-radius:20px;background:rgba(245,166,35,.12);color:var(--ac)">'+pend+' tarefa'+(pend!==1?'s':'')+'</span>':'')
+        +(late>0?'<span style="font-size:10px;padding:2px 7px;border-radius:20px;background:rgba(231,76,60,.12);color:#e74c3c">⚠ '+late+' atrasada'+(late!==1?'s':'')+'</span>':'')
+        +'</div>'
+        +'</div>';
+    });
+    html+='</div></div>';
+  });
+  el.innerHTML=html||'<div style="color:var(--mu);font-size:13px">Nenhum departamento com membros.</div>';
+}
+
+/* ── FLUXOS NO ORGANOGRAMA ── */
+function renderOrgFlows(){
+  var el=document.getElementById('org-flows-grid');
+  if(!FLOWS.length){el.innerHTML='<div style="color:var(--mu);font-size:13px;padding:8px 0">Nenhum fluxograma criado ainda. Vá em <strong>Fluxogramas</strong> para criar.</div>';return;}
+  el.innerHTML=FLOWS.map(function(f){
+    var steps=f.steps||[];
+    return '<div class="org-flow-card">'
+      +'<div class="org-flow-name">'+esc(f.nome)+'</div>'
+      +(f.descricao?'<div class="org-flow-desc">'+esc(f.descricao)+'</div>':'')
+      +'<div class="org-flow-steps">'
+      +steps.map(function(s,i){
+        var m=MEM.find(function(x){return x.nome===s.responsavel;})||{departamento:'Direção',iniciais:(s.responsavel||'?').slice(0,2)};
+        var st=deptStyle(m.departamento);
+        return '<div class="org-step">'
+          +'<div class="org-step-n">'+(i+1)+'</div>'
+          +'<div class="org-step-a">'+esc(s.acao||'')+'</div>'
+          +'<div class="org-step-r" style="display:flex;align-items:center;gap:5px">'
+          +'<span style="width:18px;height:18px;border-radius:50%;background:'+st.fill+';color:'+st.text+';display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:700">'+esc(m.iniciais)+'</span>'
+          +esc(s.responsavel||'')+'</div>'
+          +'</div>';
+      }).join('')
+      +'</div></div>';
+  }).join('');
 }
 
 loadAll();
