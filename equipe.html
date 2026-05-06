@@ -279,42 +279,41 @@ textarea{resize:vertical;min-height:52px}
 .abc-leg-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--mu)}
 .abc-leg-sq{width:10px;height:10px;border-radius:2px;flex-shrink:0}
 /* ORGANOGRAMA */
-.org-level{display:flex;justify-content:center;align-items:flex-start;gap:0;position:relative;margin-bottom:0}
-.org-node-wrap{display:flex;flex-direction:column;align-items:center;position:relative;padding:0 8px}
-.org-card{background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:12px 16px;min-width:140px;max-width:180px;text-align:center;cursor:pointer;transition:border-color .15s,transform .15s;position:relative}
-.org-card:hover{border-color:var(--ac);transform:translateY(-2px)}
-.org-card.root{border-color:var(--ac);background:rgba(245,166,35,.06);min-width:170px}
-.org-card.dept-head{border-top:3px solid transparent}
+.org-node{position:absolute;cursor:pointer;transition:box-shadow .15s}
+.org-node:hover .org-card{border-color:var(--ac);transform:translateY(-2px)}
+.org-card{background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:12px 14px;width:160px;text-align:center;transition:all .15s;user-select:none}
+.org-card.drag-over{border-color:var(--ac);box-shadow:0 0 0 3px rgba(245,166,35,.2)}
 .org-av{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;margin:0 auto 8px}
 .org-av-sm{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;margin:0 auto 6px}
 .org-name{font-size:13px;font-weight:600;color:var(--tx);margin-bottom:2px;line-height:1.2}
 .org-role{font-size:11px;color:var(--mu);margin-bottom:6px}
 .org-badge{font-size:9px;font-weight:700;padding:2px 8px;border-radius:20px;display:inline-block;letter-spacing:.5px}
-.org-connector{width:2px;height:24px;background:var(--bd);margin:0 auto}
-.org-children-row{display:flex;justify-content:center;align-items:flex-start;position:relative}
-.org-children-row::before{content:'';position:absolute;top:0;left:50%;right:50%;height:2px;background:var(--bd)}
-.org-child-wrap{display:flex;flex-direction:column;align-items:center;padding:0 10px;position:relative}
-.org-child-wrap::before{content:'';position:absolute;top:0;left:50%;width:2px;height:24px;background:var(--bd)}
-.org-h-line{height:2px;background:var(--bd);position:absolute;top:0}
-/* Dept view */
+.org-edit-mode .org-card{cursor:grab;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.org-edit-mode .org-card:active{cursor:grabbing}
+/* Dept */
 .org-dept-card{background:var(--s1);border:1px solid var(--bd);border-radius:14px;margin-bottom:16px;overflow:hidden}
 .org-dept-header{padding:14px 18px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:12px}
 .org-dept-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
 .org-dept-name{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1.5px}
 .org-dept-count{font-size:12px;color:var(--mu);margin-left:auto}
 .org-members-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;padding:14px 18px}
-.org-mem-card{background:var(--s2);border:1px solid var(--bd);border-radius:10px;padding:12px;text-align:center;transition:border-color .15s}
+.org-mem-card{background:var(--s2);border:1px solid var(--bd);border-radius:10px;padding:12px;text-align:center;transition:border-color .15s;cursor:pointer}
 .org-mem-card:hover{border-color:var(--ac)}
-/* Flows */
-.org-flow-card{background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:16px 18px}
-.org-flow-name{font-size:14px;font-weight:600;color:var(--tx);margin-bottom:4px}
-.org-flow-desc{font-size:12px;color:var(--mu);margin-bottom:12px}
-.org-flow-steps{display:flex;flex-direction:column;gap:6px}
-.org-step{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--bd)}
-.org-step:last-child{border:none}
-.org-step-n{width:20px;height:20px;border-radius:50%;background:rgba(245,166,35,.12);color:var(--ac);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.org-step-a{font-size:12px;color:var(--tx);flex:1}
-.org-step-r{font-size:10px;color:var(--mu);white-space:nowrap}
+/* Funções */
+.role-card{background:var(--s1);border:1px solid var(--bd);border-radius:14px;overflow:hidden;transition:border-color .15s}
+.role-card:hover{border-color:rgba(245,166,35,.3)}
+.role-card-header{padding:14px 16px;border-bottom:1px solid var(--bd)}
+.role-emp-line{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.role-title{font-size:14px;font-weight:600;color:var(--tx);margin-bottom:4px}
+.role-desc{font-size:12px;color:var(--mu);line-height:1.5}
+.role-card-body{padding:12px 16px}
+.role-resp-item{display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:1px solid var(--bd);font-size:12px;color:var(--tx)}
+.role-resp-item:last-child{border:none}
+.role-resp-num{width:20px;height:20px;border-radius:50%;background:rgba(245,166,35,.1);color:var(--ac);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.role-card-footer{padding:8px 16px;background:var(--s2);font-size:11px;color:var(--mu);display:flex;justify-content:space-between;align-items:center}
+/* Perfil modal */
+.opp-section{margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--bd)}
+.opp-section:last-child{border:none}
 /* FIM ORGANOGRAMA */
 input[type=date]{color-scheme:dark;cursor:pointer}
 input[type=date]::-webkit-calendar-picker-indicator{filter:invert(.6);cursor:pointer;opacity:.7}
@@ -475,7 +474,7 @@ input[type=date]::-webkit-calendar-picker-indicator:hover{opacity:1}
             <option value="">Todos departamentos</option>
           </select>
           <select id="gantt-resp-filter" onchange="renderGantt()" class="admin-only" style="font-size:12px;padding:5px 10px;border-radius:8px;background:var(--s2);border:1px solid var(--bd);color:var(--tx);font-family:'DM Sans',sans-serif;display:none">
-            <option value="">Todos responsáveis</option>
+            <option value="">Todos responsaveis</option>
           </select>
         </div>
       </div>
@@ -565,26 +564,97 @@ input[type=date]::-webkit-calendar-picker-indicator:hover{opacity:1}
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px">
       <div>
         <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;color:var(--ac)">Organograma</div>
-        <div style="font-size:12px;color:var(--mu);margin-top:2px">Estrutura hierárquica da equipe Alliance Casas</div>
+        <div style="font-size:12px;color:var(--mu);margin-top:2px">Estrutura hierárquica da equipe · arraste os cards para reorganizar</div>
       </div>
-      <div class="abc-seg">
-        <button class="aon" id="org-view-tree" onclick="setOrgView('tree',this)">🌳 Hierarquia</button>
-        <button id="org-view-dept" onclick="setOrgView('dept',this)">🏢 Departamentos</button>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <div class="abc-seg">
+          <button class="aon" id="org-view-tree" onclick="setOrgView('tree',this)">🌳 Hierarquia</button>
+          <button id="org-view-dept"  onclick="setOrgView('dept',this)">🏢 Departamentos</button>
+          <button id="org-view-roles" onclick="setOrgView('roles',this)">📋 Funções</button>
+        </div>
+        <button class="btn-s admin-only" id="org-edit-btn" onclick="toggleOrgEdit()" style="display:none;padding:7px 14px">✏️ Editar hierarquia</button>
       </div>
     </div>
+
+    <!-- VIEW HIERARQUIA LIVRE -->
     <div id="org-tree-view">
-      <div id="org-tree" style="overflow-x:auto;padding-bottom:16px;text-align:center"></div>
+      <div id="org-canvas-wrap" style="position:relative;background:var(--s1);border:1px solid var(--bd);border-radius:14px;overflow:auto;min-height:500px">
+        <svg id="org-svg-lines" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:visible" xmlns="http://www.w3.org/2000/svg"></svg>
+        <div id="org-canvas" style="position:relative;min-width:1000px;min-height:500px;padding:32px"></div>
+      </div>
+      <div id="org-edit-tip" style="display:none;font-size:12px;color:var(--mu);margin-top:10px;padding:10px 14px;background:var(--s2);border-radius:8px;border:1px dashed var(--bd)">
+        ✋ <strong>Modo edição:</strong> arraste os cards para reposicionar · clique em "Definir como raiz" para colocar alguém no topo · clique novamente em ✏️ para salvar e sair
+      </div>
     </div>
+
+    <!-- VIEW POR DEPARTAMENTO -->
     <div id="org-dept-view" style="display:none">
       <div id="org-dept-grid"></div>
     </div>
-    <div id="org-flows-section" style="margin-top:32px">
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:1.5px;color:var(--mu);margin-bottom:14px;border-top:1px solid var(--bd);padding-top:20px">PROCESSOS DOCUMENTADOS</div>
-      <div id="org-flows-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:12px"></div>
+
+    <!-- VIEW FUNÇÕES / PROCESSOS -->
+    <div id="org-roles-view" style="display:none">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+        <div>
+          <div style="font-size:13px;color:var(--mu)">Registre o que cada funcionário faz na empresa — responsabilidades, rotinas e processos.</div>
+        </div>
+        <button class="btn-p admin-only" onclick="openRoleModal(null,null)" style="display:none">+ Registrar Função</button>
+      </div>
+      <div id="org-roles-filter" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px"></div>
+      <div id="org-roles-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:12px"></div>
     </div>
   </div>
 
 </div><!-- /body-wrap -->
+
+<!-- ══ MODAL FUNÇÃO/PROCESSO FUNCIONÁRIO ══ -->
+<div class="ov" id="ov-role" onclick="if(event.target===this)closeRoleModal()">
+  <div class="modal wide">
+    <div class="mh"><span class="mtt" id="role-modal-title">📋 Registrar Função</span><button class="mx" onclick="closeRoleModal()">×</button></div>
+    <div class="g2m">
+      <div class="fg fc1"><span class="fl">Funcionário</span><select id="role-emp"></select></div>
+      <div class="fg fc1"><span class="fl">Título / Papel na empresa</span><input type="text" id="role-titulo" placeholder="Ex: Gerente de Vendas · Responsável Financeiro"></div>
+    </div>
+    <div class="fg"><span class="fl">Descrição geral</span><textarea id="role-desc" style="min-height:65px" placeholder="Em poucas linhas, o que esta pessoa faz na empresa..."></textarea></div>
+    <div class="fg"><span class="fl">Responsabilidades (uma por linha)</span><textarea id="role-resp" style="min-height:96px" placeholder="Atender clientes via WhatsApp&#10;Lançar contratos no sistema&#10;Gerar relatório semanal"></textarea></div>
+    <div class="fg"><span class="fl">Frequência</span>
+      <select id="role-freq"><option>Diário</option><option>Semanal</option><option>Quinzenal</option><option>Mensal</option><option>Sob demanda</option><option>Contínuo</option></select>
+    </div>
+    <div class="mf">
+      <button class="btn-c" id="btn-del-role" onclick="delRole()" style="margin-right:auto;border-color:rgba(231,76,60,.3);color:#e74c3c;display:none">🗑 Excluir</button>
+      <button class="btn-c" onclick="closeRoleModal()">Cancelar</button>
+      <button class="btn-ok" id="btn-save-role" onclick="saveRole()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL SUPERIOR HIERÁRQUICO ══ -->
+<div class="ov" id="ov-org-parent" onclick="if(event.target===this)document.getElementById('ov-org-parent').classList.remove('on')">
+  <div class="modal">
+    <div class="mh"><span class="mtt" id="org-parent-title">Superior hierárquico</span><button class="mx" onclick="document.getElementById('ov-org-parent').classList.remove('on')">×</button></div>
+    <div style="font-size:12px;color:var(--mu);margin-bottom:14px">Selecione quem aparece acima deste funcionário na hierarquia:</div>
+    <div class="fg"><select id="org-parent-sel"></select></div>
+    <div class="mf">
+      <button class="btn-c" onclick="setOrgParent('')">Sem superior (raiz)</button>
+      <button class="btn-c" onclick="document.getElementById('ov-org-parent').classList.remove('on')">Cancelar</button>
+      <button class="btn-ok" onclick="setOrgParent(document.getElementById('org-parent-sel').value)">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL PERFIL FUNCIONÁRIO ══ -->
+<div class="ov" id="ov-org-profile" onclick="if(event.target===this)document.getElementById('ov-org-profile').classList.remove('on')">
+  <div class="modal wide">
+    <div class="mh"><span class="mtt" id="opp-name">Perfil</span><button class="mx" onclick="document.getElementById('ov-org-profile').classList.remove('on')">×</button></div>
+    <div id="opp-body"></div>
+    <div class="mf" style="justify-content:flex-start;gap:8px;flex-wrap:wrap">
+      <button class="btn-s admin-only" id="opp-role-btn" onclick="openRoleFromProfile()" style="display:none">+ Registrar função</button>
+      <button class="btn-s admin-only" id="opp-parent-btn" onclick="openParentModal()" style="display:none">⬆ Definir superior</button>
+      <button class="btn-c" onclick="document.getElementById('ov-org-profile').classList.remove('on')" style="margin-left:auto">Fechar</button>
+    </div>
+  </div>
+</div>
+
 <div class="ov" id="ov-dept" onclick="closeDeptModal(event)">
   <div class="modal wide">
     <div class="mh"><span class="mtt">⚙️ Departamentos</span><button class="mx" onclick="closeDeptModal()">×</button></div>
@@ -821,7 +891,7 @@ function goTab(id,btn){
   if(id==='equipe')  renderEquipe();
   if(id==='tarefas') {renderKanban();if(taskView==='gantt')renderGantt();}
   if(id==='fluxos')  loadFlows(function(){showFlList();});
-  if(id==='org')     {loadFlows(function(){renderOrg();});}
+  if(id==='org')     {loadOrgData(function(){renderOrg();});applyRoleUI();}
 }
 
 /* ── DASHBOARD ── */
@@ -874,7 +944,7 @@ function renderDash(){
       listEl.innerHTML='<div style="text-align:center;padding:20px;color:var(--mu);font-size:13px">Nenhuma tarefa atribuída a você ainda.</div>';
     }else{
       // Agrupar por categoria/status
-      var catNames=CATS.length?CATS.map(function(c){return c.nome;}):[...new Set(myTasks.map(function(t){return t.status;}))];
+      var catNames=CATS.length?CATS.map(function(c){return c.nome;}):myTasks.map(function(t){return t.status;}).filter(function(v,i,a){return a.indexOf(v)===i;});
       listEl.innerHTML=catNames.map(function(catNome){
         var cat=CATS.find(function(c){return c.nome===catNome;});
         var hc=cat?cat.cor:'#7a7f9a';
@@ -1561,7 +1631,7 @@ function renderGantt(){
   deptSel.value=curDept;
   var respSel=document.getElementById('gantt-resp-filter');
   var curResp=respSel.value;
-  respSel.innerHTML='<option value="">Todos responsáveis</option>'+MEM.map(function(m){return '<option value="'+esc(m.nome)+'">'+esc(m.nome)+'</option>';}).join('');
+  respSel.innerHTML='<option value="">Todos responsaveis</option>'+MEM.map(function(m){return '<option value="'+esc(m.nome)+'">'+esc(m.nome)+'</option>';}).join('');
   respSel.value=curResp;
   var deptF=deptSel.value,respF=respSel.value;
 
@@ -1946,185 +2016,404 @@ function abcRenderDetail(nome){
 
 /* ── ORGANOGRAMA ── */
 var orgView='tree';
+var orgNodes={};
+var empRoles=[];
+var orgEditMode=false;
+var orgDragEl=null,orgDragOffX=0,orgDragOffY=0;
+var profileEmpId=null;
+var editRoleId=null;
+var orgRoleFilter='';
+
+function loadOrgData(cb){
+  Promise.all([
+    GET('org_nodes?select=*&order=ordem.asc'),
+    GET('employee_roles?select=*&order=created_at.asc')
+  ]).then(function(r){
+    var nodes=Array.isArray(r[0])?r[0]:[];
+    empRoles=Array.isArray(r[1])?r[1]:[];
+    orgNodes={};
+    nodes.forEach(function(n){orgNodes[n.employee_id]=n;});
+    if(cb)cb();
+  }).catch(function(e){console.error(e);if(cb)cb();});
+}
 
 function setOrgView(v,btn){
   orgView=v;
-  document.querySelectorAll('#org-view-tree,#org-view-dept').forEach(function(b){b.classList.remove('aon');});
+  document.querySelectorAll('#org-view-tree,#org-view-dept,#org-view-roles').forEach(function(b){b.classList.remove('aon');});
   btn.classList.add('aon');
   document.getElementById('org-tree-view').style.display=v==='tree'?'':'none';
   document.getElementById('org-dept-view').style.display=v==='dept'?'':'none';
-  if(v==='tree') renderOrgTree();
-  else renderOrgDept();
+  document.getElementById('org-roles-view').style.display=v==='roles'?'':'none';
+  if(v==='tree')renderOrgTree();
+  else if(v==='dept')renderOrgDept();
+  else renderOrgRoles();
 }
 
 function renderOrg(){
-  if(orgView==='tree') renderOrgTree();
-  else renderOrgDept();
-  renderOrgFlows();
+  if(orgView==='tree')renderOrgTree();
+  else if(orgView==='dept')renderOrgDept();
+  else renderOrgRoles();
 }
 
-/* ── VIEW HIERARQUIA ── */
-function renderOrgTree(){
-  var el=document.getElementById('org-tree');
-  if(!MEM.length){el.innerHTML='<div style="color:var(--mu);font-size:13px;padding:40px">Nenhum funcionário cadastrado.</div>';return;}
+function toggleOrgEdit(){
+  orgEditMode=!orgEditMode;
+  var btn=document.getElementById('org-edit-btn');
+  var tip=document.getElementById('org-edit-tip');
+  btn.textContent=orgEditMode?'Salvar hierarquia':'Editar hierarquia';
+  tip.style.display=orgEditMode?'':'none';
+  if(!orgEditMode){
+    var saves=MEM.map(function(m){
+      var node=orgNodes[m.id]||{};
+      var el=document.getElementById('onode-'+m.id);
+      return {employee_id:m.id,parent_id:node.parent_id||null,
+        pos_x:el?parseInt(el.style.left)||0:node.pos_x||0,
+        pos_y:el?parseInt(el.style.top)||0:node.pos_y||0,ordem:0};
+    });
+    spin(true);
+    fetch(SB+'/rest/v1/org_nodes',{
+      method:'POST',
+      headers:Object.assign({},hdr(),{'Prefer':'return=minimal,resolution=merge-duplicates'}),
+      body:JSON.stringify(saves)
+    }).then(function(){spin(false);toast('Hierarquia salva!');})
+      .catch(function(){spin(false);toast('Erro ao salvar','er');});
+  }
+  renderOrgTree();
+}
 
-  // Definir ordem de destaque: Direção > depois demais depts
-  var deptOrder=['Direção','Comercial','Engenharia','Arquitetura','Logística','Financeiro','Obra'];
-  var sortedDepts=DEPTS.slice().sort(function(a,b){
-    var ai=deptOrder.indexOf(a.nome);var bi=deptOrder.indexOf(b.nome);
-    ai=ai<0?99:ai;bi=bi<0?99:bi;
-    return ai-bi||a.ordem-b.ordem;
+function autoLayoutOrg(){
+  var COL_W=200,ROW_H=160;
+  var placed={};
+  Object.keys(orgNodes).forEach(function(eid){
+    var n=orgNodes[eid];
+    if(n&&(n.pos_x||n.pos_y))placed[eid]=true;
   });
+  var roots=MEM.filter(function(m){var n=orgNodes[m.id];return !n||!n.parent_id;});
+  var others=MEM.filter(function(m){var n=orgNodes[m.id];return n&&n.parent_id;});
+  var ri=0;
+  roots.forEach(function(m){
+    if(placed[m.id])return;
+    if(!orgNodes[m.id])orgNodes[m.id]={employee_id:m.id,parent_id:null,pos_x:0,pos_y:0,ordem:0};
+    orgNodes[m.id].pos_x=Math.max(60,Math.round((MEM.length/2)*COL_W/2)-ri*COL_W);
+    orgNodes[m.id].pos_y=30;
+    ri++;
+  });
+  var oi=0;
+  others.forEach(function(m){
+    if(placed[m.id])return;
+    if(!orgNodes[m.id])orgNodes[m.id]={employee_id:m.id,parent_id:null,pos_x:0,pos_y:0,ordem:0};
+    var par=orgNodes[orgNodes[m.id].parent_id];
+    orgNodes[m.id].pos_x=par?(par.pos_x||0)+oi*COL_W:60+oi*COL_W;
+    orgNodes[m.id].pos_y=par?(par.pos_y||0)+ROW_H:30+ROW_H;
+    oi++;
+  });
+  var ci=0;
+  var cols=Math.max(1,Math.ceil(Math.sqrt(MEM.length)));
+  MEM.forEach(function(m){
+    if(!orgNodes[m.id]){
+      orgNodes[m.id]={employee_id:m.id,parent_id:null,pos_x:(ci%cols)*COL_W+60,pos_y:Math.floor(ci/cols)*ROW_H+30,ordem:ci};
+      ci++;
+    }
+  });
+}
 
-  var html='<div style="display:inline-block;min-width:100%">';
+function renderOrgTree(){
+  var canvas=document.getElementById('org-canvas');
+  var svg=document.getElementById('org-svg-lines');
+  if(!canvas||!svg)return;
+  autoLayoutOrg();
+  var parts=[];
+  var maxW=0,maxH=0;
+  MEM.forEach(function(m){
+    var node=orgNodes[m.id]||{pos_x:60,pos_y:30};
+    var px=node.pos_x||60;var py=node.pos_y||30;
+    maxW=Math.max(maxW,px+200);maxH=Math.max(maxH,py+160);
+    var st=deptStyle(m.departamento);
+    var pend=visibleTasks().filter(function(t){return t.responsavel===m.nome&&t.status!=='Concluido';}).length;
+    var late=visibleTasks().filter(function(t){return t.responsavel===m.nome&&t.status==='Atrasado';}).length;
+    var isRoot=!node.parent_id;
+    var borderTop='border-top:3px solid '+st.text+';';
+    var extraStyle=isRoot?'border-color:'+st.text+';background:'+st.fill+';':'';
+    parts.push(
+      '<div class="org-node" id="onode-'+m.id+'" data-empid="'+m.id+'" style="position:absolute;left:'+px+'px;top:'+py+'px">'+
+      '<div class="org-card" style="'+borderTop+extraStyle+'" onclick="openOrgProfile(\''+m.id+'\')">'+
+      '<div class="org-av" style="background:'+st.fill+';color:'+st.text+'">'+esc(m.iniciais)+'</div>'+
+      '<div class="org-name">'+esc(m.nome)+'</div>'+
+      '<div class="org-role">'+esc(m.cargo)+'</div>'+
+      '<span class="org-badge" style="background:'+st.fill+';color:'+st.text+'">'+esc(m.departamento)+'</span>'+
+      (m.loja&&m.loja!=='Todas'?'<div style="font-size:9px;color:var(--mu);margin-top:3px">'+esc(m.loja)+'</div>':'')+
+      (late>0?'<div style="font-size:10px;color:#e74c3c;margin-top:5px">Atrasadas: '+late+'</div>':
+        pend>0?'<div style="font-size:10px;color:var(--ac);margin-top:5px">'+pend+' tarefa'+(pend!==1?'s':'')+'</div>':'')+
+      '</div>'+
+      (orgEditMode&&_isAdmin?
+        '<div style="margin-top:4px;display:flex;gap:4px;justify-content:center">'+
+        '<button onclick="event.stopPropagation();prepareParentModal(\''+m.id+'\')" class="btn-s" style="padding:3px 8px;font-size:10px">Superior</button>'+
+        '</div>':'')
+      +'</div>'
+    );
+  });
+  canvas.innerHTML=parts.join('');
+  canvas.style.minWidth=Math.max(maxW+60,1000)+'px';
+  canvas.style.minHeight=Math.max(maxH+60,500)+'px';
+  if(orgEditMode&&_isAdmin)attachOrgDrag();
+  drawOrgLines();
+}
 
-  // Topo: Direção
-  var dirDept=sortedDepts.find(function(d){return d.nome==='Direção';})||sortedDepts[0];
-  var dirMembers=BY_DEPT[dirDept?dirDept.nome:'']||[];
-  var dirSt=deptStyle(dirDept?dirDept.nome:'Direção');
+function drawOrgLines(){
+  var svg=document.getElementById('org-svg-lines');
+  var canvas=document.getElementById('org-canvas');
+  if(!svg||!canvas)return;
+  var lines=[];
+  MEM.forEach(function(m){
+    var node=orgNodes[m.id];if(!node||!node.parent_id)return;
+    var pNode=orgNodes[node.parent_id];if(!pNode)return;
+    var x1=(pNode.pos_x||0)+80;var y1=(pNode.pos_y||0)+148;
+    var x2=(node.pos_x||0)+80;var y2=(node.pos_y||0);
+    var my=(y1+y2)/2;
+    lines.push('<path d="M'+x1+','+y1+' C'+x1+','+my+' '+x2+','+my+' '+x2+','+y2+'" stroke="rgba(46,51,77,.85)" stroke-width="2" fill="none"/>');
+  });
+  svg.innerHTML=lines.join('');
+  var w=canvas.scrollWidth,h=canvas.scrollHeight;
+  svg.setAttribute('viewBox','0 0 '+w+' '+h);
+  svg.style.width=w+'px';svg.style.height=h+'px';
+}
 
-  html+='<div style="display:flex;justify-content:center;margin-bottom:0">';
-  if(dirMembers.length){
-    dirMembers.forEach(function(m,i){
-      if(i>0) return; // só o primeiro da direção no topo
-      html+='<div style="display:flex;flex-direction:column;align-items:center">';
-      html+=orgCardHTML(m,dirSt,true);
-      html+='<div class="org-connector"></div>';
-      html+='</div>';
-    });
-  } else {
-    html+='<div style="display:flex;flex-direction:column;align-items:center">';
-    html+='<div class="org-card root"><div class="org-av" style="background:'+dirSt.fill+';color:'+dirSt.text+'">A</div><div class="org-name">Alliance Casas</div><span class="org-badge" style="background:'+dirSt.fill+';color:'+dirSt.text+'">DIREÇÃO</span></div>';
-    html+='<div class="org-connector"></div>';
-    html+='</div>';
+function attachOrgDrag(){
+  MEM.forEach(function(m){
+    var el=document.getElementById('onode-'+m.id);if(!el)return;
+    el.style.cursor='grab';el.style.zIndex='1';
+    el.onmousedown=function(e){
+      if(e.target.tagName==='BUTTON'||e.target.tagName==='A')return;
+      e.preventDefault();
+      var wrap=document.getElementById('org-canvas-wrap');
+      var wR=wrap.getBoundingClientRect();
+      var eR=el.getBoundingClientRect();
+      orgDragOffX=e.clientX-eR.left;
+      orgDragOffY=e.clientY-eR.top;
+      orgDragEl=el;
+      el.style.cursor='grabbing';el.style.zIndex='100';
+      document.onmousemove=function(ev){
+        if(!orgDragEl)return;
+        var wrap2=document.getElementById('org-canvas-wrap');
+        var wR2=wrap2.getBoundingClientRect();
+        var nx=Math.max(0,ev.clientX-wR2.left+wrap2.scrollLeft-orgDragOffX);
+        var ny=Math.max(0,ev.clientY-wR2.top+wrap2.scrollTop-orgDragOffY);
+        orgDragEl.style.left=nx+'px';orgDragEl.style.top=ny+'px';
+        var eid=orgDragEl.getAttribute('data-empid');
+        if(orgNodes[eid]){orgNodes[eid].pos_x=Math.round(nx);orgNodes[eid].pos_y=Math.round(ny);}
+        drawOrgLines();
+      };
+      document.onmouseup=function(){
+        if(orgDragEl){orgDragEl.style.cursor='grab';orgDragEl.style.zIndex='1';}
+        orgDragEl=null;document.onmousemove=null;document.onmouseup=null;
+      };
+    };
+  });
+}
+
+function prepareParentModal(empId){
+  var m=MEM.find(function(x){return x.id===empId;});if(!m)return;
+  profileEmpId=empId;
+  document.getElementById('org-parent-title').textContent='Superior de '+m.nome;
+  var sel=document.getElementById('org-parent-sel');
+  var cur=(orgNodes[empId]||{}).parent_id||'';
+  sel.innerHTML='<option value="">Sem superior (raiz)</option>'+
+    MEM.filter(function(x){return x.id!==empId;}).map(function(x){
+      return '<option value="'+x.id+'"'+(cur===x.id?' selected':'')+'>'+esc(x.nome)+' - '+esc(x.cargo)+'</option>';
+    }).join('');
+  document.getElementById('ov-org-parent').classList.add('on');
+}
+
+function setOrgParent(parentId){
+  if(!profileEmpId)return;
+  if(!orgNodes[profileEmpId])orgNodes[profileEmpId]={employee_id:profileEmpId,parent_id:null,pos_x:100,pos_y:100,ordem:0};
+  orgNodes[profileEmpId].parent_id=parentId||null;
+  document.getElementById('ov-org-parent').classList.remove('on');
+  renderOrgTree();
+  toast('Hierarquia atualizada. Salve para persistir.');
+}
+
+function openOrgProfile(empId){
+  var m=MEM.find(function(x){return x.id===empId;});if(!m)return;
+  profileEmpId=empId;
+  var st=deptStyle(m.departamento);
+  document.getElementById('opp-name').textContent=m.nome;
+  var myRoles=empRoles.filter(function(r){return r.employee_id===empId;});
+  var myTasks=visibleTasks().filter(function(t){return t.responsavel===m.nome;});
+  var open=myTasks.filter(function(t){return t.status!=='Concluido';}).length;
+  var late=myTasks.filter(function(t){return t.status==='Atrasado';}).length;
+  var parent=null;
+  var node=orgNodes[empId];
+  if(node&&node.parent_id)parent=MEM.find(function(x){return x.id===node.parent_id;})||null;
+  var parts=[];
+  parts.push(
+    '<div style="display:flex;align-items:center;gap:16px;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--bd)">'+
+    '<div class="org-av" style="background:'+st.fill+';color:'+st.text+';flex-shrink:0">'+esc(m.iniciais)+'</div>'+
+    '<div>'+
+    '<div style="font-size:18px;font-weight:700;color:var(--tx)">'+esc(m.nome)+'</div>'+
+    '<div style="font-size:13px;color:var(--mu)">'+esc(m.cargo)+'</div>'+
+    '<span class="org-badge" style="background:'+st.fill+';color:'+st.text+';margin-top:6px;display:inline-block">'+esc(m.departamento)+'</span>'+
+    (m.loja&&m.loja!=='Todas'?'<span style="font-size:11px;color:var(--mu);margin-left:8px">'+esc(m.loja)+'</span>':'')+
+    '</div></div>'
+  );
+  if(parent){
+    parts.push(
+      '<div style="margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--bd)">'+
+      '<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--mu);margin-bottom:6px">Superior hierarquico</div>'+
+      '<div style="font-size:13px;color:var(--tx)">'+esc(parent.nome)+' - '+esc(parent.cargo)+'</div>'+
+      '</div>'
+    );
   }
-  html+='</div>';
-
-  // Linha horizontal entre colunas de dept
-  var otherDepts=sortedDepts.filter(function(d){return d.nome!==dirDept.nome&&(BY_DEPT[d.nome]||[]).length>0;});
-
-  if(otherDepts.length){
-    // Linha de conexão
-    html+='<div style="display:flex;justify-content:center;position:relative;margin-bottom:0">';
-    html+='<div style="height:2px;background:var(--bd);width:'+(Math.min(otherDepts.length,6)*200)+'px;max-width:90vw;position:relative"></div>';
-    html+='</div>';
-
-    // Colunas de departamentos
-    html+='<div style="display:flex;justify-content:center;align-items:flex-start;gap:0;flex-wrap:wrap">';
-    otherDepts.forEach(function(dept){
-      var members=BY_DEPT[dept.nome]||[];
-      var st=deptStyle(dept.nome);
-      html+='<div style="display:flex;flex-direction:column;align-items:center;padding:0 10px">';
-      // linha vertical de cima
-      html+='<div style="width:2px;height:24px;background:var(--bd)"></div>';
-      // card do departamento
-      html+='<div style="background:'+st.fill+';border:1px solid '+st.text+'40;border-top:3px solid '+st.text+';border-radius:10px;padding:8px 14px;text-align:center;margin-bottom:0;min-width:130px">';
-      html+='<div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:'+st.text+'">'+esc(dept.nome)+'</div>';
-      html+='<div style="font-size:11px;color:var(--mu);margin-top:2px">'+members.length+' pessoa'+(members.length!==1?'s':'')+'</div>';
-      html+='</div>';
-      // membros
-      html+='<div style="display:flex;flex-direction:column;align-items:center;gap:0">';
-      members.forEach(function(m){
-        html+='<div style="width:2px;height:16px;background:var(--bd)"></div>';
-        html+=orgCardSmHTML(m,st);
-      });
-      html+='</div>';
-      html+='</div>';
+  parts.push(
+    '<div style="display:flex;gap:10px;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--bd)">'+
+    '<div style="text-align:center;background:var(--s2);border:1px solid var(--bd);border-radius:10px;padding:10px 16px;flex:1">'+
+    '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:28px;color:var(--ac)">'+open+'</div>'+
+    '<div style="font-size:10px;color:var(--mu)">Tarefas abertas</div></div>'+
+    '<div style="text-align:center;background:rgba(231,76,60,.08);border:1px solid rgba(231,76,60,.2);border-radius:10px;padding:10px 16px;flex:1">'+
+    '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:28px;color:#e74c3c">'+late+'</div>'+
+    '<div style="font-size:10px;color:#e74c3c">Atrasadas</div></div>'+
+    '</div>'
+  );
+  if(myRoles.length){
+    parts.push('<div><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--mu);margin-bottom:10px">Funcoes registradas</div>');
+    myRoles.forEach(function(r){
+      var resps=r.responsabilidades||[];
+      parts.push(
+        '<div style="background:var(--s2);border:1px solid var(--bd);border-radius:10px;padding:12px;margin-bottom:8px">'+
+        '<div style="font-size:13px;font-weight:600;color:var(--tx);margin-bottom:4px">'+esc(r.titulo)+'</div>'+
+        (r.descricao?'<div style="font-size:12px;color:var(--mu);margin-bottom:8px">'+esc(r.descricao)+'</div>':'')+
+        (resps.length?'<div style="font-size:11px;color:var(--tx)">'+resps.map(function(x,i){return (i+1)+'. '+esc(x);}).join('<br>')+'</div>':'')+
+        '<div style="font-size:10px;color:var(--ac);margin-top:6px;text-align:right">'+esc(r.frequencia||'')+'</div>'+
+        (_isAdmin?'<div style="margin-top:8px;text-align:right"><button class="btn-s" onclick="openRoleModal(\''+r.id+'\',\''+empId+'\')" style="font-size:11px;padding:3px 10px">Editar</button></div>':'')+
+        '</div>'
+      );
     });
-    html+='</div>';
+    parts.push('</div>');
   }
-  html+='</div>';
-  el.innerHTML=html;
+  document.getElementById('opp-body').innerHTML=parts.join('');
+  var adminBtns=document.getElementById('opp-admin-btns');
+  if(adminBtns)adminBtns.style.display=_isAdmin?'flex':'none';
+  document.getElementById('ov-org-profile').classList.add('on');
 }
 
-function orgCardHTML(m,st,isRoot){
-  var pend=visibleTasks().filter(function(t){return t.responsavel===m.nome&&t.status!=='Concluído';}).length;
-  return '<div class="org-card'+(isRoot?' root':'')+'" onclick="abcSelect(\''+esc(m.nome)+'\')" style="border-top:3px solid '+st.text+'">'
-    +'<div class="org-av" style="background:'+st.fill+';color:'+st.text+'">'+esc(m.iniciais)+'</div>'
-    +'<div class="org-name">'+esc(m.nome)+'</div>'
-    +'<div class="org-role">'+esc(m.cargo)+'</div>'
-    +'<span class="org-badge" style="background:'+st.fill+';color:'+st.text+'">'+esc(m.departamento)+'</span>'
-    +(pend>0?'<div style="font-size:10px;color:var(--ac);margin-top:6px">'+pend+' tarefa'+(pend!==1?'s':'')+'</div>':'')
-    +(m.loja&&m.loja!=='Todas'?'<div style="font-size:9px;color:var(--mu);margin-top:3px">📍 '+esc(m.loja)+'</div>':'')
-    +'</div>';
+function openRoleFromProfile(){
+  document.getElementById('ov-org-profile').classList.remove('on');
+  openRoleModal(null,profileEmpId);
+}
+function openParentModal(){
+  document.getElementById('ov-org-profile').classList.remove('on');
+  prepareParentModal(profileEmpId);
 }
 
-function orgCardSmHTML(m,st){
-  var pend=visibleTasks().filter(function(t){return t.responsavel===m.nome&&t.status!=='Concluído';}).length;
-  var late=visibleTasks().filter(function(t){return t.responsavel===m.nome&&t.status==='Atrasado';}).length;
-  return '<div class="org-card" onclick="abcSelect(\''+esc(m.nome)+'\')" style="min-width:130px;max-width:160px">'
-    +'<div class="org-av-sm" style="background:'+st.fill+';color:'+st.text+'">'+esc(m.iniciais)+'</div>'
-    +'<div class="org-name" style="font-size:12px">'+esc(m.nome)+'</div>'
-    +'<div class="org-role" style="font-size:10px">'+esc(m.cargo)+'</div>'
-    +(late>0?'<div style="font-size:10px;color:#e74c3c;margin-top:4px">⚠ '+late+' atrasada'+(late!==1?'s':'')+'</div>'
-      :pend>0?'<div style="font-size:10px;color:var(--ac);margin-top:4px">'+pend+' tarefa'+(pend!==1?'s':'')+'</div>':'')
-    +(m.loja&&m.loja!=='Todas'?'<div style="font-size:9px;color:var(--mu);margin-top:2px">📍 '+esc(m.loja)+'</div>':'')
-    +'</div>';
-}
-
-/* ── VIEW POR DEPARTAMENTO ── */
+/* VIEW DEPARTAMENTOS */
 function renderOrgDept(){
   var el=document.getElementById('org-dept-grid');
-  var html='';
+  var parts=[];
   DEPTS.filter(function(d){return d.ativo;}).forEach(function(dept){
-    var members=BY_DEPT[dept.nome]||[];
-    if(!members.length)return;
+    var members=BY_DEPT[dept.nome]||[];if(!members.length)return;
     var st=deptStyle(dept.nome);
-    var deptTasks=visibleTasks().filter(function(t){return t.departamento===dept.nome&&t.status!=='Concluído';}).length;
-    var deptLate=visibleTasks().filter(function(t){return t.departamento===dept.nome&&t.status==='Atrasado';}).length;
-    html+='<div class="org-dept-card">';
-    html+='<div class="org-dept-header" style="border-left:4px solid '+dept.cor+'">'
-      +'<span class="org-dept-dot" style="background:'+dept.cor+'"></span>'
-      +'<span class="org-dept-name" style="color:'+dept.cor+'">'+esc(dept.nome)+'</span>'
-      +'<span class="org-dept-count">'+members.length+' pessoa'+(members.length!==1?'s':'')
-      +(deptTasks?'<span style="margin-left:8px;color:var(--ac)">·'+deptTasks+' tarefa'+(deptTasks!==1?'s':'')+'</span>':'')
-      +(deptLate?'<span style="margin-left:6px;color:#e74c3c">⚠ '+deptLate+' atrasada'+(deptLate!==1?'s':'')+'</span>':'')
-      +'</span>'
-      +'</div>';
-    html+='<div class="org-members-grid">';
-    members.forEach(function(m){
-      var pend=visibleTasks().filter(function(t){return t.responsavel===m.nome&&t.status!=='Concluído';}).length;
+    var dT=visibleTasks().filter(function(t){return t.departamento===dept.nome&&t.status!=='Concluido';}).length;
+    var dL=visibleTasks().filter(function(t){return t.departamento===dept.nome&&t.status==='Atrasado';}).length;
+    var mCards=members.map(function(m){
+      var pend=visibleTasks().filter(function(t){return t.responsavel===m.nome&&t.status!=='Concluido';}).length;
       var late=visibleTasks().filter(function(t){return t.responsavel===m.nome&&t.status==='Atrasado';}).length;
-      html+='<div class="org-mem-card" onclick="abcSelect(\''+esc(m.nome)+'\')">'
-        +'<div class="org-av-sm" style="background:'+st.fill+';color:'+st.text+'">'+esc(m.iniciais)+'</div>'
-        +'<div class="org-name" style="font-size:13px">'+esc(m.nome)+'</div>'
-        +'<div class="org-role">'+esc(m.cargo)+'</div>'
-        +(m.loja&&m.loja!=='Todas'?'<div style="font-size:10px;color:var(--mu);margin-top:4px">📍 '+esc(m.loja)+'</div>':'')
-        +'<div style="margin-top:8px;display:flex;gap:6px;justify-content:center;flex-wrap:wrap">'
-        +(pend>0?'<span style="font-size:10px;padding:2px 7px;border-radius:20px;background:rgba(245,166,35,.12);color:var(--ac)">'+pend+' tarefa'+(pend!==1?'s':'')+'</span>':'')
-        +(late>0?'<span style="font-size:10px;padding:2px 7px;border-radius:20px;background:rgba(231,76,60,.12);color:#e74c3c">⚠ '+late+' atrasada'+(late!==1?'s':'')+'</span>':'')
-        +'</div>'
-        +'</div>';
-    });
-    html+='</div></div>';
+      return '<div class="org-mem-card" onclick="openOrgProfile(\''+m.id+'\')">'+'<div class="org-av-sm" style="background:'+st.fill+';color:'+st.text+'">'+esc(m.iniciais)+'</div>'+'<div class="org-name" style="font-size:13px">'+esc(m.nome)+'</div>'+'<div class="org-role">'+esc(m.cargo)+'</div>'+(m.loja&&m.loja!=='Todas'?'<div style="font-size:10px;color:var(--mu);margin-top:4px">'+esc(m.loja)+'</div>':'')+'<div style="margin-top:8px;display:flex;gap:6px;justify-content:center;flex-wrap:wrap">'+(pend?'<span style="font-size:10px;padding:2px 7px;border-radius:20px;background:rgba(245,166,35,.12);color:var(--ac)">'+pend+'</span>':'')+(late?'<span style="font-size:10px;padding:2px 7px;border-radius:20px;background:rgba(231,76,60,.12);color:#e74c3c">'+late+' atrasada</span>':'')+'</div></div>';
+    }).join('');
+    parts.push('<div class="org-dept-card"><div class="org-dept-header" style="border-left:4px solid '+dept.cor+'"><span class="org-dept-dot" style="background:'+dept.cor+'"></span><span class="org-dept-name" style="color:'+dept.cor+'">'+esc(dept.nome)+'</span><span class="org-dept-count">'+members.length+' pessoa'+(members.length!==1?'s':'')+(dT?'<span style="margin-left:8px;color:var(--ac)"> - '+dT+' tarefa'+(dT!==1?'s':'')+'</span>':'')+(dL?'<span style="margin-left:6px;color:#e74c3c"> - '+dL+' atrasada'+(dL!==1?'s':'')+'</span>':'')+'</span></div><div class="org-members-grid">'+mCards+'</div></div>');
   });
-  el.innerHTML=html||'<div style="color:var(--mu);font-size:13px">Nenhum departamento com membros.</div>';
+  el.innerHTML=parts.join('')||'<div style="color:var(--mu);font-size:13px">Nenhum departamento com membros.</div>';
 }
 
-/* ── FLUXOS NO ORGANOGRAMA ── */
-function renderOrgFlows(){
-  var el=document.getElementById('org-flows-grid');
-  if(!FLOWS.length){el.innerHTML='<div style="color:var(--mu);font-size:13px;padding:8px 0">Nenhum fluxograma criado ainda. Vá em <strong>Fluxogramas</strong> para criar.</div>';return;}
-  el.innerHTML=FLOWS.map(function(f){
-    var steps=f.steps||[];
-    return '<div class="org-flow-card">'
-      +'<div class="org-flow-name">'+esc(f.nome)+'</div>'
-      +(f.descricao?'<div class="org-flow-desc">'+esc(f.descricao)+'</div>':'')
-      +'<div class="org-flow-steps">'
-      +steps.map(function(s,i){
-        var m=MEM.find(function(x){return x.nome===s.responsavel;})||{departamento:'Direção',iniciais:(s.responsavel||'?').slice(0,2)};
-        var st=deptStyle(m.departamento);
-        return '<div class="org-step">'
-          +'<div class="org-step-n">'+(i+1)+'</div>'
-          +'<div class="org-step-a">'+esc(s.acao||'')+'</div>'
-          +'<div class="org-step-r" style="display:flex;align-items:center;gap:5px">'
-          +'<span style="width:18px;height:18px;border-radius:50%;background:'+st.fill+';color:'+st.text+';display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:700">'+esc(m.iniciais)+'</span>'
-          +esc(s.responsavel||'')+'</div>'
-          +'</div>';
-      }).join('')
-      +'</div></div>';
+/* VIEW FUNCOES */
+function renderOrgRoles(){
+  var filterEl=document.getElementById('org-roles-filter');
+  var gridEl=document.getElementById('org-roles-grid');
+  var uniq=empRoles.map(function(r){return r.employee_id;}).filter(function(v,i,a){return a.indexOf(v)===i;});
+  filterEl.innerHTML='<button class="df'+(orgRoleFilter===''?' on':'')+'" onclick="setOrgRoleFilter(\'\',this)">Todos</button>'+
+    uniq.map(function(eid){
+      var m=MEM.find(function(x){return x.id===eid;})||{nome:eid};
+      return '<button class="df'+(orgRoleFilter===eid?' on':'')+'" onclick="setOrgRoleFilter(\''+eid+'\',this)">'+esc(m.nome.split(' ')[0])+'</button>';
+    }).join('');
+  var roles=orgRoleFilter?empRoles.filter(function(r){return r.employee_id===orgRoleFilter;}):empRoles;
+  if(!roles.length){
+    gridEl.innerHTML='<div style="color:var(--mu);font-size:13px;padding:40px 0;text-align:center;grid-column:1/-1"><div style="font-size:32px;margin-bottom:12px">-</div>Nenhuma funcao registrada ainda.<br><span style="font-size:12px">Clique em + Registrar Funcao para comecar.</span></div>';
+    return;
+  }
+  gridEl.innerHTML=roles.map(function(r){
+    var m=MEM.find(function(x){return x.id===r.employee_id;})||{nome:'?',iniciais:'?',departamento:'',cargo:'',loja:'',id:''};
+    var st=deptStyle(m.departamento);
+    var resps=r.responsabilidades||[];
+    return '<div class="role-card">'+'<div class="role-card-header">'+'<div class="role-emp-line"><div class="org-av-sm" style="background:'+st.fill+';color:'+st.text+'">'+esc(m.iniciais)+'</div><div><div style="font-size:12px;font-weight:700;color:'+st.text+'">'+esc(m.nome)+'</div><div style="font-size:10px;color:var(--mu)">'+esc(m.cargo)+' - '+esc(m.departamento)+'</div></div>'+(_isAdmin?'<button class="btn-s" onclick="openRoleModal(\''+r.id+'\',\''+r.employee_id+'\')" style="margin-left:auto;font-size:11px;padding:3px 10px">Editar</button>':'')+'</div>'+'<div class="role-title">'+esc(r.titulo)+'</div>'+(r.descricao?'<div class="role-desc">'+esc(r.descricao)+'</div>':'')+'</div>'+(resps.length?'<div class="role-card-body">'+resps.map(function(resp,i){return '<div class="role-resp-item"><div class="role-resp-num">'+(i+1)+'</div><div>'+esc(resp)+'</div></div>';}).join('')+'</div>':'')+'<div class="role-card-footer"><span>'+esc(r.frequencia||'')+'</span>'+(m.loja&&m.loja!=='Todas'?'<span>'+esc(m.loja)+'</span>':'')+'</div></div>';
   }).join('');
 }
+
+function setOrgRoleFilter(eid,btn){
+  orgRoleFilter=eid;
+  document.querySelectorAll('#org-roles-filter .df').forEach(function(b){b.classList.remove('on');});
+  btn.classList.add('on');
+  renderOrgRoles();
+}
+
+/* CRUD FUNCOES */
+function openRoleModal(roleId,empId){
+  editRoleId=roleId||null;
+  document.getElementById('role-modal-title').textContent=roleId?'Editar Funcao':'Registrar Funcao';
+  document.getElementById('btn-del-role').style.display=roleId?'':'none';
+  document.getElementById('btn-save-role').textContent=roleId?'Salvar alteracoes':'Salvar';
+  document.getElementById('role-emp').innerHTML=MEM.map(function(m){
+    return '<option value="'+m.id+'"'+(empId===m.id?' selected':'')+'>'+esc(m.nome)+' - '+esc(m.cargo)+'</option>';
+  }).join('');
+  if(roleId){
+    var r=empRoles.find(function(x){return x.id===roleId;});
+    if(r){
+      document.getElementById('role-emp').value=r.employee_id;
+      document.getElementById('role-titulo').value=r.titulo||'';
+      document.getElementById('role-desc').value=r.descricao||'';
+      document.getElementById('role-resp').value=(r.responsabilidades||[]).join('\n');
+      document.getElementById('role-freq').value=r.frequencia||'Diario';
+    }
+  }else{
+    ['role-titulo','role-desc','role-resp'].forEach(function(id){document.getElementById(id).value='';});
+    document.getElementById('role-freq').value='Diario';
+  }
+  document.getElementById('ov-role').classList.add('on');
+  setTimeout(function(){document.getElementById('role-titulo').focus();},100);
+}
+function closeRoleModal(){document.getElementById('ov-role').classList.remove('on');}
+
+function saveRole(){
+  var empId=document.getElementById('role-emp').value;
+  var titulo=document.getElementById('role-titulo').value.trim();
+  if(!empId||!titulo){toast('Preencha funcionario e titulo.','er');return;}
+  var respRaw=document.getElementById('role-resp').value;
+  var resps=respRaw.split('\n').map(function(s){return s.trim();}).filter(function(s){return s.length>0;});
+  var body={employee_id:empId,titulo:titulo,descricao:document.getElementById('role-desc').value.trim(),responsabilidades:resps,frequencia:document.getElementById('role-freq').value};
+  var btn=document.getElementById('btn-save-role');
+  btn.disabled=true;btn.textContent='Salvando...';spin(true);
+  var req=editRoleId?PATCH('employee_roles?id=eq.'+editRoleId,body):POST('employee_roles',body);
+  req.then(function(data){
+    var saved=Array.isArray(data)&&data[0]?data[0]:Object.assign({id:editRoleId||'tmp'},body);
+    if(editRoleId){
+      var i=empRoles.findIndex(function(x){return x.id===editRoleId;});
+      if(i>=0)empRoles[i]=Object.assign(empRoles[i],saved);
+    }else if(saved.id&&saved.id!=='tmp'){empRoles.push(saved);}
+    btn.disabled=false;btn.textContent=editRoleId?'Salvar alteracoes':'Salvar';
+    spin(false);closeRoleModal();renderOrgRoles();toast('Funcao salva!');
+  }).catch(function(e){
+    btn.disabled=false;btn.textContent=editRoleId?'Salvar alteracoes':'Salvar';
+    spin(false);toast('Erro','er');console.error(e);
+  });
+}
+
+function delRole(){
+  if(!editRoleId)return;
+  if(!confirm('Excluir esta funcao?'))return;
+  spin(true);
+  DEL('employee_roles?id=eq.'+editRoleId).then(function(){
+    empRoles=empRoles.filter(function(x){return x.id!==editRoleId;});
+    spin(false);toast('Excluida.');closeRoleModal();renderOrgRoles();
+  }).catch(function(){spin(false);toast('Erro','er');});
+}
+
 
 loadAll();
 </script>
