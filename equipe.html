@@ -281,13 +281,13 @@ textarea{resize:vertical;min-height:52px}
 /* ORGANOGRAMA */
 .org-node{position:absolute;cursor:pointer;transition:box-shadow .15s}
 .org-node:hover .org-card{border-color:var(--ac);transform:translateY(-2px)}
-.org-card{background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:12px 14px;width:160px;text-align:center;transition:all .15s;user-select:none}
+.org-card{background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:9px 10px;width:120px;text-align:center;transition:all .15s;user-select:none}
 .org-card.drag-over{border-color:var(--ac);box-shadow:0 0 0 3px rgba(245,166,35,.2)}
-.org-av{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;margin:0 auto 8px}
-.org-av-sm{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;margin:0 auto 6px}
-.org-name{font-size:13px;font-weight:600;color:var(--tx);margin-bottom:2px;line-height:1.2}
-.org-role{font-size:11px;color:var(--mu);margin-bottom:6px}
-.org-badge{font-size:9px;font-weight:700;padding:2px 8px;border-radius:20px;display:inline-block;letter-spacing:.5px}
+.org-av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;margin:0 auto 6px}
+.org-av-sm{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;margin:0 auto 5px}
+.org-name{font-size:12px;font-weight:600;color:var(--tx);margin-bottom:1px;line-height:1.2}
+.org-role{font-size:10px;color:var(--mu);margin-bottom:4px}
+.org-badge{font-size:8px;font-weight:700;padding:1px 6px;border-radius:20px;display:inline-block;letter-spacing:.3px}
 .org-edit-mode .org-card{cursor:grab;box-shadow:0 2px 8px rgba(0,0,0,.3)}
 .org-edit-mode .org-card:active{cursor:grabbing}
 /* Dept */
@@ -2081,7 +2081,7 @@ function toggleOrgEdit(){
 }
 
 function autoLayoutOrg(){
-  var COL_W=200,ROW_H=160;
+  var COL_W=155,ROW_H=135;
   var placed={};
   Object.keys(orgNodes).forEach(function(eid){
     var n=orgNodes[eid];
@@ -2166,8 +2166,8 @@ function drawOrgLines(){
   MEM.forEach(function(m){
     var node=orgNodes[m.id];if(!node||!node.parent_id)return;
     var pNode=orgNodes[node.parent_id];if(!pNode)return;
-    var x1=(pNode.pos_x||0)+80;var y1=(pNode.pos_y||0)+148;
-    var x2=(node.pos_x||0)+80;var y2=(node.pos_y||0);
+    var x1=(pNode.pos_x||0)+60;var y1=(pNode.pos_y||0)+118;
+    var x2=(node.pos_x||0)+60;var y2=(node.pos_y||0);
     var my=(y1+y2)/2;
     lines.push('<path d="M'+x1+','+y1+' C'+x1+','+my+' '+x2+','+my+' '+x2+','+y2+'" stroke="rgba(46,51,77,.85)" stroke-width="2" fill="none"/>');
   });
