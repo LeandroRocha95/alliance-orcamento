@@ -578,9 +578,11 @@ input[type=date]::-webkit-calendar-picker-indicator:hover{opacity:1}
 
     <!-- VIEW HIERARQUIA LIVRE -->
     <div id="org-tree-view">
-      <div id="org-canvas-wrap" style="position:relative;background:var(--s1);border:1px solid var(--bd);border-radius:14px;overflow:auto;min-height:500px">
+      <div id="org-canvas-wrap" style="position:relative;background:var(--s1);border:1px solid var(--bd);border-radius:14px;overflow:auto;min-height:500px;resize:vertical">
         <svg id="org-svg-lines" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:visible" xmlns="http://www.w3.org/2000/svg"></svg>
         <div id="org-canvas" style="position:relative;min-width:1000px;min-height:500px;padding:32px"></div>
+        <!-- Handle visual de resize -->
+        <div style="position:absolute;bottom:4px;right:6px;color:var(--mu);font-size:14px;pointer-events:none;opacity:.5;line-height:1">⇲</div>
       </div>
       <div id="org-edit-tip" style="display:none;font-size:12px;color:var(--mu);margin-top:10px;padding:10px 14px;background:var(--s2);border-radius:8px;border:1px dashed var(--bd)">
         ✋ <strong>Modo edição:</strong> arraste os cards para reposicionar · clique em "Definir como raiz" para colocar alguém no topo · clique novamente em ✏️ para salvar e sair
@@ -2062,20 +2064,43 @@ function toggleOrgEdit(){
   btn.textContent=orgEditMode?'Salvar hierarquia':'Editar hierarquia';
   tip.style.display=orgEditMode?'':'none';
   if(!orgEditMode){
-    var saves=MEM.map(function(m){
-      var node=orgNodes[m.id]||{};
+    // 1. Capturar posições atuais do DOM (drag pode ter atualizado o style sem atualizar orgNodes)
+    MEM.forEach(function(m){
       var el=document.getElementById('onode-'+m.id);
-      return {employee_id:m.id,parent_id:node.parent_id||null,
-        pos_x:el?parseInt(el.style.left)||0:node.pos_x||0,
-        pos_y:el?parseInt(el.style.top)||0:node.pos_y||0,ordem:0};
+      if(el){
+        if(!orgNodes[m.id])orgNodes[m.id]={employee_id:m.id,parent_id:null,ordem:0};
+        orgNodes[m.id].pos_x=Math.round(parseInt(el.style.left)||0);
+        orgNodes[m.id].pos_y=Math.round(parseInt(el.style.top)||0);
+      }
+    });
+    // 2. Montar array de upsert
+    var saves=MEM.map(function(m,i){
+      var node=orgNodes[m.id]||{};
+      return {
+        employee_id:m.id,
+        parent_id:node.parent_id||null,
+        pos_x:node.pos_x||0,
+        pos_y:node.pos_y||0,
+        ordem:i
+      };
     });
     spin(true);
-    fetch(SB+'/rest/v1/org_nodes',{
-      method:'POST',
-      headers:Object.assign({},hdr(),{'Prefer':'return=minimal,resolution=merge-duplicates'}),
-      body:JSON.stringify(saves)
-    }).then(function(){spin(false);toast('Hierarquia salva!');})
-      .catch(function(){spin(false);toast('Erro ao salvar','er');});
+    // 3. DELETE + INSERT (mais confiável que upsert com chave única)
+    DEL('org_nodes?employee_id=in.('+MEM.map(function(m){return m.id;}).join(',')+')')
+      .then(function(){
+        return fetch(SB+'/rest/v1/org_nodes',{
+          method:'POST',
+          headers:Object.assign({},hdr(),{'Prefer':'return=minimal'}),
+          body:JSON.stringify(saves)
+        });
+      })
+      .then(function(){
+        spin(false);
+        toast('Hierarquia salva!');
+        // Recarregar para confirmar
+        loadOrgData(function(){renderOrgTree();});
+      })
+      .catch(function(e){spin(false);toast('Erro ao salvar','er');console.error(e);});
   }
   renderOrgTree();
 }
@@ -2085,7 +2110,8 @@ function autoLayoutOrg(){
   var placed={};
   Object.keys(orgNodes).forEach(function(eid){
     var n=orgNodes[eid];
-    if(n&&(n.pos_x||n.pos_y))placed[eid]=true;
+    // Bug fix: pos_x=0 é válido — checar se tem id (registro existe no banco)
+    if(n&&n.id)placed[eid]=true;
   });
   var roots=MEM.filter(function(m){var n=orgNodes[m.id];return !n||!n.parent_id;});
   var others=MEM.filter(function(m){var n=orgNodes[m.id];return n&&n.parent_id;});
