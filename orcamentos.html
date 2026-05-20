@@ -666,7 +666,7 @@
   <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:16px;">
     <div style="position:relative;flex:2;min-width:200px;">
       <span style="position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:14px;pointer-events:none;">🔍</span>
-      <input id="historySearch" type="text" placeholder="Buscar por nome, código ou vendedor..."
+      <input id="historySearch" type="text" placeholder="Buscar por nome, código, vendedor ou metragem (ex: 120 m²)..."
         oninput="renderHistory()"
         style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;font-family:'DM Sans',sans-serif;padding:9px 14px 9px 36px;outline:none;">
     </div>
@@ -1647,6 +1647,7 @@ function saveToHistory() {
     obs:           document.getElementById('quoteObs').value,
     status:        currentStatus,
     total:         document.getElementById('finalTotal').textContent,
+    area_m2:       document.getElementById('totalM2').textContent,
     discount_val:  document.getElementById('discountVal').value,
     discount_type: document.getElementById('discountType').value,
     acrescimo_val: document.getElementById('acrescimoVal').value,
@@ -1670,6 +1671,37 @@ function saveToHistory() {
     }
   })
   .catch(function(e){ showToast('Sem conexão com a nuvem','error'); console.error(e); });
+}
+
+// Extrai a área (m²) de um orçamento salvo.
+// Usa o campo area_m2 quando disponível; senão calcula a partir do state (orçamentos antigos).
+function _calcArea(e) {
+  if (e == null) return 0;
+  // 1) Campo salvo diretamente (ex.: "123,5 m²" ou "123.5")
+  if (e.area_m2 != null && String(e.area_m2).trim() !== '') {
+    var n = parseFloat(String(e.area_m2).replace(/[^0-9.,]/g,'').replace(/\.(?=\d{3}\b)/g,'').replace(',','.'));
+    if (!isNaN(n)) return n;
+  }
+  // 2) Fallback: recalcula a partir do state salvo
+  var st = e.state;
+  if (st && typeof st === 'object') {
+    var m2 = 0;
+    try {
+      allItems().forEach(function(i){
+        var qty = st[i.id] || 0;
+        if (qty <= 0) return;
+        if (i.countM2) m2 += qty;
+        else if (i.group === 'fechada' || i.group === 'aberta') m2 += qty;
+      });
+    } catch(_){}
+    return m2;
+  }
+  return 0;
+}
+
+// Formata área para exibição
+function _fmtArea(m2) {
+  return (Math.round(m2 * 100) / 100).toLocaleString('pt-BR', {minimumFractionDigits:0, maximumFractionDigits:2}) + ' m²';
 }
 
 function renderHistory() {
@@ -1728,12 +1760,31 @@ function _applyHistoryFilters(allData) {
   // Text search
   var searchVal = (((document.getElementById('historySearch')||{}).value)||'').trim().toLowerCase();
   if (searchVal) {
-    h = h.filter(function(e){
-      return (e.client||'').toLowerCase().indexOf(searchVal) !== -1
-          || genQuoteCode(e.id).toLowerCase().indexOf(searchVal) !== -1
-          || (e.vendor||'').toLowerCase().indexOf(searchVal) !== -1
-          || (e.tipo_madeira||'').toLowerCase().indexOf(searchVal) !== -1;
-    });
+    // Detecta busca por metragem: "120", "120m", "120 m2", "120m²"
+    var areaMatch = searchVal.match(/^(\d+(?:[.,]\d+)?)\s*(?:m2?|m²|metros?)?$/);
+    var isAreaSearch = !!areaMatch && /m|metro|²/.test(searchVal); // só trata como área se tiver "m"/"metro"/"²"
+    if (isAreaSearch) {
+      var alvo = parseFloat(areaMatch[1].replace(',','.'));
+      var tol = 5; // tolerância de ±5 m²
+      h = h.filter(function(e){
+        var a = _calcArea(e);
+        return a > 0 && Math.abs(a - alvo) <= tol;
+      });
+    } else {
+      h = h.filter(function(e){
+        var byText = (e.client||'').toLowerCase().indexOf(searchVal) !== -1
+            || genQuoteCode(e.id).toLowerCase().indexOf(searchVal) !== -1
+            || (e.vendor||'').toLowerCase().indexOf(searchVal) !== -1
+            || (e.tipo_madeira||'').toLowerCase().indexOf(searchVal) !== -1;
+        // Também aceita número puro como busca de área (sem precisar digitar "m²")
+        if (!byText && /^\d+(?:[.,]\d+)?$/.test(searchVal)) {
+          var alvoNum = parseFloat(searchVal.replace(',','.'));
+          var ar = _calcArea(e);
+          return ar > 0 && Math.abs(ar - alvoNum) <= 5;
+        }
+        return byText;
+      });
+    }
   }
   if (!h.length) {
     list.innerHTML = '<div class="history-empty">Nenhum orçamento encontrado com esses filtros.</div>';
@@ -1751,6 +1802,10 @@ function _applyHistoryFilters(allData) {
     var madHtml = mad
       ? '<span style="font-size:11px;background:' + mad.bg + ';color:' + mad.color + ';border-radius:4px;padding:2px 7px;margin-left:6px;font-weight:600;">' + e.tipo_madeira + '</span>'
       : '';
+    var areaVal = _calcArea(e);
+    var areaHtml = areaVal > 0
+      ? '<span style="font-size:11px;background:rgba(155,89,182,0.15);color:#b07cd6;border-radius:4px;padding:2px 7px;margin-left:6px;font-weight:600;">📐 ' + _fmtArea(areaVal) + '</span>'
+      : '';
     var div = document.createElement('div');
     div.className = 'history-item';
     div.innerHTML =
@@ -1759,6 +1814,7 @@ function _applyHistoryFilters(allData) {
           '<span class="history-status" style="background:' + (statusColor[e.status]||'#7a7f9a') + '22;color:' + (statusColor[e.status]||'#7a7f9a') + '">' + (statusLabel[e.status]||'—') + '</span>' +
           '<span style="font-size:11px;font-family:monospace;color:var(--accent);background:rgba(48,142,238,0.1);border-radius:4px;padding:2px 7px;margin-left:6px;letter-spacing:0.5px;">' + genQuoteCode(e.id) + '</span>' +
           madHtml +
+          areaHtml +
         '</div>' +
         '<div class="history-item-meta">' + (_isAdmin && e.vendor ? '<strong style="color:var(--accent)">' + e.vendor + '</strong>' : (e.vendor||'')) + (e.city?' · '+e.city:'') + (e.date?' · '+e.date:'') + (e.validity?' · Válido até: '+e.validity:'') + '</div>' +
         (e.saved_at ? '<div style="font-size:11px;color:var(--muted);margin-top:2px;">Salvo em: ' + e.saved_at + '</div>' : '') +
